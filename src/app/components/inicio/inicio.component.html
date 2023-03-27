@@ -1,0 +1,275 @@
+
+<div style="text-align: center;" *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+
+<br>
+<button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
+(click)="displayFiltros=true"></button>
+
+<button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott" (click)="displayNuevoMovimiento = true"></button>
+
+<br><br>
+
+<p-table [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="single"
+    [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+    [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    [rowsPerPageOptions]="[10,25,50,100,1000]">
+    <ng-template pTemplate="caption">
+        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+            selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
+            placeholder="Seleccionar columnas"></p-multiSelect>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-registro let-columns="columns">
+        <tr>
+            <td *ngFor="let col of columns" (dblclick)="tiraFun(registro[col.field])">
+                {{transformarDatoMostrar(registro[col.field], col.field)}}
+                <div *ngIf="col.field == 'orden'">
+                    ord
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<br><br>
+
+<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '50vw'}" [draggable]="true"
+    [resizable]="false">
+    <p class="m-0">Filtros...
+    </p>
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="displayFiltros=false" label="Ok" styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>
+
+
+<p-dialog header="NUEVO MOVIMIENTO - NUEVO VIAJE" [(visible)]="displayNuevoMovimiento" [modal]="true" [style]="{width: '95vw', height: '90vw'}" [draggable]="true"
+    [resizable]="true" [maximizable]="true">
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label for="fechaSalida">Fecha</label><br>
+                <p-calendar [showIcon]="true" [readonlyInput]="false" inputId="fechaSalida" dateFormat="dd/mm/y"></p-calendar>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label for="selectCamapa">Campaña</label><br>
+                <p-dropdown [options]="db_campanas" placeholder="Seleccionar Campaña" optionLabel="descripcion" inputId="selectCamapa" [showClear]="true"></p-dropdown>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <p-accordion [multiple]="true">
+        <p-accordionTab header="DATOS GENERALES" [(selected)]="accordeonVer[0]">
+            <div class="formgrid row">
+                <div class="field col">
+                    <div class="field">
+                        <label for="benef">Beneficiario</label><br>
+                        <p-dropdown [options]="db_socios" placeholder="Seleccionar Socio" optionLabel="alias" inputId="benef" [showClear]="true" style="width: 170px"></p-dropdown>
+                    </div>
+                </div>
+                <div class="field col">
+                    <div class="field">
+                        <label for="establecimiento">Origen</label><br>
+                        <p-dropdown [options]="db_establecimientos" [(ngModel)]="establecimiento" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Seleccionar Origen">
+                            <ng-template pTemplate="selectedItem">
+                                <div class="flex align-items-center gap-2" *ngIf="establecimiento" style="width: 170px">
+                                    <div>{{ establecimiento.alias }}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-establecimiento pTemplate="item">
+                                <div class="flex align-items-center gap-2">
+                                    <div>{{ establecimiento.alias }}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>                        
+                    </div>
+                </div>
+                <div class="field col">
+                    <div class="field">
+                        <label for="tipoGrano">Grano</label><br>
+                        <p-dropdown [options]="db_granos" placeholder="Seleccionar Grano" optionLabel="alias" inputId="tipoGrano" [showClear]="true" style="width: 170px"></p-dropdown>
+                    </div>
+                </div>
+                <div class="field col">
+                    <div class="field">
+                        <label>De</label>
+                        <p-selectButton [options]="[{label: 'Silo', value:1},{label: 'Trilla', value:2},{label: 'Otro', value:0}]" optionLabel="label" optionValue="value"></p-selectButton>                    </div>
+                </div>
+            </div>
+        </p-accordionTab>
+        <p-accordionTab header="TRANSPORTE" [(selected)]="accordeonVer[1]">
+            <div class="formgrid row">
+                <div class="field col">
+                    <p-card header="Transporte">
+                        <div class="formgrid row">
+                            <div class="field col-3">
+                                <label>Codigo</label><br>
+                                <input [(ngModel)]="cod_transporte" type="text" pInputText style="width: 100px;" (keyup.enter)="buscarTransporte()"/>
+                            </div>
+                            <div class="field col-9">
+                                <label>Buscar:</label><br>
+                                <p-dropdown [options]="db_transportistas" [(ngModel)]="transportista" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Transportista" (onChange)="onSelectTransporte()">
+                                 <ng-template pTemplate="selectedItem">
+                                        <div class="flex align-items-center gap-2" *ngIf="transportista" style="width: 170px">
+                                            <div>{{ transportista.alias }}</div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-transportista pTemplate="item">
+                                        <div class="flex align-items-center gap-2">
+                                            <div>{{ transportista.alias }}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <br>
+                        <p>Transp.: <strong *ngIf="transportista">{{transportista.razon_social}}</strong></p>
+                        <p>CUIT: <strong *ngIf="transportista">{{transportista.cuit}}</strong></p>
+                        <p>IVA: <strong *ngIf="transportista">{{transformarDato(transportista.condicion_iva, 'condicion_iva')}}</strong></p>
+                    </p-card>
+                </div>
+                <div class="field col">
+                    <p-card header="Chofer">
+                        <div class="formgrid row">
+                            <div class="field col-3">
+                                <label>Codigo</label><br>
+                                <input [(ngModel)]="cod_chofer" type="text" pInputText style="width: 100px;" (keyup.enter)="buscarChofer()"/>
+                            </div>
+                            <div class="field col-9">
+                                <label>Buscar:</label><br>
+                                <p-dropdown [options]="select_choferes" [(ngModel)]="chofer" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Chofer" (onChange)="onSelectChofer()">
+                                    <ng-template pTemplate="selectedItem">
+                                        <div class="flex align-items-center gap-2" *ngIf="chofer" style="width: 170px">
+                                            <div>{{chofer.alias}} - {{chofer.razon_social}}</div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-chofer pTemplate="item">
+                                        <div class="flex align-items-center gap-2">
+                                            <div>{{ chofer.alias }}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <br>
+                        <p>Chofer.: <strong *ngIf="chofer">{{chofer.razon_social}}</strong></p>
+                        <p>CUIT: <strong *ngIf="chofer">{{chofer.cuit}}</strong></p>
+                        <button (click)="verTodosChoferes()">Ver todos</button>
+                    </p-card>
+                </div>
+                <div class="field col">
+                    <p-card header="Unidad">
+                        <div class="formgrid row">
+                            <div class="field col-3">
+                                <label>Codigo</label><br>
+                                <input [(ngModel)]="cod_camion" type="text" pInputText style="width: 100px;" (keyup.enter)="buscarCamion()"/>
+                            </div>
+                            <div class="field col-9">
+                                <label>Buscar:</label><br>
+                                <p-dropdown [options]="select_camiones" [(ngModel)]="camion" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Camion" (onChange)="onSelectCamion()">
+                                    <ng-template pTemplate="selectedItem">
+                                        <div class="flex align-items-center gap-2" *ngIf="camion" style="width: 170px">
+                                            <div>{{ camion.alias }}</div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-camion pTemplate="item">
+                                        <div class="flex align-items-center gap-2">
+                                            <div>{{ camion.alias }}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </div>
+                        <br>
+                        <p>Patente Chasis: <strong *ngIf="camion">{{camion.patente_chasis}}</strong></p>
+                        <p>Patente Acoplado: <strong *ngIf="camion">{{camion.patente_acoplado}}</strong></p>
+                        <p>Patente Otro.: <strong *ngIf="camion">{{camion.patente_otro}}</strong></p>
+                        <p>Modelo: <strong *ngIf="camion">{{camion.modelo}}</strong></p>
+                        <button (click)="verTodosCamiones()">Ver todos</button>
+                    </p-card>
+                </div>
+            </div>
+        </p-accordionTab>
+        <p-accordionTab header="KILOS" [(selected)]="accordeonVer[3]">
+            <div class="formgrid row"> 
+                <div class="col">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">KG BRUTO</span>
+                        <p-inputNumber placeholder="BRUTO" [(ngModel)]="kilos_bruto" (onInput)="calcularKilos($event, 'kilos_bruto')"></p-inputNumber>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">KG TARA</span>
+                        <p-inputNumber placeholder="TARA" [(ngModel)]="kilos_tara" (onInput)="calcularKilos($event, 'kilos_tara')"></p-inputNumber> 
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">KG NETO</span>
+                        <p-inputNumber placeholder="NETO" [(ngModel)]="kilos_neto" (onInput)="calcularKilos($event, 'kilos_neto')"></p-inputNumber> 
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="formgrid row"> 
+                <div class="col">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">KG REGULACION</span>
+                        <p-inputNumber placeholder="+ CARGA/ - DESCARGA" [(ngModel)]="kilos_carga_descarga" (onInput)="calcularKilos($event, 'kilos_carga_descarga')"></p-inputNumber>
+                    </div>
+                </div>
+                <div class="col">
+                    <p-dropdown [options]="db_depositos" placeholder="Deposito" optionLabel="alias" [showClear]="true"></p-dropdown>
+                </div>
+                <div class="col">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">KG NETO FINAL</span>
+                        <p-inputNumber placeholder="FINAL" [(ngModel)]="kilos_neto_final" (onInput)="calcularKilos($event, 'kilos_neto_final')"></p-inputNumber> 
+                    </div>
+                </div>
+            </div>
+        </p-accordionTab>
+        <p-accordionTab header="DESTINO" [(selected)]="accordeonVer[4]">
+            <div class="formgrid row"> 
+                <div class="col">
+                    <label>CORREDOR:</label><br>
+                    <p-listbox [options]="db_camiones" optionLabel="alias" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+                </div>
+                <div class="col">
+                    <label>ACOPIO:</label><br>
+                    <p-listbox [options]="db_camiones" optionLabel="alias" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+                </div>
+            </div>
+        </p-accordionTab>
+        <p-accordionTab header="ORDEN DE CARGA" [(selected)]="accordeonVer[5]">
+            <div style="text-align: center;">
+                <p-button class="bot" label="DESCARGAR ORDEN" styleClass="p-button-raised"></p-button>
+                <p-button class="bot" label="VER ORDEN" styleClass="p-button-raised p-button-secondary"></p-button>
+            </div>
+        </p-accordionTab>
+        <p-accordionTab header="GASTOS" [(selected)]="accordeonVer[2]">
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
+                cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
+                Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.</p>
+        </p-accordionTab>
+    </p-accordion>
+    <button (click)="verVars()">VER</button>
+
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="tiraFun($event)"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoMovimiento = false"></button>
+    </ng-template>
+</p-dialog>

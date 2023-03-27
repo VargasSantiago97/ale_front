@@ -1,0 +1,31 @@
+<br>
+<br>
+
+
+<div class="container">
+    <div class="formgrid grid row">
+        <div class="field col-4">
+            <p-card header="BENEFICIARIO">
+                <h5>Socio:</h5>
+                <p-listbox [options]="socios" [(ngModel)]="socioSeleccionado" optionLabel="alias"></p-listbox>
+                <br><br>
+                <h5>Fecha salida:</h5>
+                <p-calendar [(ngModel)]="fechaSalida" [dateFormat]="'dd/mm/yy'"></p-calendar>
+            </p-card>
+        </div>
+        <div class="field col-4">
+            <p-card header="ORIGEN">
+                <p>
+                    asdasdasd
+                </p>
+            </p-card>
+        </div>
+        <div class="field col-4">
+            <p-card header="TRANSPORTE">
+                <p>
+                    asdasdasd
+                </p>
+            </p-card>
+        </div>
+    </div>
+</div>

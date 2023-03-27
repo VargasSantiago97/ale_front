@@ -1,0 +1,41 @@
+<table>
+    <thead>
+        <tr style="text-align: center;">
+            <td><strong>Alias</strong></td>
+            <td><strong>Descripcion</strong></td>
+            <td><strong>Codigo</strong></td>
+            <td><strong>Computa IVA</strong></td>
+            <td><strong>Activo</strong></td>
+            <td><strong>ACCIONES</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let dato of datos">
+            <td>
+                <input type="text" [(ngModel)]="dato.alias">
+            </td>
+            <td>
+                <input type="text" [(ngModel)]="dato.descripcion">
+            </td>
+            <td>
+                <input type="text" [(ngModel)]="dato.codigo">
+            </td>
+            <td>
+                <input type="text" [(ngModel)]="dato.iva">
+            </td>
+            <td>
+                <input type="text" [(ngModel)]="dato.activo">
+            </td>
+            <td *ngIf="dato.id">
+                <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="editarElemento(dato)"><i class="pi pi-pencil"></i></button>
+                <button style="background-color: rgba(255, 17, 0, 0.486);" (click)="eliminarElemento(dato)"><i class="pi pi-trash"></i></button>
+                <button style="background-color: rgba(0, 110, 255, 0.486);" (click)="duplicarElemento(dato)"><i class="pi pi-arrow-circle-down"></i></button>
+            </td>
+            <td *ngIf="!dato.id">
+                <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="guardarElemento(dato)"><i class="pi pi-save"></i></button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br><br>
+<button pButton pRipple type="button" label="AGREGAR" class="p-button-success bott" (click)="agregarElemento()"></button>
