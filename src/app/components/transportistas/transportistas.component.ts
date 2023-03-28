@@ -10,7 +10,7 @@ import { PadronService } from 'src/app/services/padron.service';
 })
 export class TransportistasComponent {
 
-    displayTransportista: any = true
+    displayTransportista: any = false
 
     db_camiones: any = []
     db_choferes: any = []
@@ -54,18 +54,19 @@ export class TransportistasComponent {
         this.obtenerCondicion_iva()
 
         this.datosTransportista = {
-            codigo: 'codigo',
-            alias: 'alias',
-            cuit: 123,
+            id: null,
+            codigo: '',
+            alias: '',
+            cuit: null,
             tipoPersona: 'FISICA',
-            condicion_iva: '',
-            nombre: 'nombre',
-            apellido: 'apellido',
-            razonSocial: 'razonSocial',
-            direccion: 'direccion',
-            localidad: 'localidad',
-            codigoPostal: 'codigoPostal',
-            descripcionProvincia: 'descripcionProvincia'
+            condicion_iva: 1,
+            nombre: '',
+            apellido: '',
+            razonSocial: '',
+            direccion: '',
+            localidad: '',
+            codigoPostal: '',
+            descripcionProvincia: ''
         }
     }
 
@@ -91,7 +92,7 @@ export class TransportistasComponent {
             }
         )
     }
-    obtenerTransportistas(){
+    obtenerTransportistas(){/* 
         this.comunicacionService.get_transportistas().subscribe(
             (res:any) => {
                 this.db_transportistas = res;
@@ -100,7 +101,24 @@ export class TransportistasComponent {
             (err:any) => {
                 console.log(err)
             }
-        )
+        ) */
+        this.db_transportistas = [
+            {
+                alias: 'Transp1',
+                codigo: '01',
+                cuit: null
+            },
+            {
+                alias: 'Transp5',
+                codigo: '02',
+                cuit: null
+            },
+            {
+                alias: 'Transp3',
+                codigo: '03',
+                cuit: null
+            }
+        ]
     }
     obtenerCondicion_iva(){
         this.comunicacionService.get_condicion_iva().subscribe(
@@ -213,6 +231,7 @@ export class TransportistasComponent {
 
     nuevoTransportista(){
         this.datosTransportista = {
+            id: null,
             codigo: '',
             alias: '',
             cuit: null,
@@ -228,4 +247,59 @@ export class TransportistasComponent {
         }
         this.displayTransportista = true
     }
+
+    guardarTransportista(){
+        var errores = 0
+        var mensaje = ''
+        if(!this.datosTransportista.id){
+            //CREAR
+            if(!this.datosTransportista.codigo){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
+                errores++;
+            }
+            if(!errores && this.db_transportistas.some((e:any) => {return e.codigo == this.datosTransportista.codigo})){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un transportista con este codigo'})
+                errores++;
+            }
+
+            if(!errores && this.db_transportistas.some((e:any) => {return e.cuit == this.datosTransportista.cuit})){
+                this.messageService.add({severity:'warn', summary:'ADVERTENCIA!', detail:'Ya existe un transportista con este CUIT.'})
+                mensaje = " - Tenga en cuenta que ya existe un transportista con ese CUIT."
+            }
+
+            if(!errores){
+                this.messageService.clear('confirmGuardarTransp');
+                this.messageService.add({key: 'confirmGuardarTransp', sticky: true, severity:'warn', summary:'Estas seguro?', detail:'Confirme para guardar' + mensaje});
+            }
+            
+        } else {
+            //MODIFICAR
+            alert('modif')
+        }
+    }
+
+    onReject() {
+        this.messageService.clear('confirmGuardarTransp');
+    }
+    onConfirm() {
+        this.messageService.clear('confirmGuardarTransp');
+        this.displayTransportista = false
+
+        this.comunicacionService.create_transportistas({}).subscribe(
+            (res:any) => {
+                if(!res || res.mensaje == false){
+                    this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
+                    console.log(res)
+                } else {
+                    this.messageService.add({severity:'success', summary:'Exito!', detail:'Transportista creado con exito 👌'})
+                    this.obtenerTransportistas()
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a backend. Consulte consola'})
+            }
+        )
+    }
+
 }

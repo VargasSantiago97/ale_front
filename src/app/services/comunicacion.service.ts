@@ -162,16 +162,25 @@ export class ComunicacionService {
     return this.http.post(`${this.API_URI}/index.php?op=update&tabla=socios`, data);
   }
 
+  get_transportistas(){
+    return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=transportistas`)
+  }
+  create_transportistas(data: any){
+    data.creado_por = this.USER_ID;
+    data.editado_por = this.USER_ID;
+    data.creado_el = new Date();
+    data.creado_el.setHours(data.creado_el.getHours()-3);
+    data.editado_el = new Date();
+    data.editado_el.setHours(data.editado_el.getHours()-3);
+    return this.http.post(`${this.API_URI}/index.php?op=create&tabla=transportistas`, data);
+  }
+
   get_camiones(){
     return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=camiones`)
   }
   get_choferes(){
     return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=choferes`)
   }
-  get_transportistas(){
-    return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=transportistas`)
-  }
-
 
 
   
