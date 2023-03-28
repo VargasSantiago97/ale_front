@@ -4,7 +4,7 @@
             <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/organization/walter.jpg" styleClass="mr-2" size="xlarge" shape="circle"></p-avatar>
         </ng-template>
         <p>Contraseña:</p>
-        <p-password [(ngModel)]="pass" [toggleMask]="true"></p-password>
+        <p-password [(ngModel)]="pass" [toggleMask]="true" (keydown.enter)="intentoLogueo()"></p-password>
         <br><br><br>
         <p-button label="Ingresar" (click)="intentoLogueo()"></p-button>
         <br><br>

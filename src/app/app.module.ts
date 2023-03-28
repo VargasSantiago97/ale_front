@@ -61,6 +61,7 @@ import { DepositosComponent } from './components/tablas/depositos/depositos.comp
 import { CondicionIvaComponent } from './components/tablas/condicion-iva/condicion-iva.component';
 import { GastosComponent } from './components/tablas/gastos/gastos.component';
 import { UnloginComponent } from './components/login/unlogin/unlogin.component';
+import { TransportistasComponent } from './components/transportistas/transportistas.component';
 
 
 
@@ -79,7 +80,8 @@ import { UnloginComponent } from './components/login/unlogin/unlogin.component';
     DepositosComponent,
     CondicionIvaComponent,
     GastosComponent,
-    UnloginComponent
+    UnloginComponent,
+    TransportistasComponent
   ],
   imports: [
     BrowserModule,

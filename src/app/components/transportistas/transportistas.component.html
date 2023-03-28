@@ -1,0 +1,149 @@
+<br>
+<div class="formgrid row">
+    <div class="field col">
+        <p-card header="Transporte">
+            <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
+                [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
+                [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
+                <ng-template let-transport pTemplate="item">
+                    <div class="transport-item">
+                        <div>{{transport.alias}} - {{transport.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </p-card>
+    </div>
+    <div class="field col">
+        <p-card header="Chofer">
+            <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
+                [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
+                [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
+                <ng-template let-transport pTemplate="item">
+                    <div class="transport-item">
+                        <div>{{transport.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </p-card>
+    </div>
+    <div class="field col">
+        <p-card header="Camion">
+            <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
+                [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
+                [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
+                <ng-template let-transport pTemplate="item">
+                    <div class="transport-item">
+                        <div>{{transport.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </p-card>
+    </div>
+</div>
+
+
+<p-dialog header="TRANSPORTISTA" [(visible)]="displayTransportista" [modal]="true" [style]="{width: '1100px', height: '700px'}"
+    [draggable]="true" [resizable]="true" [maximizable]="true">
+    <div class="formgrid row">
+        <div class="col-3">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Cód.</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.codigo"/>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Alias</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.alias"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <div style="text-align: center;" *ngIf="spinnerCUIT">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="col-4">
+            <div class="p-inputgroup">
+                <input type="number" pInputText placeholder="CUIT" (keydown.enter)="buscarCUIT()" [(ngModel)]="datosTransportista.cuit">   
+                <button (click)="buscarCUIT()" type="button" pButton pRipple label="BUSCAR" styleClass="p-button-warn"></button>      
+            </div>
+        </div>
+        <div class="col-4">
+            <p-dropdown [options]="tipoPersonaOptions" [(ngModel)]="datosTransportista.tipoPersona"></p-dropdown>
+        </div>
+        <div class="col-4">
+            <p-dropdown [options]="db_condicion_iva" [(ngModel)]="datosTransportista.condicion_iva" optionLabel="alias" optionValue="idd"></p-dropdown>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row" *ngIf="datosTransportista.tipoPersona == 'FISICA'"> 
+        <div class="col-6">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Nombre/s</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.nombre" />  
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Apellido</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.apellido" />  
+            </div>
+        </div>
+    </div>
+    <div class="formgrid row" *ngIf="datosTransportista.tipoPersona == 'JURIDICA'"> 
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Razon Social</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.razonSocial" />  
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <span>Direccion:</span>
+    <div class="formgrid row"> 
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Direccion</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.direccion" />  
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row"> 
+        <div class="col-5">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Localidad</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosTransportista.localidad"/>  
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">C.P.</span>
+                <input type="text" class="p-inputtext-sm" [(ngModel)]="datosTransportista.codigoPostal" pInputText />  
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Provincia</span>
+                <input type="text" class="p-inputtext-sm" [(ngModel)]="datosTransportista.descripcionProvincia" pInputText />  
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="verVars()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayTransportista = false"></button>
+    </ng-template>
+</p-dialog>

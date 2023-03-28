@@ -7,11 +7,14 @@ import { InicioComponent } from './components/inicio/inicio.component';
 import { LoginComponent } from './components/login/login.component';
 import { UnloginComponent } from './components/login/unlogin/unlogin.component';
 import { TablasComponent } from './components/tablas/tablas.component';
+import { TransportistasComponent } from './components/transportistas/transportistas.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: '/inicio', pathMatch: 'full'},
   { path: 'inicio', component: InicioComponent },
+  { path: 'transportistas', component: TransportistasComponent },
+
 
   { path: 'unlogin', component: UnloginComponent },
   { path: 'login', component: LoginComponent },

@@ -81,7 +81,7 @@ export class InicioComponent {
             { field: "cpe", header: "cpe" },
             { field: "benef", header: "benef" },
             { field: "ctg", header: "ctg" },
-            { field: "capo", header: "capo" },
+            { field: "campo", header: "campo" },
             { field: "tipo_orig", header: "tipo_orig" },
             { field: "pat", header: "pat" },
             { field: "patAc", header: "patAc" },
@@ -104,7 +104,7 @@ export class InicioComponent {
         this.selectedColumns = [
             { field: "cultivo", header: "cultivo" },
             { field: "fecha", header: "fecha" },
-            { field: "capo", header: "capo" },
+            { field: "campo", header: "campo" },
             { field: "tipo_orig", header: "tipo_orig" },
             { field: "pat", header: "pat" },
             { field: "patAc", header: "patAc" },
