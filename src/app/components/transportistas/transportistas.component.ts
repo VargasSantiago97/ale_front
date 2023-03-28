@@ -57,7 +57,7 @@ export class TransportistasComponent {
             codigo: 'codigo',
             alias: 'alias',
             cuit: 123,
-            tipoPersona: [],
+            tipoPersona: 'FISICA',
             condicion_iva: '',
             nombre: 'nombre',
             apellido: 'apellido',
@@ -163,18 +163,45 @@ export class TransportistasComponent {
 
     buscarCUIT(){
         this.spinnerCUIT = true
-        this.padronService.padronCUIT(this.cuit).subscribe(
+        this.padronService.padronCUIT(this.datosTransportista.cuit).subscribe(
             (res:any) => {
-                if(res.tipoPersona == 'FISICA'){
-                    console.log(res.nombre + ' ' + res.apellido)
-                } else {
-                    console.log(res.razonSocial)
-                }
                 this.spinnerCUIT = false
+                if(!res){
+                    this.messageService.add({severity:'error', summary:'Error!', detail:'Verifique los datos ingresados'})
+                }
+
+                this.datosTransportista.tipoPersona = res.tipoPersona
+
+                var sugiereAlias = ''
+                if(res.tipoPersona == 'FISICA'){
+                    this.datosTransportista.nombre = res.nombre
+                    this.datosTransportista.apellido = res.apellido
+                    this.datosTransportista.razonSocial = ''
+                    sugiereAlias = res.apellido + ', ' + res.nombre
+                } else {
+                    this.datosTransportista.razonSocial = res.razonSocial
+                    this.datosTransportista.nombre = ''
+                    this.datosTransportista.apellido = ''
+                    sugiereAlias = res.razonSocial
+                }
+
+                if(this.datosTransportista.alias == '' || this.datosTransportista.alias == null){
+                    this.datosTransportista.alias = sugiereAlias
+                }
+
+                if(res.domicilio.length){
+                    let domicilio = res.domicilio.find((e:any) => {return e.tipoDomicilio == 'LEGAL/REAL'})
+                    if(domicilio){
+                        this.datosTransportista.direccion = domicilio.direccion
+                        this.datosTransportista.localidad = domicilio.localidad
+                        this.datosTransportista.codigoPostal = domicilio.codigoPostal
+                        this.datosTransportista.descripcionProvincia = domicilio.descripcionProvincia
+                    }
+                }
             },
             (err:any) => {
                 console.log(err)
-                this.messageService.add({severity:'error', summary:'Error!', detail:'CUIT no encontrado'})
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a Backend (AFIP)'})
                 this.spinnerCUIT = false
             }
         )
@@ -182,5 +209,23 @@ export class TransportistasComponent {
 
     verVars(){
         console.log(this.datosTransportista)
+    }
+
+    nuevoTransportista(){
+        this.datosTransportista = {
+            codigo: '',
+            alias: '',
+            cuit: null,
+            tipoPersona: 'FISICA',
+            condicion_iva: 1,
+            nombre: '',
+            apellido: '',
+            razonSocial: '',
+            direccion: '',
+            localidad: '',
+            codigoPostal: '',
+            descripcionProvincia: ''
+        }
+        this.displayTransportista = true
     }
 }

@@ -2,6 +2,7 @@
 <div class="formgrid row">
     <div class="field col">
         <p-card header="Transporte">
+            <button pButton pRipple type="button" label="NUEVO" class="p-button-success bott" (click)="nuevoTransportista()"></button>
             <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
@@ -75,7 +76,7 @@
             <p-dropdown [options]="tipoPersonaOptions" [(ngModel)]="datosTransportista.tipoPersona"></p-dropdown>
         </div>
         <div class="col-4">
-            <p-dropdown [options]="db_condicion_iva" [(ngModel)]="datosTransportista.condicion_iva" optionLabel="alias" optionValue="idd"></p-dropdown>
+            <p-dropdown [options]="db_condicion_iva" [(ngModel)]="datosTransportista.condicion_iva" optionLabel="descripcion" optionValue="id"></p-dropdown>
         </div>
     </div>
     <br>
@@ -93,7 +94,7 @@
             </div>
         </div>
     </div>
-    <div class="formgrid row" *ngIf="datosTransportista.tipoPersona == 'JURIDICA'"> 
+    <div class="formgrid row" *ngIf="datosTransportista.tipoPersona != 'FISICA'"> 
         <div class="col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Razon Social</span>
