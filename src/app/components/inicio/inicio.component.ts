@@ -311,6 +311,7 @@ export class InicioComponent {
     onSelectCamion(){
         if(this.camion){
             this.cod_camion = this.camion.codigo
+            this.kilos_tara = this.camion.kg_tara
         }
     }
 
@@ -364,6 +365,9 @@ export class InicioComponent {
 
     }
 
+    save(event:any) {
+        console.log("You entered: ", event.target.value);
+    }
 
 
     transformarDato(dato:any, tipo:any){

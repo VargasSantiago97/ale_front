@@ -111,7 +111,7 @@
         <p-accordionTab header="TRANSPORTE" [(selected)]="accordeonVer[1]">
             <div class="formgrid row">
                 <div class="field col">
-                    <p-card header="Transporte">
+                    <p-card header="Transporte" (keydown.insert)="save($event)">
                         <div class="formgrid row">
                             <div class="field col-3">
                                 <label>Codigo</label><br>
@@ -195,6 +195,7 @@
                         <p>Patente Chasis: <strong *ngIf="camion">{{camion.patente_chasis}}</strong></p>
                         <p>Patente Acoplado: <strong *ngIf="camion">{{camion.patente_acoplado}}</strong></p>
                         <p>Patente Otro.: <strong *ngIf="camion">{{camion.patente_otro}}</strong></p>
+                        <p>Tara: <strong *ngIf="camion">{{camion.kg_tara}}</strong></p>
                         <p>Modelo: <strong *ngIf="camion">{{camion.modelo}}</strong></p>
                         <button (click)="verTodosCamiones()">Ver todos</button>
                     </p-card>
@@ -253,20 +254,7 @@
                 </div>
             </div>
         </p-accordionTab>
-        <p-accordionTab header="ORDEN DE CARGA" [(selected)]="accordeonVer[5]">
-            <div style="text-align: center;">
-                <p-button class="bot" label="DESCARGAR ORDEN" styleClass="p-button-raised"></p-button>
-                <p-button class="bot" label="VER ORDEN" styleClass="p-button-raised p-button-secondary"></p-button>
-            </div>
-        </p-accordionTab>
-        <p-accordionTab header="GASTOS" [(selected)]="accordeonVer[2]">
-            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-                cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
-                Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.</p>
-        </p-accordionTab>
     </p-accordion>
-    <button (click)="verVars()">VER</button>
-
 
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="tiraFun($event)"></button>
