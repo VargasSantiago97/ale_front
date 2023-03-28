@@ -5,10 +5,10 @@
             <button pButton pRipple type="button" label="NUEVO" class="p-button-success bott" (click)="nuevoTransportista()"></button>
             <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
-                [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
+                [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}" (onChange)="onSelectTransporte()">
                 <ng-template let-transport pTemplate="item">
                     <div class="transport-item">
-                        <div>{{transport.alias}} - {{transport.alias}}</div>
+                        <div>{{transport.alias}} - {{transport.cuit}}</div>
                     </div>
                 </ng-template>
             </p-listbox>
@@ -16,12 +16,13 @@
     </div>
     <div class="field col">
         <p-card header="Chofer">
-            <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
+            <button pButton pRipple type="button" label="NUEVO" class="p-button-success bott" (click)="nuevoChofer()"></button>
+            <p-listbox [options]="select_choferes" [(ngModel)]="chofer" [metaKeySelection]="false"
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
-                <ng-template let-transport pTemplate="item">
-                    <div class="transport-item">
-                        <div>{{transport.alias}}</div>
+                <ng-template let-fecho pTemplate="item">
+                    <div class="fecho-item">
+                        <div>{{fecho.alias}} - {{fecho.cuit}}</div>
                     </div>
                 </ng-template>
             </p-listbox>
@@ -29,12 +30,12 @@
     </div>
     <div class="field col">
         <p-card header="Camion">
-            <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
+            <p-listbox [options]="select_camiones" [(ngModel)]="camion" [metaKeySelection]="false"
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
-                <ng-template let-transport pTemplate="item">
-                    <div class="transport-item">
-                        <div>{{transport.alias}}</div>
+                <ng-template let-unidad pTemplate="item">
+                    <div class="unidad-item">
+                        <div>{{unidad.alias}} - {{unidad.modelo}}</div>
                     </div>
                 </ng-template>
             </p-listbox>
@@ -135,20 +136,11 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarTransportista()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayTransportista = false"></button>
     </ng-template>
 </p-dialog>
-
-
 <p-toast position="bottom-center" key="confirmGuardarTransp" (onClose)="onReject()" [baseZIndex]="5000">
     <ng-template let-message pTemplate="message">
         <div class="flex flex-column" style="flex: 1">
@@ -158,11 +150,122 @@
                 <p>{{message.detail}}</p>
             </div>
             <div class="grid p-fluid">
-                <div class="col-6">
-                    <button type="button" pButton (click)="onConfirm()" label="SI" class="p-button-success"></button>
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirm()" label="SI" class="p-button-success"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onReject()" label="NO" class="p-button-secondary"></button>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <button type="button" pButton (click)="onReject()" label="NO" class="p-button-secondary"></button>
+            </div>
+        </div>
+    </ng-template>
+</p-toast>
+<p-toast position="bottom-center" key="confirmModificarTransp" (onClose)="onRejectModificar()" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1">
+            <div class="text-center">
+                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+            <div class="grid p-fluid">
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirmModificar()" label="SI" class="p-button-success"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onRejectModificar()" label="NO" class="p-button-secondary"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-toast>
+
+<p-dialog header="CHOFER" [(visible)]="displayChofer" [modal]="true" [style]="{width: '1100px', height: '500px'}"
+    [draggable]="true" [resizable]="true" [maximizable]="true">
+    <div class="formgrid row">
+        <div class="col-3">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Cód.</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosChofer.codigo"/>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Alias</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosChofer.alias"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <div style="text-align: center;" *ngIf="spinnerChoferCUIT">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="col-4">
+            <div class="p-inputgroup">
+                <input type="number" pInputText placeholder="CUIT" (keydown.enter)="buscarChoferCUIT()" [(ngModel)]="datosChofer.cuit">   
+                <button (click)="buscarChoferCUIT()" type="button" pButton pRipple label="BUSCAR" styleClass="p-button-warn"></button>      
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row"> 
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Razon Social</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosChofer.razonSocial" />  
+            </div>
+        </div>
+    </div>
+    <br>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarChofer()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayChofer = false"></button>
+    </ng-template>
+</p-dialog>
+<p-toast position="bottom-center" key="confirmGuardarChofer" (onClose)="onRejectChofer()" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1">
+            <div class="text-center">
+                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+            <div class="grid p-fluid">
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirmChofer()" label="SI" class="p-button-success"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onRejectChofer()" label="NO" class="p-button-secondary"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-toast>
+<p-toast position="bottom-center" key="confirmModificarChofer" (onClose)="onRejectModificarChofer()" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1">
+            <div class="text-center">
+                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+            <div class="grid p-fluid">
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirmModificarChofer()" label="SI" class="p-button-success"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onRejectModificarChofer()" label="NO" class="p-button-secondary"></button>
+                    </div>
                 </div>
             </div>
         </div>
