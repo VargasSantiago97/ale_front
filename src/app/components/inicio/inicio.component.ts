@@ -17,7 +17,7 @@ export class InicioComponent {
     dataParaMostrarTabla: any = []
 
     displayFiltros: Boolean = false;
-    displayNuevoMovimiento: Boolean = true;
+    displayNuevoMovimiento: Boolean = false;
 
     accordeonVer = [false , false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
 
@@ -375,6 +375,16 @@ export class InicioComponent {
             return this.db_condicion_iva.some((e:any) => { return e.codigo == dato}) ? this.db_condicion_iva.find((e:any) => { return e.codigo == dato}).descripcion : '-'
         }
         return dato
+    }
+
+    generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
     }
 
 

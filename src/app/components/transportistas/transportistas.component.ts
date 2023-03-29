@@ -282,7 +282,13 @@ export class TransportistasComponent {
     onConfirm() {
         this.messageService.clear('confirmGuardarTransp');
 
-        this.datosTransportista.id = true
+        var idd = this.generateUUID()
+        if(this.db_transportistas.some((e:any) => {return e.id == idd})){
+            this.messageService.add({severity:'info', summary:'INTENTE NUEVAMENTE', detail:'Hubo un error interno en UUID. Vuelva a presionar "guardar"'})
+            return
+        }
+
+        this.datosTransportista.id = idd
 
         this.comunicacionService.create_transportistas(this.datosTransportista).subscribe(
             (res:any) => {
@@ -433,7 +439,13 @@ export class TransportistasComponent {
     onConfirmChofer() {
         this.messageService.clear('confirmGuardarChofer');
 
-        this.datosChofer.id = true
+        var idd = this.generateUUID()
+        if(this.db_choferes.some((e:any) => {return e.id == idd})){
+            this.messageService.add({severity:'info', summary:'INTENTE NUEVAMENTE', detail:'Hubo un error interno en UUID. Vuelva a presionar "guardar"'})
+            return
+        }
+
+        this.datosChofer.id = idd
 
         this.comunicacionService.create_choferes(this.datosChofer).subscribe(
             (res:any) => {
@@ -560,7 +572,13 @@ export class TransportistasComponent {
     onConfirmCamion() {
         this.messageService.clear('confirmGuardarCamion');
 
-        this.datosCamion.id = true
+        var idd = this.generateUUID()
+        if(this.db_camiones.some((e:any) => {return e.id == idd})){
+            this.messageService.add({severity:'info', summary:'INTENTE NUEVAMENTE', detail:'Hubo un error interno en UUID. Vuelva a presionar "guardar"'})
+            return
+        }
+
+        this.datosCamion.id = idd
 
         this.comunicacionService.create_camiones(this.datosCamion).subscribe(
             (res:any) => {
@@ -605,4 +623,14 @@ export class TransportistasComponent {
         )
     }
 
+
+    generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    }
 }

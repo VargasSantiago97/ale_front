@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
 declare var vars: any;
 
 @Injectable({
@@ -10,7 +11,10 @@ export class ComunicacionService {
     API_URI = vars.API_URI;
     USER_ID: any = 0;
 
-    constructor(private http: HttpClient) {
+    constructor(
+        private http: HttpClient,
+        private messageService: MessageService
+    ) {
         this.USER_ID = localStorage.getItem('user')
     }
 
