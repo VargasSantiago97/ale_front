@@ -246,7 +246,7 @@ export class ComunicacionService {
 [
     {
         "tabla": "camiones",
-        "columnas": ["id", "id_transportista", "patente_chasis", "patente_acoplado", "patente_otro", "codigo", "alias", "modelo", "creado_por", "creado_el", "editado_por", "editado_el", "estado"]
+        "columnas": ["id", "id_transportista", "patente_chasis", "patente_acoplado", "patente_otro", "codigo", "alias", "modelo", "kg_tara", "creado_por", "creado_el", "editado_por", "editado_el", "estado"]
     },
     {
         "tabla": "choferes",

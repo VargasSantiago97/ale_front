@@ -11,8 +11,8 @@ import { PadronService } from 'src/app/services/padron.service';
 export class TransportistasComponent {
 
     displayTransportista: any = false
-    displayChofer: any = true
-    displayCamion: any = true
+    displayChofer: any = false
+    displayCamion: any = false
 
     spinnerCUIT: any = false;
     spinnerChoferCUIT: any = false;
@@ -29,13 +29,10 @@ export class TransportistasComponent {
     select_choferes: any = [];
     select_camiones: any = [];
 
-    cod_transporte: any;
-    cod_chofer: any;
-    cod_camion: any;
-
     load_camiones: any = true
     load_choferes: any = true
     load_transportistas: any = true
+    load_condicion_iva: any = true
 
     cuit:any;
 
@@ -75,6 +72,7 @@ export class TransportistasComponent {
         }
         this.datosChofer = {
             id: null,
+            id_transportista: null,
             codigo: '',
             alias: '',
             cuit: null,
@@ -89,9 +87,11 @@ export class TransportistasComponent {
             patente_otro: '',
             alias: '',
             modelo: '',
+            kg_tara: ''
         }
     }
 
+    //CONEXION A BASE DE DATOS
     obtenerCamiones(){
         this.comunicacionService.get_camiones().subscribe(
             (res:any) => {
@@ -129,6 +129,7 @@ export class TransportistasComponent {
         this.comunicacionService.get_condicion_iva().subscribe(
             (res:any) => {
                 this.db_condicion_iva = res;
+                this.load_condicion_iva = false
             },
             (err:any) => {
                 console.log(err)
@@ -138,28 +139,18 @@ export class TransportistasComponent {
 
 
 
-    buscarTransporte(){
-        if(this.db_transportistas.some((e:any) => {return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase()})){
-            this.transportista = { ... this.db_transportistas.find((e:any) => {return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase()}) }
-
-        } else {
-            this.transportista = null
-            this.messageService.add({severity:'error', summary:'Error!', detail:'TRANSPORTISTA no encontrado'})
-        }
-        
-    }
-
     onSelectTransporte(){
         if(this.transportista){
-            this.cod_transporte = this.transportista.codigo
             this.buscarChoferesCamiones()
         }
     }
-
-
     buscarChoferesCamiones(){
-        this.select_choferes = this.db_choferes.filter((e:any) => { return e.id_transportista == this.transportista.id})
-        this.select_camiones = this.db_camiones.filter((e:any) => { return e.id_transportista == this.transportista.id})
+        if(this.transportista){
+            if(this.transportista.id){
+                this.select_choferes = this.db_choferes.filter((e:any) => { return e.id_transportista == this.transportista.id})
+                this.select_camiones = this.db_camiones.filter((e:any) => { return e.id_transportista == this.transportista.id})        
+            }
+        }
     }
 
     buscarCUIT(){
@@ -215,6 +206,7 @@ export class TransportistasComponent {
         )
     }
 
+    //TRANSPORTISTAS
     nuevoTransportista(){
         this.datosTransportista = {
             id: null,
@@ -233,12 +225,10 @@ export class TransportistasComponent {
         }
         this.displayTransportista = true
     }
-
     editarTransportista(dato:any){
         this.datosTransportista = { ... dato }
         this.displayTransportista = true
     }
-
     guardarTransportista(){
         var errores = 0
         var mensaje = ''
@@ -248,7 +238,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_transportistas.some((e:any) => {return e.codigo.toUpperCase() == this.datosTransportista.codigo.toUpperCase()})){
+            if(!errores && this.db_transportistas.some((e:any) => {return e.codigo.toString().toUpperCase() == this.datosTransportista.codigo.toString().toUpperCase()})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un transportista con este codigo'})
                 errores++;
             }
@@ -291,7 +281,6 @@ export class TransportistasComponent {
     }
     onConfirm() {
         this.messageService.clear('confirmGuardarTransp');
-        this.displayTransportista = false
 
         this.datosTransportista.id = true
 
@@ -303,6 +292,7 @@ export class TransportistasComponent {
                 } else {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Transportista creado con exito 👌'})
                     this.obtenerTransportistas()
+                    this.displayTransportista = false
                 }
             },
             (err:any) => {
@@ -317,7 +307,6 @@ export class TransportistasComponent {
     }
     onConfirmModificar(){
         this.messageService.clear('confirmModificarTransp');
-        this.displayTransportista = false
 
         this.comunicacionService.update_transportistas(this.datosTransportista).subscribe(
             (res:any) => {
@@ -326,6 +315,7 @@ export class TransportistasComponent {
                 } else {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Transportista modificado con exito 👌'})
                     this.obtenerTransportistas()
+                    this.displayTransportista = false
                 }
             },
             (err:any) => {
@@ -338,16 +328,24 @@ export class TransportistasComponent {
 
     //CHOFERES
     nuevoChofer(){
-        this.datosChofer = {
-            id: null,
-            codigo: '',
-            alias: '',
-            cuit: null,
-            razon_social: '',
-        }
-        this.displayChofer = true
-    }
+        if(this.transportista){
+            if(this.transportista.id){
+                this.datosChofer = {
+                    id: null,
+                    id_transportista: this.transportista.id,
+                    codigo: '',
+                    alias: '',
+                    cuit: null,
+                    razon_social: '',
+                }
+                this.displayChofer = true
 
+                return
+            }
+        }
+        //else
+        this.messageService.add({severity:'error', summary:'Error!', detail:'Seleccione un TRANSPORTISTA'})
+    }
     editarChofer(dato:any){
         this.datosChofer = { ... dato }
         this.displayChofer = true
@@ -382,7 +380,6 @@ export class TransportistasComponent {
             }
         )
     }
-
     guardarChofer(){
         var errores = 0
         var mensaje = ''
@@ -392,7 +389,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_choferes.some((e:any) => {return e.codigo.toUpperCase() == this.datosChofer.codigo.toUpperCase()})){
+            if(!errores && this.db_choferes.some((e:any) => {return e.codigo.toString().toUpperCase() == this.datosChofer.codigo.toString().toUpperCase()})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un chofer con este codigo'})
                 errores++;
             }
@@ -413,7 +410,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_choferes.some((e:any) => {return (e.codigo.toUpperCase() == this.datosChofer.codigo.toUpperCase()) && (e.id != this.datosChofer.id)})){
+            if(!errores && this.db_choferes.some((e:any) => {return (e.codigo.toString().toUpperCase() == this.datosChofer.codigo.toString().toUpperCase()) && (e.id != this.datosChofer.id)})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un chofer con este codigo'})
                 errores++;
             }
@@ -433,10 +430,8 @@ export class TransportistasComponent {
     onRejectChofer() {
         this.messageService.clear('confirmGuardarChofer');
     }
-
     onConfirmChofer() {
         this.messageService.clear('confirmGuardarChofer');
-        this.displayChofer = false
 
         this.datosChofer.id = true
 
@@ -448,6 +443,8 @@ export class TransportistasComponent {
                 } else {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Chofer creado con exito 👌'})
                     this.obtenerChoferes()
+                    this.buscarChoferesCamiones()
+                    this.displayChofer = false
                 }
             },
             (err:any) => {
@@ -462,7 +459,6 @@ export class TransportistasComponent {
     }
     onConfirmModificarChofer(){
         this.messageService.clear('confirmModificarChofer');
-        this.displayChofer = false
 
         this.comunicacionService.update_choferes(this.datosChofer).subscribe(
             (res:any) => {
@@ -471,6 +467,8 @@ export class TransportistasComponent {
                 } else {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Chofer modificado con exito 👌'})
                     this.obtenerChoferes()
+                    this.buscarChoferesCamiones()
+                    this.displayChofer = false
                 }
             },
             (err:any) => {
@@ -484,25 +482,31 @@ export class TransportistasComponent {
 
     //CAMIONES
     nuevoCamion(){
-        this.datosCamion = {
-            id: null,
-            id_transportista: null,
-            codigo: '',
-            patente_chasis: '',
-            patente_acoplado: '',
-            patente_otro: '',
-            alias: '',
-            modelo: '',
+        if(this.transportista){
+            if(this.transportista.id){
+                this.datosCamion = {
+                    id: null,
+                    id_transportista: this.transportista.id,
+                    codigo: '',
+                    patente_chasis: '',
+                    patente_acoplado: '',
+                    patente_otro: '',
+                    alias: '',
+                    modelo: '',
+                    kg_tara: ''
+                }
+                this.displayCamion = true
+
+                return
+            }
         }
-        this.displayCamion = true
-
+        //else
+        this.messageService.add({severity:'error', summary:'Error!', detail:'Seleccione un TRANSPORTISTA'})
     }
-
     editarCamion(dato:any){
         this.datosCamion = { ... dato }
         this.displayCamion = true
     }
-
     guardarCamion(){
         var errores = 0
         var mensaje = ''
@@ -512,7 +516,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_camiones.some((e:any) => {return e.codigo.toUpperCase() == this.datosCamion.codigo.toUpperCase()})){
+            if(!errores && this.db_camiones.some((e:any) => {return e.codigo.toString().toUpperCase() == this.datosCamion.codigo.toString().toUpperCase()})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un camion con este codigo'})
                 errores++;
             }
@@ -533,7 +537,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_camiones.some((e:any) => {return (e.codigo.toUpperCase() == this.datosCamion.codigo.toUpperCase()) && (e.id != this.datosCamion.id)})){
+            if(!errores && this.db_camiones.some((e:any) => {return (e.codigo.toString().toUpperCase() == this.datosCamion.codigo.toString().toUpperCase()) && (e.id != this.datosCamion.id)})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un Camion con este codigo'})
                 errores++;
             }
@@ -553,10 +557,8 @@ export class TransportistasComponent {
     onRejectCamion() {
         this.messageService.clear('confirmGuardarCamion');
     }
-
     onConfirmCamion() {
         this.messageService.clear('confirmGuardarCamion');
-        this.displayCamion = false
 
         this.datosCamion.id = true
 
@@ -569,6 +571,7 @@ export class TransportistasComponent {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Camion creado con exito 👌'})
                     this.obtenerCamiones()
                     this.buscarChoferesCamiones()
+                    this.displayCamion = false
                 }
             },
             (err:any) => {
@@ -583,7 +586,6 @@ export class TransportistasComponent {
     }
     onConfirmModificarCamion(){
         this.messageService.clear('confirmModificarCamion');
-        this.displayCamion = false
 
         this.comunicacionService.update_camiones(this.datosCamion).subscribe(
             (res:any) => {
@@ -593,6 +595,7 @@ export class TransportistasComponent {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Camion modificado con exito 👌'})
                     this.obtenerCamiones()
                     this.buscarChoferesCamiones()
+                    this.displayCamion = false
                 }
             },
             (err:any) => {
@@ -602,7 +605,4 @@ export class TransportistasComponent {
         )
     }
 
-    verVars(){
-        console.log(this.datosTransportista)
-    }
 }

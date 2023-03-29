@@ -1,4 +1,9 @@
-<button pButton pRipple type="button" label="NUEVO" class="p-button-success bott" (click)="verVars()"></button>
+<div style="text-align: center;" *ngIf="load_camiones || load_choferes || load_condicion_iva || load_transportistas">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+
+<!-- TABLAS (transp, chofer y camiones) -->
 <br>
 <div class="formgrid row">
     <div class="field col">
@@ -36,7 +41,7 @@
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
                 <ng-template let-unidad pTemplate="item">
-                    <div class="unidad-item">
+                    <div class="unidad-item" (dblclick)="editarCamion(unidad)">
                         <div>{{unidad.alias}} - {{unidad.modelo}}</div>
                     </div>
                 </ng-template>
@@ -46,6 +51,8 @@
 </div>
 
 
+
+<!-- TRANSPORTISTA. MODAL Y DIALOGOS (PARA GUARDAR/EDITAR) -->
 <p-dialog header="TRANSPORTISTA" [(visible)]="displayTransportista" [modal]="true" [style]="{width: '1100px', height: '700px'}"
     [draggable]="true" [resizable]="true" [maximizable]="true">
     <div class="formgrid row">
@@ -186,6 +193,7 @@
     </ng-template>
 </p-toast>
 
+<!-- CHOFER. MODAL Y DIALOGOS (PARA GUARDAR/EDITAR) -->
 <p-dialog header="CHOFER" [(visible)]="displayChofer" [modal]="true" [style]="{width: '1100px', height: '500px'}"
     [draggable]="true" [resizable]="true" [maximizable]="true">
     <div class="formgrid row">
@@ -267,6 +275,110 @@
                     </div>
                     <div class="col-6">
                         <button type="button" pButton (click)="onRejectModificarChofer()" label="NO" class="p-button-secondary"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-toast>
+
+<!-- CAMION. MODAL Y DIALOGOS (PARA GUARDAR/EDITAR) -->
+<p-dialog header="CAMION" [(visible)]="displayCamion" [modal]="true" [style]="{width: '1100px', height: '500px'}"
+    [draggable]="true" [resizable]="true" [maximizable]="true">
+    <div class="formgrid row">
+        <div class="col-3">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Cód.</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.codigo"/>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Alias</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.alias"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <div class="formgrid row"> 
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Patente Chasis</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.patente_chasis" />  
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Patente Acoplado</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.patente_acoplado" />  
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Patente Otro</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.patente_otro" />  
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row"> 
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Modelo/Obs</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.modelo" />  
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">KG TARA</span>
+                <input type="number" class="p-inputtext-sm" pInputText [(ngModel)]="datosCamion.kg_tara" />  
+            </div>
+        </div>
+    </div>
+    <br>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarCamion()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayCamion = false"></button>
+    </ng-template>
+</p-dialog>
+<p-toast position="bottom-center" key="confirmGuardarCamion" (onClose)="onRejectCamion()" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1">
+            <div class="text-center">
+                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+            <div class="grid p-fluid">
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirmCamion()" label="SI" class="p-button-success"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onRejectCamion()" label="NO" class="p-button-secondary"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-toast>
+<p-toast position="bottom-center" key="confirmModificarCamion" (onClose)="onRejectModificarCamion()" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1">
+            <div class="text-center">
+                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+            <div class="grid p-fluid">
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirmModificarCamion()" label="SI" class="p-button-success"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onRejectModificarCamion()" label="NO" class="p-button-secondary"></button>
                     </div>
                 </div>
             </div>
