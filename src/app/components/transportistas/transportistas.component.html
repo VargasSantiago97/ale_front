@@ -1,3 +1,4 @@
+<button pButton pRipple type="button" label="NUEVO" class="p-button-success bott" (click)="verVars()"></button>
 <br>
 <div class="formgrid row">
     <div class="field col">
@@ -7,7 +8,7 @@
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}" (onChange)="onSelectTransporte()">
                 <ng-template let-transport pTemplate="item">
-                    <div class="transport-item">
+                    <div class="transport-item" (dblclick)="editarTransportista(transport)">
                         <div>{{transport.alias}} - {{transport.cuit}}</div>
                     </div>
                 </ng-template>

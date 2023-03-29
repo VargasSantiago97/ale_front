@@ -80,7 +80,7 @@ export class TransportistasComponent {
         }
     }
 
-    obtenerCamiones(){/* 
+    obtenerCamiones(){
         this.comunicacionService.get_camiones().subscribe(
             (res:any) => {
                 this.db_camiones = res;
@@ -89,31 +89,9 @@ export class TransportistasComponent {
             (err:any) => {
                 console.log(err)
             }
-        ) */
-        this.db_camiones = [
-            {
-                alias: 'cam1 de 1',
-                id_transportista: 1
-            },
-            {
-                alias: 'cam2 de 1',
-                id_transportista: 1
-            },
-            {
-                alias: 'cam1 de 3',
-                id_transportista: 3
-            },
-            {
-                alias: 'cam2 de 3',
-                id_transportista: 3
-            },
-            {
-                alias: 'cam3 de 3',
-                id_transportista: 3
-            }
-        ]
+        )
     }
-    obtenerChoferes(){/* 
+    obtenerChoferes(){
         this.comunicacionService.get_choferes().subscribe(
             (res:any) => {
                 this.db_choferes = res;
@@ -122,31 +100,9 @@ export class TransportistasComponent {
             (err:any) => {
                 console.log(err)
             }
-        ) */
-        this.db_choferes = [
-            {
-                alias: 'fecho1 de 1',
-                id_transportista: 1
-            },
-            {
-                alias: 'fecho2 de 1',
-                id_transportista: 1
-            },
-            {
-                alias: 'fecho1 de 2',
-                id_transportista: 2
-            },
-            {
-                alias: 'fecho2 de 2',
-                id_transportista: 2
-            },
-            {
-                alias: 'fecho3 de 2',
-                id_transportista: 2
-            }
-        ]
+        )
     }
-    obtenerTransportistas(){/* 
+    obtenerTransportistas(){
         this.comunicacionService.get_transportistas().subscribe(
             (res:any) => {
                 this.db_transportistas = res;
@@ -155,27 +111,7 @@ export class TransportistasComponent {
             (err:any) => {
                 console.log(err)
             }
-        ) */
-        this.db_transportistas = [
-            {
-                alias: 'Transp1',
-                codigo: '01',
-                cuit: null,
-                id: 1
-            },
-            {
-                alias: 'Transp5',
-                codigo: '02',
-                cuit: null,
-                id: 2
-            },
-            {
-                alias: 'Transp3',
-                codigo: '03',
-                cuit: null,
-                id: 3
-            }
-        ]
+        )
     }
     obtenerCondicion_iva(){
         this.comunicacionService.get_condicion_iva().subscribe(
@@ -291,6 +227,11 @@ export class TransportistasComponent {
         this.displayTransportista = true
     }
 
+    editarTransportista(dato:any){
+        this.datosTransportista = { ... dato }
+        this.displayTransportista = true
+    }
+
     guardarTransportista(){
         var errores = 0
         var mensaje = ''
@@ -321,7 +262,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_transportistas.some((e:any) => {return e.codigo == this.datosTransportista.codigo})){
+            if(!errores && this.db_transportistas.some((e:any) => {return (e.codigo == this.datosTransportista.codigo) && (e.id != this.datosTransportista.id)})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un transportista con este codigo'})
                 errores++;
             }
@@ -345,7 +286,9 @@ export class TransportistasComponent {
         this.messageService.clear('confirmGuardarTransp');
         this.displayTransportista = false
 
-        this.comunicacionService.create_transportistas({}).subscribe(
+        this.datosTransportista.id = true
+
+        this.comunicacionService.create_transportistas(this.datosTransportista).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -369,7 +312,7 @@ export class TransportistasComponent {
         this.messageService.clear('confirmModificarTransp');
         this.displayTransportista = false
 
-        this.comunicacionService.update_transportistas({}).subscribe(
+        this.comunicacionService.update_transportistas(this.datosTransportista).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -415,7 +358,7 @@ export class TransportistasComponent {
                     sugiereAlias = res.razonSocial
                 }
 
-                this.datosChofer.razon_social = sugiereAlias
+                this.datosChofer.razonSocial = sugiereAlias
 
                 if(this.datosChofer.alias == '' || this.datosChofer.alias == null){
                     this.datosChofer.alias = sugiereAlias
@@ -523,5 +466,9 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a backend. Consulte consola'})
             }
         )
+    }
+
+    verVars(){
+        console.log(this.datosTransportista)
     }
 }
