@@ -386,6 +386,7 @@ export class InicioComponent {
         });
         return uuid;
     }
+    //alangaú esto es en la rama "inicio"
 
 
 }
