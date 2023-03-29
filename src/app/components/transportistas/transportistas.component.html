@@ -21,9 +21,9 @@
             <p-listbox [options]="select_choferes" [(ngModel)]="chofer" [metaKeySelection]="false"
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">
-                <ng-template let-fecho pTemplate="item">
-                    <div class="fecho-item">
-                        <div>{{fecho.alias}} - {{fecho.cuit}}</div>
+                <ng-template let-fercho pTemplate="item">
+                    <div class="fercho-item" (dblclick)="editarChofer(fercho)">
+                        <div>{{fercho.alias}} - {{fercho.cuit}}</div>
                     </div>
                 </ng-template>
             </p-listbox>
@@ -31,6 +31,7 @@
     </div>
     <div class="field col">
         <p-card header="Camion">
+            <button pButton pRipple type="button" label="NUEVO" class="p-button-success bott" (click)="nuevoCamion()"></button>
             <p-listbox [options]="select_camiones" [(ngModel)]="camion" [metaKeySelection]="false"
                 [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
                 [listStyle]="{'max-height':'490px'}" [style]="{'width':'100%'}">

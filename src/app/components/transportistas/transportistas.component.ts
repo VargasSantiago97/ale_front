@@ -12,6 +12,7 @@ export class TransportistasComponent {
 
     displayTransportista: any = false
     displayChofer: any = true
+    displayCamion: any = true
 
     spinnerCUIT: any = false;
     spinnerChoferCUIT: any = false;
@@ -42,6 +43,7 @@ export class TransportistasComponent {
 
     datosTransportista: any
     datosChofer: any
+    datosCamion: any
 
 
     constructor(
@@ -77,6 +79,16 @@ export class TransportistasComponent {
             alias: '',
             cuit: null,
             razon_social: '',
+        }
+        this.datosCamion = {
+            id: null,
+            id_transportista: null,
+            codigo: '',
+            patente_chasis: '',
+            patente_acoplado: '',
+            patente_otro: '',
+            alias: '',
+            modelo: '',
         }
     }
 
@@ -123,11 +135,6 @@ export class TransportistasComponent {
             }
         )
     }
-
-
-
-
-
 
 
 
@@ -241,7 +248,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_transportistas.some((e:any) => {return e.codigo == this.datosTransportista.codigo})){
+            if(!errores && this.db_transportistas.some((e:any) => {return e.codigo.toUpperCase() == this.datosTransportista.codigo.toUpperCase()})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un transportista con este codigo'})
                 errores++;
             }
@@ -267,7 +274,7 @@ export class TransportistasComponent {
                 errores++;
             }
 
-            if(!errores && this.db_transportistas.some((e:any) => {return e.cuit == this.datosTransportista.cuit})){
+            if(!errores && this.db_transportistas.some((e:any) => {return (e.cuit == this.datosTransportista.cuit) && (e.id != this.datosTransportista.id)})){
                 this.messageService.add({severity:'warn', summary:'ADVERTENCIA!', detail:'Ya existe un transportista con este CUIT.'})
                 mensaje = " - Tenga en cuenta que ya existe un transportista con ese CUIT."
             }
@@ -316,7 +323,6 @@ export class TransportistasComponent {
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
-                    console.log(res)
                 } else {
                     this.messageService.add({severity:'success', summary:'Exito!', detail:'Transportista modificado con exito 👌'})
                     this.obtenerTransportistas()
@@ -333,12 +339,17 @@ export class TransportistasComponent {
     //CHOFERES
     nuevoChofer(){
         this.datosChofer = {
-            id: 1,
+            id: null,
             codigo: '',
             alias: '',
             cuit: null,
             razon_social: '',
         }
+        this.displayChofer = true
+    }
+
+    editarChofer(dato:any){
+        this.datosChofer = { ... dato }
         this.displayChofer = true
     }
     buscarChoferCUIT(){
@@ -381,7 +392,7 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_choferes.some((e:any) => {return e.codigo == this.datosChofer.codigo})){
+            if(!errores && this.db_choferes.some((e:any) => {return e.codigo.toUpperCase() == this.datosChofer.codigo.toUpperCase()})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un chofer con este codigo'})
                 errores++;
             }
@@ -402,12 +413,12 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
                 errores++;
             }
-            if(!errores && this.db_choferes.some((e:any) => {return e.codigo == this.datosChofer.codigo})){
+            if(!errores && this.db_choferes.some((e:any) => {return (e.codigo.toUpperCase() == this.datosChofer.codigo.toUpperCase()) && (e.id != this.datosChofer.id)})){
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un chofer con este codigo'})
                 errores++;
             }
 
-            if(!errores && this.db_choferes.some((e:any) => {return e.cuit == this.datosChofer.cuit})){
+            if(!errores && this.db_choferes.some((e:any) => {return (e.cuit == this.datosChofer.cuit) && (e.id != this.datosChofer.id)})){
                 this.messageService.add({severity:'warn', summary:'ADVERTENCIA!', detail:'Ya existe un chofer con este CUIT.'})
                 mensaje = " - Tenga en cuenta que ya existe un chofer con ese CUIT."
             }
@@ -427,7 +438,9 @@ export class TransportistasComponent {
         this.messageService.clear('confirmGuardarChofer');
         this.displayChofer = false
 
-        this.comunicacionService.create_choferes({}).subscribe(
+        this.datosChofer.id = true
+
+        this.comunicacionService.create_choferes(this.datosChofer).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -451,14 +464,135 @@ export class TransportistasComponent {
         this.messageService.clear('confirmModificarChofer');
         this.displayChofer = false
 
-        this.comunicacionService.update_choferes({}).subscribe(
+        this.comunicacionService.update_choferes(this.datosChofer).subscribe(
+            (res:any) => {
+                if(!res || res.mensaje == false){
+                    this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
+                } else {
+                    this.messageService.add({severity:'success', summary:'Exito!', detail:'Chofer modificado con exito 👌'})
+                    this.obtenerChoferes()
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a backend. Consulte consola'})
+            }
+        )
+    }
+
+    
+
+    //CAMIONES
+    nuevoCamion(){
+        this.datosCamion = {
+            id: null,
+            id_transportista: null,
+            codigo: '',
+            patente_chasis: '',
+            patente_acoplado: '',
+            patente_otro: '',
+            alias: '',
+            modelo: '',
+        }
+        this.displayCamion = true
+
+    }
+
+    editarCamion(dato:any){
+        this.datosCamion = { ... dato }
+        this.displayCamion = true
+    }
+
+    guardarCamion(){
+        var errores = 0
+        var mensaje = ''
+        if(!this.datosCamion.id){
+            //CREAR
+            if(!this.datosCamion.codigo){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
+                errores++;
+            }
+            if(!errores && this.db_camiones.some((e:any) => {return e.codigo.toUpperCase() == this.datosCamion.codigo.toUpperCase()})){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un camion con este codigo'})
+                errores++;
+            }
+
+            if(!errores && this.db_camiones.some((e:any) => {return e.patente_chasis == this.datosCamion.patente_chasis})){
+                this.messageService.add({severity:'warn', summary:'ADVERTENCIA!', detail:'Ya existe un camion con esa patente'})
+                mensaje = " - Tenga en cuenta que ya existe un camion con esa patente."
+            }
+
+            if(!errores){
+                this.messageService.clear('confirmGuardarCamion');
+                this.messageService.add({key: 'confirmGuardarCamion', sticky: true, severity:'warn', summary:'CREAR NUEVO', detail:'Confirme para guardar' + mensaje});
+            }
+
+        } else {
+            //MODIFICAR
+            if(!this.datosCamion.codigo){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ingrese un codigo'})
+                errores++;
+            }
+            if(!errores && this.db_camiones.some((e:any) => {return (e.codigo.toUpperCase() == this.datosCamion.codigo.toUpperCase()) && (e.id != this.datosCamion.id)})){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un Camion con este codigo'})
+                errores++;
+            }
+
+            if(!errores && this.db_camiones.some((e:any) => {return (e.patente_chasis == this.datosCamion.patente_chasis) && (e.id != this.datosCamion.id)})){
+                this.messageService.add({severity:'warn', summary:'ADVERTENCIA!', detail:'Ya existe un camion con esa patente.'})
+                mensaje = " - Tenga en cuenta que ya existe un camion con esa patente."
+            }
+
+            if(!errores){
+                this.messageService.clear('confirmModificarCamion');
+                this.messageService.add({key: 'confirmModificarCamion', sticky: true, severity:'warn', summary:'MODIFICAR', detail:'Confirme para modificar' + mensaje});
+            }
+        }
+    }
+
+    onRejectCamion() {
+        this.messageService.clear('confirmGuardarCamion');
+    }
+
+    onConfirmCamion() {
+        this.messageService.clear('confirmGuardarCamion');
+        this.displayCamion = false
+
+        this.datosCamion.id = true
+
+        this.comunicacionService.create_camiones(this.datosCamion).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
                     console.log(res)
                 } else {
-                    this.messageService.add({severity:'success', summary:'Exito!', detail:'Chofer modificado con exito 👌'})
-                    this.obtenerChoferes()
+                    this.messageService.add({severity:'success', summary:'Exito!', detail:'Camion creado con exito 👌'})
+                    this.obtenerCamiones()
+                    this.buscarChoferesCamiones()
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a backend. Consulte consola'})
+            }
+        )
+    }
+
+    onRejectModificarCamion(){
+        this.messageService.clear('confirmModificarCamion');
+    }
+    onConfirmModificarCamion(){
+        this.messageService.clear('confirmModificarCamion');
+        this.displayCamion = false
+
+        this.comunicacionService.update_camiones(this.datosCamion).subscribe(
+            (res:any) => {
+                if(!res || res.mensaje == false){
+                    this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
+                } else {
+                    this.messageService.add({severity:'success', summary:'Exito!', detail:'Camion modificado con exito 👌'})
+                    this.obtenerCamiones()
+                    this.buscarChoferesCamiones()
                 }
             },
             (err:any) => {
