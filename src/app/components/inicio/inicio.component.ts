@@ -20,6 +20,7 @@ export class InicioComponent {
     displayNuevoMovimiento: Boolean = false;
 
     accordeonVer = [false , false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
+    optionsDe = [{label: 'Silo', id:'S'},{label: 'Trilla', id:'T'},{label: 'Otro', id:'O'}]
 
     //DATA-VARIABLES DE DB:
     db_camiones: any = []
@@ -65,6 +66,8 @@ export class InicioComponent {
     kilos_neto: any = null;
     kilos_carga_descarga: any = null;
     kilos_neto_final: any = null;
+
+    datosMovimiento: any;
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -127,6 +130,34 @@ export class InicioComponent {
         this.obtenerGastos()
         this.obtenerGranos()
 
+        this.datosMovimiento = {
+            id: null,
+            fecha: null,
+            id_campana: null,
+            id_socio: null,
+            id_origen: null,
+            id_grano: null,
+            id_transporte: null,
+            id_chofer: null,
+            id_camion: null,
+            id_corredor: null,
+            id_acopio: null,
+            id_deposito: null,
+            kg_bruto: null,
+            kg_tara: null,
+            kg_neto: null,
+            kg_regulacion: null,
+            kg_neto_final: null,
+            observaciones: null,
+            tipo_origen: null,
+            creado_por: null,
+            creado_el: null,
+            editado_por: null,
+            editado_el: null,
+            activo: null,
+            estado: null
+        }
+
     }
 
     obtenerCamiones(){
@@ -167,6 +198,8 @@ export class InicioComponent {
             (res:any) => {
                 this.db_socios = res;
                 this.load_socios = false;
+
+                console.log(res)
             },
             (err:any) => {
                 console.log(err)
@@ -241,30 +274,6 @@ export class InicioComponent {
     }
 
 
-
-    transformarDatoMostrar(a: any, b: any) {
-        return 'aaaaa'
-    }
-
-    tiraFun(e:any){
-        console.log(this.db_camiones)
-        console.log(this.db_choferes)
-        console.log(this.db_condicion_iva)
-        console.log(this.db_socios)
-        console.log(this.db_transportistas)
-        console.log(this.db_campanas)
-        console.log(this.db_depositos)
-        console.log(this.db_establecimientos)
-        console.log(this.db_gastos)
-        console.log(this.db_granos)
-    }
-
-    verVars(){
-        console.log(this.transportista)
-        console.log(this.chofer)
-        console.log(this.camion)
-    }
-
     buscarTransporte(){
         if(this.db_transportistas.some((e:any) => {return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase()})){
             this.transportista = { ... this.db_transportistas.find((e:any) => {return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase()}) }
@@ -296,14 +305,16 @@ export class InicioComponent {
 
     
     onSelectTransporte(){
-        if(this.transportista){
+        if(this.datosMovimiento.id_transporte){
+            this.transportista = this.db_transportistas.find((e:any) => { return e.id == this.datosMovimiento.id_transporte})
             this.cod_transporte = this.transportista.codigo
             this.buscarChoferesCamiones()
         }
     }
 
     onSelectChofer(){
-        if(this.chofer){
+        if(this.datosMovimiento.id_chofer){
+            this.chofer = this.db_choferes.find((e:any) => { return e.id == this.datosMovimiento.id_chofer})
             this.cod_chofer = this.chofer.codigo
         }
     }
@@ -369,13 +380,50 @@ export class InicioComponent {
         console.log("You entered: ", event.target.value);
     }
 
+    nuevoMovimiento(){
+        var fecha = new Date()
 
-    transformarDato(dato:any, tipo:any){
-        if(tipo == 'condicion_iva'){
-            return this.db_condicion_iva.some((e:any) => { return e.codigo == dato}) ? this.db_condicion_iva.find((e:any) => { return e.codigo == dato}).descripcion : '-'
+        this.datosMovimiento = {
+            id: null,
+            fecha: fecha,
+            id_campana: "23b3f4f21c28",
+            id_socio: "4",
+            id_origen: "1",
+            id_grano: "1",
+            id_transporte: "f0d0249ad9d0",
+            id_chofer: "18e305302f41",
+            id_camion: null,
+            id_corredor: null,
+            id_acopio: null,
+            id_deposito: null,
+            kg_bruto: null,
+            kg_tara: null,
+            kg_neto: null,
+            kg_regulacion: null,
+            kg_neto_final: null,
+            observaciones: null,
+            tipo_origen: "T",
+            creado_por: null,
+            creado_el: null,
+            editado_por: null,
+            editado_el: null,
+            activo: null,
+            estado: null
         }
-        return dato
+
+        //esto iria para EDITAR:
+        if(this.datosMovimiento.id_transporte){
+            this.onSelectTransporte()
+        }
+        if(this.datosMovimiento.id_chofer){
+            this.onSelectChofer()
+        }
+
+        this.displayNuevoMovimiento = true
     }
+
+
+
 
     generateUUID() {
         var d = new Date().getTime();
@@ -386,7 +434,26 @@ export class InicioComponent {
         });
         return uuid;
     }
-    //alangaú esto es en la rama "inicio"
 
+    transformarDatoMostrar(dato: any, tipo: any) {
+        if(tipo == 'condicion_iva'){
+            return this.db_condicion_iva.some((e:any) => { return e.codigo == dato}) ? this.db_condicion_iva.find((e:any) => { return e.codigo == dato}).descripcion : '-'
+        }
 
+        if(tipo == 'id_origen'){
+            return this.db_establecimientos.some((e:any) => { return e.id == dato}) ? this.db_establecimientos.find((e:any) => { return e.id == dato}).descripcion : '-'
+        }
+
+        return dato
+    }
+
+    tiraFun(e:any){
+        console.log(this.datosMovimiento)
+    }
+
+    verVars(){
+        console.log(this.transportista)
+        console.log(this.chofer)
+        console.log(this.camion)
+    }
 }

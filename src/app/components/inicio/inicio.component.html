@@ -3,14 +3,10 @@
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
-
-<button pButton pRipple type="button" label="IDD" class="p-button-success bott"
-(click)="generateUUID()"></button>
-
 <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
 (click)="displayFiltros=true"></button>
 
-<button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott" (click)="displayNuevoMovimiento = true"></button>
+<button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott" (click)="nuevoMovimiento()"></button>
 
 <br><br>
 
@@ -60,13 +56,13 @@
         <div class="field col">
             <div class="field">
                 <label for="fechaSalida">Fecha</label><br>
-                <p-calendar [showIcon]="true" [readonlyInput]="false" inputId="fechaSalida" dateFormat="dd/mm/y"></p-calendar>
+                <p-calendar [(ngModel)]="datosMovimiento.fecha" [showIcon]="true" [readonlyInput]="false" inputId="fechaSalida" dateFormat="dd/mm/y"></p-calendar>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label for="selectCamapa">Campaña</label><br>
-                <p-dropdown [options]="db_campanas" placeholder="Seleccionar Campaña" optionLabel="descripcion" inputId="selectCamapa" [showClear]="true"></p-dropdown>
+                <p-dropdown [options]="db_campanas" [(ngModel)]="datosMovimiento.id_campana" placeholder="Seleccionar Campaña" optionLabel="descripcion" optionValue="id" inputId="selectCamapa" [showClear]="true"></p-dropdown>
             </div>
         </div>
     </div>
@@ -77,16 +73,16 @@
                 <div class="field col">
                     <div class="field">
                         <label for="benef">Beneficiario</label><br>
-                        <p-dropdown [options]="db_socios" placeholder="Seleccionar Socio" optionLabel="alias" inputId="benef" [showClear]="true" style="width: 170px"></p-dropdown>
+                        <p-dropdown [options]="db_socios" [(ngModel)]="datosMovimiento.id_socio" placeholder="Seleccionar Socio" optionLabel="alias" inputId="benef" optionValue="id" [showClear]="true"></p-dropdown>
                     </div>
                 </div>
                 <div class="field col">
                     <div class="field">
                         <label for="establecimiento">Origen</label><br>
-                        <p-dropdown [options]="db_establecimientos" [(ngModel)]="establecimiento" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Seleccionar Origen">
+                        <p-dropdown [options]="db_establecimientos" [(ngModel)]="datosMovimiento.id_origen" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Seleccionar Origen">
                             <ng-template pTemplate="selectedItem">
-                                <div class="flex align-items-center gap-2" *ngIf="establecimiento" style="width: 170px">
-                                    <div>{{ establecimiento.alias }}</div>
+                                <div class="flex align-items-center gap-2" *ngIf="datosMovimiento.id_origen" style="width: 170px">
+                                    <div>{{ transformarDatoMostrar(datosMovimiento.id_origen, "id_origen") }}</div>
                                 </div>
                             </ng-template>
                             <ng-template let-establecimiento pTemplate="item">
@@ -94,19 +90,19 @@
                                     <div>{{ establecimiento.alias }}</div>
                                 </div>
                             </ng-template>
-                        </p-dropdown>                        
+                        </p-dropdown>
                     </div>
                 </div>
                 <div class="field col">
                     <div class="field">
                         <label for="tipoGrano">Grano</label><br>
-                        <p-dropdown [options]="db_granos" placeholder="Seleccionar Grano" optionLabel="alias" inputId="tipoGrano" [showClear]="true" style="width: 170px"></p-dropdown>
+                        <p-dropdown [options]="db_granos" [(ngModel)]="datosMovimiento.id_grano" placeholder="Seleccionar Grano" optionLabel="alias" optionValue="id" inputId="tipoGrano" [showClear]="true"></p-dropdown>
                     </div>
                 </div>
                 <div class="field col">
                     <div class="field">
                         <label>De</label>
-                        <p-selectButton [options]="[{label: 'Silo', value:1},{label: 'Trilla', value:2},{label: 'Otro', value:0}]" optionLabel="label" optionValue="value"></p-selectButton>                    </div>
+                        <p-selectButton [options]="optionsDe" [(ngModel)]="datosMovimiento.tipo_origen" optionLabel="label" optionValue="id"></p-selectButton>                    </div>
                 </div>
             </div>
         </p-accordionTab>
@@ -121,7 +117,7 @@
                             </div>
                             <div class="field col-9">
                                 <label>Buscar:</label><br>
-                                <p-dropdown [options]="db_transportistas" [(ngModel)]="transportista" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Transportista" (onChange)="onSelectTransporte()">
+                                <p-dropdown [options]="db_transportistas" [(ngModel)]="datosMovimiento.id_transporte" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Transportista" (onChange)="onSelectTransporte()">
                                  <ng-template pTemplate="selectedItem">
                                         <div class="flex align-items-center gap-2" *ngIf="transportista" style="width: 170px">
                                             <div>{{ transportista.alias }}</div>
@@ -138,7 +134,7 @@
                         <br>
                         <p>Transp.: <strong *ngIf="transportista">{{transportista.razon_social}}</strong></p>
                         <p>CUIT: <strong *ngIf="transportista">{{transportista.cuit}}</strong></p>
-                        <p>IVA: <strong *ngIf="transportista">{{transformarDato(transportista.condicion_iva, 'condicion_iva')}}</strong></p>
+                        <p>IVA: <strong *ngIf="transportista">{{transformarDatoMostrar(transportista.condicion_iva, 'condicion_iva')}}</strong></p>
                     </p-card>
                 </div>
                 <div class="field col">
@@ -150,7 +146,7 @@
                             </div>
                             <div class="field col-9">
                                 <label>Buscar:</label><br>
-                                <p-dropdown [options]="select_choferes" [(ngModel)]="chofer" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Chofer" (onChange)="onSelectChofer()">
+                                <p-dropdown [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Chofer" (onChange)="onSelectChofer()">
                                     <ng-template pTemplate="selectedItem">
                                         <div class="flex align-items-center gap-2" *ngIf="chofer" style="width: 170px">
                                             <div>{{chofer.alias}} - {{chofer.razon_social}}</div>
@@ -179,7 +175,7 @@
                             </div>
                             <div class="field col-9">
                                 <label>Buscar:</label><br>
-                                <p-dropdown [options]="select_camiones" [(ngModel)]="camion" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Camion" (onChange)="onSelectCamion()">
+                                <p-dropdown [options]="select_camiones" [(ngModel)]="datosMovimiento.id_mchofer" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Camion" (onChange)="onSelectCamion()">
                                     <ng-template pTemplate="selectedItem">
                                         <div class="flex align-items-center gap-2" *ngIf="camion" style="width: 170px">
                                             <div>{{ camion.alias }}</div>
