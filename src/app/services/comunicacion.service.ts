@@ -179,7 +179,6 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=transportistas`)
     }
     create_transportistas(data: any) {
-        data.razon_social = data.razonSocial
         data.creado_por = this.USER_ID;
         data.editado_por = this.USER_ID;
         data.creado_el = new Date();
@@ -187,8 +186,6 @@ export class ComunicacionService {
         data.editado_el = new Date();
         data.editado_el.setHours(data.editado_el.getHours() - 3);
         data.estado = 1;
-
-        console.log(data)
 
         return this.http.post(`${this.API_URI}/index.php?op=create&tabla=transportistas`, data);
     }
@@ -234,6 +231,7 @@ export class ComunicacionService {
         data.creado_el.setHours(data.creado_el.getHours() - 3);
         data.editado_el = new Date();
         data.editado_el.setHours(data.editado_el.getHours() - 3);
+        data.estado = 1;
         return this.http.post(`${this.API_URI}/index.php?op=create&tabla=camiones`, data)
     }
     update_camiones(data:any) {

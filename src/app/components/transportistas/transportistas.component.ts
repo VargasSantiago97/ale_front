@@ -64,7 +64,7 @@ export class TransportistasComponent {
             condicion_iva: 1,
             nombre: '',
             apellido: '',
-            razonSocial: '',
+            razon_social: '',
             direccion: '',
             localidad: '',
             codigoPostal: '',
@@ -168,10 +168,10 @@ export class TransportistasComponent {
                 if(res.tipoPersona == 'FISICA'){
                     this.datosTransportista.nombre = res.nombre
                     this.datosTransportista.apellido = res.apellido
-                    this.datosTransportista.razonSocial = ''
+                    this.datosTransportista.razon_social = res.apellido + ' ' + res.nombre
                     sugiereAlias = res.apellido + ', ' + res.nombre
                 } else {
-                    this.datosTransportista.razonSocial = res.razonSocial
+                    this.datosTransportista.razon_social = res.razonSocial
                     this.datosTransportista.nombre = ''
                     this.datosTransportista.apellido = ''
                     sugiereAlias = res.razonSocial
@@ -181,7 +181,6 @@ export class TransportistasComponent {
                     this.datosTransportista.alias = sugiereAlias
                 }
 
-                console.log(res)
 
                 if(res.domicilio.length){
                     let domicilio = res.domicilio.find((e:any) => {return e.tipoDomicilio == 'LEGAL/REAL'})
@@ -289,6 +288,7 @@ export class TransportistasComponent {
         }
 
         this.datosTransportista.id = idd
+        this.datosTransportista.razon_social = this.datosTransportista.razonSocial
 
         this.comunicacionService.create_transportistas(this.datosTransportista).subscribe(
             (res:any) => {
@@ -313,6 +313,8 @@ export class TransportistasComponent {
     }
     onConfirmModificar(){
         this.messageService.clear('confirmModificarTransp');
+
+        this.datosTransportista.razon_social = this.datosTransportista.razonSocial
 
         this.comunicacionService.update_transportistas(this.datosTransportista).subscribe(
             (res:any) => {
@@ -346,6 +348,8 @@ export class TransportistasComponent {
                 }
                 this.displayChofer = true
 
+                console.log(this.datosChofer)
+
                 return
             }
         }
@@ -366,14 +370,17 @@ export class TransportistasComponent {
                 }
 
                 var sugiereAlias = ''
+                var razonSocial = ''
 
                 if(res.tipoPersona == 'FISICA'){
                     sugiereAlias = res.apellido + ', ' + res.nombre
+                    razonSocial = res.apellido + ' ' + res.nombre
                 } else {
                     sugiereAlias = res.razonSocial
+                    razonSocial = res.razonSocial
                 }
 
-                this.datosChofer.razonSocial = sugiereAlias
+                this.datosChofer.razon_social = razonSocial
 
                 if(this.datosChofer.alias == '' || this.datosChofer.alias == null){
                     this.datosChofer.alias = sugiereAlias

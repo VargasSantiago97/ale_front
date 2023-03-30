@@ -52,7 +52,13 @@ export class CampanasComponent {
   
   guardarElemento(dato:any){
 
-    dato['id'] = true
+    var idd = this.generateUUID()
+    if(this.datos.some((e:any) => {return e.id == idd})){
+      this.messageService.add({severity:'info', summary:'INTENTE NUEVAMENTE', detail:'Hubo un error interno en UUID. Vuelva a presionar "guardar"'})
+      return
+    }
+
+    dato.id = idd
     dato['estado'] = 1
 
     console.log(dato)
@@ -84,5 +90,14 @@ export class CampanasComponent {
         }
       )
     }
+  }
+  generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
   }
 }
