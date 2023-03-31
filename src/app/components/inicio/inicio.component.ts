@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
+
 declare var vars: any;
 const API_URI = vars.API_URI;
 
@@ -71,7 +72,7 @@ export class InicioComponent {
 
     constructor(
         private comunicacionService: ComunicacionService,
-        private messageService: MessageService
+        private messageService: MessageService,
     ){}
 
     ngOnInit() {
@@ -320,7 +321,8 @@ export class InicioComponent {
     }
 
     onSelectCamion(){
-        if(this.camion){
+        if(this.datosMovimiento.id_camion){
+            this.camion = this.db_camiones.find((e:any) => { return e.id == this.datosMovimiento.id_camion})
             this.cod_camion = this.camion.codigo
             this.kilos_tara = this.camion.kg_tara
         }
@@ -330,9 +332,9 @@ export class InicioComponent {
         this.select_choferes = this.db_choferes.filter((e:any) => { return e.id_transportista == this.transportista.id})
         this.select_camiones = this.db_camiones.filter((e:any) => { return e.id_transportista == this.transportista.id})
 
-        this.chofer = { ... this.select_choferes[0] }
+        this.datosMovimiento.id_chofer = { ... this.select_choferes[0].id }
         this.onSelectChofer()
-        this.camion = { ... this.select_camiones[0] }
+        this.datosMovimiento.id_camion = { ... this.select_camiones[0].id }
         this.onSelectCamion()
 
     }
@@ -410,6 +412,33 @@ export class InicioComponent {
             activo: null,
             estado: null
         }
+        this.datosMovimiento = {
+            id: null,
+            fecha: fecha,
+            id_campana: null,
+            id_socio: null,
+            id_origen: null,
+            id_grano: null,
+            id_transporte: null,
+            id_chofer: null,
+            id_camion: null,
+            id_corredor: null,
+            id_acopio: null,
+            id_deposito: null,
+            kg_bruto: null,
+            kg_tara: null,
+            kg_neto: null,
+            kg_regulacion: null,
+            kg_neto_final: null,
+            observaciones: null,
+            tipo_origen: null,
+            creado_por: null,
+            creado_el: null,
+            editado_por: null,
+            editado_el: null,
+            activo: null,
+            estado: null
+        }
 
         //esto iria para EDITAR:
         if(this.datosMovimiento.id_transporte){
@@ -418,6 +447,10 @@ export class InicioComponent {
         if(this.datosMovimiento.id_chofer){
             this.onSelectChofer()
         }
+        if(this.datosMovimiento.id_camion){
+            this.onSelectChofer()
+        }
+
 
         this.displayNuevoMovimiento = true
     }

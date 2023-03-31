@@ -5,6 +5,7 @@
     <button pButton pRipple type="button" label="CUENTAS CORRIENTES" class="p-button-primary bott"></button>
     <button pButton pRipple type="button" label="TABLAS GENERALES" class="p-button-primary bott" routerLink="tablas"></button>    
     <button pButton pRipple type="button" label="CERRAR SESION" class="p-button-danger bott" routerLink="unlogin"></button>
+    <button pButton pRipple type="button" label="{{fechaHoraActualizacion.fechaHoraActualizacion}}" title="{{fechaHoraActualizacion.fechaHoraActualizacionLarga}}" (click)="actualizar()" class="{{fechaHoraActualizacion.actualizado ? 'p-button-success' : 'p-button-danger'}} bott"></button>
 </div>
 
 <router-outlet></router-outlet>

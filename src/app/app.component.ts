@@ -11,6 +11,8 @@ export class AppComponent {
   title = 'norte';
   sessionIniciada: any = false;
 
+  fechaHoraActualizacion: any = {fechaHoraActualizacion: false, fechaHoraActualizacionLarga:false, actualizado: false}
+
   constructor(
     private login: LoginService,
     private sync: SyncService
@@ -19,6 +21,14 @@ export class AppComponent {
   ngOnInit() {
     this.login.verificarSession()
     this.sessionIniciada = this.login.sessionIniciada();
+
+    this.sync.recibirVariable(this.fechaHoraActualizacion)
+
     this.sync.iniciarActualizacion()
   }
+
+  actualizar(){
+    this.sync.actualizarDatosNube()
+  }
+
 }

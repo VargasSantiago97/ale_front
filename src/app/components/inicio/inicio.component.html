@@ -175,7 +175,7 @@
                             </div>
                             <div class="field col-9">
                                 <label>Buscar:</label><br>
-                                <p-dropdown [options]="select_camiones" [(ngModel)]="datosMovimiento.id_mchofer" optionLabel="alias" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Camion" (onChange)="onSelectCamion()">
+                                <p-dropdown [options]="select_camiones" [(ngModel)]="datosMovimiento.id_camion" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Camion" (onChange)="onSelectCamion()">
                                     <ng-template pTemplate="selectedItem">
                                         <div class="flex align-items-center gap-2" *ngIf="camion" style="width: 170px">
                                             <div>{{ camion.alias }}</div>
