@@ -24,11 +24,11 @@ export class AppComponent {
 
     this.sync.recibirVariable(this.fechaHoraActualizacion)
 
-    this.sync.iniciarActualizacion()
+    //this.sync.iniciarActualizacion()
   }
 
   actualizar(){
-    this.sync.actualizarDatosNube()
+    this.sync.obtenerDatosLocales()
   }
 
 }
