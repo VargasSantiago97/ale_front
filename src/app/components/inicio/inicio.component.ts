@@ -19,6 +19,7 @@ export class InicioComponent {
 
     displayFiltros: Boolean = false;
     displayNuevoMovimiento: Boolean = false;
+    displayBanderas: Boolean = true;
 
     accordeonVer = [false , false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
     optionsDe = [{label: 'Silo', id:'S'},{label: 'Trilla', id:'T'},{label: 'Otro', id:'O'}]
@@ -67,6 +68,12 @@ export class InicioComponent {
     kilos_neto: any = null;
     kilos_carga_descarga: any = null;
     kilos_neto_final: any = null;
+
+    colorFlag: any = '#FFFFFF'
+    fondoFlag: any = 'info';
+    fondosFlag: any = ['info', 'success', 'warning', 'danger'];
+    iconFlag: any = 'pi-flag-fill'
+    iconsFlag: any = ['pi-flag-fill', 'pi-bookmark-fill', 'pi-calendar', 'pi-check-square', 'pi-circle-fill', 'pi-cog', 'pi-dollar', 'pi-file-edit', 'pi-info-circle', 'pi-sync', 'pi-thumbs-up-fill', 'pi-thumbs-down-fill', 'pi-user', 'pi-exclamation-triangle', 'pi-exclamation-circle'];
 
     datosMovimiento: any;
 
@@ -162,7 +169,7 @@ export class InicioComponent {
     }
 
     obtenerCamiones(){
-        this.comunicacionService.get_camiones().subscribe(
+        this.comunicacionService.getDB('camiones').subscribe(
             (res:any) => {
                 this.db_camiones = res;
                 this.load_camiones = false;
@@ -173,7 +180,7 @@ export class InicioComponent {
         )
     }
     obtenerChoferes(){
-        this.comunicacionService.get_choferes().subscribe(
+        this.comunicacionService.getDB('choferes').subscribe(
             (res:any) => {
                 this.db_choferes = res;
                 this.load_choferes = false;
@@ -184,7 +191,7 @@ export class InicioComponent {
         )
     }
     obtenerCondicion_iva(){
-        this.comunicacionService.get_condicion_iva().subscribe(
+        this.comunicacionService.getDB('condicion_iva').subscribe(
             (res:any) => {
                 this.db_condicion_iva = res;
                 this.load_condicion_iva = false;
@@ -195,7 +202,7 @@ export class InicioComponent {
         )
     }
     obtenerSocios(){
-        this.comunicacionService.get_socios().subscribe(
+        this.comunicacionService.getDB('socios').subscribe(
             (res:any) => {
                 this.db_socios = res;
                 this.load_socios = false;
@@ -208,7 +215,7 @@ export class InicioComponent {
         )
     }
     obtenerTransportistas(){
-        this.comunicacionService.get_transportistas().subscribe(
+        this.comunicacionService.getDB('transportistas').subscribe(
             (res:any) => {
                 this.db_transportistas = res;
                 this.load_transportistas = false;
@@ -219,7 +226,7 @@ export class InicioComponent {
         )
     }
     obtenerCampanas(){
-        this.comunicacionService.get_campanas().subscribe(
+        this.comunicacionService.getDB('campanas').subscribe(
             (res:any) => {
                 this.db_campanas = res;
                 this.load_campanas = false;
@@ -230,7 +237,7 @@ export class InicioComponent {
         )
     }
     obtenerDepositos(){
-        this.comunicacionService.get_depositos().subscribe(
+        this.comunicacionService.getDB('depositos').subscribe(
             (res:any) => {
                 this.db_depositos = res;
                 this.load_depositos = false;
@@ -241,7 +248,7 @@ export class InicioComponent {
         )
     }
     obtenerEstablecimientos(){
-        this.comunicacionService.get_establecimientos().subscribe(
+        this.comunicacionService.getDB('establecimientos').subscribe(
             (res:any) => {
                 this.db_establecimientos = res;
                 this.load_establecimientos = false;
@@ -252,7 +259,7 @@ export class InicioComponent {
         )
     }
     obtenerGastos(){
-        this.comunicacionService.get_gastos().subscribe(
+        this.comunicacionService.getDB('gastos').subscribe(
             (res:any) => {
                 this.db_gastos = res;
                 this.load_gastos = false;
@@ -263,7 +270,7 @@ export class InicioComponent {
         )
     }
     obtenerGranos(){
-        this.comunicacionService.get_granos().subscribe(
+        this.comunicacionService.getDB('granos').subscribe(
             (res:any) => {
                 this.db_granos = res;
                 this.load_granos = false;

@@ -46,6 +46,14 @@ import {TabViewModule} from 'primeng/tabview';
 import {AccordionModule} from 'primeng/accordion';
 import {DropdownModule} from 'primeng/dropdown';
 import {InputNumberModule} from 'primeng/inputnumber';
+import {ColorPickerModule} from 'primeng/colorpicker';
+
+
+
+
+
+
+
 
 
 import { InicioComponent } from './components/inicio/inicio.component';
@@ -126,7 +134,8 @@ import { TransportistasComponent } from './components/transportistas/transportis
     TabViewModule,
     AccordionModule,
     DropdownModule,
-    InputNumberModule
+    InputNumberModule,
+    ColorPickerModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

@@ -93,7 +93,7 @@ export class TransportistasComponent {
 
     //CONEXION A BASE DE DATOS
     obtenerCamiones(){
-        this.comunicacionService.get_camiones().subscribe(
+        this.comunicacionService.getDB("camiones").subscribe(
             (res:any) => {
                 this.db_camiones = res;
                 this.load_camiones = false;
@@ -104,7 +104,7 @@ export class TransportistasComponent {
         )
     }
     obtenerChoferes(){
-        this.comunicacionService.get_choferes().subscribe(
+        this.comunicacionService.getDB("choferes").subscribe(
             (res:any) => {
                 this.db_choferes = res;
                 this.load_choferes = false;
@@ -115,7 +115,7 @@ export class TransportistasComponent {
         )
     }
     obtenerTransportistas(){
-        this.comunicacionService.get_transportistas().subscribe(
+        this.comunicacionService.getDB("transportistas").subscribe(
             (res:any) => {
                 this.db_transportistas = res;
                 this.load_transportistas = false;
@@ -126,7 +126,7 @@ export class TransportistasComponent {
         )
     }
     obtenerCondicion_iva(){
-        this.comunicacionService.get_condicion_iva().subscribe(
+        this.comunicacionService.getDB("condicion_iva").subscribe(
             (res:any) => {
                 this.db_condicion_iva = res;
                 this.load_condicion_iva = false
@@ -290,7 +290,7 @@ export class TransportistasComponent {
         this.datosTransportista.id = idd
         this.datosTransportista.razon_social = this.datosTransportista.razonSocial
 
-        this.comunicacionService.create_transportistas(this.datosTransportista).subscribe(
+        this.comunicacionService.createDB("transportistas", this.datosTransportista).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -316,7 +316,7 @@ export class TransportistasComponent {
 
         this.datosTransportista.razon_social = this.datosTransportista.razonSocial
 
-        this.comunicacionService.update_transportistas(this.datosTransportista).subscribe(
+        this.comunicacionService.updateDB("transportistas", this.datosTransportista).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -454,7 +454,7 @@ export class TransportistasComponent {
 
         this.datosChofer.id = idd
 
-        this.comunicacionService.create_choferes(this.datosChofer).subscribe(
+        this.comunicacionService.createDB("choferes", this.datosChofer).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -479,7 +479,7 @@ export class TransportistasComponent {
     onConfirmModificarChofer(){
         this.messageService.clear('confirmModificarChofer');
 
-        this.comunicacionService.update_choferes(this.datosChofer).subscribe(
+        this.comunicacionService.updateDB("choferes", this.datosChofer).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -587,7 +587,7 @@ export class TransportistasComponent {
 
         this.datosCamion.id = idd
 
-        this.comunicacionService.create_camiones(this.datosCamion).subscribe(
+        this.comunicacionService.createDB("camiones", this.datosCamion).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})
@@ -612,7 +612,7 @@ export class TransportistasComponent {
     onConfirmModificarCamion(){
         this.messageService.clear('confirmModificarCamion');
 
-        this.comunicacionService.update_camiones(this.datosCamion).subscribe(
+        this.comunicacionService.updateDB("camiones", this.datosCamion).subscribe(
             (res:any) => {
                 if(!res || res.mensaje == false){
                     this.messageService.add({severity:'error', summary:'Error!', detail:'Error en el backend. Consulte consola'})

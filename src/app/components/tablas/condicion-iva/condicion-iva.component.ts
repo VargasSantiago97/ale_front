@@ -18,7 +18,7 @@ export class CondicionIvaComponent {
   }
 
   obtenerElementos(){
-    this.serv.get_condicion_iva().subscribe(
+    this.serv.getDB("condicion_iva").subscribe(
       (res:any) => {
         this.datos = res
       },
@@ -38,7 +38,7 @@ export class CondicionIvaComponent {
   }
 
   editarElemento(dato:any){
-    this.serv.update_condicion_iva(dato).subscribe(
+    this.serv.updateDB("condicion_iva", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Editado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -62,7 +62,7 @@ export class CondicionIvaComponent {
     dato['estado'] = 1
 
     console.log(dato)
-    this.serv.create_condicion_iva(dato).subscribe(
+    this.serv.createDB("condicion_iva", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Guardado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -78,7 +78,7 @@ export class CondicionIvaComponent {
   eliminarElemento(dato:any){
     if(confirm('Desea eliminar elemento?')){
       dato.estado = 0
-      this.serv.update_condicion_iva(dato).subscribe(
+      this.serv.updateDB("condicion_iva", dato).subscribe(
         (res:any) => {
           console.log(res)
           res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Eliminado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})

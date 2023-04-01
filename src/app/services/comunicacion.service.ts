@@ -18,6 +18,19 @@ export class ComunicacionService {
         this.USER_ID = localStorage.getItem('user')
     }
 
+    
+    //Consultas a DB
+    getDB(tabla: any) {
+        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=${tabla}`);
+    }
+    createDB(tabla: any, data: any) {
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=${tabla}`, this.trans(tabla, data));
+    }
+    updateDB(tabla: any, data: any) {
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=${tabla}`, this.transEdit(tabla, data));
+    }
+
+
     descargarOrdenCarga(data: any) {
         return this.http.post(`${this.API_URI}/ordencarga/pdf/index.php?D=D&odenDeCarga=ok`, data);
     };
@@ -25,122 +38,8 @@ export class ComunicacionService {
         return this.http.post(`${this.API_URI}/ordencarga/pdf/index.php?D=I&odenDeCarga=ok`, data);
     };
 
-    //CAMPANiAS
-    get_campanas() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=campanas`);
-    }
-    create_campanas(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=campanas`, this.trans(data));
-    }
-    update_campanas(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=campanas`, this.transEdit(data));
-    }
 
-    //depositos
-    get_depositos() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=depositos`);
-    }
-    create_depositos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=depositos`, this.trans(data));
-    }
-    update_depositos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=depositos`, this.transEdit(data));
-    }
-
-    //establecimientos
-    get_establecimientos() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=establecimientos`);
-    }
-    create_establecimientos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=establecimientos`, this.trans(data));
-    }
-    update_establecimientos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=establecimientos`, this.transEdit(data));
-    }
-
-    //gastos
-    get_gastos() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=gastos`);
-    }
-    create_gastos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=gastos`, this.trans(data));
-    }
-    update_gastos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=gastos`, this.transEdit(data));
-    }
-
-    //granos
-    get_granos() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=granos`);
-    }
-    create_granos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=granos`, this.trans(data));
-    }
-    update_granos(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=granos`, this.transEdit(data));
-    }
-
-    //condicion_iva
-    get_condicion_iva() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=condicion_iva`);
-    }
-    create_condicion_iva(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=condicion_iva`, this.trans(data));
-    }
-    update_condicion_iva(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=condicion_iva`, this.transEdit(data));
-    }
-
-
-    //socios
-    get_socios() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=socios`);
-    }
-    create_socios(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=socios`, this.trans(data));
-    }
-    update_socios(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=socios`, this.transEdit(data));
-    }
-
-
-    //transportistas
-    get_transportistas() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=transportistas`)
-    }
-    create_transportistas(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=transportistas`, this.trans(data));
-    }
-    update_transportistas(data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=transportistas`, this.transEdit(data));
-    }
-
-
-    //CHOFERES
-    get_choferes() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=choferes`)
-    }
-    create_choferes(data:any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=choferes`, this.trans(data))
-    }
-    update_choferes(data:any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=choferes`, this.transEdit(data))
-    }
-
-
-
-    //CAMIONES
-    get_camiones() {
-        return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=camiones`)
-    }
-    create_camiones(data:any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=camiones`, this.trans(data))
-    }
-    update_camiones(data:any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=camiones`, this.transEdit(data))
-    }
-
-    trans(dato:any){
+    trans(tabla:any, dato:any){
         dato.estado = 1;
 
         dato.creado_por = this.USER_ID;
@@ -148,24 +47,46 @@ export class ComunicacionService {
 
         var fechaHora = new Date();
         fechaHora.setHours(fechaHora.getHours() - 3);
-        
-        dato.creado_el = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
-        dato.editado_el = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+        var fechaHoraISO = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        dato.creado_el = fechaHoraISO
+        dato.editado_el = fechaHoraISO
+
+        this.setearUltimaMod(tabla, fechaHoraISO)
 
         return dato
     }
-    transEdit(dato:any){
+    transEdit(tabla:any, dato:any){
         dato.editado_por = this.USER_ID;
 
         var fechaHora = new Date();
         fechaHora.setHours(fechaHora.getHours() - 3);
-        
-        dato.editado_el = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+        var fechaHoraISO = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        dato.editado_el = fechaHoraISO
+
+        this.setearUltimaMod(tabla, fechaHoraISO)
 
         return dato
     }
-
-
+    setearUltimaMod(tabla:any, ult_mod:any){
+        this.getDB('sync').subscribe(
+            (res:any) => {
+                if(res){
+                    var dato = res.find((e:any) => { return e.tabla == tabla })
+                    if(dato){
+                        dato.ult_mod = ult_mod
+                        this.updateDB('sync', dato).subscribe(
+                            (resp:any) => {}, (errr:any) => {console.log(errr)}
+                        )
+                    }
+                }
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
+    }
 }
 
 /* 

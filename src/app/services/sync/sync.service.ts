@@ -39,7 +39,7 @@ export class SyncService {
         this.obtenerDatosLocales()
         setInterval(() => {
             this.obtenerDatosLocales()
-        }, 60000)
+        }, 300000)
     }
 
     recibirVariable(dato:any){
@@ -79,11 +79,13 @@ export class SyncService {
 
             var dataServer = this.listaSyncRemota.find((e:any) => {return e.tabla == tabla})
             
-            var ult_mod_local = new Date(dataLocal.ult_mod).getTime()
-            var ult_mod_server = new Date(dataServer.ult_mod).getTime()
-
-            if(ult_mod_local != ult_mod_server){
-                this.tablasAModificar.push(tabla)
+            if(dataServer){
+                var ult_mod_local = new Date(dataLocal.ult_mod).getTime()
+                var ult_mod_server = new Date(dataServer.ult_mod).getTime()
+    
+                if(ult_mod_local != ult_mod_server){
+                    this.tablasAModificar.push(tabla)
+                }
             }
         });
 
@@ -274,5 +276,6 @@ export class SyncService {
     remoto_update(tabla:any, datos:any){
         return this.http.post(`${this.API_URI_NUBE}/index.php?op=update&tabla=${tabla}`, datos)
     }
+
 
 }

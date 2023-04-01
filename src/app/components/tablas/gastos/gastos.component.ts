@@ -18,7 +18,7 @@ export class GastosComponent {
     }
 
     obtenerElementos() {
-        this.serv.get_gastos().subscribe(
+        this.serv.getDB("gastos").subscribe(
             (res: any) => {
                 this.datos = res
             },
@@ -38,7 +38,7 @@ export class GastosComponent {
     }
 
     editarElemento(dato: any) {
-        this.serv.update_gastos(dato).subscribe(
+        this.serv.updateDB("gastos", dato).subscribe(
             (res: any) => {
                 console.log(res)
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -63,7 +63,7 @@ export class GastosComponent {
         dato.id = idd
 
         console.log(dato)
-        this.serv.create_gastos(dato).subscribe(
+        this.serv.createDB("gastos", dato).subscribe(
             (res: any) => {
                 console.log(res)
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Guardado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -79,7 +79,7 @@ export class GastosComponent {
     eliminarElemento(dato: any) {
         if (confirm('Desea eliminar elemento?')) {
             dato.estado = 0
-            this.serv.update_gastos(dato).subscribe(
+            this.serv.updateDB("gastos", dato).subscribe(
                 (res: any) => {
                     console.log(res)
                     res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })

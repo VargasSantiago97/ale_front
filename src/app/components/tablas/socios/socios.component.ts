@@ -18,7 +18,7 @@ export class SociosComponent {
   }
 
   obtenerElementos(){
-    this.serv.get_socios().subscribe(
+    this.serv.getDB("socios").subscribe(
       (res:any) => {
         this.datos = res
       },
@@ -38,7 +38,7 @@ export class SociosComponent {
   }
 
   editarElemento(dato:any){
-    this.serv.update_socios(dato).subscribe(
+    this.serv.updateDB("socios", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Editado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -63,7 +63,7 @@ export class SociosComponent {
     dato.id = idd
 
     console.log(dato)
-    this.serv.create_socios(dato).subscribe(
+    this.serv.createDB("socios", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Guardado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -79,7 +79,7 @@ export class SociosComponent {
   eliminarElemento(dato:any){
     if(confirm('Desea eliminar elemento?')){
       dato.estado = 0
-      this.serv.update_socios(dato).subscribe(
+      this.serv.updateDB("socios", dato).subscribe(
         (res:any) => {
           console.log(res)
           res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Eliminado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})

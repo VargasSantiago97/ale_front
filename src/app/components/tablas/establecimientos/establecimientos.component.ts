@@ -18,7 +18,7 @@ export class EstablecimientosComponent {
   }
 
   obtenerElementos(){
-    this.serv.get_establecimientos().subscribe(
+    this.serv.getDB("establecimientos").subscribe(
       (res:any) => {
         this.datos = res
       },
@@ -38,7 +38,7 @@ export class EstablecimientosComponent {
   }
 
   editarElemento(dato:any){
-    this.serv.update_establecimientos(dato).subscribe(
+    this.serv.updateDB("establecimientos", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Editado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -62,7 +62,7 @@ export class EstablecimientosComponent {
     dato['estado'] = 1
 
     console.log(dato)
-    this.serv.create_establecimientos(dato).subscribe(
+    this.serv.createDB("establecimientos", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Guardado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -78,7 +78,7 @@ export class EstablecimientosComponent {
   eliminarElemento(dato:any){
     if(confirm('Desea eliminar elemento?')){
       dato.estado = 0
-      this.serv.update_establecimientos(dato).subscribe(
+      this.serv.updateDB("establecimientos", dato).subscribe(
         (res:any) => {
           console.log(res)
           res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Eliminado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})

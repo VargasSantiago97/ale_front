@@ -18,7 +18,7 @@ export class GranosComponent {
   }
 
   obtenerElementos(){
-    this.serv.get_granos().subscribe(
+    this.serv.getDB("granos").subscribe(
       (res:any) => {
         this.datos = res
       },
@@ -38,7 +38,7 @@ export class GranosComponent {
   }
 
   editarElemento(dato:any){
-    this.serv.update_granos(dato).subscribe(
+    this.serv.updateDB("granos", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Editado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -62,7 +62,7 @@ export class GranosComponent {
     dato['estado'] = 1
 
     console.log(dato)
-    this.serv.create_granos(dato).subscribe(
+    this.serv.createDB("granos", dato).subscribe(
       (res:any) => {
         console.log(res)
         res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Guardado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})
@@ -78,7 +78,7 @@ export class GranosComponent {
   eliminarElemento(dato:any){
     if(confirm('Desea eliminar elemento?')){
       dato.estado = 0
-      this.serv.update_granos(dato).subscribe(
+      this.serv.updateDB("granos", dato).subscribe(
         (res:any) => {
           console.log(res)
           res.mensaje ? this.messageService.add({severity:'success', summary:'Exito!', detail:'Eliminado con exito'}) : this.messageService.add({severity:'error', summary:'Error!', detail:'Fallo en backend'})

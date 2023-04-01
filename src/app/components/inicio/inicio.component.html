@@ -8,6 +8,9 @@
 
 <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott" (click)="nuevoMovimiento()"></button>
 
+<button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott"
+(click)="displayBanderas=true"></button>
+
 <br><br>
 
 <p-table [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="single"
@@ -257,5 +260,33 @@
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="tiraFun($event)"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoMovimiento = false"></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '700px', height:'500px'}" [draggable]="true"
+    [resizable]="true" [maximizable]="true">
+
+    <div style="text-align: center;">
+        <p-tag severity="{{fondoFlag}}"><i class="pi {{iconFlag}}" [style]="{color:colorFlag, fontSize: '50px'}"></i></p-tag>
+    </div>
+    <br>
+
+    <div class="formgrid row"> 
+        <div class="col">
+            <label><strong>Icono:</strong></label><br>
+            <p-dropdown [options]="iconsFlag" [(ngModel)]="iconFlag" placeholder="Seleccionar Icono" [showClear]="true"></p-dropdown>
+        </div>
+        <div class="col">
+            <label><strong>Fondo:</strong></label><br>
+            <p-listbox [options]="fondosFlag" [(ngModel)]="fondoFlag" [style]="{ width: '90%' }"></p-listbox>
+        </div>
+        <div class="col">
+            <label><strong>Color:</strong></label><br>
+            <p-colorPicker [(ngModel)]="colorFlag" [inline]="true"></p-colorPicker>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="displayBanderas=false" label="Ok" styleClass="p-button-text"></p-button>
     </ng-template>
 </p-dialog>
