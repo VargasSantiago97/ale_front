@@ -41,7 +41,6 @@ export class SyncService {
             this.obtenerDatosLocales()
         }, 300000)
     }
-
     recibirVariable(dato:any){
         this.actualizarFechaHora = dato
     }
@@ -58,7 +57,6 @@ export class SyncService {
             }
         )
     }
-
     obtenerDatosRemotos(){
         this.remoto_getSync().subscribe(
             (res:any) => {
@@ -70,7 +68,6 @@ export class SyncService {
             }
         )
     }
-
     realizarCompararcionDeTablas(){
         this.tablasAModificar = []
 
@@ -120,7 +117,6 @@ export class SyncService {
         )
 
     }
-
     compararDatosTablas(){
         //SI EXISTE EN REMOTO Y NO EN LOCAL
         this.datosTablaRemota.forEach((e:any) => {
@@ -169,6 +165,7 @@ export class SyncService {
                 if(res){
                     this.local_create(tabla, res[0]).subscribe(
                         (resp:any) => {
+                            this.setearUltimaModLocal(tabla, res[0].editado_el)
                             console.log(resp)
                         },
                         (errr:any) => {
@@ -188,6 +185,7 @@ export class SyncService {
                 if(res){
                     this.remoto_create(tabla, res[0]).subscribe(
                         (resp:any) => {
+                            this.setearUltimaModRemoto(tabla, res[0].editado_el)
                             console.log(resp)
                         },
                         (errr:any) => {
@@ -207,6 +205,7 @@ export class SyncService {
                 if(res){
                     this.local_update(tabla, res[0]).subscribe(
                         (resp:any) => {
+                            this.setearUltimaModLocal(tabla, res[0].editado_el)
                             console.log(resp)
                         },
                         (errr:any) => {
@@ -226,6 +225,7 @@ export class SyncService {
                 if(res){
                     this.remoto_update(tabla, res[0]).subscribe(
                         (resp:any) => {
+                            this.setearUltimaModRemoto(tabla, res[0].editado_el)
                             console.log(resp)
                         },
                         (errr:any) => {
@@ -239,7 +239,6 @@ export class SyncService {
             }
         )
     }
-
 
     //CONEXIONES A DB
     local_getSync(){
@@ -277,5 +276,26 @@ export class SyncService {
         return this.http.post(`${this.API_URI_NUBE}/index.php?op=update&tabla=${tabla}`, datos)
     }
 
-
+    setearUltimaModLocal(tabla:any, ult_mod:any){
+        var dato = this.listaSyncLocal.find((e:any) => { return e.tabla == tabla })
+        if(dato){
+            if(dato.ult_mod < ult_mod){
+                dato.ult_mod = ult_mod
+                this.local_update('sync', dato).subscribe(
+                    (resp:any) => {}, (errr:any) => {console.log(errr)}
+                )
+            }
+        }
+    }
+    setearUltimaModRemoto(tabla:any, ult_mod:any){
+        var dato = this.listaSyncRemota.find((e:any) => { return e.tabla == tabla })
+        if(dato){
+            if(dato.ult_mod < ult_mod){
+                dato.ult_mod = ult_mod
+                this.remoto_update('sync', dato).subscribe(
+                    (resp:any) => {}, (errr:any) => {console.log(errr)}
+                )
+            }
+        }
+    }
 }
