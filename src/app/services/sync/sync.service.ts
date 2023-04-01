@@ -103,12 +103,12 @@ export class SyncService {
                 this.datosTablaLocal = res;
 
                 this.remoto_getAllForSync(this.tablasAModificar[this.modificandoTablaN]).subscribe(
-                    (res:any) => {
-                        this.datosTablaRemota = res;
+                    (resp:any) => {
+                        this.datosTablaRemota = resp;
                         this.compararDatosTablas()
                     },
-                    (err:any) => {
-                        console.log(err)
+                    (errr:any) => {
+                        console.log(errr)
                     }
                 )
             },
@@ -123,35 +123,30 @@ export class SyncService {
         //SI EXISTE EN REMOTO Y NO EN LOCAL
         this.datosTablaRemota.forEach((e:any) => {
             if(!this.datosTablaLocal.some((f:any) => {return f.id == e.id})){
-                //crearEnLocal
-                console.log('crearEnLocal', e)
+                this.crearEnLocal(this.tablasAModificar[this.modificandoTablaN], e.id)
             }
         })
 
         //SI EXISTE EN LOCAL Y NO EN REMOTO
         this.datosTablaLocal.forEach((e:any) => {
             if(!this.datosTablaRemota.some((f:any) => {return f.id == e.id})){
-                //crearEnRemoto
-                console.log('crearEnRemoto', e)
+                this.crearEnRemoto(this.tablasAModificar[this.modificandoTablaN], e.id)
             }
         })
 
         //SI EXISTE EN REMOTO Y MODIFICACION MAS RECIENTE (bajar)
         this.datosTablaRemota.forEach((e:any) => {
             if(this.datosTablaLocal.some((f:any) => {return (f.id == e.id) && (f.editado_el < e.editado_el)})){
-                //bajarALocal
-                console.log('bajarALocal', e)
+                this.actualizarEnLocal(this.tablasAModificar[this.modificandoTablaN], e.id)
             }
         })
 
         //SI EXISTE EN LOCAL Y MODIFICACION MAS RECIENTE (subir)
         this.datosTablaLocal.forEach((e:any) => {
             if(this.datosTablaRemota.some((f:any) => {return (f.id == e.id) && (f.editado_el < e.editado_el)})){
-                //subirARemoto
-                console.log('subirARemoto', e)
+                this.actualizarEnRemoto(this.tablasAModificar[this.modificandoTablaN], e.id)
             }
         })
-
 
         this.modificandoTablaN++;
         if(this.tablasAModificar.length > this.modificandoTablaN){
@@ -163,6 +158,84 @@ export class SyncService {
             this.actualizarFechaHora.fechaHoraActualizacionLarga = fecha.toLocaleString('es-ES', {weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: 'numeric', second: 'numeric'})
             this.actualizarFechaHora.actualizado = true
         }
+    }
+
+    //FUNCIONES
+    crearEnLocal(tabla:any, idd:any){
+        this.remoto_getID(tabla, idd).subscribe(
+            (res:any) => {
+                if(res){
+                    this.local_create(tabla, res[0]).subscribe(
+                        (resp:any) => {
+                            console.log(resp)
+                        },
+                        (errr:any) => {
+                            console.log(errr)
+                        }
+                    )
+                }
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
+    }
+    crearEnRemoto(tabla:any, idd:any){
+        this.local_getID(tabla, idd).subscribe(
+            (res:any) => {
+                if(res){
+                    this.remoto_create(tabla, res[0]).subscribe(
+                        (resp:any) => {
+                            console.log(resp)
+                        },
+                        (errr:any) => {
+                            console.log(errr)
+                        }
+                    )
+                }
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
+    }
+    actualizarEnLocal(tabla:any, idd:any){
+        this.remoto_getID(tabla, idd).subscribe(
+            (res:any) => {
+                if(res){
+                    this.local_update(tabla, res[0]).subscribe(
+                        (resp:any) => {
+                            console.log(resp)
+                        },
+                        (errr:any) => {
+                            console.log(errr)
+                        }
+                    )
+                }
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
+    }
+    actualizarEnRemoto(tabla:any, idd:any){
+        this.local_getID(tabla, idd).subscribe(
+            (res:any) => {
+                if(res){
+                    this.remoto_update(tabla, res[0]).subscribe(
+                        (resp:any) => {
+                            console.log(resp)
+                        },
+                        (errr:any) => {
+                            console.log(errr)
+                        }
+                    )
+                }
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
     }
 
 
@@ -188,18 +261,18 @@ export class SyncService {
         return this.http.get(`${this.API_URI_NUBE}/index.php?op=getID&tabla=${tabla}&id=${idd}`)
     }
 
-    local_create(tabla:any, idd:any){
-        return this.http.get(`${this.API_URI}/index.php?op=getID&tabla=${tabla}&id=${idd}`)
+    local_create(tabla:any, datos:any){
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=${tabla}`, datos)
     }
-    remoto_create(tabla:any, idd:any){
-        return this.http.get(`${this.API_URI_NUBE}/index.php?op=getID&tabla=${tabla}&id=${idd}`)
+    remoto_create(tabla:any, datos:any){
+        return this.http.post(`${this.API_URI_NUBE}/index.php?op=create&tabla=${tabla}`, datos)
     }
 
-    local_update(tabla:any, idd:any){
-        return this.http.get(`${this.API_URI}/index.php?op=getID&tabla=${tabla}&id=${idd}`)
+    local_update(tabla:any, datos:any){
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=${tabla}`, datos)
     }
-    remoto_update(tabla:any, idd:any){
-        return this.http.get(`${this.API_URI_NUBE}/index.php?op=getID&tabla=${tabla}&id=${idd}`)
+    remoto_update(tabla:any, datos:any){
+        return this.http.post(`${this.API_URI_NUBE}/index.php?op=update&tabla=${tabla}`, datos)
     }
 
 }

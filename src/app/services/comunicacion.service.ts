@@ -30,20 +30,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=campanas`);
     }
     create_campanas(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=campanas`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=campanas`, this.trans(data));
     }
     update_campanas(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=campanas`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=campanas`, this.transEdit(data));
     }
 
     //depositos
@@ -51,20 +41,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=depositos`);
     }
     create_depositos(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=depositos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=depositos`, this.trans(data));
     }
     update_depositos(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=depositos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=depositos`, this.transEdit(data));
     }
 
     //establecimientos
@@ -72,20 +52,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=establecimientos`);
     }
     create_establecimientos(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=establecimientos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=establecimientos`, this.trans(data));
     }
     update_establecimientos(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=establecimientos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=establecimientos`, this.transEdit(data));
     }
 
     //gastos
@@ -93,20 +63,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=gastos`);
     }
     create_gastos(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=gastos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=gastos`, this.trans(data));
     }
     update_gastos(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=gastos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=gastos`, this.transEdit(data));
     }
 
     //granos
@@ -114,20 +74,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=granos`);
     }
     create_granos(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=granos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=granos`, this.trans(data));
     }
     update_granos(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=granos`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=granos`, this.transEdit(data));
     }
 
     //condicion_iva
@@ -135,20 +85,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=condicion_iva`);
     }
     create_condicion_iva(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=condicion_iva`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=condicion_iva`, this.trans(data));
     }
     update_condicion_iva(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=condicion_iva`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=condicion_iva`, this.transEdit(data));
     }
 
 
@@ -157,20 +97,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=socios`);
     }
     create_socios(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=socios`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=socios`, this.trans(data));
     }
     update_socios(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=socios`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=socios`, this.transEdit(data));
     }
 
 
@@ -179,21 +109,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=transportistas`)
     }
     create_transportistas(data: any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=transportistas`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=transportistas`, this.trans(data));
     }
     update_transportistas(data: any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=transportistas`, data);
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=transportistas`, this.transEdit(data));
     }
 
 
@@ -202,20 +121,10 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=choferes`)
     }
     create_choferes(data:any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=choferes`, data)
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=choferes`, this.trans(data))
     }
     update_choferes(data:any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=choferes`, data)
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=choferes`, this.transEdit(data))
     }
 
 
@@ -225,20 +134,35 @@ export class ComunicacionService {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=camiones`)
     }
     create_camiones(data:any) {
-        data.creado_por = this.USER_ID;
-        data.editado_por = this.USER_ID;
-        data.creado_el = new Date();
-        data.creado_el.setHours(data.creado_el.getHours() - 3);
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        data.estado = 1;
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=camiones`, data)
+        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=camiones`, this.trans(data))
     }
     update_camiones(data:any) {
-        data.editado_por = this.USER_ID;
-        data.editado_el = new Date();
-        data.editado_el.setHours(data.editado_el.getHours() - 3);
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=camiones`, data)
+        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=camiones`, this.transEdit(data))
+    }
+
+    trans(dato:any){
+        dato.estado = 1;
+
+        dato.creado_por = this.USER_ID;
+        dato.editado_por = this.USER_ID;
+
+        var fechaHora = new Date();
+        fechaHora.setHours(fechaHora.getHours() - 3);
+        
+        dato.creado_el = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+        dato.editado_el = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        return dato
+    }
+    transEdit(dato:any){
+        dato.editado_por = this.USER_ID;
+
+        var fechaHora = new Date();
+        fechaHora.setHours(fechaHora.getHours() - 3);
+        
+        dato.editado_el = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        return dato
     }
 
 

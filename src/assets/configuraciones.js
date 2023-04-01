@@ -1,7 +1,8 @@
 var vars = {
-    //API_URI: 'http://192.168.50.136',
-    //API_URI: 'http://localhost',
+
+    //API_URI: 'https://sny.com.ar/api_ale',
     API_URI: 'http://localhost/api',
+
     API_URI_NUBE: 'https://sny.com.ar/api_ale',
 
     //API_URI_PADRON: 'http://localhost/ng_fact/camacho/api', //OFICINA
