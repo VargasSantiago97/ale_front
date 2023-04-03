@@ -22,6 +22,7 @@ export class InicioComponent {
     displayNuevoMovimiento: Boolean = false;
     displayBanderas: Boolean = false;
     displayBanderasDis: Boolean = false;
+    displayOrdenCarga: Boolean = true;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
     optionsDe = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
@@ -79,6 +80,7 @@ export class InicioComponent {
     iconsFlag: any = ['pi-flag-fill', 'pi-bookmark-fill', 'pi-calendar', 'pi-check-square', 'pi-circle-fill', 'pi-cog', 'pi-dollar', 'pi-file-edit', 'pi-info-circle', 'pi-sync', 'pi-thumbs-up-fill', 'pi-thumbs-down-fill', 'pi-user', 'pi-exclamation-triangle', 'pi-exclamation-circle'];
 
     datosMovimiento: any;
+    datosOrdenCarga: any = {};
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -474,30 +476,30 @@ export class InicioComponent {
         this.datosMovimiento = {
             id: null,
             fecha: fecha,
-            id_campana: "23b3f4f21c28",
-            id_socio: "4",
-            id_origen: "1",
-            id_grano: "1",
+            id_campana: null,
+            id_socio: null,
+            id_origen: null,
+            id_grano: null,
             id_transporte: null,
             id_chofer: null,
             id_camion: null,
-            id_corredor: 'c1',
-            id_acopio: 'a1',
-            id_deposito: '1',
+            id_corredor: null,
+            id_acopio: null,
+            id_deposito: null,
             id_bandera: null,
-            kg_bruto: 100,
-            kg_tara: 20,
-            kg_neto: 80,
-            kg_regulacion: 10,
-            kg_neto_final: 90,
-            observaciones: "Observar",
-            tipo_origen: "T",
+            kg_bruto: null,
+            kg_tara: null,
+            kg_neto: null,
+            kg_regulacion: null,
+            kg_neto_final: null,
+            observaciones: null,
+            tipo_origen: null,
             creado_por: null,
             creado_el: null,
             editado_por: null,
             editado_el: null,
-            activo: null,
-            estado: null
+            activo: 1,
+            estado: 1
         }
 
 
@@ -516,7 +518,7 @@ export class InicioComponent {
         this.displayNuevoMovimiento = true
     }
 
-
+    //BANDERAS
     agregarBandera() {
         this.db_banderas.push({
             icono: 'pi-flag-fill',
@@ -607,6 +609,27 @@ export class InicioComponent {
         this.displayNuevoMovimiento = true
     }
 
+    //ORDEN CARGA
+    nuevaOrdenCarga(){
+        this.datosOrdenCarga = {
+        numero: '00-0001',
+        fecha: '22/12/2332',
+        beneficiario: 'Norte Semillas S.R.L.'.toUpperCase(),
+        transportista: 'Transporte Vargas S.A.'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+        conductor: 'Vargas, Santiago Manuel'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+        patentes: 'AD037RE',
+        establecimiento: 'La Esmeralda'.toUpperCase(),
+        cultivo: 'MAIZ'.toUpperCase(),
+        trilla_silo: 'SILO'.toUpperCase(),
+        tara: '15.000',
+        bruto: '40.000',
+        neto: '25.000',
+        firma1: 'Vargas, Santiago Manuelñ',
+        firma2: 'cargador',
+        observaciones: ''
+        }
+    }
+
     generateUUID() {
         var d = new Date().getTime();
         var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -673,6 +696,7 @@ export class InicioComponent {
         let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
         return base64;
     }
+
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]

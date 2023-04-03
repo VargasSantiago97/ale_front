@@ -279,8 +279,6 @@
     </ng-template>
 </p-dialog>
 
-<button (click)="mostrarOrdenCarga('ver')">VER</button>
-<button (click)="mostrarOrdenCarga('descargar')">DESCARGAR</button>
 
 <p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '1000px', height:'600px'}" [draggable]="true"
     [resizable]="true" [maximizable]="true">
@@ -354,5 +352,115 @@
 
     <ng-template pTemplate="footer">
         <p-button icon="pi pi-check" (click)="displayBanderasDis=false" label="Ok" styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>
+
+
+<p-dialog header="ORDEN DE CARGA" [(visible)]="displayOrdenCarga" [modal]="true" [style]="{width: '95vw', height: '90vw'}" [draggable]="true"
+    [resizable]="true" [maximizable]="true">
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <p-calendar [(ngModel)]="datosMovimiento.fecha" [showIcon]="true" [readonlyInput]="false" inputId="fechaSalida" dateFormat="dd/mm/yy"></p-calendar>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Numero</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Beneficiario</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Transp.</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Chofer</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Patentes</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Est.</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Cultivo</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Desde</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">TARA</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">BRUTO</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">NETO</span>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <span class="p-float-label">
+                <textarea id="float-input" rows="5" cols="70" pInputTextarea [(ngModel)]="datosMovimiento.observaciones"></textarea>
+                <label for="float-input">Observaciones</label>
+            </span>        
+        </div>
+        <div class="field col">
+            <div class="p-inputgroup">
+                <button pButton pRipple type="button" label="VER" class="p-button-success bott" (click)="mostrarOrdenCarga('ver')"></button>
+                <button pButton pRipple type="button" label="DESCARGAR" class="p-button-success bott" (click)="mostrarOrdenCarga('descargar')"></button>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarMovimiento()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoMovimiento = false"></button>
     </ng-template>
 </p-dialog>
