@@ -105,15 +105,16 @@ export class InicioComponent {
             { field: "rem", header: "rem" },
             { field: "corre", header: "corre" },
             { field: "acop", header: "acop" },
-            { field: "tara", header: "tara" },
-            { field: "bruto", header: "bruto" },
-            { field: "neto", header: "neto" },
-            { field: "carga", header: "carga" },
-            { field: "descarga", header: "descarga" },
-            { field: "netofin", header: "netofin" },
+            { field: "kg_tara", header: "tara" },
+            { field: "kg_bruto", header: "bruto" },
+            { field: "kg_neto", header: "neto" },
+            { field: "kg_regulacion", header: "carga" },
+            { field: "kg_regulacion", header: "descarga" },
+            { field: "kg_neto_final", header: "netofin" },
             { field: "factura", header: "factura" },
             { field: "pagado", header: "pagado" },
             { field: "observaciones", header: "observaciones" },
+            { field: "id_origen", header: "origen" },
         ];
         this.selectedColumns = [
             { field: "cultivo", header: "cultivo" },
@@ -123,10 +124,11 @@ export class InicioComponent {
             { field: "pat", header: "pat" },
             { field: "patAc", header: "patAc" },
             { field: "transporte", header: "transporte" },
-            { field: "netofin", header: "netofin" },
+            { field: "kg_neto_final", header: "netofin" },
             { field: "factura", header: "factura" },
             { field: "pagado", header: "pagado" },
             { field: "observaciones", header: "observaciones" },
+            { field: "id_origen", header: "origen" },
 
         ];
 
@@ -582,7 +584,7 @@ export class InicioComponent {
     guardarMovimiento(){
         var idd = this.generateUUID()
         if (this.db_movimientos.some((e: any) => { return e.id == idd })) {
-            this.messageService.add({ severity: 'info', summary: 'INTENTE NUEVAMENTE', detail: 'Hubo un error interno en UUID. Vuelva a presionar "guardar"' })
+            this.guardarMovimiento()
             return
         }
 
@@ -638,29 +640,38 @@ export class InicioComponent {
     }
 
     mostrarOrdenCarga(ver: any) {
-        var numero = '00-0001';
-        var fecha = '22/12/2332';
-        var beneficiario = 'Norte Semillas S.R.L.';
-        var transportista = 'Transporte Vargas S.A.';
-        var conductor = 'Vargas, Santiago Manuel';
-        var patentes = 'AD037RE';
-        var establecimiento = 'La Esmeralda';
-        var cultivo = 'Maiz';
-        var trilla_silo = 'Silo';
-        var tara = '15000';
-        var bruto = '40000';
-        var neto = '25000';
-        var firma1 = 'Vargas, Santiago Manuel';
-        var firma2 = 'Cargador';
-        var observaciones = 'obssss';
+        var datos = {
+            numero: '00-0001',
+            fecha: '22/12/2332',
+            beneficiario: 'Norte Semillas S.R.L.'.toUpperCase(),
+            transportista: 'Transporte Vargas S.A.'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            conductor: 'Vargas, Santiago Manuel'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            patentes: 'AD037RE',
+            establecimiento: 'La Esmeralda'.toUpperCase(),
+            cultivo: 'MAIZ'.toUpperCase(),
+            trilla_silo: 'SILO'.toUpperCase(),
+            tara: '15.000',
+            bruto: '40.000',
+            neto: '25.000',
+            firma1: 'Vargas, Santiago Manuelñ',
+            firma2: 'Cargador',
+            observaciones: 'obssss'
+        }
 
-        var url = `${ORDEN_CARGA}/orden_carga.php?orden_carga=1&numero=${numero}&fecha=${fecha}&beneficiario=${beneficiario}&transportista=${transportista}&conductor=${conductor}&patentes=${patentes}&establecimiento=${establecimiento}&cultivo=${cultivo}&trilla_silo=${trilla_silo}&tara=${tara}&bruto=${bruto}&neto=${neto}&firma1=${firma1}&firma2=${firma2}&observaciones=${observaciones}`
+        var url = `${ORDEN_CARGA}/orden_carga.php?&o=${this.objUtf8ToBase64(datos)}`
 
         if (ver == 'descargar') {
             window.open(url + '&D=D');
         } else {
             window.open(url + '&D=I', '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
         }
+    }
+
+    objUtf8ToBase64(ent:any) {
+        let str = JSON.stringify(ent)
+        let bytes = new TextEncoder().encode(str);
+        let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
+        return base64;
     }
 }
 
