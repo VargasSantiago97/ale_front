@@ -113,7 +113,7 @@ export class InicioComponent {
             { field: "netofin", header: "netofin" },
             { field: "factura", header: "factura" },
             { field: "pagado", header: "pagado" },
-            { field: "obs", header: "obs" },
+            { field: "observaciones", header: "observaciones" },
         ];
         this.selectedColumns = [
             { field: "cultivo", header: "cultivo" },
@@ -126,7 +126,7 @@ export class InicioComponent {
             { field: "netofin", header: "netofin" },
             { field: "factura", header: "factura" },
             { field: "pagado", header: "pagado" },
-            { field: "obs", header: "obs" },
+            { field: "observaciones", header: "observaciones" },
 
         ];
 
@@ -579,6 +579,32 @@ export class InicioComponent {
         this.displayBanderasDis = true
     }
 
+    guardarMovimiento(){
+        var idd = this.generateUUID()
+        if (this.db_movimientos.some((e: any) => { return e.id == idd })) {
+            this.messageService.add({ severity: 'info', summary: 'INTENTE NUEVAMENTE', detail: 'Hubo un error interno en UUID. Vuelva a presionar "guardar"' })
+            return
+        }
+
+        this.datosMovimiento.id = idd
+
+        this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Guardado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.displayNuevoMovimiento = false
+                this.obtenerMovimientos()
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+    }
+    mostrarMovimiento(mov:any){
+        this.datosMovimiento = { ... mov }
+        this.displayNuevoMovimiento = true
+    }
+
     generateUUID() {
         var d = new Date().getTime();
         var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -602,7 +628,7 @@ export class InicioComponent {
     }
 
     tiraFun(e: any) {
-        console.log(this.datosMovimiento)
+        console.log(e)
     }
 
     verVars() {

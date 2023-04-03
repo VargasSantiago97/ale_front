@@ -31,8 +31,8 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-registro let-columns="columns">
-        <tr>
-            <td *ngFor="let col of columns" (dblclick)="tiraFun(registro[col.field])">
+        <tr (dblclick)="mostrarMovimiento(registro)">
+            <td *ngFor="let col of columns">
                 {{transformarDatoMostrar(registro[col.field], col.field)}}
                 <div *ngIf="col.field == 'orden'">
                     ord
@@ -274,7 +274,7 @@
         <label for="float-input">Observaciones</label>
     </span>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="tiraFun($event)"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarMovimiento()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoMovimiento = false"></button>
     </ng-template>
 </p-dialog>
