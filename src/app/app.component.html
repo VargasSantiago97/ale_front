@@ -4,7 +4,7 @@
     <button pButton pRipple type="button" label="GASTOS" class="p-button-primary bott"></button>
     <button pButton pRipple type="button" label="CUENTAS CORRIENTES" class="p-button-primary bott"></button>
     <button pButton pRipple type="button" label="TABLAS GENERALES" class="p-button-primary bott" routerLink="tablas"></button>    
-    <button pButton pRipple type="button" label="{{fechaHoraActualizacion.fechaHoraActualizacion ? fechaHoraActualizacion.fechaHoraActualizacion : 'NO SINCRONIZADO'}}" title="{{fechaHoraActualizacion.fechaHoraActualizacionLarga}}" (click)="actualizar()" class="{{fechaHoraActualizacion.actualizado ? 'p-button-success' : 'p-button-danger'}} bott"  icon="pi {{fechaHoraActualizacion.fechaHoraActualizacion ? 'pi-check' : 'pi-replay'}}" iconPos="right"></button>
+    <button pButton pRipple type="button" label="{{fechaHoraActualizacion.actualizado ? fechaHoraActualizacion.fechaHoraActualizacion : 'NO SINCRONIZADO'}}" title="{{fechaHoraActualizacion.fechaHoraActualizacionLarga}}" (click)="actualizar()" class="{{fechaHoraActualizacion.actualizado ? 'p-button-success' : 'p-button-danger'}} bott"  icon="pi {{fechaHoraActualizacion.actualizado ? 'pi-check' : 'pi-replay'}}" iconPos="right"></button>
     <button pButton pRipple type="button" label="CERRAR SESION" class="p-button-danger bott" routerLink="unlogin" icon="pi pi-sign-out" iconPos="right"></button>
 </div>
 

@@ -47,7 +47,7 @@ import {AccordionModule} from 'primeng/accordion';
 import {DropdownModule} from 'primeng/dropdown';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {ColorPickerModule} from 'primeng/colorpicker';
-
+import {InputTextareaModule} from 'primeng/inputtextarea';
 
 
 
@@ -135,7 +135,8 @@ import { TransportistasComponent } from './components/transportistas/transportis
     AccordionModule,
     DropdownModule,
     InputNumberModule,
-    ColorPickerModule
+    ColorPickerModule,
+    InputTextareaModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

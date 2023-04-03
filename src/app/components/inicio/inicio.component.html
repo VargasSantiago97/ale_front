@@ -1,5 +1,5 @@
 
-<div style="text-align: center;" *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos">
+<div style="text-align: center;" *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_corredores || load_acopios || load_movimientos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -66,6 +66,18 @@
             <div class="field">
                 <label for="selectCamapa">Campaña</label><br>
                 <p-dropdown [options]="db_campanas" [(ngModel)]="datosMovimiento.id_campana" placeholder="Seleccionar Campaña" optionLabel="descripcion" optionValue="id" inputId="selectCamapa" [showClear]="true"></p-dropdown>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label for="selectBandera">Bandera</label><br>
+                <p-dropdown [options]="db_banderas" [(ngModel)]="datosMovimiento.id_bandera" placeholder="Seleccionar Bandera" optionLabel="alias" optionValue="id" inputId="selectBandera" [showClear]="true">
+                    <ng-template let-bandera pTemplate="item">
+                        <div class="bandera-item">
+                            <p-tag severity="{{bandera.fondo}}" (click)="disenarFlag(bandera)"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
+                        </div>
+                    </ng-template>
+                </p-dropdown>
             </div>
         </div>
     </div>
@@ -208,19 +220,19 @@
                 <div class="col">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon">KG BRUTO</span>
-                        <p-inputNumber placeholder="BRUTO" [(ngModel)]="kilos_bruto" (onInput)="calcularKilos($event, 'kilos_bruto')"></p-inputNumber>
+                        <p-inputNumber placeholder="BRUTO" [(ngModel)]="datosMovimiento.kg_bruto" (onInput)="calcularKilos($event, 'kilos_bruto')"></p-inputNumber>
                     </div>
                 </div>
                 <div class="col">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon">KG TARA</span>
-                        <p-inputNumber placeholder="TARA" [(ngModel)]="kilos_tara" (onInput)="calcularKilos($event, 'kilos_tara')"></p-inputNumber> 
+                        <p-inputNumber placeholder="TARA" [(ngModel)]="datosMovimiento.kg_tara" (onInput)="calcularKilos($event, 'kilos_tara')"></p-inputNumber> 
                     </div>
                 </div>
                 <div class="col">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon">KG NETO</span>
-                        <p-inputNumber placeholder="NETO" [(ngModel)]="kilos_neto" (onInput)="calcularKilos($event, 'kilos_neto')"></p-inputNumber> 
+                        <p-inputNumber placeholder="NETO" [(ngModel)]="datosMovimiento.kg_neto" (onInput)="calcularKilos($event, 'kilos_neto')"></p-inputNumber> 
                     </div>
                 </div>
             </div>
@@ -229,16 +241,16 @@
                 <div class="col">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon">KG REGULACION</span>
-                        <p-inputNumber placeholder="+ CARGA/ - DESCARGA" [(ngModel)]="kilos_carga_descarga" (onInput)="calcularKilos($event, 'kilos_carga_descarga')"></p-inputNumber>
+                        <p-inputNumber placeholder="+ CARGA/ - DESCARGA" [(ngModel)]="datosMovimiento.kg_regulacion" (onInput)="calcularKilos($event, 'kilos_carga_descarga')"></p-inputNumber>
                     </div>
                 </div>
                 <div class="col">
-                    <p-dropdown [options]="db_depositos" placeholder="Deposito" optionLabel="alias" [showClear]="true"></p-dropdown>
+                    <p-dropdown [options]="db_depositos" [(ngModel)]="datosMovimiento.id_deposito" placeholder="Deposito" optionLabel="alias" optionValue="id" [showClear]="true"></p-dropdown>
                 </div>
                 <div class="col">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon">KG NETO FINAL</span>
-                        <p-inputNumber placeholder="FINAL" [(ngModel)]="kilos_neto_final" (onInput)="calcularKilos($event, 'kilos_neto_final')"></p-inputNumber> 
+                        <p-inputNumber placeholder="FINAL" [(ngModel)]="datosMovimiento.kg_neto_final" (onInput)="calcularKilos($event, 'kilos_neto_final')"></p-inputNumber> 
                     </div>
                 </div>
             </div>
@@ -247,46 +259,100 @@
             <div class="formgrid row"> 
                 <div class="col">
                     <label>CORREDOR:</label><br>
-                    <p-listbox [options]="db_camiones" optionLabel="alias" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+                    <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias" optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
                 </div>
                 <div class="col">
                     <label>ACOPIO:</label><br>
-                    <p-listbox [options]="db_camiones" optionLabel="alias" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+                    <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias" optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
                 </div>
             </div>
         </p-accordionTab>
     </p-accordion>
-
+    <br>
+    <span class="p-float-label">
+        <textarea id="float-input" rows="5" cols="70" pInputTextarea [(ngModel)]="datosMovimiento.observaciones"></textarea>
+        <label for="float-input">Observaciones</label>
+    </span>
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="tiraFun($event)"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoMovimiento = false"></button>
     </ng-template>
 </p-dialog>
 
-<p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '700px', height:'600px'}" [draggable]="true"
+<button (click)="mostrarOrdenCarga('ver')">VER</button>
+<button (click)="mostrarOrdenCarga('descargar')">DESCARGAR</button>
+
+<p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '1000px', height:'600px'}" [draggable]="true"
+    [resizable]="true" [maximizable]="true">
+
+    <table>
+        <thead>
+            <tr style="text-align: center;">
+                <td><strong>BANDERA</strong></td>
+                <td><strong>ALIAS</strong></td>
+                <td><strong>CODIGO</strong></td>
+                <td><strong>ACTIVO</strong></td>
+                <td><strong>ACCIONES</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let bandera of db_banderas">
+                <td style="text-align: center;">
+                    <p-tag severity="{{bandera.fondo}}" (click)="disenarFlag(bandera)"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag>
+                </td>
+                <td>
+                    <input type="text" [(ngModel)]="bandera.alias">
+                </td>
+                <td>
+                    <input type="text" [(ngModel)]="bandera.codigo">
+                </td>
+                <td>
+                    <input type="text" [(ngModel)]="bandera.activo">
+                </td>
+                <td *ngIf="bandera.id">
+                    <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="editarBandera(bandera)"><i class="pi pi-pencil"></i></button>
+                    <button style="background-color: rgba(255, 17, 0, 0.486);" (click)="eliminarBandera(bandera)"><i class="pi pi-trash"></i></button>
+                    <button style="background-color: rgba(0, 110, 255, 0.486);" (click)="duplicarBandera(bandera)"><i class="pi pi-arrow-circle-down"></i></button>
+                </td>
+                <td *ngIf="!bandera.id">
+                    <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="guardarBandera(bandera)"><i class="pi pi-save"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <button pButton pRipple type="button" label="NUEVA BANDERA" class="p-button-success bott" (click)="agregarBandera()"></button>
+
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="displayBanderas=false" label="Ok" styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="DISEÑO BANDERAS" [(visible)]="displayBanderasDis" [modal]="true" [style]="{width: '700px', height:'600px'}" [draggable]="true"
     [resizable]="true" [maximizable]="true">
 
     <div style="text-align: center;">
-        <p-tag severity="{{fondoFlag}}"><i class="pi {{iconFlag}}" [style]="{color:colorFlag, fontSize: '50px'}"></i></p-tag>
+        <p-tag severity="{{disFlag.fondo}}"><i class="pi {{disFlag.icono}}" [style]="{color:disFlag.color, fontSize: '80px'}"></i></p-tag>
     </div>
     <br>
 
     <div class="formgrid row"> 
         <div class="col">
             <label><strong>Icono:</strong></label><br>
-            <p-dropdown [options]="iconsFlag" [(ngModel)]="iconFlag" placeholder="Seleccionar Icono" [showClear]="true"></p-dropdown>
+            <p-dropdown [options]="iconsFlag" [(ngModel)]="disFlag.icono" placeholder="Seleccionar Icono" [showClear]="true"></p-dropdown>
         </div>
         <div class="col">
             <label><strong>Fondo:</strong></label><br>
-            <p-listbox [options]="fondosFlag" [(ngModel)]="fondoFlag" [style]="{ width: '90%' }"></p-listbox>
+            <p-listbox [options]="fondosFlag" [(ngModel)]="disFlag.fondo" [style]="{ width: '90%' }"></p-listbox>
         </div>
         <div class="col">
             <label><strong>Color:</strong></label><br>
-            <p-colorPicker [(ngModel)]="colorFlag" [inline]="true"></p-colorPicker>
+            <p-colorPicker [(ngModel)]="disFlag.color" [inline]="true"></p-colorPicker>
         </div>
     </div>
 
     <ng-template pTemplate="footer">
-        <p-button icon="pi pi-check" (click)="displayBanderas=false" label="Ok" styleClass="p-button-text"></p-button>
+        <p-button icon="pi pi-check" (click)="displayBanderasDis=false" label="Ok" styleClass="p-button-text"></p-button>
     </ng-template>
 </p-dialog>

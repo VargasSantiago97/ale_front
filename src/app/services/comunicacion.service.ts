@@ -31,14 +31,6 @@ export class ComunicacionService {
     }
 
 
-    descargarOrdenCarga(data: any) {
-        return this.http.post(`${this.API_URI}/ordencarga/pdf/index.php?D=D&odenDeCarga=ok`, data);
-    };
-    mostrarOrdenCarga(data: any) {
-        return this.http.post(`${this.API_URI}/ordencarga/pdf/index.php?D=I&odenDeCarga=ok`, data);
-    };
-
-
     trans(tabla:any, dato:any){
         dato.estado = 1;
 

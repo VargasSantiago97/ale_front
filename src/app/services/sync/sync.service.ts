@@ -54,6 +54,7 @@ export class SyncService {
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
     }
@@ -65,6 +66,7 @@ export class SyncService {
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
     }
@@ -82,6 +84,7 @@ export class SyncService {
     
                 if(ult_mod_local != ult_mod_server){
                     this.tablasAModificar.push(tabla)
+                    console.log(tabla)
                 }
             }
         });
@@ -89,6 +92,12 @@ export class SyncService {
         this.modificandoTablaN = 0
         if(this.tablasAModificar.length > 0){
             this.getAllForSyncLocal()
+        } else {
+            //fin
+            var fecha = new Date()
+            this.actualizarFechaHora.fechaHoraActualizacion = fecha.toLocaleString()
+            this.actualizarFechaHora.fechaHoraActualizacionLarga = fecha.toLocaleString('es-ES', {weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: 'numeric', second: 'numeric'})
+            this.actualizarFechaHora.actualizado = true
         }
     }
 
@@ -108,11 +117,13 @@ export class SyncService {
                     },
                     (errr:any) => {
                         console.log(errr)
+                        this.actualizarFechaHora.actualizado = false
                     }
                 )
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
 
@@ -170,12 +181,14 @@ export class SyncService {
                         },
                         (errr:any) => {
                             console.log(errr)
+                            this.actualizarFechaHora.actualizado = false
                         }
                     )
                 }
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
     }
@@ -190,12 +203,14 @@ export class SyncService {
                         },
                         (errr:any) => {
                             console.log(errr)
+                            this.actualizarFechaHora.actualizado = false
                         }
                     )
                 }
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
     }
@@ -210,12 +225,14 @@ export class SyncService {
                         },
                         (errr:any) => {
                             console.log(errr)
+                            this.actualizarFechaHora.actualizado = false
                         }
                     )
                 }
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
     }
@@ -230,12 +247,14 @@ export class SyncService {
                         },
                         (errr:any) => {
                             console.log(errr)
+                            this.actualizarFechaHora.actualizado = false
                         }
                     )
                 }
             },
             (err:any) => {
                 console.log(err)
+                this.actualizarFechaHora.actualizado = false
             }
         )
     }
