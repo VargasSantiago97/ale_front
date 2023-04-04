@@ -149,6 +149,8 @@ export class InicioComponent {
         this.obtenerAcopios()
         this.obtenerMovimientos()
 
+        this.nuevaOrdenCarga()
+
         this.datosMovimiento = {
             id: null,
             fecha: null,
@@ -630,6 +632,18 @@ export class InicioComponent {
         }
     }
 
+    guardarOrdenCarga(accion:any){
+        if(accion == 'guardar_ver'){
+            this.mostrarOrdenCarga('ver')
+        }
+        if(accion == 'guardar_descargar'){
+            this.mostrarOrdenCarga('descargar')
+        }
+
+        this.displayOrdenCarga = false
+
+    }
+
     generateUUID() {
         var d = new Date().getTime();
         var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -663,26 +677,7 @@ export class InicioComponent {
     }
 
     mostrarOrdenCarga(ver: any) {
-        var datos = {
-            numero: '00-0001',
-            fecha: '22/12/2332',
-            beneficiario: 'Norte Semillas S.R.L.'.toUpperCase(),
-            transportista: 'Transporte Vargas S.A.'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-            conductor: 'Vargas, Santiago Manuel'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-            patentes: 'AD037RE',
-            establecimiento: 'La Esmeralda'.toUpperCase(),
-            cultivo: 'MAIZ'.toUpperCase(),
-            trilla_silo: 'SILO'.toUpperCase(),
-            tara: '15.000',
-            bruto: '40.000',
-            neto: '25.000',
-            firma1: 'Vargas, Santiago Manuelñ',
-            firma2: 'Cargador',
-            observaciones: 'obssss'
-        }
-
-        var url = `${ORDEN_CARGA}/orden_carga.php?&o=${this.objUtf8ToBase64(datos)}`
-
+        var url = `${ORDEN_CARGA}/orden_carga.php?&o=${this.objUtf8ToBase64(this.datosOrdenCarga)}`
         if (ver == 'descargar') {
             window.open(url + '&D=D');
         } else {
