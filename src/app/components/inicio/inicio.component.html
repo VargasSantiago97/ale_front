@@ -11,6 +11,8 @@
 <button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott"
 (click)="displayBanderas=true"></button>
 
+<button pButton pRipple type="button" label="NUEVA OC" class="p-button-success bott" (click)="nuevaOrdenCarga()"></button>
+
 <br><br>
 
 <p-table [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="single"
@@ -74,7 +76,7 @@
                 <p-dropdown [options]="db_banderas" [(ngModel)]="datosMovimiento.id_bandera" placeholder="Seleccionar Bandera" optionLabel="alias" optionValue="id" inputId="selectBandera" [showClear]="true">
                     <ng-template let-bandera pTemplate="item">
                         <div class="bandera-item">
-                            <p-tag severity="{{bandera.fondo}}" (click)="disenarFlag(bandera)"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
+                            <p-tag severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
                         </div>
                     </ng-template>
                 </p-dropdown>
@@ -363,7 +365,10 @@
     <div class="formgrid row">
         <div class="field col">
             <div class="field">
-                <p-calendar [(ngModel)]="datosOrdenCarga.fecha" [showIcon]="true" [readonlyInput]="false" inputId="fechaSalida" dateFormat="dd/mm/yy"></p-calendar>
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">Fecha</span>
+                    <input type="text" pInputText [(ngModel)]="datosOrdenCarga.fecha"/>
+                </div>
             </div>
         </div>
         <div class="field col">

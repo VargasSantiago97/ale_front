@@ -22,10 +22,10 @@ export class InicioComponent {
     displayNuevoMovimiento: Boolean = false;
     displayBanderas: Boolean = false;
     displayBanderasDis: Boolean = false;
-    displayOrdenCarga: Boolean = true;
+    displayOrdenCarga: Boolean = false;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
-    optionsDe = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
+    optionsDe: any = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
 
     //DATA-VARIABLES DE DB:
     db_camiones: any = []
@@ -150,8 +150,6 @@ export class InicioComponent {
         this.obtenerCorredores()
         this.obtenerAcopios()
         this.obtenerMovimientos()
-
-        this.nuevaOrdenCarga()
 
         this.datosMovimiento = {
             id: null,
@@ -622,23 +620,28 @@ export class InicioComponent {
 
     //ORDEN CARGA
     nuevaOrdenCarga(){
+        var fecha = new Date(this.datosMovimiento.fecha);
+        const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
+
         this.datosOrdenCarga = {
         numero: '00-0001',
-        fecha: '22/12/2332',
-        beneficiario: 'Norte Semillas S.R.L.'.toUpperCase(),
-        transportista: 'Transporte Vargas S.A.'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-        conductor: 'Vargas, Santiago Manuel'.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-        patentes: 'AD037RE',
-        establecimiento: 'La Esmeralda'.toUpperCase(),
-        cultivo: 'MAIZ'.toUpperCase(),
-        trilla_silo: 'SILO'.toUpperCase(),
-        tara: '15.000',
-        bruto: '40.000',
-        neto: '25.000',
-        firma1: 'Vargas, Santiago Manuelñ',
+        fecha: fechaFormateada,
+        beneficiario: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "socio").toUpperCase(),
+        transportista: this.transformarDatoMostrar(this.datosMovimiento.id_transporte, "transporte").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+        conductor: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+        patentes: this.transformarDatoMostrar(this.datosMovimiento.id_camion, "patentes"),
+        establecimiento: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "establecimiento").toUpperCase(),
+        cultivo: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "grano").toUpperCase(),
+        trilla_silo: this.transformarDatoMostrar(this.datosMovimiento.tipo_origen, "tipo_origen").toUpperCase(),
+        tara: this.transformarDatoMostrar(this.datosMovimiento.kg_tara, "kilos"),
+        bruto: this.transformarDatoMostrar(this.datosMovimiento.kg_bruto, "kilos"),
+        neto: this.transformarDatoMostrar(this.datosMovimiento.kg_neto, "kilos"),
+        firma1: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
         firma2: 'cargador',
         observaciones: ''
         }
+
+        this.displayOrdenCarga = true
     }
 
     guardarOrdenCarga(accion:any){
@@ -683,7 +686,48 @@ export class InicioComponent {
         if (tipo == 'id_origen') {
             return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
         }
+        
+        if (tipo == 'kilos') {
+            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
+        }
 
+
+        if (tipo == 'socio') {
+            return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).razon_social : '-'
+        }
+        
+        if (tipo == 'transporte') {
+            return this.db_transportistas.some((e: any) => { return e.id == dato }) ? this.db_transportistas.find((e: any) => { return e.id == dato }).razon_social : '-'
+        }
+        
+        if (tipo == 'chofer') {
+            return this.db_choferes.some((e: any) => { return e.id == dato }) ? this.db_choferes.find((e: any) => { return e.id == dato }).razon_social : '-'
+        }
+        
+        if (tipo == 'patentes') {
+            if(this.db_camiones.some((e: any) => { return e.id == dato })){
+                var camion = this.db_camiones.find((e: any) => { return e.id == dato })
+                var patentes = ""
+                camion.patente_chasis ? patentes += camion.patente_chasis : null
+                camion.patente_acoplado ? patentes += " / " + camion.patente_acoplado : null
+                camion.patente_otro ? patentes += " / " + camion.patente_otro : null
+
+                return patentes
+            }
+        }
+        
+        if (tipo == 'establecimiento') {
+            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
+        }
+        
+        if (tipo == 'grano') {
+            return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).descripcion : '-'
+        }
+        
+        if (tipo == 'tipo_origen') {
+            return this.optionsDe.some((e: any) => { return e.id == dato }) ? this.optionsDe.find((e: any) => { return e.id == dato }).label : '-'
+        }
+        
         return dato
     }
 
