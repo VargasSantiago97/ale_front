@@ -82,6 +82,8 @@ export class InicioComponent {
     datosMovimiento: any;
     datosOrdenCarga: any = {};
 
+    existePlantilla = false;
+
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
@@ -477,7 +479,7 @@ export class InicioComponent {
 
         this.datosMovimiento = {
             id: null,
-            fecha: fecha,
+            fecha: null,
             id_campana: null,
             id_socio: null,
             id_origen: null,
@@ -503,6 +505,13 @@ export class InicioComponent {
             activo: 1,
             estado: 1
         }
+
+        if(localStorage.getItem('plantilla')){
+            this.datosMovimiento = this.base64toObjUtf8(localStorage.getItem('plantilla'))
+            this.existePlantilla = true;
+        }
+
+        this.datosMovimiento.fecha = fecha
 
 
         //esto iria para EDITAR:
@@ -644,6 +653,18 @@ export class InicioComponent {
 
     }
 
+    //plantilla
+    guardarPlantilla(){
+        localStorage.setItem('plantilla', this.objUtf8ToBase64(this.datosMovimiento))
+        this.existePlantilla = true
+        this.messageService.add({ severity: 'success', summary: 'Guardado!', detail: 'Plantilla Guardada' })
+    }
+    borrarPlantilla(){
+        localStorage.removeItem('plantilla')
+        this.existePlantilla = false
+        this.messageService.add({ severity: 'info', summary: 'Atencion!', detail: 'Plantilla Borrada' })
+    }
+
     generateUUID() {
         var d = new Date().getTime();
         var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -690,6 +711,12 @@ export class InicioComponent {
         let bytes = new TextEncoder().encode(str);
         let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
         return base64;
+    }
+    base64toObjUtf8(ent:any) {
+        let json = atob(ent);
+        let utf8String = decodeURIComponent(escape(json));
+        let obj = JSON.parse(utf8String)
+        return obj;
     }
 
 }
