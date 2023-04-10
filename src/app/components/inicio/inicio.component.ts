@@ -474,6 +474,7 @@ export class InicioComponent {
 
     nuevoMovimiento() {
         var fecha = new Date()
+        fecha.setHours(fecha.getHours() - 3);
 
         this.datosMovimiento = {
             id: null,
@@ -600,6 +601,7 @@ export class InicioComponent {
         }
 
         this.datosMovimiento.id = idd
+        this.datosMovimiento.fecha = this.datosMovimiento.fecha.toISOString().slice(0, 19).replace('T', ' ');
 
         this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
