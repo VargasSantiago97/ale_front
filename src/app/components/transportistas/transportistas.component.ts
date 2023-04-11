@@ -288,7 +288,6 @@ export class TransportistasComponent {
         }
 
         this.datosTransportista.id = idd
-        this.datosTransportista.razon_social = this.datosTransportista.razonSocial
 
         this.comunicacionService.createDB("transportistas", this.datosTransportista).subscribe(
             (res:any) => {
@@ -313,8 +312,6 @@ export class TransportistasComponent {
     }
     onConfirmModificar(){
         this.messageService.clear('confirmModificarTransp');
-
-        this.datosTransportista.razon_social = this.datosTransportista.razonSocial
 
         this.comunicacionService.updateDB("transportistas", this.datosTransportista).subscribe(
             (res:any) => {

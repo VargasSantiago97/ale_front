@@ -7,3 +7,48 @@
     margin: 50px;
     padding: 10px;
 }
+
+
+.select-class {
+    width: 200px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+  
+.select-class option {
+  font-size: 16px;
+}
+
+.input-text-codigo {
+    width: 100px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+  
+
+.select-button-active {
+    width: 60px;
+    height: 35px;
+    background-color: rgba(0, 255, 115, 0.733);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+.select-button-disabled {
+    width: 60px;
+    height: 35px;
+    background-color: rgb(165, 11, 11);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    color: aliceblue;
+}
+
+.tarjeta {
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}

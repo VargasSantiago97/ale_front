@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
+import { DatePipe } from '@angular/common';
 
 declare var vars: any;
 const API_URI = vars.API_URI;
@@ -92,28 +93,27 @@ export class InicioComponent {
     ngOnInit() {
 
         this.cols = [
-            { field: "cultivo", header: "cultivo" },
-            { field: "fecha", header: "fecha" },
-            { field: "orden", header: "orden" },
-            { field: "benef_orden", header: "benef_orden" },
-            { field: "cpe", header: "cpe" },
-            { field: "benef", header: "benef" },
-            { field: "ctg", header: "ctg" },
-            { field: "campo", header: "campo" },
-            { field: "tipo_orig", header: "tipo_orig" },
-            { field: "pat", header: "pat" },
-            { field: "patAc", header: "patAc" },
-            { field: "transporte", header: "transporte" },
-            { field: "cuit", header: "cuit" },
-            { field: "gasoil", header: "gasoil" },
-            { field: "rem", header: "rem" },
-            { field: "corre", header: "corre" },
-            { field: "acop", header: "acop" },
+            { field: "cultivo", header: "Cultivo" },
+            { field: "fecha", header: "Fecha" },
+            { field: "orden", header: "O.C." },
+            { field: "benef_orden", header: "Benef Orden" },
+            { field: "cpe", header: "N° C.P." },
+            { field: "benef", header: "Benef C.P." },
+            { field: "ctg", header: "C.T.G." },
+            { field: "campo", header: "Campo" },
+            { field: "tipo_orig", header: "Desde" },
+            { field: "pat", header: "Pat." },
+            { field: "patAc", header: "Pat. Ac." },
+            { field: "transporte", header: "Transporte" },
+            { field: "cuit", header: "CUIT Transp" },
+            { field: "gastos", header: "Gastos" },
+            { field: "id_corredor", header: "Corredor" },
+            { field: "id_acopio", header: "Acopio" },
+
             { field: "kg_tara", header: "tara" },
             { field: "kg_bruto", header: "bruto" },
             { field: "kg_neto", header: "neto" },
-            { field: "kg_regulacion", header: "carga" },
-            { field: "kg_regulacion", header: "descarga" },
+            { field: "kg_regulacion", header: "carga/desc" },
             { field: "kg_neto_final", header: "netofin" },
             { field: "factura", header: "factura" },
             { field: "pagado", header: "pagado" },
@@ -121,20 +121,34 @@ export class InicioComponent {
             { field: "id_origen", header: "origen" },
         ];
         this.selectedColumns = [
-            { field: "cultivo", header: "cultivo" },
-            { field: "fecha", header: "fecha" },
-            { field: "campo", header: "campo" },
-            { field: "tipo_orig", header: "tipo_orig" },
-            { field: "pat", header: "pat" },
-            { field: "patAc", header: "patAc" },
-            { field: "transporte", header: "transporte" },
+            { field: "cultivo", header: "Cultivo" },
+            { field: "fecha", header: "Fecha" },
+            { field: "orden", header: "O.C." },
+            { field: "benef_orden", header: "Benef Orden" },
+            { field: "cpe", header: "N° C.P." },
+            { field: "benef", header: "Benef C.P." },
+            { field: "ctg", header: "C.T.G." },
+            { field: "campo", header: "Campo" },
+            { field: "tipo_orig", header: "Desde" },
+            { field: "pat", header: "Pat." },
+            { field: "patAc", header: "Pat. Ac." },
+            { field: "transporte", header: "Transporte" },
+            { field: "cuit", header: "CUIT Transp" },
+            { field: "gastos", header: "Gastos" },
+            { field: "id_corredor", header: "Corredor" },
+            { field: "id_acopio", header: "Acopio" },
+
+            { field: "kg_tara", header: "tara" },
+            { field: "kg_bruto", header: "bruto" },
+            { field: "kg_neto", header: "neto" },
+            { field: "kg_regulacion", header: "carga/desc" },
             { field: "kg_neto_final", header: "netofin" },
             { field: "factura", header: "factura" },
             { field: "pagado", header: "pagado" },
             { field: "observaciones", header: "observaciones" },
             { field: "id_origen", header: "origen" },
-
         ];
+
 
         this.obtenerCamiones()
         this.obtenerChoferes()
@@ -154,7 +168,7 @@ export class InicioComponent {
         this.datosMovimiento = {
             id: null,
             fecha: null,
-            id_campana: null,
+            id_campana: "3a3f05f44963",
             id_socio: null,
             id_origen: null,
             id_grano: null,
@@ -171,7 +185,7 @@ export class InicioComponent {
             kg_regulacion: null,
             kg_neto_final: null,
             observaciones: null,
-            tipo_origen: null,
+            tipo_origen: 'T',
             creado_por: null,
             creado_el: null,
             editado_por: null,
@@ -441,28 +455,28 @@ export class InicioComponent {
         this.datosMovimiento
 
         if (ingresa == 'kilos_bruto') {
-            this.datosMovimiento.kg_bruto = event.value
+            this.datosMovimiento.kg_bruto = event
             this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - this.datosMovimiento.kg_tara
         }
         if (ingresa == 'kilos_tara' && this.datosMovimiento.kg_bruto) {
-            this.datosMovimiento.kg_tara = event.value
+            this.datosMovimiento.kg_tara = event
             this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - this.datosMovimiento.kg_tara
         }
         if (ingresa == 'kilos_neto') {
-            this.datosMovimiento.kg_neto = event.value
+            this.datosMovimiento.kg_neto = event
             this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_tara
         }
 
 
         if (ingresa == 'kilos_carga_descarga') {
-            this.datosMovimiento.kg_regulacion = event.value
+            this.datosMovimiento.kg_regulacion = event
         }
         if (this.datosMovimiento.kg_neto) {
             this.datosMovimiento.kg_neto_final = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_regulacion
         }
 
         if (ingresa == 'kilos_neto_final') {
-            this.datosMovimiento.kg_neto_final = event.value
+            this.datosMovimiento.kg_neto_final = event
             this.datosMovimiento.kg_neto = this.datosMovimiento.kg_neto_final - this.datosMovimiento.kg_regulacion
             this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_tara
         }
@@ -475,6 +489,9 @@ export class InicioComponent {
     nuevoMovimiento() {
         var fecha = new Date()
         fecha.setHours(fecha.getHours() - 3);
+
+        const datePipe = new DatePipe('en-US');
+        const fechaHoy = datePipe.transform(fecha, 'yyyy-MM-dd');
 
         this.datosMovimiento = {
             id: null,
@@ -510,7 +527,7 @@ export class InicioComponent {
             this.existePlantilla = true;
         }
 
-        this.datosMovimiento.fecha = fecha
+        this.datosMovimiento.fecha = fechaHoy
 
 
         //esto iria para EDITAR:
@@ -601,7 +618,12 @@ export class InicioComponent {
         }
 
         this.datosMovimiento.id = idd
-        this.datosMovimiento.fecha = this.datosMovimiento.fecha.toISOString().slice(0, 19).replace('T', ' ');
+
+        var fecha = new Date(this.datosMovimiento.fecha);
+        this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
+        
+        this.datosMovimiento.activo = 1
+
 
         this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
@@ -617,7 +639,14 @@ export class InicioComponent {
     }
     mostrarMovimiento(mov:any){
         this.datosMovimiento = { ... mov }
-        this.displayNuevoMovimiento = true
+
+        var fecha = new Date(this.datosMovimiento.fecha)
+        const datePipe = new DatePipe('en-US');
+        const fechaMov = datePipe.transform(fecha, 'yyyy-MM-dd');
+
+        this.datosMovimiento.fecha = fechaMov;
+
+        this.displayNuevoMovimiento = true;
     }
 
     //ORDEN CARGA
@@ -732,6 +761,60 @@ export class InicioComponent {
         
         return dato
     }
+    transformarDatoMostrarTabla(registro: any, tipo: any) {
+        if (tipo == 'fecha') {
+            var fecha = new Date(registro.fecha)
+            const datePipe = new DatePipe('en-US');
+            return datePipe.transform(fecha, 'yyyy-MM-dd');
+        }
+        if (tipo == 'cultivo') {
+            return this.db_granos.some((e: any) => { return e.id == registro.id_grano }) ? this.db_granos.find((e: any) => { return e.id == registro.id_grano }).alias : '-'
+        }
+        if (tipo == 'benef_orden') {
+            return this.db_socios.some((e: any) => { return e.id == registro.id_socio }) ? this.db_socios.find((e: any) => { return e.id == registro.id_socio }).alias : '-'
+        }
+        if (tipo == 'orden') {
+            return '~orden~'
+        }
+        if (tipo == 'cpe') {
+            return '~cpe~'
+        }
+        if (tipo == 'ctg') {
+            return '~ctg~'
+        }
+        if (tipo == 'campo') {
+            return this.db_establecimientos.some((e: any) => { return e.id == registro.id_origen }) ? this.db_establecimientos.find((e: any) => { return e.id == registro.id_origen }).alias : '-'
+        }
+        if (tipo == 'tipo_orig') {
+            return this.optionsDe.some((e:any) => { return e.id == registro.tipo_origen }) ? this.optionsDe.find((e: any) => { return e.id == registro.tipo_origen }).label : '-'
+        }
+        if (tipo == 'pat') {
+            return '~ctg~'
+        }
+        if (tipo == 'patAc') {
+            return '~ctg~'
+        }
+        if (tipo == 'transporte') {
+            return '~ctg~'
+        }
+        if (tipo == 'cuit') {
+            return '~ctg~'
+        }
+        if (tipo == 'gastos') {
+            return '~ctg~'
+        }
+        if (tipo == 'id_corredor') {
+            return '~ctg~'
+        }
+        if (tipo == 'id_acopio') {
+            return '~ctg~'
+        }
+
+
+
+
+        return registro.id
+    }
 
     tiraFun(e: any) {
         console.log(e)
@@ -765,6 +848,9 @@ export class InicioComponent {
         return obj;
     }
 
+    mostrat(e:any){
+        console.log(e)
+    }
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
