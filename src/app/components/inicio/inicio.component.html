@@ -1,17 +1,19 @@
-
-<div style="text-align: center;" *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_corredores || load_acopios || load_movimientos">
+<div style="text-align: center;"
+    *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_corredores || load_acopios || load_movimientos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
 <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
-(click)="displayFiltros=true"></button>
+    (click)="displayFiltros=true"></button>
 
-<button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott" (click)="nuevoMovimiento()"></button>
+<button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"
+    (click)="nuevoMovimiento()"></button>
 
 <button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott"
-(click)="displayBanderas=true"></button>
+    (click)="displayBanderas=true"></button>
 
-<button pButton pRipple type="button" label="NUEVA OC" class="p-button-success bott" (click)="nuevaOrdenCarga()"></button>
+<button pButton pRipple type="button" label="NUEVA OC" class="p-button-success bott"
+    (click)="nuevaOrdenCarga()"></button>
 
 <br><br>
 
@@ -55,237 +57,275 @@
 </p-dialog>
 
 
-<p-dialog header="MOVIMIENTO - VIAJE" [(visible)]="displayNuevoMovimiento" [modal]="true" [style]="{width: '95vw', height: '90vw'}" [draggable]="true"
-    [resizable]="true" [maximizable]="true">
+<p-dialog header="MOVIMIENTO - VIAJE" [(visible)]="displayNuevoMovimiento" [modal]="true"
+    [style]="{width: '95vw', height: '90vw'}" [draggable]="true" [resizable]="true" [maximizable]="true">
     <div class="formgrid row">
         <div class="field col">
             <div class="field">
                 <label for="fechaSalida">Fecha</label><br>
-                <p-calendar [(ngModel)]="datosMovimiento.fecha" [showIcon]="true" [readonlyInput]="false" inputId="fechaSalida" dateFormat="dd/mm/y"></p-calendar>
+                <p-calendar [(ngModel)]="datosMovimiento.fecha" [showIcon]="true" [readonlyInput]="false"
+                    inputId="fechaSalida" dateFormat="dd/mm/y"></p-calendar>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label for="selectCamapa">Campaña</label><br>
-                <p-dropdown [options]="db_campanas" [(ngModel)]="datosMovimiento.id_campana" placeholder="Seleccionar Campaña" optionLabel="descripcion" optionValue="id" inputId="selectCamapa" [showClear]="true"></p-dropdown>
+                <p-dropdown [options]="db_campanas" [(ngModel)]="datosMovimiento.id_campana"
+                    placeholder="Seleccionar Campaña" optionLabel="descripcion" optionValue="id" inputId="selectCamapa"
+                    [showClear]="true"></p-dropdown>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label for="selectBandera">Bandera</label><br>
-                <p-dropdown [options]="db_banderas" [(ngModel)]="datosMovimiento.id_bandera" placeholder="Seleccionar Bandera" optionLabel="alias" optionValue="id" inputId="selectBandera" [showClear]="true">
+                <p-dropdown [options]="db_banderas" [(ngModel)]="datosMovimiento.id_bandera"
+                    placeholder="Seleccionar Bandera" optionLabel="alias" optionValue="id" inputId="selectBandera"
+                    [showClear]="true">
                     <ng-template let-bandera pTemplate="item">
                         <div class="bandera-item">
-                            <p-tag severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
+                            <p-tag severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}"
+                                    [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
                         </div>
                     </ng-template>
                 </p-dropdown>
             </div>
         </div>
     </div>
-    <br><br>
-    <p-accordion [multiple]="true">
-        <p-accordionTab header="DATOS GENERALES" [(selected)]="accordeonVer[0]">
-            <div class="formgrid row">
-                <div class="field col">
-                    <div class="field">
-                        <label for="benef">Beneficiario</label><br>
-                        <p-dropdown [options]="db_socios" [(ngModel)]="datosMovimiento.id_socio" placeholder="Seleccionar Socio" optionLabel="alias" inputId="benef" optionValue="id" [showClear]="true"></p-dropdown>
+    <br>
+    <p-divider align="left">
+        <b>Datos Generales</b>
+    </p-divider>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label for="benef">Beneficiario</label><br>
+                <p-dropdown [options]="db_socios" [(ngModel)]="datosMovimiento.id_socio" placeholder="Seleccionar Socio"
+                    optionLabel="alias" inputId="benef" optionValue="id" [showClear]="true"></p-dropdown>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label for="establecimiento">Origen</label><br>
+                <p-dropdown [options]="db_establecimientos" [(ngModel)]="datosMovimiento.id_origen" optionLabel="alias"
+                    optionValue="id" [filter]="true" filterBy="alias" [showClear]="true"
+                    placeholder="Seleccionar Origen">
+                    <ng-template pTemplate="selectedItem">
+                        <div class="flex align-items-center gap-2" *ngIf="datosMovimiento.id_origen"
+                            style="width: 170px">
+                            <div>{{ transformarDatoMostrar(datosMovimiento.id_origen, "id_origen") }}</div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-establecimiento pTemplate="item">
+                        <div class="flex align-items-center gap-2">
+                            <div>{{ establecimiento.alias }}</div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label for="tipoGrano">Grano</label><br>
+                <p-dropdown [options]="db_granos" [(ngModel)]="datosMovimiento.id_grano" placeholder="Seleccionar Grano"
+                    optionLabel="alias" optionValue="id" inputId="tipoGrano" [showClear]="true"></p-dropdown>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>De</label>
+                <p-selectButton [options]="optionsDe" [(ngModel)]="datosMovimiento.tipo_origen" optionLabel="label"
+                    optionValue="id"></p-selectButton>
+            </div>
+        </div>
+    </div>
+    <p-divider align="left">
+        <b>Transporte</b>
+    </p-divider>
+    <div class="formgrid row">
+        <div class="field col">
+            <p-card header="Transporte" (keydown.insert)="save($event)">
+                <div class="formgrid row">
+                    <div class="field col-3">
+                        <label>Codigo</label><br>
+                        <input [(ngModel)]="cod_transporte" type="text" pInputText style="width: 100px;"
+                            (keyup.enter)="buscarTransporte()" />
                     </div>
-                </div>
-                <div class="field col">
-                    <div class="field">
-                        <label for="establecimiento">Origen</label><br>
-                        <p-dropdown [options]="db_establecimientos" [(ngModel)]="datosMovimiento.id_origen" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Seleccionar Origen">
+                    <div class="field col-9">
+                        <label>Buscar:</label><br>
+                        <p-dropdown [options]="db_transportistas" [(ngModel)]="datosMovimiento.id_transporte"
+                            optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true"
+                            placeholder="Transportista" (onChange)="onSelectTransporte()">
                             <ng-template pTemplate="selectedItem">
-                                <div class="flex align-items-center gap-2" *ngIf="datosMovimiento.id_origen" style="width: 170px">
-                                    <div>{{ transformarDatoMostrar(datosMovimiento.id_origen, "id_origen") }}</div>
+                                <div class="flex align-items-center gap-2" *ngIf="transportista" style="width: 170px">
+                                    <div>{{ transportista.alias }}</div>
                                 </div>
                             </ng-template>
-                            <ng-template let-establecimiento pTemplate="item">
+                            <ng-template let-transportista pTemplate="item">
                                 <div class="flex align-items-center gap-2">
-                                    <div>{{ establecimiento.alias }}</div>
+                                    <div>{{ transportista.alias }}</div>
                                 </div>
                             </ng-template>
                         </p-dropdown>
                     </div>
                 </div>
-                <div class="field col">
-                    <div class="field">
-                        <label for="tipoGrano">Grano</label><br>
-                        <p-dropdown [options]="db_granos" [(ngModel)]="datosMovimiento.id_grano" placeholder="Seleccionar Grano" optionLabel="alias" optionValue="id" inputId="tipoGrano" [showClear]="true"></p-dropdown>
+                <br>
+                <p>Transp.: <strong *ngIf="transportista">{{transportista.razon_social}}</strong></p>
+                <p>CUIT: <strong *ngIf="transportista">{{transportista.cuit}}</strong></p>
+                <p>IVA: <strong *ngIf="transportista">{{transformarDatoMostrar(transportista.condicion_iva,
+                        'condicion_iva')}}</strong></p>
+            </p-card>
+        </div>
+        <div class="field col">
+            <p-card header="Chofer">
+                <div class="formgrid row">
+                    <div class="field col-3">
+                        <label>Codigo</label><br>
+                        <input [(ngModel)]="cod_chofer" type="text" pInputText style="width: 100px;"
+                            (keyup.enter)="buscarChofer()" />
+                    </div>
+                    <div class="field col-9">
+                        <label>Buscar:</label><br>
+                        <p-dropdown [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                            optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true"
+                            placeholder="Chofer" (onChange)="onSelectChofer()">
+                            <ng-template pTemplate="selectedItem">
+                                <div class="flex align-items-center gap-2" *ngIf="chofer" style="width: 170px">
+                                    <div>{{chofer.alias}} - {{chofer.razon_social}}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-chofer pTemplate="item">
+                                <div class="flex align-items-center gap-2">
+                                    <div>{{ chofer.alias }}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
                 </div>
-                <div class="field col">
-                    <div class="field">
-                        <label>De</label>
-                        <p-selectButton [options]="optionsDe" [(ngModel)]="datosMovimiento.tipo_origen" optionLabel="label" optionValue="id"></p-selectButton>                    </div>
+                <br>
+                <p>Chofer.: <strong *ngIf="chofer">{{chofer.razon_social}}</strong></p>
+                <p>CUIT: <strong *ngIf="chofer">{{chofer.cuit}}</strong></p>
+                <button (click)="verTodosChoferes()">Ver todos</button>
+            </p-card>
+        </div>
+        <div class="field col">
+            <p-card header="Unidad">
+                <div class="formgrid row">
+                    <div class="field col-3">
+                        <label>Codigo</label><br>
+                        <input [(ngModel)]="cod_camion" type="text" pInputText style="width: 100px;"
+                            (keyup.enter)="buscarCamion()" />
+                    </div>
+                    <div class="field col-9">
+                        <label>Buscar:</label><br>
+                        <p-dropdown [options]="select_camiones" [(ngModel)]="datosMovimiento.id_camion"
+                            optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true"
+                            placeholder="Camion" (onChange)="onSelectCamion()">
+                            <ng-template pTemplate="selectedItem">
+                                <div class="flex align-items-center gap-2" *ngIf="camion" style="width: 170px">
+                                    <div>{{ camion.alias }}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-camion pTemplate="item">
+                                <div class="flex align-items-center gap-2">
+                                    <div>{{ camion.alias }}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
                 </div>
+                <br>
+                <p>Patente Chasis: <strong *ngIf="camion">{{camion.patente_chasis}}</strong></p>
+                <p>Patente Acoplado: <strong *ngIf="camion">{{camion.patente_acoplado}}</strong></p>
+                <p>Patente Otro.: <strong *ngIf="camion">{{camion.patente_otro}}</strong></p>
+                <p>Tara: <strong *ngIf="camion">{{camion.kg_tara}}</strong></p>
+                <p>Modelo: <strong *ngIf="camion">{{camion.modelo}}</strong></p>
+                <button (click)="verTodosCamiones()">Ver todos</button>
+            </p-card>
+        </div>
+    </div>
+    <p-divider align="left">
+        <b>Kilos</b>
+    </p-divider>
+    <div class="formgrid row">
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">KG BRUTO</span>
+                <p-inputNumber placeholder="BRUTO" [(ngModel)]="datosMovimiento.kg_bruto"
+                    (onInput)="calcularKilos($event, 'kilos_bruto')"></p-inputNumber>
             </div>
-        </p-accordionTab>
-        <p-accordionTab header="TRANSPORTE" [(selected)]="accordeonVer[1]">
-            <div class="formgrid row">
-                <div class="field col">
-                    <p-card header="Transporte" (keydown.insert)="save($event)">
-                        <div class="formgrid row">
-                            <div class="field col-3">
-                                <label>Codigo</label><br>
-                                <input [(ngModel)]="cod_transporte" type="text" pInputText style="width: 100px;" (keyup.enter)="buscarTransporte()"/>
-                            </div>
-                            <div class="field col-9">
-                                <label>Buscar:</label><br>
-                                <p-dropdown [options]="db_transportistas" [(ngModel)]="datosMovimiento.id_transporte" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Transportista" (onChange)="onSelectTransporte()">
-                                 <ng-template pTemplate="selectedItem">
-                                        <div class="flex align-items-center gap-2" *ngIf="transportista" style="width: 170px">
-                                            <div>{{ transportista.alias }}</div>
-                                        </div>
-                                    </ng-template>
-                                    <ng-template let-transportista pTemplate="item">
-                                        <div class="flex align-items-center gap-2">
-                                            <div>{{ transportista.alias }}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </div>
-                        </div>
-                        <br>
-                        <p>Transp.: <strong *ngIf="transportista">{{transportista.razon_social}}</strong></p>
-                        <p>CUIT: <strong *ngIf="transportista">{{transportista.cuit}}</strong></p>
-                        <p>IVA: <strong *ngIf="transportista">{{transformarDatoMostrar(transportista.condicion_iva, 'condicion_iva')}}</strong></p>
-                    </p-card>
-                </div>
-                <div class="field col">
-                    <p-card header="Chofer">
-                        <div class="formgrid row">
-                            <div class="field col-3">
-                                <label>Codigo</label><br>
-                                <input [(ngModel)]="cod_chofer" type="text" pInputText style="width: 100px;" (keyup.enter)="buscarChofer()"/>
-                            </div>
-                            <div class="field col-9">
-                                <label>Buscar:</label><br>
-                                <p-dropdown [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Chofer" (onChange)="onSelectChofer()">
-                                    <ng-template pTemplate="selectedItem">
-                                        <div class="flex align-items-center gap-2" *ngIf="chofer" style="width: 170px">
-                                            <div>{{chofer.alias}} - {{chofer.razon_social}}</div>
-                                        </div>
-                                    </ng-template>
-                                    <ng-template let-chofer pTemplate="item">
-                                        <div class="flex align-items-center gap-2">
-                                            <div>{{ chofer.alias }}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </div>
-                        </div>
-                        <br>
-                        <p>Chofer.: <strong *ngIf="chofer">{{chofer.razon_social}}</strong></p>
-                        <p>CUIT: <strong *ngIf="chofer">{{chofer.cuit}}</strong></p>
-                        <button (click)="verTodosChoferes()">Ver todos</button>
-                    </p-card>
-                </div>
-                <div class="field col">
-                    <p-card header="Unidad">
-                        <div class="formgrid row">
-                            <div class="field col-3">
-                                <label>Codigo</label><br>
-                                <input [(ngModel)]="cod_camion" type="text" pInputText style="width: 100px;" (keyup.enter)="buscarCamion()"/>
-                            </div>
-                            <div class="field col-9">
-                                <label>Buscar:</label><br>
-                                <p-dropdown [options]="select_camiones" [(ngModel)]="datosMovimiento.id_camion" optionLabel="alias" optionValue="id" [filter]="true" filterBy="alias" [showClear]="true" placeholder="Camion" (onChange)="onSelectCamion()">
-                                    <ng-template pTemplate="selectedItem">
-                                        <div class="flex align-items-center gap-2" *ngIf="camion" style="width: 170px">
-                                            <div>{{ camion.alias }}</div>
-                                        </div>
-                                    </ng-template>
-                                    <ng-template let-camion pTemplate="item">
-                                        <div class="flex align-items-center gap-2">
-                                            <div>{{ camion.alias }}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </div>
-                        </div>
-                        <br>
-                        <p>Patente Chasis: <strong *ngIf="camion">{{camion.patente_chasis}}</strong></p>
-                        <p>Patente Acoplado: <strong *ngIf="camion">{{camion.patente_acoplado}}</strong></p>
-                        <p>Patente Otro.: <strong *ngIf="camion">{{camion.patente_otro}}</strong></p>
-                        <p>Tara: <strong *ngIf="camion">{{camion.kg_tara}}</strong></p>
-                        <p>Modelo: <strong *ngIf="camion">{{camion.modelo}}</strong></p>
-                        <button (click)="verTodosCamiones()">Ver todos</button>
-                    </p-card>
-                </div>
+        </div>
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">KG TARA</span>
+                <p-inputNumber placeholder="TARA" [(ngModel)]="datosMovimiento.kg_tara"
+                    (onInput)="calcularKilos($event, 'kilos_tara')"></p-inputNumber>
             </div>
-        </p-accordionTab>
-        <p-accordionTab header="KILOS" [(selected)]="accordeonVer[3]">
-            <div class="formgrid row"> 
-                <div class="col">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon">KG BRUTO</span>
-                        <p-inputNumber placeholder="BRUTO" [(ngModel)]="datosMovimiento.kg_bruto" (onInput)="calcularKilos($event, 'kilos_bruto')"></p-inputNumber>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon">KG TARA</span>
-                        <p-inputNumber placeholder="TARA" [(ngModel)]="datosMovimiento.kg_tara" (onInput)="calcularKilos($event, 'kilos_tara')"></p-inputNumber> 
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon">KG NETO</span>
-                        <p-inputNumber placeholder="NETO" [(ngModel)]="datosMovimiento.kg_neto" (onInput)="calcularKilos($event, 'kilos_neto')"></p-inputNumber> 
-                    </div>
-                </div>
+        </div>
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">KG NETO</span>
+                <p-inputNumber placeholder="NETO" [(ngModel)]="datosMovimiento.kg_neto"
+                    (onInput)="calcularKilos($event, 'kilos_neto')"></p-inputNumber>
             </div>
-            <br>
-            <div class="formgrid row"> 
-                <div class="col">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon">KG REGULACION</span>
-                        <p-inputNumber placeholder="+ CARGA/ - DESCARGA" [(ngModel)]="datosMovimiento.kg_regulacion" (onInput)="calcularKilos($event, 'kilos_carga_descarga')"></p-inputNumber>
-                    </div>
-                </div>
-                <div class="col">
-                    <p-dropdown [options]="db_depositos" [(ngModel)]="datosMovimiento.id_deposito" placeholder="Deposito" optionLabel="alias" optionValue="id" [showClear]="true"></p-dropdown>
-                </div>
-                <div class="col">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon">KG NETO FINAL</span>
-                        <p-inputNumber placeholder="FINAL" [(ngModel)]="datosMovimiento.kg_neto_final" (onInput)="calcularKilos($event, 'kilos_neto_final')"></p-inputNumber> 
-                    </div>
-                </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">KG REGULACION</span>
+                <p-inputNumber placeholder="+ CARGA/ - DESCARGA" [(ngModel)]="datosMovimiento.kg_regulacion"
+                    (onInput)="calcularKilos($event, 'kilos_carga_descarga')"></p-inputNumber>
             </div>
-        </p-accordionTab>
-        <p-accordionTab header="DESTINO" [(selected)]="accordeonVer[4]">
-            <div class="formgrid row"> 
-                <div class="col">
-                    <label>CORREDOR:</label><br>
-                    <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias" optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
-                </div>
-                <div class="col">
-                    <label>ACOPIO:</label><br>
-                    <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias" optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
-                </div>
+        </div>
+        <div class="col">
+            <p-dropdown [options]="db_depositos" [(ngModel)]="datosMovimiento.id_deposito" placeholder="Deposito"
+                optionLabel="alias" optionValue="id" [showClear]="true"></p-dropdown>
+        </div>
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">KG NETO FINAL</span>
+                <p-inputNumber placeholder="FINAL" [(ngModel)]="datosMovimiento.kg_neto_final"
+                    (onInput)="calcularKilos($event, 'kilos_neto_final')"></p-inputNumber>
             </div>
-        </p-accordionTab>
-    </p-accordion>
+        </div>
+    </div>
+    <p-divider align="left">
+        <b>Datos varios</b>
+    </p-divider>
+    <div class="formgrid row">
+        <div class="col">
+            <label>CORREDOR:</label><br>
+            <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias"
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+        </div>
+        <div class="col">
+            <label>ACOPIO:</label><br>
+            <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias"
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+        </div>
+    </div>
     <br>
     <span class="p-float-label">
-        <textarea id="float-input" rows="5" cols="70" pInputTextarea [(ngModel)]="datosMovimiento.observaciones"></textarea>
+        <textarea id="float-input" rows="5" cols="70" pInputTextarea
+            [(ngModel)]="datosMovimiento.observaciones"></textarea>
         <label for="float-input">Observaciones</label>
     </span>
     <ng-template pTemplate="footer">
-        <button *ngIf="!existePlantilla" pButton pRipple type="button" label="GUARDAR PLANTILLA" class="p-button-success bott" (click)="guardarPlantilla()"></button>
-        <button *ngIf="existePlantilla" pButton pRipple type="button" label="BORRAR PLANTILLA" class="p-button-danger bott" (click)="borrarPlantilla()"></button>
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarMovimiento()"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoMovimiento = false"></button>
+        <button *ngIf="!existePlantilla" pButton pRipple type="button" label="GUARDAR PLANTILLA"
+            class="p-button-success bott" (click)="guardarPlantilla()"></button>
+        <button *ngIf="existePlantilla" pButton pRipple type="button" label="BORRAR PLANTILLA"
+            class="p-button-danger bott" (click)="borrarPlantilla()"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+            (click)="guardarMovimiento()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayNuevoMovimiento = false"></button>
     </ng-template>
 </p-dialog>
 
 
-<p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '1000px', height:'600px'}" [draggable]="true"
-    [resizable]="true" [maximizable]="true">
+<p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '1000px', height:'600px'}"
+    [draggable]="true" [resizable]="true" [maximizable]="true">
 
     <table>
         <thead>
@@ -300,7 +340,8 @@
         <tbody>
             <tr *ngFor="let bandera of db_banderas">
                 <td style="text-align: center;">
-                    <p-tag severity="{{bandera.fondo}}" (click)="disenarFlag(bandera)"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag>
+                    <p-tag severity="{{bandera.fondo}}" (click)="disenarFlag(bandera)"><i class="pi {{bandera.icono}}"
+                            [style]="{color: bandera.color}"></i></p-tag>
                 </td>
                 <td>
                     <input type="text" [(ngModel)]="bandera.alias">
@@ -312,18 +353,23 @@
                     <input type="text" [(ngModel)]="bandera.activo">
                 </td>
                 <td *ngIf="bandera.id">
-                    <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="editarBandera(bandera)"><i class="pi pi-pencil"></i></button>
-                    <button style="background-color: rgba(255, 17, 0, 0.486);" (click)="eliminarBandera(bandera)"><i class="pi pi-trash"></i></button>
-                    <button style="background-color: rgba(0, 110, 255, 0.486);" (click)="duplicarBandera(bandera)"><i class="pi pi-arrow-circle-down"></i></button>
+                    <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="editarBandera(bandera)"><i
+                            class="pi pi-pencil"></i></button>
+                    <button style="background-color: rgba(255, 17, 0, 0.486);" (click)="eliminarBandera(bandera)"><i
+                            class="pi pi-trash"></i></button>
+                    <button style="background-color: rgba(0, 110, 255, 0.486);" (click)="duplicarBandera(bandera)"><i
+                            class="pi pi-arrow-circle-down"></i></button>
                 </td>
                 <td *ngIf="!bandera.id">
-                    <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="guardarBandera(bandera)"><i class="pi pi-save"></i></button>
+                    <button style="background-color: rgba(21, 255, 0, 0.486);" (click)="guardarBandera(bandera)"><i
+                            class="pi pi-save"></i></button>
                 </td>
             </tr>
         </tbody>
     </table>
     <br>
-    <button pButton pRipple type="button" label="NUEVA BANDERA" class="p-button-success bott" (click)="agregarBandera()"></button>
+    <button pButton pRipple type="button" label="NUEVA BANDERA" class="p-button-success bott"
+        (click)="agregarBandera()"></button>
 
 
     <ng-template pTemplate="footer">
@@ -331,18 +377,20 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog header="DISEÑO BANDERAS" [(visible)]="displayBanderasDis" [modal]="true" [style]="{width: '700px', height:'600px'}" [draggable]="true"
-    [resizable]="true" [maximizable]="true">
+<p-dialog header="DISEÑO BANDERAS" [(visible)]="displayBanderasDis" [modal]="true"
+    [style]="{width: '700px', height:'600px'}" [draggable]="true" [resizable]="true" [maximizable]="true">
 
     <div style="text-align: center;">
-        <p-tag severity="{{disFlag.fondo}}"><i class="pi {{disFlag.icono}}" [style]="{color:disFlag.color, fontSize: '80px'}"></i></p-tag>
+        <p-tag severity="{{disFlag.fondo}}"><i class="pi {{disFlag.icono}}"
+                [style]="{color:disFlag.color, fontSize: '80px'}"></i></p-tag>
     </div>
     <br>
 
-    <div class="formgrid row"> 
+    <div class="formgrid row">
         <div class="col">
             <label><strong>Icono:</strong></label><br>
-            <p-dropdown [options]="iconsFlag" [(ngModel)]="disFlag.icono" placeholder="Seleccionar Icono" [showClear]="true"></p-dropdown>
+            <p-dropdown [options]="iconsFlag" [(ngModel)]="disFlag.icono" placeholder="Seleccionar Icono"
+                [showClear]="true"></p-dropdown>
         </div>
         <div class="col">
             <label><strong>Fondo:</strong></label><br>
@@ -355,26 +403,27 @@
     </div>
 
     <ng-template pTemplate="footer">
-        <p-button icon="pi pi-check" (click)="displayBanderasDis=false" label="Ok" styleClass="p-button-text"></p-button>
+        <p-button icon="pi pi-check" (click)="displayBanderasDis=false" label="Ok"
+            styleClass="p-button-text"></p-button>
     </ng-template>
 </p-dialog>
 
 
-<p-dialog header="ORDEN DE CARGA" [(visible)]="displayOrdenCarga" [modal]="true" [style]="{width: '1200px', height: '90vw'}" [draggable]="true"
-    [resizable]="true" [maximizable]="true">
+<p-dialog header="ORDEN DE CARGA" [(visible)]="displayOrdenCarga" [modal]="true"
+    [style]="{width: '1200px', height: '90vw'}" [draggable]="true" [resizable]="true" [maximizable]="true">
     <div class="formgrid row">
         <div class="field col">
             <div class="field">
                 <div class="p-inputgroup">
                     <span class="p-inputgroup-addon">Fecha</span>
-                    <input type="text" pInputText [(ngModel)]="datosOrdenCarga.fecha"/>
+                    <input type="text" pInputText [(ngModel)]="datosOrdenCarga.fecha" />
                 </div>
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Numero</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.numero" />
             </div>
         </div>
     </div>
@@ -383,7 +432,7 @@
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Beneficiario</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.beneficiario"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.beneficiario" />
             </div>
         </div>
     </div>
@@ -392,19 +441,19 @@
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Transp.</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.transportista"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.transportista" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Chofer</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.conductor"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.conductor" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Patentes</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.patentes"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.patentes" />
             </div>
         </div>
     </div>
@@ -413,19 +462,19 @@
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Est.</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.establecimiento"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.establecimiento" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Cultivo</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.cultivo"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.cultivo" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Desde</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.trilla_silo"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.trilla_silo" />
             </div>
         </div>
     </div>
@@ -434,19 +483,19 @@
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">TARA</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.tara"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.tara" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">BRUTO</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.bruto"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.bruto" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">NETO</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.neto"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.neto" />
             </div>
         </div>
     </div>
@@ -454,9 +503,10 @@
     <div class="formgrid row">
         <div class="field col">
             <span class="p-float-label">
-                <textarea id="float-input" rows="5" cols="70" pInputTextarea [(ngModel)]="datosOrdenCarga.observaciones"></textarea>
+                <textarea id="float-input" rows="5" cols="70" pInputTextarea
+                    [(ngModel)]="datosOrdenCarga.observaciones"></textarea>
                 <label for="float-input">Observaciones</label>
-            </span>        
+            </span>
         </div>
     </div>
     <br>
@@ -464,20 +514,24 @@
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Firma</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.firma1"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.firma1" />
             </div>
         </div>
         <div class="field col">
             <div class="p-inputgroup">
                 <span class="p-inputgroup-addon">Firma</span>
-                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.firma2"/>
+                <input type="text" pInputText [(ngModel)]="datosOrdenCarga.firma2" />
             </div>
         </div>
     </div>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarOrdenCarga('guardar')"></button>
-        <button pButton pRipple type="button" label="GUARDAR Y VER" class="p-button-success bott" (click)="guardarOrdenCarga('guardar_ver')"></button>
-        <button pButton pRipple type="button" label="GUARDAR Y DESCARGAR" class="p-button-success bott" (click)="guardarOrdenCarga('guardar_descargar')"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayOrdenCarga = false"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+            (click)="guardarOrdenCarga('guardar')"></button>
+        <button pButton pRipple type="button" label="GUARDAR Y VER" class="p-button-success bott"
+            (click)="guardarOrdenCarga('guardar_ver')"></button>
+        <button pButton pRipple type="button" label="GUARDAR Y DESCARGAR" class="p-button-success bott"
+            (click)="guardarOrdenCarga('guardar_descargar')"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayOrdenCarga = false"></button>
     </ng-template>
 </p-dialog>
