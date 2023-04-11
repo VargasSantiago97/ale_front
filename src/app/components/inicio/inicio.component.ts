@@ -19,7 +19,7 @@ export class InicioComponent {
 
     dataParaMostrarTabla: any = []
 
-    displayFiltros: Boolean = false;
+    displayFiltros: Boolean = true;
     displayNuevoMovimiento: Boolean = false;
     displayBanderas: Boolean = false;
     displayBanderasDis: Boolean = false;
@@ -105,20 +105,20 @@ export class InicioComponent {
             { field: "pat", header: "Pat." },
             { field: "patAc", header: "Pat. Ac." },
             { field: "transporte", header: "Transporte" },
-            { field: "cuit", header: "CUIT Transp" },
+            { field: "cuit_transp", header: "CUIT Transp" },
             { field: "gastos", header: "Gastos" },
             { field: "id_corredor", header: "Corredor" },
             { field: "id_acopio", header: "Acopio" },
 
-            { field: "kg_tara", header: "tara" },
-            { field: "kg_bruto", header: "bruto" },
-            { field: "kg_neto", header: "neto" },
-            { field: "kg_regulacion", header: "carga/desc" },
-            { field: "kg_neto_final", header: "netofin" },
-            { field: "factura", header: "factura" },
-            { field: "pagado", header: "pagado" },
-            { field: "observaciones", header: "observaciones" },
-            { field: "id_origen", header: "origen" },
+            { field: "kg_tara", header: "Tara" },
+            { field: "kg_bruto", header: "Bruto" },
+            { field: "kg_neto", header: "Neto" },
+            { field: "kg_regulacion", header: "Carga/Desc" },
+            { field: "kg_neto_final", header: "Neto Final" },
+
+            { field: "factura", header: "Factura" },
+            { field: "pagado", header: "Pagado" },
+            { field: "observaciones", header: "Obser" },
         ];
         this.selectedColumns = [
             { field: "cultivo", header: "Cultivo" },
@@ -133,20 +133,20 @@ export class InicioComponent {
             { field: "pat", header: "Pat." },
             { field: "patAc", header: "Pat. Ac." },
             { field: "transporte", header: "Transporte" },
-            { field: "cuit", header: "CUIT Transp" },
+            { field: "cuit_transp", header: "CUIT Transp" },
             { field: "gastos", header: "Gastos" },
             { field: "id_corredor", header: "Corredor" },
             { field: "id_acopio", header: "Acopio" },
 
-            { field: "kg_tara", header: "tara" },
-            { field: "kg_bruto", header: "bruto" },
-            { field: "kg_neto", header: "neto" },
-            { field: "kg_regulacion", header: "carga/desc" },
-            { field: "kg_neto_final", header: "netofin" },
-            { field: "factura", header: "factura" },
-            { field: "pagado", header: "pagado" },
-            { field: "observaciones", header: "observaciones" },
-            { field: "id_origen", header: "origen" },
+            { field: "kg_tara", header: "Tara" },
+            { field: "kg_bruto", header: "Bruto" },
+            { field: "kg_neto", header: "Neto" },
+            { field: "kg_regulacion", header: "Carga/Desc" },
+            { field: "kg_neto_final", header: "Neto Final" },
+
+            { field: "factura", header: "Factura" },
+            { field: "pagado", header: "Pagado" },
+            { field: "observaciones", header: "Obser" },
         ];
 
 
@@ -630,12 +630,17 @@ export class InicioComponent {
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Guardado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
                 this.displayNuevoMovimiento = false
                 this.obtenerMovimientos()
+                this.nuevaOrdenCarga
             },
             (err: any) => {
                 console.log(err)
                 this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
             }
         )
+    }
+
+    editarMovimiento(){
+
     }
     mostrarMovimiento(mov:any){
         this.datosMovimiento = { ... mov }
@@ -719,7 +724,7 @@ export class InicioComponent {
         }
         
         if (tipo == 'kilos') {
-            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
+            return dato.toLocaleString("es-AR");
         }
 
 
@@ -779,6 +784,9 @@ export class InicioComponent {
         if (tipo == 'cpe') {
             return '~cpe~'
         }
+        if (tipo == 'benef') {
+            return '~benef~'
+        }
         if (tipo == 'ctg') {
             return '~ctg~'
         }
@@ -789,27 +797,50 @@ export class InicioComponent {
             return this.optionsDe.some((e:any) => { return e.id == registro.tipo_origen }) ? this.optionsDe.find((e: any) => { return e.id == registro.tipo_origen }).label : '-'
         }
         if (tipo == 'pat') {
-            return '~ctg~'
+            return this.db_camiones.some((e:any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e:any) => { return e.id == registro.id_camion }).patente_chasis : '-'
         }
         if (tipo == 'patAc') {
-            return '~ctg~'
+            return this.db_camiones.some((e:any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e:any) => { return e.id == registro.id_camion }).patente_acoplado : '-'
         }
         if (tipo == 'transporte') {
-            return '~ctg~'
+            return this.db_transportistas.some((e:any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e:any) => { return e.id == registro.id_transporte }).alias : '-'
         }
-        if (tipo == 'cuit') {
-            return '~ctg~'
+        if (tipo == 'cuit_transp') {
+            return this.db_transportistas.some((e:any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e:any) => { return e.id == registro.id_transporte }).cuit : '-'
         }
         if (tipo == 'gastos') {
-            return '~ctg~'
+            return '~gastos~'
         }
         if (tipo == 'id_corredor') {
-            return '~ctg~'
+            return this.db_corredores.some((e:any) => { return e.id == registro.id_corredor }) ? this.db_corredores.find((e:any) => { return e.id == registro.id_corredor }).alias : '-'
         }
         if (tipo == 'id_acopio') {
-            return '~ctg~'
+            return this.db_acopios.some((e:any) => { return e.id == registro.id_acopio }) ? this.db_acopios.find((e:any) => { return e.id == registro.id_acopio }).alias : '-'
         }
-
+        if (tipo == 'kg_tara') {
+            return registro.kg_tara ? registro.kg_tara.toLocaleString("es-AR") : '-'
+        }
+        if (tipo == 'kg_bruto') {
+            return registro.kg_bruto ? registro.kg_bruto.toLocaleString("es-AR") : '-'
+        }
+        if (tipo == 'kg_neto') {
+            return registro.kg_neto ? registro.kg_neto.toLocaleString("es-AR") : '-'
+        }
+        if (tipo == 'kg_regulacion') {
+            return registro.kg_regulacion ? registro.kg_regulacion.toLocaleString("es-AR") : '-'
+        }
+        if (tipo == 'kg_neto_final') {
+            return registro.kg_neto_final ? registro.kg_neto_final.toLocaleString("es-AR") : '-'
+        }
+        if (tipo == 'factura') {
+            return '~fac~'
+        }
+        if (tipo == 'pagado') {
+            return '~pag~'
+        }
+        if (tipo == 'observaciones') {
+            return registro.observaciones ? registro.observaciones : '-'
+        }
 
 
 

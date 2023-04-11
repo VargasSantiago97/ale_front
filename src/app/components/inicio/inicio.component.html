@@ -19,9 +19,9 @@
 
 <p-table [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="single"
     [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-    [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    [paginator]="true" [rows]="20" [showCurrentPageReport]="true"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-    [rowsPerPageOptions]="[10,25,50,100,1000]">
+    [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
     <ng-template pTemplate="caption">
         <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
             selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
@@ -44,18 +44,154 @@
 </p-table>
 <br><br>
 
-<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '50vw'}" [draggable]="true"
+<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw'}" [draggable]="true"
     [resizable]="false">
-    <p class="m-0">Filtros...
-    </p>
+
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+    </div>
+
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ASD</label><br>
+                <p-listbox [options]="select_choferes" [(ngModel)]="datosMovimiento.id_chofer"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="name"
+                    [listStyle]="{'max-height':'250px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-country pTemplate="item">
+                        <div class="country-item">
+                            <img src="assets/showcase/images/demo/flag/flag_placeholder.png"
+                                [class]="'flag flag-' + country.code.toLowerCase()" />
+                            <div>{{country.name}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+    </div>
+
+
+
     <ng-template pTemplate="footer">
-        <p-button icon="pi pi-check" (click)="displayFiltros=false" label="Ok" styleClass="p-button-text"></p-button>
+        <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott" (click)="guardarPlantilla()"></button>
+        <button pButton pRipple type="button" label="QUITAR FILTROS" class="p-button-danger bott" (click)="borrarPlantilla()"></button>
     </ng-template>
 </p-dialog>
 
 
-<p-dialog header="MOVIMIENTO - VIAJE" [(visible)]="displayNuevoMovimiento" [modal]="true" [style]="{width: '95vw', height: '90vw'}"
-    [draggable]="true" [resizable]="true" [maximizable]="true">
+<p-dialog header="{{datosMovimiento.id ? 'EDITAR' : 'NUEVO'}} MOVIMIENTO - VIAJE" [(visible)]="displayNuevoMovimiento"
+    [modal]="true" [style]="{width: '95vw', height: '90vw'}" [draggable]="true" [resizable]="true" [maximizable]="true">
     <div class="formgrid row">
         <div class="field col">
             <div class="field">
@@ -109,7 +245,8 @@
         <div class="field col">
             <div class="field">
                 <label>Desde</label><br>
-                <button *ngFor=" let desde of optionsDe" (click)="datosMovimiento.tipo_origen = desde.id" class="{{datosMovimiento.tipo_origen == desde.id ? 'select-button-active' : 'select-button-disabled'}}">{{desde.label}}</button>
+                <button *ngFor=" let desde of optionsDe" (click)="datosMovimiento.tipo_origen = desde.id"
+                    class="{{datosMovimiento.tipo_origen == desde.id ? 'select-button-active' : 'select-button-disabled'}}">{{desde.label}}</button>
             </div>
         </div>
     </div>
@@ -123,12 +260,15 @@
                 <div class="formgrid row">
                     <div class="field col-3">
                         <label>Codigo</label><br>
-                        <input [(ngModel)]="cod_transporte" class="input-text-codigo" type="text" (keyup.enter)="buscarTransporte()"/>
+                        <input [(ngModel)]="cod_transporte" class="input-text-codigo" type="text"
+                            (keyup.enter)="buscarTransporte()" />
                     </div>
                     <div class="field col-9">
                         <label>Seleccionar:</label><br>
-                        <select [(ngModel)]="datosMovimiento.id_transporte" class="select-class" (ngModelChange)="onSelectTransporte()" style="width: 300px;">
-                            <option *ngFor="let transp of db_transportistas" value="{{transp.id}}">{{transp.alias}}</option>
+                        <select [(ngModel)]="datosMovimiento.id_transporte" class="select-class"
+                            (ngModelChange)="onSelectTransporte()" style="width: 300px;">
+                            <option *ngFor="let transp of db_transportistas" value="{{transp.id}}">{{transp.alias}}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -145,12 +285,15 @@
                 <div class="formgrid row">
                     <div class="field col-3">
                         <label>Codigo</label><br>
-                        <input [(ngModel)]="cod_chofer" class="input-text-codigo" type="text" (keyup.enter)="buscarChofer()" style="width: 85px;"/>
+                        <input [(ngModel)]="cod_chofer" class="input-text-codigo" type="text"
+                            (keyup.enter)="buscarChofer()" style="width: 85px;" />
                     </div>
                     <div class="field col-9">
                         <label>Seleccionar:</label><br>
-                        <select [(ngModel)]="datosMovimiento.id_chofer" class="select-class" (ngModelChange)="onSelectChofer()">
-                            <option *ngFor="let chofer of select_choferes" value="{{chofer.id}}">{{chofer.alias}}</option>
+                        <select [(ngModel)]="datosMovimiento.id_chofer" class="select-class"
+                            (ngModelChange)="onSelectChofer()">
+                            <option *ngFor="let chofer of select_choferes" value="{{chofer.id}}">{{chofer.alias}}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -166,18 +309,23 @@
                 <div class="formgrid row">
                     <div class="field col-3">
                         <label>Codigo</label><br>
-                        <input [(ngModel)]="cod_camion" class="input-text-codigo" type="text" (keyup.enter)="buscarCamion()" style="width: 85px;"/>
+                        <input [(ngModel)]="cod_camion" class="input-text-codigo" type="text"
+                            (keyup.enter)="buscarCamion()" style="width: 85px;" />
                     </div>
                     <div class="field col-9">
                         <label>Seleccionar:</label><br>
-                        <select [(ngModel)]="datosMovimiento.id_camion" class="select-class" (ngModelChange)="onSelectCamion()">
-                            <option *ngFor="let camion of select_camiones" value="{{camion.id}}">{{camion.alias}}</option>
+                        <select [(ngModel)]="datosMovimiento.id_camion" class="select-class"
+                            (ngModelChange)="onSelectCamion()">
+                            <option *ngFor="let camion of select_camiones" value="{{camion.id}}">{{camion.alias}}
+                            </option>
                         </select>
                     </div>
                 </div>
                 <br>
-                <p>Patentes: <strong *ngIf="camion">{{camion.patente_chasis}} - {{camion.patente_acoplado}} - {{camion.patente_otro}}</strong></p>
-                <p>Tara: <strong *ngIf="camion">{{camion.kg_tara}}</strong> / Modelo: <strong *ngIf="camion">{{camion.modelo}}</strong></p>
+                <p>Patentes: <strong *ngIf="camion">{{camion.patente_chasis}} - {{camion.patente_acoplado}} -
+                        {{camion.patente_otro}}</strong></p>
+                <p>Tara: <strong *ngIf="camion">{{camion.kg_tara}}</strong> / Modelo: <strong
+                        *ngIf="camion">{{camion.modelo}}</strong></p>
                 <button (click)="verTodosCamiones()">Ver todos</button>
             </div>
         </div>
@@ -187,31 +335,42 @@
                 <table>
                     <tr>
                         <td>KG BRUTO</td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_bruto" (ngModelChange)="calcularKilos($event, 'kilos_bruto')"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.kg_bruto"
+                                (ngModelChange)="calcularKilos($event, 'kilos_bruto')"><br></td>
                     </tr>
                     <tr>
                         <td>KG TARA</td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_tara" (ngModelChange)="calcularKilos($event, 'kilos_tara')"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.kg_tara"
+                                (ngModelChange)="calcularKilos($event, 'kilos_tara')"><br></td>
                     </tr>
                     <tr>
                         <td><strong>NETO</strong></td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_neto" (ngModelChange)="calcularKilos($event, 'kilos_neto')"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.kg_neto"
+                                (ngModelChange)="calcularKilos($event, 'kilos_neto')"><br></td>
                     </tr>
                     <tr>
                         <td>CARG/DESC</td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_regulacion" (ngModelChange)="calcularKilos($event, 'kilos_carga_descarga')"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.kg_regulacion"
+                                (ngModelChange)="calcularKilos($event, 'kilos_carga_descarga')"><br></td>
                     </tr>
                     <tr>
                         <td>Depos.</td>
                         <td>
                             <select [(ngModel)]="datosMovimiento.id_deposito" class="select-class" style="width: 100px">
-                                <option *ngFor="let deposito of db_depositos" value="{{deposito.id}}">{{deposito.alias}}</option>
+                                <option *ngFor="let deposito of db_depositos" value="{{deposito.id}}">{{deposito.alias}}
+                                </option>
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>NETO FINAL</strong></td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_neto_final" (ngModelChange)="calcularKilos($event, 'kilos_neto_final')"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.kg_neto_final"
+                                (ngModelChange)="calcularKilos($event, 'kilos_neto_final')"><br></td>
                     </tr>
                 </table>
             </div>
@@ -244,8 +403,10 @@
             class="p-button-success bott" (click)="guardarPlantilla()"></button>
         <button *ngIf="existePlantilla" pButton pRipple type="button" label="BORRAR PLANTILLA"
             class="p-button-danger bott" (click)="borrarPlantilla()"></button>
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+        <button *ngIf="!datosMovimiento.id" pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
             (click)="guardarMovimiento()"></button>
+        <button *ngIf="datosMovimiento.id" pButton pRipple type="button" label="EDITAR" class="p-button-success bott"
+            (click)="editarMovimiento()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
             (click)="displayNuevoMovimiento = false"></button>
     </ng-template>
