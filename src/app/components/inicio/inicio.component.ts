@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
+import { PadronService } from 'src/app/services/padron.service';
 
 declare var vars: any;
 const API_URI = vars.API_URI;
@@ -25,6 +26,7 @@ export class InicioComponent {
     displayBanderasDis: Boolean = false;
     displayOrdenCarga: Boolean = false;
     displayVistas: Boolean = false;
+    displayCPE: Boolean = false;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
     optionsDe: any = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
@@ -83,12 +85,20 @@ export class InicioComponent {
 
     datosMovimiento: any;
     datosOrdenCarga: any = {};
+    datosCPE: any = {};
 
     existePlantilla = false;
+
+    permiteCrearCTG: any = {
+        "9a869d84b572": true,
+        "93ff9dd068be": true
+    }
+    intervinientesCPE: any = {};
 
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
+        private padronService: PadronService
     ) { }
 
     ngOnInit() {
@@ -194,6 +204,24 @@ export class InicioComponent {
             activo: null,
             estado: null
         }
+
+        this.intervinientesCPE = {
+            destinatario: [{razon_social: 'nom', cuit:123}],
+            destino: [{razon_social: 'nom', cuit:123}],
+            corredor_venta_primaria: [{razon_social: 'nom', cuit:123}],
+            corredor_venta_secundaria: [{razon_social: 'nom', cuit:123}],
+            mercado_a_termino: [{razon_social: 'nom', cuit:123}],
+            remitente_comercial_venta_primaria: [{razon_social: 'nom', cuit:123}],
+            remitente_comercial_venta_secundaria: [{razon_social: 'nom', cuit:123}],
+            remitente_comercial_venta_secundaria2: [{razon_social: 'nom', cuit:123}],
+            representante_entregador: [{razon_social: 'nom', cuit:123}],
+            representante_recibidor: [{razon_social: 'nom', cuit:123}],
+            remitente_comercial_productor: [{razon_social: 'nom', cuit:123}],
+            chofer: [{razon_social: 'nom', cuit:123}],
+            intermediario_flete: [{razon_social: 'nom', cuit:123}],
+            pagador_flete: [{razon_social: 'nom', cuit:123}],
+            transportista: [{razon_social: 'nom', cuit:123}]
+        };
     }
 
     obtenerCamiones() {
@@ -1010,6 +1038,249 @@ export class InicioComponent {
     mostrat(e:any){
         console.log(e)
     }
+
+
+    abrirModalCrearCPE(mov:any){
+        this.intervinientesCPE = {
+            destinatario: [ ... this.db_socios ],
+            destino: [ ... this.db_socios ],
+            corredor_venta_primaria: [ ... this.db_socios ],
+            corredor_venta_secundaria: [ ... this.db_socios ],
+            mercado_a_termino: [ ... this.db_socios ],
+            remitente_comercial_venta_primaria: [ ... this.db_socios ],
+            remitente_comercial_venta_secundaria: [ ... this.db_socios ],
+            remitente_comercial_venta_secundaria2: [ ... this.db_socios ],
+            representante_entregador: [ ... this.db_socios ],
+            representante_recibidor: [ ... this.db_socios ],
+            remitente_comercial_productor: [ ... this.db_socios ],
+            chofer: [ ... this.db_choferes ],
+            intermediario_flete: [ ... this.db_socios ],
+            pagador_flete: [ ... this.db_socios ],
+            transportista: [ ... this.db_transportistas ]
+        }
+
+        this.datosCPE = {}
+
+        this.datosCPE.tipo_cpe = 74
+
+        if(mov.id_socio){
+            this.datosCPE.cuit_solicitante = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
+        }
+        if(mov.id_corredor){
+            //this.datosCPE.cuit_corredor_venta_primaria = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
+        }
+        if(mov.id_acopio){
+            //this.datosCPE.cuit_solicitante = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
+        }
+        if(mov.id_transporte){
+            this.datosCPE.cuit_transportista = this.db_transportistas.some((e:any) => { return e.id == mov.id_transporte }) ? this.db_transportistas.find((e:any) => { return e.id == mov.id_transporte }).cuit : null;
+        }
+        if(mov.id_chofer){
+            this.datosCPE.cuit_chofer = this.db_choferes.some((e:any) => { return e.id == mov.id_chofer }) ? this.db_choferes.find((e:any) => { return e.id == mov.id_chofer }).cuit : null;
+        }
+        if(mov.id_camion){
+            var camion = this.db_camiones.some((e:any) => { return e.id == mov.id_socio }) ? this.db_camiones.find((e:any) => { return e.id == mov.id_camion }) : null;
+            this.datosCPE.dominio = camion ? (camion.patente_chasis ? camion.patente_chasis : '') : ''
+            this.datosCPE.dominio2 = camion ? (camion.patente_acoplado ? camion.patente_acoplado : '') : ''
+            this.datosCPE.dominio3 = camion ? (camion.patente_otro ? camion.patente_otro : '') : ''
+        }
+        if(mov.id_grano){
+            this.datosCPE.cod_grano = this.db_granos.some((e:any) => { return e.id == mov.id_grano }) ? this.db_granos.find((e:any) => { return e.id == mov.id_grano }).codigo : null;
+        }
+        if(mov.id_campana){
+            this.datosCPE.cosecha = this.db_campanas.some((e:any) => { return e.id == mov.id_campana }) ? this.db_campanas.find((e:any) => { return e.id == mov.id_campana }).codigo : null;
+        }
+
+        this.displayCPE = true
+    }
+
+    buscarCUIT(cuit:any, razon_social:any){
+        this.datosCPE[razon_social] = 'buscando...'
+
+        this.padronService.padronCUIT(cuit).subscribe(
+            (res:any) => {
+                if(!res){
+                    this.messageService.add({severity:'error', summary:'Error!', detail:'Verifique los datos ingresados'})
+                    this.datosCPE[razon_social] = ''
+                }
+                var razonSocial = ''
+                if(res.tipoPersona == 'FISICA'){
+                    razonSocial = res.apellido + ' ' + res.nombre
+                } else {
+                    razonSocial = res.razonSocial
+                }
+                this.datosCPE[razon_social] = razonSocial
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a Backend (AFIP)'})
+                this.datosCPE[razon_social] = ''
+            }
+        )
+    }
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
+
+/* 
+{
+    "contingencia": [
+        {
+            "concepto": "B", 
+            "concepto_desactivacion": "B", 
+            "cuit_transportista": 20333333334, 
+            "descripcion": "Desctrucci\u00f3n carga", 
+            "nro_operativo": 1111111111
+        }
+    ], 
+    "": "20267565393", 
+    "datos_carga": [
+        {
+            "cod_grano": 23, 
+            "cosecha": 2021, 
+            "peso_bruto": 110, 
+            "peso_tara": 10
+        }
+    ],
+    "destino": [
+        {
+            "cod_localidad": 14310, 
+            "cod_provincia": 12, 
+            "cuit_destinatario": "20267565393", 
+            "cuit_destino": "20267565393", 
+            "es_destino_campo": "true", 
+            "planta": 1938
+        }
+    ], 
+    "intervinientes": [
+        {
+            "cuit_corredor_venta_primaria": null, 
+            "cuit_corredor_venta_secundaria": null, 
+            "cuit_mercado_a_termino": null, 
+            "cuit_remitente_comercial_venta_primaria": 27000000014, 
+            "cuit_remitente_comercial_venta_secundaria": null, 
+            "cuit_remitente_comercial_venta_secundaria2": 20400000000, 
+            "cuit_representante_entregador": null, 
+            "cuit_representante_recibidor": null
+        }
+    ], 
+    "nro_orden": 28, 
+    "observaciones": "Notas del transporte", 
+    "origen": [
+        {
+            "cod_localidad_productor": 14310, 
+            "cod_provincia_productor": 1
+        }
+    ], 
+    "retiro_productor": [
+        {
+            "certificado_coe": null, 
+            "corresponde_retiro_productor": "false", 
+            "cuit_remitente_comercial_productor": null, 
+            "es_solicitante_campo": "true"
+        }
+    ], 
+    "sucursal": 222, 
+    "": 74, 
+    "transporte": [
+        {
+            "codigo_turno": null, 
+            "cuit_chofer": "20333333334", 
+            "cuit_intermediario_flete": null, 
+            "cuit_pagador_flete": null, 
+            "cuit_transportista": 20120372913, 
+            "dominio": "AB000ST", 
+            "fecha_hora_partida": "2023-04-13T16:41:26", 
+            "km_recorrer": 500, 
+            "mercaderia_fumigada": "true", 
+            "tarifa": null, 
+            "tarifa_referencia": 1234.5
+        }, 
+        {
+            "dominio": "AC001ST"
+        }
+    ]
+}
+
+
+
+//todos
+{
+    "contingencia": [
+        {
+            "concepto": "B", 
+            "concepto_desactivacion": "B", 
+            "cuit_transportista": 20333333334, 
+            "descripcion": "Desctrucci\u00f3n carga", 
+            "nro_operativo": 1111111111
+        }
+    ], 
+    "cuit_solicitante": "20267565393", 
+    "datos_carga": [
+        {
+            "cod_grano": 23, 
+            "cosecha": 2021, 
+            "peso_bruto": 110, 
+            "peso_tara": 10
+        }
+    ],
+    "destino": [
+        {
+            "cod_localidad": 14310, 
+            "cod_provincia": 12, 
+            "cuit_destinatario": "20267565393", 
+            "cuit_destino": "20267565393", 
+            "es_destino_campo": "true", 
+            "planta": 1938
+        }
+    ], 
+    "intervinientes": [
+        {
+            "cuit_corredor_venta_primaria": null, 
+            "cuit_corredor_venta_secundaria": null, 
+            "cuit_mercado_a_termino": null, 
+            "cuit_remitente_comercial_venta_primaria": 27000000014, 
+            "cuit_remitente_comercial_venta_secundaria": null, 
+            "cuit_remitente_comercial_venta_secundaria2": 20400000000, 
+            "cuit_representante_entregador": null, 
+            "cuit_representante_recibidor": null
+        }
+    ], 
+    "nro_orden": 28, 
+    "observaciones": "Notas del transporte", 
+    "origen": [
+        {
+            "cod_localidad_productor": 14310, 
+            "cod_provincia_productor": 1
+        }
+    ], 
+    "retiro_productor": [
+        {
+            "certificado_coe": null, 
+            "corresponde_retiro_productor": "false", 
+            "cuit_remitente_comercial_productor": null, 
+            "es_solicitante_campo": "true"
+        }
+    ], 
+    "sucursal": 222, 
+    "tipo_cpe": 74, 
+    "transporte": [
+        {
+            "codigo_turno": null, 
+            "cuit_chofer": "20333333334", 
+            "cuit_intermediario_flete": null, 
+            "cuit_pagador_flete": null, 
+            "cuit_transportista": 20120372913, 
+            "dominio": "AB000ST", 
+            "fecha_hora_partida": "2023-04-13T16:41:26", 
+            "km_recorrer": 500, 
+            "mercaderia_fumigada": "true", 
+            "tarifa": null, 
+            "tarifa_referencia": 1234.5
+        }, 
+        {
+            "dominio": "AC001ST"
+        }
+    ]
+}
+ */
