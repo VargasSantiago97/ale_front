@@ -15,11 +15,14 @@
 <button pButton pRipple type="button" label="NUEVA OC" class="p-button-success bott"
     (click)="nuevaOrdenCarga()"></button>
 
+<button pButton pRipple type="button" label="COLUMNAS" class="p-button-success bott"
+    (click)="displayVistas=true"></button>
+
 <br><br>
 
 <p-table [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="single"
     [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-    [paginator]="true" [rows]="20" [showCurrentPageReport]="true"
+    [paginator]="true" [rows]="25" [showCurrentPageReport]="true"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
     <ng-template pTemplate="caption">
@@ -38,13 +41,17 @@
         <tr (dblclick)="mostrarMovimiento(registro)">
             <td *ngFor="let col of columns">
                 {{transformarDatoMostrarTabla(registro, col.field)}}
+                <div *ngIf="col.field == 'orden'">
+                    <button class="button-tabla"><i class="pi pi-download"></i></button>
+                    <button class="button-tabla"><i class="pi pi-eye"></i></button>
+                </div>
             </td>
         </tr>
     </ng-template>
 </p-table>
 <br><br>
 
-<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw'}" [draggable]="true"
+<!-- p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw'}" [draggable]="true"
     [resizable]="false">
 
     <div class="formgrid row">
@@ -187,7 +194,7 @@
         <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott" (click)="guardarPlantilla()"></button>
         <button pButton pRipple type="button" label="QUITAR FILTROS" class="p-button-danger bott" (click)="borrarPlantilla()"></button>
     </ng-template>
-</p-dialog>
+</p-dialog !-->
 
 
 <p-dialog header="{{datosMovimiento.id ? 'EDITAR' : 'NUEVO'}} MOVIMIENTO - VIAJE" [(visible)]="displayNuevoMovimiento"
@@ -256,7 +263,8 @@
     <div class="formgrid row">
         <div class="field col-4">
             <div class="tarjeta">
-                <h6>Transporte:</h6>
+                <h6>Transporte: <button (click)="actualizarTransportistas()" class="button-tabla"><i
+                            class="pi pi-refresh"></i></button></h6>
                 <div class="formgrid row">
                     <div class="field col-3">
                         <label>Codigo</label><br>
@@ -281,7 +289,8 @@
         </div>
         <div class="field col-3">
             <div class="tarjeta">
-                <h6>Chofer:</h6>
+                <h6>Chofer: <button (click)="actualizarChoferes()" class="button-tabla"><i
+                            class="pi pi-refresh"></i></button></h6>
                 <div class="formgrid row">
                     <div class="field col-3">
                         <label>Codigo</label><br>
@@ -300,12 +309,13 @@
                 <br>
                 <p>Chofer.: <strong *ngIf="chofer">{{chofer.razon_social}}</strong></p>
                 <p>CUIT: <strong *ngIf="chofer">{{chofer.cuit}}</strong></p>
-                <button (click)="verTodosChoferes()">Ver todos</button>
+                <button class="button-ver-todo" (click)="verTodosChoferes()">Ver todos</button>
             </div>
         </div>
         <div class="field col-3">
             <div class="tarjeta">
-                <h6>Camion:</h6>
+                <h6>Camion: <button (click)="actualizarCamiones()" class="button-tabla"><i
+                            class="pi pi-refresh"></i></button></h6>
                 <div class="formgrid row">
                     <div class="field col-3">
                         <label>Codigo</label><br>
@@ -326,7 +336,7 @@
                         {{camion.patente_otro}}</strong></p>
                 <p>Tara: <strong *ngIf="camion">{{camion.kg_tara}}</strong> / Modelo: <strong
                         *ngIf="camion">{{camion.modelo}}</strong></p>
-                <button (click)="verTodosCamiones()">Ver todos</button>
+                <button class="button-ver-todo" (click)="verTodosCamiones()">Ver todos</button>
             </div>
         </div>
         <div class="field col-2">
@@ -407,6 +417,8 @@
             (click)="guardarMovimiento()"></button>
         <button *ngIf="datosMovimiento.id" pButton pRipple type="button" label="EDITAR" class="p-button-success bott"
             (click)="editarMovimiento()"></button>
+        <button *ngIf="datosMovimiento.id" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+            (click)="borrarMovimiento()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
             (click)="displayNuevoMovimiento = false"></button>
     </ng-template>
@@ -496,7 +508,6 @@
             styleClass="p-button-text"></p-button>
     </ng-template>
 </p-dialog>
-
 
 <p-dialog header="ORDEN DE CARGA" [(visible)]="displayOrdenCarga" [modal]="true"
     [style]="{width: '1200px', height: '90vw'}" [draggable]="true" [resizable]="true" [maximizable]="true">
@@ -623,4 +634,15 @@
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
             (click)="displayOrdenCarga = false"></button>
     </ng-template>
+</p-dialog>
+
+<p-dialog header="COLUMNAS" [(visible)]="displayVistas" [modal]="true" [style]="{width: '300px'}" [draggable]="true"
+    [resizable]="false">
+    <div class="formgrid row">
+        <p-button label="TODO" styleClass="p-button-sm" (click)="columnsTabla('todo')"></p-button>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <p-button label="TRANPORTES" styleClass="p-button-sm" (click)="columnsTabla(1)"></p-button>
+    </div>
 </p-dialog>

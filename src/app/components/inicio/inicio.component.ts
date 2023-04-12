@@ -24,6 +24,7 @@ export class InicioComponent {
     displayBanderas: Boolean = false;
     displayBanderasDis: Boolean = false;
     displayOrdenCarga: Boolean = false;
+    displayVistas: Boolean = false;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
     optionsDe: any = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
@@ -237,8 +238,6 @@ export class InicioComponent {
                 this.db_socios = res;
                 this.load_socios = false;
                 this.datosParaTabla()
-
-                console.log(res)
             },
             (err: any) => {
                 console.log(err)
@@ -365,6 +364,42 @@ export class InicioComponent {
             }
         )
     }
+    
+    actualizarTransportistas() {
+        this.comunicacionService.getDB('transportistas').subscribe(
+            (res: any) => {
+                this.db_transportistas = res;
+                this.load_transportistas = false;
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    actualizarCamiones() {
+        this.comunicacionService.getDB('camiones').subscribe(
+            (res: any) => {
+                this.db_camiones = res;
+                this.select_camiones = res;
+                this.load_camiones = false;
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    actualizarChoferes() {
+        this.comunicacionService.getDB('choferes').subscribe(
+            (res: any) => {
+                this.db_choferes = res;
+                this.select_choferes = res;
+                this.load_choferes = false;
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
 
     datosParaTabla() {
         if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_corredores || this.load_acopios || this.load_movimientos)) {
@@ -372,7 +407,6 @@ export class InicioComponent {
 
             this.db_movimientos.forEach((e: any) => {
                 this.dataParaMostrarTabla.push(e)
-                console.log(e)
             });
         }
     }
@@ -381,6 +415,7 @@ export class InicioComponent {
     buscarTransporte() {
         if (this.db_transportistas.some((e: any) => { return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase() })) {
             this.transportista = { ... this.db_transportistas.find((e: any) => { return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase() }) }
+            this.datosMovimiento.id_transporte = this.transportista.id
             this.buscarChoferesCamiones()
         } else {
             this.transportista = null
@@ -420,6 +455,9 @@ export class InicioComponent {
         if (this.datosMovimiento.id_chofer) {
             this.chofer = this.db_choferes.find((e: any) => { return e.id == this.datosMovimiento.id_chofer })
             this.cod_chofer = this.chofer.codigo
+        } else{
+            this.chofer = {}
+            this.cod_chofer = ''
         }
     }
 
@@ -428,6 +466,10 @@ export class InicioComponent {
             this.camion = this.db_camiones.find((e: any) => { return e.id == this.datosMovimiento.id_camion })
             this.cod_camion = this.camion.codigo
             this.datosMovimiento.kg_tara = this.camion.kg_tara
+        } else {
+            this.camion = {}
+            this.cod_camion = ''
+            this.datosMovimiento.kg_tara = null
         }
     }
 
@@ -435,11 +477,23 @@ export class InicioComponent {
         this.select_choferes = this.db_choferes.filter((e: any) => { return e.id_transportista == this.transportista.id })
         this.select_camiones = this.db_camiones.filter((e: any) => { return e.id_transportista == this.transportista.id })
 
-        this.datosMovimiento.id_chofer = { ... this.select_choferes[0].id }
-        this.onSelectChofer()
-        this.datosMovimiento.id_camion = { ... this.select_camiones[0].id }
-        this.onSelectCamion()
+        if(this.select_choferes){
+            if(this.select_choferes.length){
+                this.datosMovimiento.id_chofer = this.select_choferes[0].id
+            }else{
+                this.datosMovimiento.id_chofer = null
+            }
+            this.onSelectChofer()
+        }
 
+        if(this.select_camiones){
+            if(this.select_camiones.length){
+                this.datosMovimiento.id_camion = this.select_camiones[0].id
+            }else{
+                this.datosMovimiento.id_camion = null
+            }
+            this.onSelectCamion()
+        }
     }
 
     verTodosChoferes() {
@@ -481,10 +535,10 @@ export class InicioComponent {
             this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_tara
         }
     }
-
     save(event: any) {
         console.log("You entered: ", event.target.value);
     }
+
 
     nuevoMovimiento() {
         var fecha = new Date()
@@ -524,25 +578,115 @@ export class InicioComponent {
 
         if(localStorage.getItem('plantilla')){
             this.datosMovimiento = this.base64toObjUtf8(localStorage.getItem('plantilla'))
+            this.datosMovimiento.id = null
             this.existePlantilla = true;
         }
 
         this.datosMovimiento.fecha = fechaHoy
 
-
-        //esto iria para EDITAR:
-        if (this.datosMovimiento.id_transporte) {
-            //this.onSelectTransporte()
-        }
-        if (this.datosMovimiento.id_chofer) {
-            //this.onSelectChofer()
-        }
-        if (this.datosMovimiento.id_camion) {
-            //this.onSelectChofer()
-        }
-
+        this.setearTransporteChoferCamion()
 
         this.displayNuevoMovimiento = true
+    }
+    guardarMovimiento(){
+        var idd = this.generateUUID()
+        if (this.db_movimientos.some((e: any) => { return e.id == idd })) {
+            this.guardarMovimiento()
+            return
+        }
+
+        this.datosMovimiento.id = idd
+
+        var fecha = new Date(this.datosMovimiento.fecha);
+        this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
+
+        this.datosMovimiento.activo = 1
+
+
+        this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Guardado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.displayNuevoMovimiento = false
+                this.obtenerMovimientos()
+                this.nuevaOrdenCarga()
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+    }
+    editarMovimiento(){
+
+        var fecha = new Date(this.datosMovimiento.fecha);
+        this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
+
+        this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.displayNuevoMovimiento = false
+                this.obtenerMovimientos()
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+    }
+    borrarMovimiento(){
+        if (confirm('Desea eliminar Movimiento?')) {
+            this.datosMovimiento.estado = 0
+            this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.displayNuevoMovimiento = false
+                    this.obtenerMovimientos()
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
+    }
+    mostrarMovimiento(mov:any){
+        this.datosMovimiento = { ... mov }
+
+        var fecha = new Date(this.datosMovimiento.fecha)
+        const datePipe = new DatePipe('en-US');
+        const fechaMov = datePipe.transform(fecha, 'yyyy-MM-dd');
+
+        this.datosMovimiento.fecha = fechaMov;
+
+        this.setearTransporteChoferCamion()
+
+        this.displayNuevoMovimiento = true;
+    }
+    setearTransporteChoferCamion(){
+        this.select_choferes = [ ... this.db_choferes ]
+        this.select_camiones = [ ... this.db_camiones ]
+
+        if (this.datosMovimiento.id_transporte) {
+            this.transportista = this.db_transportistas.find((e: any) => { return e.id == this.datosMovimiento.id_transporte })
+            this.cod_transporte = this.transportista.codigo
+        } else {
+            this.transportista = {}
+            this.cod_transporte = ''
+        }
+        if (this.datosMovimiento.id_chofer) {
+            this.chofer = this.db_choferes.find((e: any) => { return e.id == this.datosMovimiento.id_chofer })
+            this.cod_chofer = this.chofer.codigo
+        } else{
+            this.chofer = {}
+            this.cod_chofer = ''
+        }
+        if (this.datosMovimiento.id_camion) {
+            this.camion = this.db_camiones.find((e: any) => { return e.id == this.datosMovimiento.id_camion })
+            this.cod_camion = this.camion.codigo
+        } else {
+            this.camion = {}
+            this.cod_camion = ''
+        }
     }
 
     //BANDERAS
@@ -610,64 +754,20 @@ export class InicioComponent {
         this.displayBanderasDis = true
     }
 
-    guardarMovimiento(){
-        var idd = this.generateUUID()
-        if (this.db_movimientos.some((e: any) => { return e.id == idd })) {
-            this.guardarMovimiento()
-            return
-        }
-
-        this.datosMovimiento.id = idd
-
-        var fecha = new Date(this.datosMovimiento.fecha);
-        this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
-        
-        this.datosMovimiento.activo = 1
-
-
-        this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
-            (res: any) => {
-                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Guardado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
-                this.displayNuevoMovimiento = false
-                this.obtenerMovimientos()
-                this.nuevaOrdenCarga
-            },
-            (err: any) => {
-                console.log(err)
-                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
-            }
-        )
-    }
-
-    editarMovimiento(){
-
-    }
-    mostrarMovimiento(mov:any){
-        this.datosMovimiento = { ... mov }
-
-        var fecha = new Date(this.datosMovimiento.fecha)
-        const datePipe = new DatePipe('en-US');
-        const fechaMov = datePipe.transform(fecha, 'yyyy-MM-dd');
-
-        this.datosMovimiento.fecha = fechaMov;
-
-        this.displayNuevoMovimiento = true;
-    }
-
     //ORDEN CARGA
     nuevaOrdenCarga(){
         var fecha = new Date(this.datosMovimiento.fecha);
         const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
 
         this.datosOrdenCarga = {
-        numero: '00-0001',
+        numero: '01-0001',
         fecha: fechaFormateada,
         beneficiario: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "socio").toUpperCase(),
         transportista: this.transformarDatoMostrar(this.datosMovimiento.id_transporte, "transporte").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
         conductor: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
         patentes: this.transformarDatoMostrar(this.datosMovimiento.id_camion, "patentes"),
-        establecimiento: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "establecimiento").toUpperCase(),
-        cultivo: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "grano").toUpperCase(),
+        establecimiento: this.transformarDatoMostrar(this.datosMovimiento.id_origen, "establecimiento").toUpperCase(),
+        cultivo: this.transformarDatoMostrar(this.datosMovimiento.id_grano, "grano").toUpperCase(),
         trilla_silo: this.transformarDatoMostrar(this.datosMovimiento.tipo_origen, "tipo_origen").toUpperCase(),
         tara: this.transformarDatoMostrar(this.datosMovimiento.kg_tara, "kilos"),
         bruto: this.transformarDatoMostrar(this.datosMovimiento.kg_bruto, "kilos"),
@@ -724,7 +824,10 @@ export class InicioComponent {
         }
         
         if (tipo == 'kilos') {
-            return dato.toLocaleString("es-AR");
+            if(dato){
+                var numero = parseInt(dato)
+                return numero.toLocaleString("es-ES") ? numero.toLocaleString("es-ES") : null;
+            }
         }
 
 
@@ -864,6 +967,31 @@ export class InicioComponent {
         } else {
             window.open(url + '&D=I', '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
         }
+    }
+
+    columnsTabla(opc:any){
+        if(opc=='todo'){
+            this.selectedColumns = this.cols
+        }
+        if(opc==1){
+            this.selectedColumns = [
+                { field: "cultivo", header: "Cultivo" },
+                { field: "fecha", header: "Fecha" },
+                { field: "benef", header: "Benef C.P." },
+                { field: "ctg", header: "C.T.G." },
+                { field: "campo", header: "Campo" },
+                { field: "pat", header: "Pat." },
+                { field: "transporte", header: "Transporte" },
+                { field: "gastos", header: "Gastos" },
+                { field: "kg_neto_final", header: "Neto Final" },
+    
+                { field: "factura", header: "Factura" },
+                { field: "pagado", header: "Pagado" },
+                { field: "observaciones", header: "Obser" },
+            ];
+        }
+
+        this.displayVistas = false
     }
 
     objUtf8ToBase64(ent:any) {

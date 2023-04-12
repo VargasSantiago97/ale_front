@@ -45,6 +45,26 @@
     border-radius: 8px;
     color: aliceblue;
 }
+.button-tabla {
+    width: 27px;
+    height: 27px;
+    background-color: rgba(0, 255, 115, 0.233);
+    border: 0px solid #ccc;
+    border-radius: 4px;
+    margin: 0px 2px;
+    padding: 0px;
+    text-align: center;
+}
+.button-ver-todo {
+    width: 80px;
+    height: 27px;
+    background-color: rgba(0, 255, 115, 0.233);
+    border: 1px solid #72727223;
+    border-radius: 4px;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
 
 .tarjeta {
     border: 1px solid rgba(0, 0, 0, 0.226);

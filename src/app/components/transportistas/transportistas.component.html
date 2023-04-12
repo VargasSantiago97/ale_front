@@ -146,7 +146,12 @@
         </div>
     </div>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarTransportista()"></button>
+        <button *ngIf="datosTransportista.id" pButton pRipple type="button" label="EDITAR" class="p-button-success bott"
+        (click)="guardarTransportista()"></button>
+        <button *ngIf="!datosTransportista.id" pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+        (click)="guardarTransportista()"></button>
+        <button *ngIf="datosTransportista.id" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+        (click)="borrarTransportista()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayTransportista = false"></button>
     </ng-template>
 </p-dialog>
@@ -235,7 +240,12 @@
     </div>
     <br>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarChofer()"></button>
+        <button *ngIf="datosChofer.id" pButton pRipple type="button" label="EDITAR" class="p-button-success bott"
+        (click)="guardarChofer()"></button>
+        <button *ngIf="!datosChofer.id" pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+        (click)="guardarChofer()"></button>
+        <button *ngIf="datosChofer.id" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+        (click)="borrarChofer()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayChofer = false"></button>
     </ng-template>
 </p-dialog>
@@ -339,7 +349,12 @@
     </div>
     <br>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarCamion()"></button>
+        <button *ngIf="datosCamion.id" pButton pRipple type="button" label="EDITAR" class="p-button-success bott"
+        (click)="guardarCamion()"></button>
+        <button *ngIf="!datosCamion.id" pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+        (click)="guardarCamion()"></button>
+        <button *ngIf="datosCamion.id" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+        (click)="borrarCamion()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayCamion = false"></button>
     </ng-template>
 </p-dialog>

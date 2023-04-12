@@ -330,6 +330,23 @@ export class TransportistasComponent {
         )
     }
 
+    borrarTransportista(){
+        if (confirm('Desea eliminar Tranportista?')) {
+            this.datosTransportista.estado = 0
+            this.comunicacionService.updateDB("transportistas", this.datosTransportista).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.displayTransportista = false
+                    this.obtenerTransportistas()
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
+    }
+
 
     //CHOFERES
     nuevoChofer(){
@@ -494,6 +511,23 @@ export class TransportistasComponent {
         )
     }
 
+    borrarChofer(){
+        if (confirm('Desea eliminar Chofer?')) {
+            this.datosChofer.estado = 0
+            this.comunicacionService.updateDB("choferes", this.datosChofer).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.displayChofer = false
+                    this.obtenerChoferes()
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
+    }
+
     
 
     //CAMIONES
@@ -625,6 +659,22 @@ export class TransportistasComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a backend. Consulte consola'})
             }
         )
+    }
+    borrarCamion(){
+        if (confirm('Desea eliminar Camion?')) {
+            this.datosCamion.estado = 0
+            this.comunicacionService.updateDB("camiones", this.datosCamion).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.displayCamion = false
+                    this.obtenerCamiones()
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
     }
 
 
