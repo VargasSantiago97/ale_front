@@ -79,7 +79,7 @@ export class InicioComponent {
 
     establecimiento: any;
 
-    disFlag: any = {icono:null, fondo:null, color:null};
+    disFlag: any = { icono: null, fondo: null, color: null };
     fondosFlag: any = ['info', 'success', 'warning', 'danger'];
     iconsFlag: any = ['pi-flag-fill', 'pi-bookmark-fill', 'pi-calendar', 'pi-check-square', 'pi-circle-fill', 'pi-cog', 'pi-dollar', 'pi-file-edit', 'pi-info-circle', 'pi-sync', 'pi-thumbs-up-fill', 'pi-thumbs-down-fill', 'pi-user', 'pi-exclamation-triangle', 'pi-exclamation-circle'];
 
@@ -206,21 +206,21 @@ export class InicioComponent {
         }
 
         this.intervinientesCPE = {
-            destinatario: [{razon_social: 'nom', cuit:123}],
-            destino: [{razon_social: 'nom', cuit:123}],
-            corredor_venta_primaria: [{razon_social: 'nom', cuit:123}],
-            corredor_venta_secundaria: [{razon_social: 'nom', cuit:123}],
-            mercado_a_termino: [{razon_social: 'nom', cuit:123}],
-            remitente_comercial_venta_primaria: [{razon_social: 'nom', cuit:123}],
-            remitente_comercial_venta_secundaria: [{razon_social: 'nom', cuit:123}],
-            remitente_comercial_venta_secundaria2: [{razon_social: 'nom', cuit:123}],
-            representante_entregador: [{razon_social: 'nom', cuit:123}],
-            representante_recibidor: [{razon_social: 'nom', cuit:123}],
-            remitente_comercial_productor: [{razon_social: 'nom', cuit:123}],
-            chofer: [{razon_social: 'nom', cuit:123}],
-            intermediario_flete: [{razon_social: 'nom', cuit:123}],
-            pagador_flete: [{razon_social: 'nom', cuit:123}],
-            transportista: [{razon_social: 'nom', cuit:123}]
+            destinatario: [{ razon_social: 'nom', cuit: 123 }],
+            destino: [{ razon_social: 'nom', cuit: 123 }],
+            corredor_venta_primaria: [{ razon_social: 'nom', cuit: 123 }],
+            corredor_venta_secundaria: [{ razon_social: 'nom', cuit: 123 }],
+            mercado_a_termino: [{ razon_social: 'nom', cuit: 123 }],
+            remitente_comercial_venta_primaria: [{ razon_social: 'nom', cuit: 123 }],
+            remitente_comercial_venta_secundaria: [{ razon_social: 'nom', cuit: 123 }],
+            remitente_comercial_venta_secundaria2: [{ razon_social: 'nom', cuit: 123 }],
+            representante_entregador: [{ razon_social: 'nom', cuit: 123 }],
+            representante_recibidor: [{ razon_social: 'nom', cuit: 123 }],
+            remitente_comercial_productor: [{ razon_social: 'nom', cuit: 123 }],
+            chofer: [{ razon_social: 'nom', cuit: 123 }],
+            intermediario_flete: [{ razon_social: 'nom', cuit: 123 }],
+            pagador_flete: [{ razon_social: 'nom', cuit: 123 }],
+            transportista: [{ razon_social: 'nom', cuit: 123 }]
         };
     }
 
@@ -392,7 +392,7 @@ export class InicioComponent {
             }
         )
     }
-    
+
     actualizarTransportistas() {
         this.comunicacionService.getDB('transportistas').subscribe(
             (res: any) => {
@@ -483,7 +483,7 @@ export class InicioComponent {
         if (this.datosMovimiento.id_chofer) {
             this.chofer = this.db_choferes.find((e: any) => { return e.id == this.datosMovimiento.id_chofer })
             this.cod_chofer = this.chofer.codigo
-        } else{
+        } else {
             this.chofer = {}
             this.cod_chofer = ''
         }
@@ -505,19 +505,19 @@ export class InicioComponent {
         this.select_choferes = this.db_choferes.filter((e: any) => { return e.id_transportista == this.transportista.id })
         this.select_camiones = this.db_camiones.filter((e: any) => { return e.id_transportista == this.transportista.id })
 
-        if(this.select_choferes){
-            if(this.select_choferes.length){
+        if (this.select_choferes) {
+            if (this.select_choferes.length) {
                 this.datosMovimiento.id_chofer = this.select_choferes[0].id
-            }else{
+            } else {
                 this.datosMovimiento.id_chofer = null
             }
             this.onSelectChofer()
         }
 
-        if(this.select_camiones){
-            if(this.select_camiones.length){
+        if (this.select_camiones) {
+            if (this.select_camiones.length) {
                 this.datosMovimiento.id_camion = this.select_camiones[0].id
-            }else{
+            } else {
                 this.datosMovimiento.id_camion = null
             }
             this.onSelectCamion()
@@ -604,7 +604,7 @@ export class InicioComponent {
             estado: 1
         }
 
-        if(localStorage.getItem('plantilla')){
+        if (localStorage.getItem('plantilla')) {
             this.datosMovimiento = this.base64toObjUtf8(localStorage.getItem('plantilla'))
             this.datosMovimiento.id = null
             this.existePlantilla = true;
@@ -616,7 +616,7 @@ export class InicioComponent {
 
         this.displayNuevoMovimiento = true
     }
-    guardarMovimiento(){
+    guardarMovimiento() {
         var idd = this.generateUUID()
         if (this.db_movimientos.some((e: any) => { return e.id == idd })) {
             this.guardarMovimiento()
@@ -644,7 +644,7 @@ export class InicioComponent {
             }
         )
     }
-    editarMovimiento(){
+    editarMovimiento() {
 
         var fecha = new Date(this.datosMovimiento.fecha);
         this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
@@ -661,7 +661,7 @@ export class InicioComponent {
             }
         )
     }
-    borrarMovimiento(){
+    borrarMovimiento() {
         if (confirm('Desea eliminar Movimiento?')) {
             this.datosMovimiento.estado = 0
             this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
@@ -677,8 +677,8 @@ export class InicioComponent {
             )
         }
     }
-    mostrarMovimiento(mov:any){
-        this.datosMovimiento = { ... mov }
+    mostrarMovimiento(mov: any) {
+        this.datosMovimiento = { ...mov }
 
         var fecha = new Date(this.datosMovimiento.fecha)
         const datePipe = new DatePipe('en-US');
@@ -690,9 +690,9 @@ export class InicioComponent {
 
         this.displayNuevoMovimiento = true;
     }
-    setearTransporteChoferCamion(){
-        this.select_choferes = [ ... this.db_choferes ]
-        this.select_camiones = [ ... this.db_camiones ]
+    setearTransporteChoferCamion() {
+        this.select_choferes = [... this.db_choferes]
+        this.select_camiones = [... this.db_camiones]
 
         if (this.datosMovimiento.id_transporte) {
             this.transportista = this.db_transportistas.find((e: any) => { return e.id == this.datosMovimiento.id_transporte })
@@ -704,7 +704,7 @@ export class InicioComponent {
         if (this.datosMovimiento.id_chofer) {
             this.chofer = this.db_choferes.find((e: any) => { return e.id == this.datosMovimiento.id_chofer })
             this.cod_chofer = this.chofer.codigo
-        } else{
+        } else {
             this.chofer = {}
             this.cod_chofer = ''
         }
@@ -777,42 +777,42 @@ export class InicioComponent {
             }
         )
     }
-    disenarFlag(bandera:any){
+    disenarFlag(bandera: any) {
         this.disFlag = bandera
         this.displayBanderasDis = true
     }
 
     //ORDEN CARGA
-    nuevaOrdenCarga(){
+    nuevaOrdenCarga() {
         var fecha = new Date(this.datosMovimiento.fecha);
         const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
 
         this.datosOrdenCarga = {
-        numero: '01-0001',
-        fecha: fechaFormateada,
-        beneficiario: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "socio").toUpperCase(),
-        transportista: this.transformarDatoMostrar(this.datosMovimiento.id_transporte, "transporte").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-        conductor: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-        patentes: this.transformarDatoMostrar(this.datosMovimiento.id_camion, "patentes"),
-        establecimiento: this.transformarDatoMostrar(this.datosMovimiento.id_origen, "establecimiento").toUpperCase(),
-        cultivo: this.transformarDatoMostrar(this.datosMovimiento.id_grano, "grano").toUpperCase(),
-        trilla_silo: this.transformarDatoMostrar(this.datosMovimiento.tipo_origen, "tipo_origen").toUpperCase(),
-        tara: this.transformarDatoMostrar(this.datosMovimiento.kg_tara, "kilos"),
-        bruto: this.transformarDatoMostrar(this.datosMovimiento.kg_bruto, "kilos"),
-        neto: this.transformarDatoMostrar(this.datosMovimiento.kg_neto, "kilos"),
-        firma1: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word:any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
-        firma2: 'cargador',
-        observaciones: ''
+            numero: '01-0001',
+            fecha: fechaFormateada,
+            beneficiario: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "socio").toUpperCase(),
+            transportista: this.transformarDatoMostrar(this.datosMovimiento.id_transporte, "transporte").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            conductor: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            patentes: this.transformarDatoMostrar(this.datosMovimiento.id_camion, "patentes"),
+            establecimiento: this.transformarDatoMostrar(this.datosMovimiento.id_origen, "establecimiento").toUpperCase(),
+            cultivo: this.transformarDatoMostrar(this.datosMovimiento.id_grano, "grano").toUpperCase(),
+            trilla_silo: this.transformarDatoMostrar(this.datosMovimiento.tipo_origen, "tipo_origen").toUpperCase(),
+            tara: this.transformarDatoMostrar(this.datosMovimiento.kg_tara, "kilos"),
+            bruto: this.transformarDatoMostrar(this.datosMovimiento.kg_bruto, "kilos"),
+            neto: this.transformarDatoMostrar(this.datosMovimiento.kg_neto, "kilos"),
+            firma1: this.transformarDatoMostrar(this.datosMovimiento.id_chofer, "chofer").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            firma2: 'cargador',
+            observaciones: ''
         }
 
         this.displayOrdenCarga = true
     }
 
-    guardarOrdenCarga(accion:any){
-        if(accion == 'guardar_ver'){
+    guardarOrdenCarga(accion: any) {
+        if (accion == 'guardar_ver') {
             this.mostrarOrdenCarga('ver')
         }
-        if(accion == 'guardar_descargar'){
+        if (accion == 'guardar_descargar') {
             this.mostrarOrdenCarga('descargar')
         }
 
@@ -821,12 +821,12 @@ export class InicioComponent {
     }
 
     //plantilla
-    guardarPlantilla(){
+    guardarPlantilla() {
         localStorage.setItem('plantilla', this.objUtf8ToBase64(this.datosMovimiento))
         this.existePlantilla = true
         this.messageService.add({ severity: 'success', summary: 'Guardado!', detail: 'Plantilla Guardada' })
     }
-    borrarPlantilla(){
+    borrarPlantilla() {
         localStorage.removeItem('plantilla')
         this.existePlantilla = false
         this.messageService.add({ severity: 'info', summary: 'Atencion!', detail: 'Plantilla Borrada' })
@@ -850,9 +850,9 @@ export class InicioComponent {
         if (tipo == 'id_origen') {
             return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
         }
-        
+
         if (tipo == 'kilos') {
-            if(dato){
+            if (dato) {
                 var numero = parseInt(dato)
                 return numero.toLocaleString("es-ES") ? numero.toLocaleString("es-ES") : null;
             }
@@ -862,17 +862,17 @@ export class InicioComponent {
         if (tipo == 'socio') {
             return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).razon_social : '-'
         }
-        
+
         if (tipo == 'transporte') {
             return this.db_transportistas.some((e: any) => { return e.id == dato }) ? this.db_transportistas.find((e: any) => { return e.id == dato }).razon_social : '-'
         }
-        
+
         if (tipo == 'chofer') {
             return this.db_choferes.some((e: any) => { return e.id == dato }) ? this.db_choferes.find((e: any) => { return e.id == dato }).razon_social : '-'
         }
-        
+
         if (tipo == 'patentes') {
-            if(this.db_camiones.some((e: any) => { return e.id == dato })){
+            if (this.db_camiones.some((e: any) => { return e.id == dato })) {
                 var camion = this.db_camiones.find((e: any) => { return e.id == dato })
                 var patentes = ""
                 camion.patente_chasis ? patentes += camion.patente_chasis : null
@@ -882,19 +882,19 @@ export class InicioComponent {
                 return patentes
             }
         }
-        
+
         if (tipo == 'establecimiento') {
             return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
         }
-        
+
         if (tipo == 'grano') {
             return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).descripcion : '-'
         }
-        
+
         if (tipo == 'tipo_origen') {
             return this.optionsDe.some((e: any) => { return e.id == dato }) ? this.optionsDe.find((e: any) => { return e.id == dato }).label : '-'
         }
-        
+
         return dato
     }
     transformarDatoMostrarTabla(registro: any, tipo: any) {
@@ -925,28 +925,28 @@ export class InicioComponent {
             return this.db_establecimientos.some((e: any) => { return e.id == registro.id_origen }) ? this.db_establecimientos.find((e: any) => { return e.id == registro.id_origen }).alias : '-'
         }
         if (tipo == 'tipo_orig') {
-            return this.optionsDe.some((e:any) => { return e.id == registro.tipo_origen }) ? this.optionsDe.find((e: any) => { return e.id == registro.tipo_origen }).label : '-'
+            return this.optionsDe.some((e: any) => { return e.id == registro.tipo_origen }) ? this.optionsDe.find((e: any) => { return e.id == registro.tipo_origen }).label : '-'
         }
         if (tipo == 'pat') {
-            return this.db_camiones.some((e:any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e:any) => { return e.id == registro.id_camion }).patente_chasis : '-'
+            return this.db_camiones.some((e: any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e: any) => { return e.id == registro.id_camion }).patente_chasis : '-'
         }
         if (tipo == 'patAc') {
-            return this.db_camiones.some((e:any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e:any) => { return e.id == registro.id_camion }).patente_acoplado : '-'
+            return this.db_camiones.some((e: any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e: any) => { return e.id == registro.id_camion }).patente_acoplado : '-'
         }
         if (tipo == 'transporte') {
-            return this.db_transportistas.some((e:any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e:any) => { return e.id == registro.id_transporte }).alias : '-'
+            return this.db_transportistas.some((e: any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == registro.id_transporte }).alias : '-'
         }
         if (tipo == 'cuit_transp') {
-            return this.db_transportistas.some((e:any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e:any) => { return e.id == registro.id_transporte }).cuit : '-'
+            return this.db_transportistas.some((e: any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == registro.id_transporte }).cuit : '-'
         }
         if (tipo == 'gastos') {
             return '~gastos~'
         }
         if (tipo == 'id_corredor') {
-            return this.db_corredores.some((e:any) => { return e.id == registro.id_corredor }) ? this.db_corredores.find((e:any) => { return e.id == registro.id_corredor }).alias : '-'
+            return this.db_corredores.some((e: any) => { return e.id == registro.id_corredor }) ? this.db_corredores.find((e: any) => { return e.id == registro.id_corredor }).alias : '-'
         }
         if (tipo == 'id_acopio') {
-            return this.db_acopios.some((e:any) => { return e.id == registro.id_acopio }) ? this.db_acopios.find((e:any) => { return e.id == registro.id_acopio }).alias : '-'
+            return this.db_acopios.some((e: any) => { return e.id == registro.id_acopio }) ? this.db_acopios.find((e: any) => { return e.id == registro.id_acopio }).alias : '-'
         }
         if (tipo == 'kg_tara') {
             return registro.kg_tara ? registro.kg_tara.toLocaleString("es-AR") : '-'
@@ -997,11 +997,11 @@ export class InicioComponent {
         }
     }
 
-    columnsTabla(opc:any){
-        if(opc=='todo'){
+    columnsTabla(opc: any) {
+        if (opc == 'todo') {
             this.selectedColumns = this.cols
         }
-        if(opc==1){
+        if (opc == 1) {
             this.selectedColumns = [
                 { field: "cultivo", header: "Cultivo" },
                 { field: "fecha", header: "Fecha" },
@@ -1012,7 +1012,7 @@ export class InicioComponent {
                 { field: "transporte", header: "Transporte" },
                 { field: "gastos", header: "Gastos" },
                 { field: "kg_neto_final", header: "Neto Final" },
-    
+
                 { field: "factura", header: "Factura" },
                 { field: "pagado", header: "Pagado" },
                 { field: "observaciones", header: "Obser" },
@@ -1022,98 +1022,108 @@ export class InicioComponent {
         this.displayVistas = false
     }
 
-    objUtf8ToBase64(ent:any) {
+    objUtf8ToBase64(ent: any) {
         let str = JSON.stringify(ent)
         let bytes = new TextEncoder().encode(str);
         let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
         return base64;
     }
-    base64toObjUtf8(ent:any) {
+    base64toObjUtf8(ent: any) {
         let json = atob(ent);
         let utf8String = decodeURIComponent(escape(json));
         let obj = JSON.parse(utf8String)
         return obj;
     }
 
-    mostrat(e:any){
+    mostrat(e: any) {
         console.log(e)
     }
 
 
-    abrirModalCrearCPE(mov:any){
+    abrirModalCrearCPE(mov: any) {
         this.intervinientesCPE = {
-            destinatario: [ ... this.db_socios ],
-            destino: [ ... this.db_socios ],
-            corredor_venta_primaria: [ ... this.db_socios ],
-            corredor_venta_secundaria: [ ... this.db_socios ],
-            mercado_a_termino: [ ... this.db_socios ],
-            remitente_comercial_venta_primaria: [ ... this.db_socios ],
-            remitente_comercial_venta_secundaria: [ ... this.db_socios ],
-            remitente_comercial_venta_secundaria2: [ ... this.db_socios ],
-            representante_entregador: [ ... this.db_socios ],
-            representante_recibidor: [ ... this.db_socios ],
-            remitente_comercial_productor: [ ... this.db_socios ],
-            chofer: [ ... this.db_choferes ],
-            intermediario_flete: [ ... this.db_socios ],
-            pagador_flete: [ ... this.db_socios ],
-            transportista: [ ... this.db_transportistas ]
+            destinatario: [... this.db_socios],
+            destino: [... this.db_socios],
+            corredor_venta_primaria: [... this.db_socios],
+            corredor_venta_secundaria: [... this.db_socios],
+            mercado_a_termino: [... this.db_socios],
+            remitente_comercial_venta_primaria: [... this.db_socios],
+            remitente_comercial_venta_secundaria: [... this.db_socios],
+            remitente_comercial_venta_secundaria2: [... this.db_socios],
+            representante_entregador: [... this.db_socios],
+            representante_recibidor: [... this.db_socios],
+            remitente_comercial_productor: [... this.db_socios],
+            chofer: [... this.db_choferes],
+            intermediario_flete: [... this.db_socios],
+            pagador_flete: [... this.db_socios],
+            transportista: [... this.db_transportistas]
         }
 
         this.datosCPE = {}
 
         this.datosCPE.tipo_cpe = 74
 
-        if(mov.id_socio){
-            this.datosCPE.cuit_solicitante = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
+        if (mov.id_socio) {
+            this.datosCPE.cuit_solicitante = this.db_socios.some((e: any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e: any) => { return e.id == mov.id_socio }).cuit : null;
         }
-        if(mov.id_corredor){
+        if (mov.id_corredor) {
             //this.datosCPE.cuit_corredor_venta_primaria = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
         }
-        if(mov.id_acopio){
+        if (mov.id_acopio) {
             //this.datosCPE.cuit_solicitante = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
         }
-        if(mov.id_transporte){
-            this.datosCPE.cuit_transportista = this.db_transportistas.some((e:any) => { return e.id == mov.id_transporte }) ? this.db_transportistas.find((e:any) => { return e.id == mov.id_transporte }).cuit : null;
+        if (mov.id_transporte) {
+            this.datosCPE.cuit_transportista = this.db_transportistas.some((e: any) => { return e.id == mov.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == mov.id_transporte }).cuit : null;
         }
-        if(mov.id_chofer){
-            this.datosCPE.cuit_chofer = this.db_choferes.some((e:any) => { return e.id == mov.id_chofer }) ? this.db_choferes.find((e:any) => { return e.id == mov.id_chofer }).cuit : null;
+        if (mov.id_chofer) {
+            this.datosCPE.cuit_chofer = this.db_choferes.some((e: any) => { return e.id == mov.id_chofer }) ? this.db_choferes.find((e: any) => { return e.id == mov.id_chofer }).cuit : null;
         }
-        if(mov.id_camion){
-            var camion = this.db_camiones.some((e:any) => { return e.id == mov.id_socio }) ? this.db_camiones.find((e:any) => { return e.id == mov.id_camion }) : null;
+        if (mov.id_camion) {
+            var camion = this.db_camiones.some((e: any) => { return e.id == mov.id_socio }) ? this.db_camiones.find((e: any) => { return e.id == mov.id_camion }) : null;
             this.datosCPE.dominio = camion ? (camion.patente_chasis ? camion.patente_chasis : '') : ''
             this.datosCPE.dominio2 = camion ? (camion.patente_acoplado ? camion.patente_acoplado : '') : ''
             this.datosCPE.dominio3 = camion ? (camion.patente_otro ? camion.patente_otro : '') : ''
         }
-        if(mov.id_grano){
-            this.datosCPE.cod_grano = this.db_granos.some((e:any) => { return e.id == mov.id_grano }) ? this.db_granos.find((e:any) => { return e.id == mov.id_grano }).codigo : null;
+        if (mov.id_grano) {
+            this.datosCPE.cod_grano = this.db_granos.some((e: any) => { return e.id == mov.id_grano }) ? this.db_granos.find((e: any) => { return e.id == mov.id_grano }).codigo : null;
         }
-        if(mov.id_campana){
-            this.datosCPE.cosecha = this.db_campanas.some((e:any) => { return e.id == mov.id_campana }) ? this.db_campanas.find((e:any) => { return e.id == mov.id_campana }).codigo : null;
+        if (mov.id_campana) {
+            this.datosCPE.cosecha = this.db_campanas.some((e: any) => { return e.id == mov.id_campana }) ? this.db_campanas.find((e: any) => { return e.id == mov.id_campana }).codigo : null;
         }
+        if (mov.kg_tara) {
+            this.datosCPE.peso_tara = mov.kg_tara ? parseInt(mov.kg_tara) : 0;
+        }
+        if (mov.kg_neto_final) {
+            var neto_final = mov.kg_neto_final ? parseInt(mov.kg_neto_final) : 0;
+            var tara = mov.kg_tara ? parseInt(mov.kg_tara) : 0;
+            this.datosCPE.peso_bruto = neto_final + tara
+        }
+
+
 
         this.displayCPE = true
     }
 
-    buscarCUIT(cuit:any, razon_social:any){
+    buscarCUIT(cuit: any, razon_social: any) {
         this.datosCPE[razon_social] = 'buscando...'
 
         this.padronService.padronCUIT(cuit).subscribe(
-            (res:any) => {
-                if(!res){
-                    this.messageService.add({severity:'error', summary:'Error!', detail:'Verifique los datos ingresados'})
+            (res: any) => {
+                if (!res) {
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Verifique los datos ingresados' })
                     this.datosCPE[razon_social] = ''
                 }
                 var razonSocial = ''
-                if(res.tipoPersona == 'FISICA'){
+                if (res.tipoPersona == 'FISICA') {
                     razonSocial = res.apellido + ' ' + res.nombre
                 } else {
                     razonSocial = res.razonSocial
                 }
                 this.datosCPE[razon_social] = razonSocial
             },
-            (err:any) => {
+            (err: any) => {
                 console.log(err)
-                this.messageService.add({severity:'error', summary:'Error!', detail:'Error conectando a Backend (AFIP)'})
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error conectando a Backend (AFIP)' })
                 this.datosCPE[razon_social] = ''
             }
         )

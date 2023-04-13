@@ -428,7 +428,6 @@
     </ng-template>
 </p-dialog>
 
-
 <p-dialog header="BANDERAS" [(visible)]="displayBanderas" [modal]="true" [style]="{width: '1000px', height:'600px'}"
     [draggable]="true" [resizable]="true" [maximizable]="true">
 
@@ -659,16 +658,24 @@
         <div class="field col">
             <div class="field">
                 <label>Tipo</label><br>
-                <select [(ngModel)]="datosCPE.tipo_cpe" class="select-class">
-                    <option value=74>74 - Automotor - Gramps</option>
+                <select [(ngModel)]="datosCPE.tipo_cpe" class="select-class" style="width: 300px;">
+                    <option value=74>74 - Automotor - Granos</option>
                 </select>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label>Titular</label><br>
-                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class">
+                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class" style="width: 300px;">
                     <option *ngFor="let socio of db_socios" value="{{socio.cuit}}">{{socio.razon_social}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>CAMPAÑA</label><br>
+                <select [(ngModel)]="datosCPE.cosecha" class="select-class" style="width: 300px;">
+                    <option *ngFor="let campana of db_campanas" value="{{campana.codigo}}">{{campana.codigo}} - {{campana.descripcion}}</option>
                 </select>
             </div>
         </div>
@@ -683,17 +690,24 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_remitente_comercial_productor" class="select-class">
-                            <option *ngFor="let remitente_comercial_productor of intervinientesCPE.remitente_comercial_productor" value="{{remitente_comercial_productor.cuit}}">{{remitente_comercial_productor.alias}}
+                            <option
+                                *ngFor="let remitente_comercial_productor of intervinientesCPE.remitente_comercial_productor"
+                                value="{{remitente_comercial_productor.cuit}}">{{remitente_comercial_productor.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_remitente_comercial_productor" (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_productor, 'remitente_comercial_productor')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_remitente_comercial_productor"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_productor, 'remitente_comercial_productor')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_productor, 'remitente_comercial_productor')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button
+                        (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_productor, 'remitente_comercial_productor')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.remitente_comercial_productor" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.remitente_comercial_productor" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -701,17 +715,25 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_primaria" class="select-class">
-                            <option *ngFor="let remitente_comercial_venta_primaria of intervinientesCPE.remitente_comercial_venta_primaria" value="{{remitente_comercial_venta_primaria.cuit}}">{{remitente_comercial_venta_primaria.alias}}
+                            <option
+                                *ngFor="let remitente_comercial_venta_primaria of intervinientesCPE.remitente_comercial_venta_primaria"
+                                value="{{remitente_comercial_venta_primaria.cuit}}">
+                                {{remitente_comercial_venta_primaria.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_primaria" (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_primaria, 'remitente_comercial_venta_primaria')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_primaria"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_primaria, 'remitente_comercial_venta_primaria')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_primaria, 'remitente_comercial_venta_primaria')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button
+                        (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_primaria, 'remitente_comercial_venta_primaria')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.remitente_comercial_venta_primaria" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.remitente_comercial_venta_primaria" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -719,17 +741,25 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_secundaria" class="select-class">
-                            <option *ngFor="let remitente_comercial_venta_secundaria of intervinientesCPE.remitente_comercial_venta_secundaria" value="{{remitente_comercial_venta_secundaria.cuit}}">{{remitente_comercial_venta_secundaria.alias}}
+                            <option
+                                *ngFor="let remitente_comercial_venta_secundaria of intervinientesCPE.remitente_comercial_venta_secundaria"
+                                value="{{remitente_comercial_venta_secundaria.cuit}}">
+                                {{remitente_comercial_venta_secundaria.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_secundaria" (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria, 'remitente_comercial_venta_secundaria')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_secundaria"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria, 'remitente_comercial_venta_secundaria')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria, 'remitente_comercial_venta_secundaria')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button
+                        (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria, 'remitente_comercial_venta_secundaria')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.remitente_comercial_venta_secundaria" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.remitente_comercial_venta_secundaria" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -737,17 +767,25 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_secundaria2" class="select-class">
-                            <option *ngFor="let remitente_comercial_venta_secundaria2 of intervinientesCPE.remitente_comercial_venta_secundaria2" value="{{remitente_comercial_venta_secundaria2.cuit}}">{{remitente_comercial_venta_secundaria2.alias}}
+                            <option
+                                *ngFor="let remitente_comercial_venta_secundaria2 of intervinientesCPE.remitente_comercial_venta_secundaria2"
+                                value="{{remitente_comercial_venta_secundaria2.cuit}}">
+                                {{remitente_comercial_venta_secundaria2.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_secundaria2" (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria2, 'remitente_comercial_venta_secundaria2')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_remitente_comercial_venta_secundaria2"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria2, 'remitente_comercial_venta_secundaria2')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria2, 'remitente_comercial_venta_secundaria2')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button
+                        (click)="buscarCUIT(datosCPE.cuit_remitente_comercial_venta_secundaria2, 'remitente_comercial_venta_secundaria2')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.remitente_comercial_venta_secundaria2" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.remitente_comercial_venta_secundaria2" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -755,17 +793,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_mercado_a_termino" class="select-class">
-                            <option *ngFor="let mercado_a_termino of intervinientesCPE.mercado_a_termino" value="{{mercado_a_termino.cuit}}">{{mercado_a_termino.alias}}
+                            <option *ngFor="let mercado_a_termino of intervinientesCPE.mercado_a_termino"
+                                value="{{mercado_a_termino.cuit}}">{{mercado_a_termino.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_mercado_a_termino" (keydown.enter)="buscarCUIT(datosCPE.cuit_mercado_a_termino, 'mercado_a_termino')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_mercado_a_termino"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_mercado_a_termino, 'mercado_a_termino')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_mercado_a_termino, 'mercado_a_termino')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_mercado_a_termino, 'mercado_a_termino')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.mercado_a_termino" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.mercado_a_termino" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -773,17 +816,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_corredor_venta_primaria" class="select-class">
-                            <option *ngFor="let corredor_venta_primaria of intervinientesCPE.corredor_venta_primaria" value="{{corredor_venta_primaria.cuit}}">{{corredor_venta_primaria.alias}}
+                            <option *ngFor="let corredor_venta_primaria of intervinientesCPE.corredor_venta_primaria"
+                                value="{{corredor_venta_primaria.cuit}}">{{corredor_venta_primaria.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_corredor_venta_primaria" (keydown.enter)="buscarCUIT(datosCPE.cuit_corredor_venta_primaria, 'corredor_venta_primaria')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_corredor_venta_primaria"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_corredor_venta_primaria, 'corredor_venta_primaria')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_corredor_venta_primaria, 'corredor_venta_primaria')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_corredor_venta_primaria, 'corredor_venta_primaria')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.corredor_venta_primaria" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.corredor_venta_primaria" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -791,17 +839,23 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_corredor_venta_secundaria" class="select-class">
-                            <option *ngFor="let corredor_venta_secundaria of intervinientesCPE.corredor_venta_secundaria" value="{{corredor_venta_secundaria.cuit}}">{{corredor_venta_secundaria.alias}}
+                            <option
+                                *ngFor="let corredor_venta_secundaria of intervinientesCPE.corredor_venta_secundaria"
+                                value="{{corredor_venta_secundaria.cuit}}">{{corredor_venta_secundaria.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_corredor_venta_secundaria" (keydown.enter)="buscarCUIT(datosCPE.cuit_corredor_venta_secundaria, 'corredor_venta_secundaria')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_corredor_venta_secundaria"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_corredor_venta_secundaria, 'corredor_venta_secundaria')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_corredor_venta_secundaria, 'corredor_venta_secundaria')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_corredor_venta_secundaria, 'corredor_venta_secundaria')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.corredor_venta_secundaria" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.corredor_venta_secundaria" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -809,17 +863,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_representante_entregador" class="select-class">
-                            <option *ngFor="let representante_entregador of intervinientesCPE.representante_entregador" value="{{representante_entregador.cuit}}">{{representante_entregador.alias}}
+                            <option *ngFor="let representante_entregador of intervinientesCPE.representante_entregador"
+                                value="{{representante_entregador.cuit}}">{{representante_entregador.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_representante_entregador" (keydown.enter)="buscarCUIT(datosCPE.cuit_representante_entregador, 'representante_entregador')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_representante_entregador"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_representante_entregador, 'representante_entregador')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_representante_entregador, 'representante_entregador')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_representante_entregador, 'representante_entregador')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.representante_entregador" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.representante_entregador" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -827,17 +886,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_representante_recibidor" class="select-class">
-                            <option *ngFor="let representante_recibidor of intervinientesCPE.representante_recibidor" value="{{representante_recibidor.cuit}}">{{representante_recibidor.alias}}
+                            <option *ngFor="let representante_recibidor of intervinientesCPE.representante_recibidor"
+                                value="{{representante_recibidor.cuit}}">{{representante_recibidor.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_representante_recibidor" (keydown.enter)="buscarCUIT(datosCPE.cuit_representante_recibidor, 'representante_recibidor')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_representante_recibidor"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_representante_recibidor, 'representante_recibidor')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_representante_recibidor, 'representante_recibidor')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_representante_recibidor, 'representante_recibidor')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.representante_recibidor" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.representante_recibidor" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -845,17 +909,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_destinatario" class="select-class">
-                            <option *ngFor="let destinatario of intervinientesCPE.destinatario" value="{{destinatario.cuit}}">{{destinatario.alias}}
+                            <option *ngFor="let destinatario of intervinientesCPE.destinatario"
+                                value="{{destinatario.cuit}}">{{destinatario.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_destinatario" (keydown.enter)="buscarCUIT(datosCPE.cuit_destinatario, 'destinatario')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_destinatario"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_destinatario, 'destinatario')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_destinatario, 'destinatario')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_destinatario, 'destinatario')" class="button-tabla"><i
+                            class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.destinatario" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.destinatario" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -863,17 +932,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_destino" class="select-class">
-                            <option *ngFor="let destino of intervinientesCPE.destino" value="{{destino.cuit}}">{{destino.alias}}
+                            <option *ngFor="let destino of intervinientesCPE.destino" value="{{destino.cuit}}">
+                                {{destino.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_destino" (keydown.enter)="buscarCUIT(datosCPE.cuit_destino, 'destino')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_destino"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_destino, 'destino')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_destino, 'destino')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_destino, 'destino')" class="button-tabla"><i
+                            class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.destino" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.destino"
+                        readonly><br>
                 </td>
             </tr>
             <tr>
@@ -881,17 +955,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_transportista" class="select-class">
-                            <option *ngFor="let transportista of intervinientesCPE.transportista" value="{{transportista.cuit}}">{{transportista.alias}}
+                            <option *ngFor="let transportista of intervinientesCPE.transportista"
+                                value="{{transportista.cuit}}">{{transportista.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_transportista" (keydown.enter)="buscarCUIT(datosCPE.cuit_transportista, 'transportista')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_transportista"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_transportista, 'transportista')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_transportista, 'transportista')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_transportista, 'transportista')" class="button-tabla"><i
+                            class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.transportista" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.transportista" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -899,17 +978,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_pagador_flete" class="select-class">
-                            <option *ngFor="let pagador_flete of intervinientesCPE.pagador_flete" value="{{pagador_flete.cuit}}">{{pagador_flete.alias}}
+                            <option *ngFor="let pagador_flete of intervinientesCPE.pagador_flete"
+                                value="{{pagador_flete.cuit}}">{{pagador_flete.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_pagador_flete" (keydown.enter)="buscarCUIT(datosCPE.cuit_pagador_flete, 'pagador_flete')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_pagador_flete"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_pagador_flete, 'pagador_flete')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_pagador_flete, 'pagador_flete')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_pagador_flete, 'pagador_flete')" class="button-tabla"><i
+                            class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.pagador_flete" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.pagador_flete" readonly><br>
                 </td>
             </tr>
             <tr>
@@ -917,17 +1001,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_chofer" class="select-class">
-                            <option *ngFor="let chofer of intervinientesCPE.chofer" value="{{chofer.cuit}}">{{chofer.alias}}
+                            <option *ngFor="let chofer of intervinientesCPE.chofer" value="{{chofer.cuit}}">
+                                {{chofer.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_chofer" (keydown.enter)="buscarCUIT(datosCPE.cuit_chofer, 'chofer')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_chofer"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_chofer, 'chofer')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_chofer, 'chofer')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_chofer, 'chofer')" class="button-tabla"><i
+                            class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.chofer" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.chofer"
+                        readonly><br>
                 </td>
             </tr>
             <tr>
@@ -935,17 +1024,22 @@
                 <td>
                     <div class="field">
                         <select [(ngModel)]="datosCPE.cuit_intermediario_flete" class="select-class">
-                            <option *ngFor="let intermediario_flete of intervinientesCPE.intermediario_flete" value="{{intermediario_flete.cuit}}">{{intermediario_flete.alias}}
+                            <option *ngFor="let intermediario_flete of intervinientesCPE.intermediario_flete"
+                                value="{{intermediario_flete.cuit}}">{{intermediario_flete.alias}}
                             </option>
                         </select>
                     </div>
                 </td>
-                <td><input type="number" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosCPE.cuit_intermediario_flete" (keydown.enter)="buscarCUIT(datosCPE.cuit_intermediario_flete, 'intermediario_flete')"><br>
+                <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                        [(ngModel)]="datosCPE.cuit_intermediario_flete"
+                        (keydown.enter)="buscarCUIT(datosCPE.cuit_intermediario_flete, 'intermediario_flete')"><br>
                 </td>
                 <td>
-                    <button (click)="buscarCUIT(datosCPE.cuit_intermediario_flete, 'intermediario_flete')" class="button-tabla"><i class="pi pi-search"></i></button>
+                    <button (click)="buscarCUIT(datosCPE.cuit_intermediario_flete, 'intermediario_flete')"
+                        class="button-tabla"><i class="pi pi-search"></i></button>
                 </td>
-                <td><input type="text" class="input-text-codigo" style="width: 320px;" [(ngModel)]="datosCPE.intermediario_flete" readonly><br>
+                <td><input type="text" class="input-text-codigo" style="width: 320px;"
+                        [(ngModel)]="datosCPE.intermediario_flete" readonly><br>
                 </td>
             </tr>
         </table>
@@ -955,22 +1049,63 @@
     </p-divider>
     <div class="formgrid row">
         <div class="field col">
-            <div class="field">
-                <label>Tipo</label><br>
-                <select [(ngModel)]="datosCPE.tipo_cpe" class="select-class">
-                    <option value=74>74 - Automotor - Gramps</option>
-                </select>
+            <div class="formgrid row">
+                <div class="field col">
+                    <div class="field">
+                        <label>Grano/especie:</label><br>
+                        <select [(ngModel)]="datosCPE.cod_grano" class="select-class" style="width: 240px;">
+                            <option *ngFor="let grano of db_granos"
+                                value="{{grano.codigo}}">{{grano.alias}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field col">
+                    <div class="field">
+                        <label>Codigo</label><br>
+                        <input type="text" class="input-text-codigo" [(ngModel)]="datosCPE.cod_grano">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="field col">
             <div class="field">
-                <label>Titular</label><br>
-                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class">
-                    <option *ngFor="let socio of db_socios" value="{{socio.cuit}}">{{socio.razon_social}}</option>
-                </select>
+                <table>
+                    <tr>
+                        <td style="text-align: right; padding: 0px 20px 0px 0px;">PESO BRUTO (kg):</td>
+                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosCPE.peso_bruto"><br></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 0px 20px 0px 0px;">PESO TARA (kg):</td>
+                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosCPE.peso_tara"><br></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 0px 20px 0px 0px;">PESO NETO (kg):</td>
+                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosCPE.peso_bruto - datosCPE.peso_tara" readonly><br></td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
+    <p-divider align="center">
+        <b>C - PROCEDENCIA</b>
+    </p-divider>
+    <p-divider align="center">
+        <b>D - DESTINO DE LA MERCADERIA</b>
+    </p-divider>
+    <p-divider align="center">
+        <b>E - DATOS DEL TRANSPORTE</b>
+    </p-divider>
+    <p-divider align="center">
+        <b>F - CONTINGENCIAS</b>
+    </p-divider>
+    <p-divider align="center">
+        <b>G - DESCARGA</b>
+    </p-divider>
+
+
+
+
+
 
     <ng-template pTemplate="footer">
         <button (click)="mostrat(datosCPE)" pButton pRipple type="button" label="GUARDAR"
