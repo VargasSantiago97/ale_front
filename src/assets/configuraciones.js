@@ -11,5 +11,108 @@ var vars = {
     //API_URI_CONAGRO: 'http://localhost/api'
     //API_URI_CONAGRO: 'http://192.168.50.141/api'
 
-    ORDEN_CARGA: 'http://localhost/api/pdf'
+    API_CPE: 'http://localhost/cpe',
+
+    ORDEN_CARGA: 'http://localhost/api/pdf',
+
+
+    //TABLAS GENERALES CPE - AFIP
+    CPE_PROVINCIAS: [
+        {
+          descripcion: "BUENOS AIRES",
+          codigo: 1
+        },
+        {
+          descripcion: "CAP.FEDERAL",
+          codigo: 0
+        },
+        {
+          descripcion: "CATAMARCA",
+          codigo: 2
+        },
+        {
+          descripcion: "CHACO",
+          codigo: 16
+        },
+        {
+          descripcion: "CHUBUT",
+          codigo: 17
+        },
+        {
+          descripcion: "CORDOBA",
+          codigo: 3
+        },
+        {
+          descripcion: "CORRIENTES",
+          codigo: 4
+        },
+        {
+          descripcion: "ENTRE RIOS",
+          codigo: 5
+        },
+        {
+          descripcion: "FORMOSA",
+          codigo: 18
+        },
+        {
+          descripcion: "JUJUY",
+          codigo: 6
+        },
+        {
+          descripcion: "LA PAMPA",
+          codigo: 21
+        },
+        {
+          descripcion: "LA RIOJA",
+          codigo: 8
+        },
+        {
+          descripcion: "MENDOZA",
+          codigo: 7
+        },
+        {
+          descripcion: "MISIONES",
+          codigo: 19
+        },
+        {
+          descripcion: "NEUQUEN",
+          codigo: 20
+        },
+        {
+          descripcion: "RIO NEGRO",
+          codigo: 22
+        },
+        {
+          descripcion: "SALTA",
+          codigo: 9
+        },
+        {
+          descripcion: "SAN JUAN",
+          codigo: 10
+        },
+        {
+          descripcion: "SAN LUIS",
+          codigo: 11
+        },
+        {
+          descripcion: "SANTA CRUZ",
+          codigo: 23
+        },
+        {
+          descripcion: "SANTA FE",
+          codigo: 12
+        },
+        {
+          descripcion: "SGO.DEL ESTERO",
+          codigo: 13
+        },
+        {
+          descripcion: "TIER.DEL FUEGO",
+          codigo: 24
+        },
+        {
+          descripcion: "TUCUMAN",
+          codigo: 14
+        }
+      ]
 }

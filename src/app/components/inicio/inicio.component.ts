@@ -3,6 +3,7 @@ import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
 import { PadronService } from 'src/app/services/padron.service';
+import { CpeService } from 'src/app/services/cpe/cpe.service';
 
 declare var vars: any;
 const API_URI = vars.API_URI;
@@ -98,7 +99,8 @@ export class InicioComponent {
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
-        private padronService: PadronService
+        private padronService: PadronService,
+        private cpeService: CpeService
     ) { }
 
     ngOnInit() {
@@ -1036,7 +1038,77 @@ export class InicioComponent {
     }
 
     mostrat(e: any) {
-        console.log(e)
+        //console.log(e)
+        /* 
+        var data = {
+            cuit: 30715327720,
+            ejecutar: "dummy",
+            data: {}
+        }
+        var data = {
+            cuit: 30715327720,
+            ejecutar: "provincias",
+            data: {}
+        }
+        var data = {
+            cuit: 30715327720,
+            ejecutar: "tipos_grano",
+            data: {}
+        }
+        var data = {
+            cuit: 30715327720,
+            ejecutar: "localidades_por_provincias",
+            data: {
+                cod_provincia: 16
+            }
+        } 
+        */
+        var data = {
+            cuit: 30715327720,
+            ejecutar: "tipos_grano",
+            data: {}
+        } 
+        data = {
+            cuit: 30715327720,
+            ejecutar: "localidades_productor",
+            data: {
+                cuit: 30714518549
+            }
+        } 
+        data = {
+            cuit: 30715327720,
+            ejecutar: "plantas",
+            data: {
+                cuit: 3068700023
+            }
+        }
+        data = {
+            cuit: 30715327720,
+            ejecutar: "consultar_cpe_automotor",
+            data: {
+                sucursal: 0,
+                nro_orden: 1197
+            }
+        }
+        data = {
+            cuit: 30715327720,
+            ejecutar: "consultar_cpe_automotor",
+            data: {
+                ctg: 10108738847,
+            }
+        }
+
+
+        
+
+        this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+            (res:any) => {
+                console.log(res)
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
     }
 
 
