@@ -1062,6 +1062,9 @@ export class InicioComponent {
         this.datosCPE = {}
 
         this.datosCPE.tipo_cpe = 74
+        this.datosCPE.es_solicitante_campo = true
+        this.datosCPE.corresponde_retiro_productor = false
+        this.datosCPE.certificado_coe = null
 
         if (mov.id_socio) {
             this.datosCPE.cuit_solicitante = this.db_socios.some((e: any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e: any) => { return e.id == mov.id_socio }).cuit : null;
@@ -1100,8 +1103,13 @@ export class InicioComponent {
         }
 
 
-
         this.displayCPE = true
+    }
+
+    selectEsSolicitanteCampo(){
+        this.datosCPE.es_solicitante_campo = true
+        this.datosCPE.corresponde_retiro_productor = false
+        this.datosCPE.certificado_coe = null
     }
 
     buscarCUIT(cuit: any, razon_social: any) {

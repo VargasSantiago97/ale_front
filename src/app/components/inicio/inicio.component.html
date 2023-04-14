@@ -1105,6 +1105,41 @@
     <p-divider align="center">
         <b>C - PROCEDENCIA</b>
     </p-divider>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>Es un campo?</label><br>
+                <button (click)="selectEsSolicitanteCampo()" class="{{datosCPE.es_solicitante_campo == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
+                <button (click)="datosCPE.es_solicitante_campo = false" class="{{datosCPE.es_solicitante_campo == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field" *ngIf="datosCPE.es_solicitante_campo">
+                <label>Localidad:</label>
+                <br>
+                <select [(ngModel)]="datosCPE.cod_grano" class="select-class" style="width: 240px;">
+                    <option value=""></option>
+                    <option *ngFor="let grano of db_granos"
+                        value="{{grano.codigo}}">{{grano.alias}}</option>
+                </select>
+            </div>
+            <div class="field" *ngIf="!datosCPE.es_solicitante_campo">
+                <label>Corresponde retiro productor?</label><br>
+                <button (click)="datosCPE.corresponde_retiro_productor = true" class="{{datosCPE.corresponde_retiro_productor == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
+                <button (click)="datosCPE.corresponde_retiro_productor = false" class="{{datosCPE.corresponde_retiro_productor == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field" *ngIf="datosCPE.es_solicitante_campo">
+                <label>Provincia:</label><br>
+                <input type="text" class="input-text-codigo" style="width: 240px;" [(ngModel)]="datosCPE.provincia" readonly>
+            </div>
+            <div class="field" *ngIf="!datosCPE.es_solicitante_campo">
+                <label>Certificado COE:</label><br>
+                <input type="text" class="input-text-codigo" style="width: 240px;" [(ngModel)]="datosCPE.certificado_coe">
+            </div>
+        </div>
+    </div>
     <p-divider align="center">
         <b>D - DESTINO DE LA MERCADERIA</b>
     </p-divider>
