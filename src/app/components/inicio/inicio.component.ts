@@ -1062,7 +1062,6 @@ export class InicioComponent {
                 cod_provincia: 16
             }
         } 
-        */
         var data = {
             cuit: 30715327720,
             ejecutar: "tipos_grano",
@@ -1109,11 +1108,11 @@ export class InicioComponent {
                 observaciones: '',
 
                 //AGREGAR ORIGEN
-                planta_origen: 1,          //no campo
-                cod_provincia_operador: 1, //no campo
-                cod_localidad_operador: 1, //no campo
+                planta_origen: false,          //no campo -> false
+                cod_provincia_operador: false, //no campo -> false
+                cod_localidad_operador: false, //no campo -> false
                 cod_provincia_productor: 1,
-                cod_localidad_productor: 1,
+                cod_localidad_productor: 1, //es campo. En caso de no serlo -> false
 
                 //AGREGAR DESTINO
                 planta_destino: 1,
@@ -1124,7 +1123,7 @@ export class InicioComponent {
                 cuit_destinatario: 123,
 
                 //AGREGAR RETIRO PRODUCTOR
-                certificado_coe: 123123123123, //ret. product.
+                certificado_coe: false, //ret. product.Sino -> false
                 cuit_remitente_comercial_productor: 1, //ret. product.
                 corresponde_retiro_productor: false,
                 es_solicitante_campo: true,
@@ -1146,16 +1145,76 @@ export class InicioComponent {
                 cosecha: 2223,
 
                 //AGREGAR TRANSPORTE
+                cuit_transportista: 20120372913,
+                fecha_hora_partida: 1, //ver formato
+                codigo_turno: "00",
+                dominio: ["AB001ST", "AB001TS"],
+                km_recorrer: 500, //obligatorio
+                cuit_chofer: 20333333334,
+                tarifa_referencia: 100.10,
+                tarifa: 100.10,
+                cuit_pagador_flete: 20333333334,
+                cuit_intermediario_flete: 20333333334,
+                mercaderia_fumigada: true,
+            }
+        }
+        */
+        var data:any = {
+            cuit: 30715327720,
+            ejecutar: "anular_cpe",
+            data: {
+                //AGREGAR CABECERA
+                tipo_cpe: 74,
+                sucursal: 1,
+                nro_orden:null,
+            }
+        }
 
-                //AGREGAR DOMINIO
+        data = {
+            cuit: 30715327720,
+            ejecutar: "rechazo_cpe",
+            data: {
+                //AGREGAR CABECERA
+                tipo_cpe: 74,
+                sucursal: 1,
+                nro_orden:null,
+            }
+        }
 
-                //AUTORIZAR CPE AUTOMOTOR
-                ctg: 10,
+        data = {
+            cuit: 30715327720,
+            ejecutar: "editar_cpe_automotor",
+            data: {
+                //AGREGAR DESTINO
+                planta_destino: 1,
+                cod_provincia: 1,
+                es_destino_campo: false,
+                cod_localidad: 1,
+                cuit_destino: 123,
+                cuit_destinatario: 123,
+
+                //AGREGAR INTERVINIENTES
+                cuit_corredor_venta_primaria: null,
+                cuit_corredor_venta_secundaria: null,
+                cuit_remitente_comercial_venta_primaria: null,
+                cuit_remitente_comercial_venta_secundaria: null,
+                cuit_remitente_comercial_venta_secundaria2: null,
+
+                nro_ctg: null,
+                cuit_chofer: null,
+                cuit_transportista: null,
+                peso_bruto: null,
+                cod_grano: null,
+                dominio: null
             }
         }
 
 
-        
+
+
+
+
+
 
         this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
             (res:any) => {
