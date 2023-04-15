@@ -1097,6 +1097,62 @@ export class InicioComponent {
                 ctg: 10108738847,
             }
         }
+        data = {
+            cuit: 30715327720,
+            ejecutar: "autorizar_cpe_automotor",
+            data: {
+                //AGREGAR CABECERA
+                tipo_cpe: 74,
+                cuit_solicitante: 30715327720,
+                sucursal: 1,
+                nro_orden:null, //solo
+                observaciones: '',
+
+                //AGREGAR ORIGEN
+                planta_origen: 1,          //no campo
+                cod_provincia_operador: 1, //no campo
+                cod_localidad_operador: 1, //no campo
+                cod_provincia_productor: 1,
+                cod_localidad_productor: 1,
+
+                //AGREGAR DESTINO
+                planta_destino: 1,
+                cod_provincia: 1,
+                es_destino_campo: false,
+                cod_localidad: 1,
+                cuit_destino: 123,
+                cuit_destinatario: 123,
+
+                //AGREGAR RETIRO PRODUCTOR
+                certificado_coe: 123123123123, //ret. product.
+                cuit_remitente_comercial_productor: 1, //ret. product.
+                corresponde_retiro_productor: false,
+                es_solicitante_campo: true,
+
+                //AGREGAR INTERVINIENTES
+                cuit_corredor_venta_primaria: null,
+                cuit_corredor_venta_secundaria: null,
+                cuit_mercado_a_termino: null,
+                cuit_remitente_comercial_venta_primaria: null,
+                cuit_remitente_comercial_venta_secundaria: null,
+                cuit_remitente_comercial_venta_secundaria2: null,
+                cuit_representante_entregador: null,
+                cuit_representante_recibidor: null,
+
+                //AGREGAR DATOS CARGA
+                peso_tara: 1,
+                peso_bruto: 1,
+                cod_grano: 23,
+                cosecha: 2223,
+
+                //AGREGAR TRANSPORTE
+
+                //AGREGAR DOMINIO
+
+                //AUTORIZAR CPE AUTOMOTOR
+                ctg: 10,
+            }
+        }
 
 
         
