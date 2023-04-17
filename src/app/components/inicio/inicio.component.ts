@@ -6,8 +6,10 @@ import { PadronService } from 'src/app/services/padron.service';
 import { CpeService } from 'src/app/services/cpe/cpe.service';
 
 declare var vars: any;
+
 const API_URI = vars.API_URI;
 const ORDEN_CARGA = vars.ORDEN_CARGA;
+const CPE_PROVINCIAS = vars.CPE_PROVINCIAS;
 
 @Component({
     selector: 'app-inicio',
@@ -95,6 +97,9 @@ export class InicioComponent {
         "93ff9dd068be": true
     }
     intervinientesCPE: any = {};
+
+    cpePlantasDestino: any = [];
+    cpeCamposDestino: any = [];
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -1211,13 +1216,11 @@ export class InicioComponent {
 
 
 
-
         var data = {
-            cuit: 20319442473,
-            ejecutar: "consultar_cpe_automotor",
+            cuit: 30715327720,
+            ejecutar: "plantas",
             data: {
-                sucursal: 0,
-                nro_orden: 700
+                cuit: 20329623514
             }
         }
 
@@ -1258,6 +1261,7 @@ export class InicioComponent {
 
         this.datosCPE.tipo_cpe = 74
         this.datosCPE.es_solicitante_campo = true
+        this.datosCPE.es_destino_campo = false
         this.datosCPE.corresponde_retiro_productor = false
         this.datosCPE.certificado_coe = null
 
@@ -1306,6 +1310,64 @@ export class InicioComponent {
         this.datosCPE.corresponde_retiro_productor = false
         this.datosCPE.certificado_coe = null
     }
+    selectEsDestinoCampo(estado:any){
+        this.datosCPE.es_destino_campo = estado
+
+        var data:any = {} 
+
+        this.cpePlantasDestino = []
+        this.cpeCamposDestino = []
+
+        if(this.datosCPE.es_destino_campo){
+            data = {
+                cuit: 30715327720,
+                ejecutar: "localidades_productor",
+                data: {
+                    cuit: this.datosCPE.cuit_destino
+                }
+            }
+
+            this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+                (res:any) => {
+    
+                    for (let i = 0; i < res.length; i++) {
+                        let descripcion = res[i].descripcion;
+                        let idProvincia = descripcion.match(/ID Provincia: (\d+)/)[1];
+
+                        this.cpeCamposDestino.push({
+                            descripcion: descripcion,
+                            codProvincia: idProvincia,
+                            codLocalidad: res[i].codigo
+                        });
+                    }
+    
+                },
+                (err:any) => {
+                    console.log(err)
+                }
+            )
+        } else {
+            data = {
+                cuit: 30715327720,
+                ejecutar: "plantas",
+                data: {
+                    cuit: this.datosCPE.cuit_destino
+                }
+            }
+
+            this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+                (res:any) => {
+                    this.cpePlantasDestino = res    
+                },
+                (err:any) => {
+                    console.log(err)
+                }
+            )
+        }
+
+
+
+    }
 
     buscarCUIT(cuit: any, razon_social: any) {
         this.datosCPE[razon_social] = 'buscando...'
@@ -1323,6 +1385,10 @@ export class InicioComponent {
                     razonSocial = res.razonSocial
                 }
                 this.datosCPE[razon_social] = razonSocial
+
+                if(razon_social == 'destino'){
+                    this.selectEsDestinoCampo(false)
+                }
             },
             (err: any) => {
                 console.log(err)

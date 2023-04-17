@@ -23,8 +23,7 @@
 
 
 
-<button pButton pRipple type="button" label="CPE" class="p-button-success bott"
-(click)="mostrat(0)"></button>
+<button pButton pRipple type="button" label="CPE" class="p-button-success bott" (click)="mostrat(0)"></button>
 
 
 <br><br>
@@ -684,7 +683,8 @@
             <div class="field">
                 <label>CAMPAÑA</label><br>
                 <select [(ngModel)]="datosCPE.cosecha" class="select-class" style="width: 300px;">
-                    <option *ngFor="let campana of db_campanas" value="{{campana.codigo}}">{{campana.codigo}} - {{campana.descripcion}}</option>
+                    <option *ngFor="let campana of db_campanas" value="{{campana.codigo}}">{{campana.codigo}} -
+                        {{campana.descripcion}}</option>
                 </select>
             </div>
         </div>
@@ -1079,8 +1079,7 @@
                         <label>Grano/especie:</label><br>
                         <select [(ngModel)]="datosCPE.cod_grano" class="select-class" style="width: 240px;">
                             <option value=""></option>
-                            <option *ngFor="let grano of db_granos"
-                                value="{{grano.codigo}}">{{grano.alias}}</option>
+                            <option *ngFor="let grano of db_granos" value="{{grano.codigo}}">{{grano.alias}}</option>
                         </select>
                     </div>
                 </div>
@@ -1097,15 +1096,18 @@
                 <table>
                     <tr>
                         <td style="text-align: right; padding: 0px 20px 0px 0px;">PESO BRUTO (kg):</td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosCPE.peso_bruto"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosCPE.peso_bruto"><br></td>
                     </tr>
                     <tr>
                         <td style="text-align: right; padding: 0px 20px 0px 0px;">PESO TARA (kg):</td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosCPE.peso_tara"><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosCPE.peso_tara"><br></td>
                     </tr>
                     <tr>
                         <td style="text-align: right; padding: 0px 20px 0px 0px;">PESO NETO (kg):</td>
-                        <td><input type="number" step="10" class="input-text-codigo" [(ngModel)]="datosCPE.peso_bruto - datosCPE.peso_tara" readonly><br></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosCPE.peso_bruto - datosCPE.peso_tara" readonly><br></td>
                     </tr>
                 </table>
             </div>
@@ -1118,8 +1120,10 @@
         <div class="field col">
             <div class="field">
                 <label>Es un campo?</label><br>
-                <button (click)="selectEsSolicitanteCampo()" class="{{datosCPE.es_solicitante_campo == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
-                <button (click)="datosCPE.es_solicitante_campo = false" class="{{datosCPE.es_solicitante_campo == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
+                <button (click)="selectEsSolicitanteCampo()"
+                    class="{{datosCPE.es_solicitante_campo == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
+                <button (click)="datosCPE.es_solicitante_campo = false"
+                    class="{{datosCPE.es_solicitante_campo == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
             </div>
         </div>
         <div class="field col">
@@ -1128,39 +1132,121 @@
                 <br>
                 <select [(ngModel)]="datosCPE.cod_grano" class="select-class" style="width: 240px;">
                     <option value=""></option>
-                    <option *ngFor="let grano of db_granos"
-                        value="{{grano.codigo}}">{{grano.alias}}</option>
+                    <option *ngFor="let grano of db_granos" value="{{grano.codigo}}">{{grano.alias}}</option>
                 </select>
             </div>
             <div class="field" *ngIf="!datosCPE.es_solicitante_campo">
                 <label>Corresponde retiro productor?</label><br>
-                <button (click)="datosCPE.corresponde_retiro_productor = true" class="{{datosCPE.corresponde_retiro_productor == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
-                <button (click)="datosCPE.corresponde_retiro_productor = false" class="{{datosCPE.corresponde_retiro_productor == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
+                <button (click)="datosCPE.corresponde_retiro_productor = true"
+                    class="{{datosCPE.corresponde_retiro_productor == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
+                <button (click)="datosCPE.corresponde_retiro_productor = false"
+                    class="{{datosCPE.corresponde_retiro_productor == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
             </div>
         </div>
         <div class="field col">
             <div class="field" *ngIf="datosCPE.es_solicitante_campo">
                 <label>Provincia:</label><br>
-                <input type="text" class="input-text-codigo" style="width: 240px;" [(ngModel)]="datosCPE.provincia" readonly>
+                <input type="text" class="input-text-codigo" style="width: 240px;" [(ngModel)]="datosCPE.provincia"
+                    readonly>
             </div>
             <div class="field" *ngIf="!datosCPE.es_solicitante_campo">
                 <label>Certificado COE:</label><br>
-                <input type="text" class="input-text-codigo" style="width: 240px;" [(ngModel)]="datosCPE.certificado_coe">
+                <input type="text" class="input-text-codigo" style="width: 240px;"
+                    [(ngModel)]="datosCPE.certificado_coe">
             </div>
         </div>
     </div>
     <p-divider align="center">
         <b>D - DESTINO DE LA MERCADERIA</b>
     </p-divider>
+    <div class="formgrid row">
+        <div class="field col-4">
+            <div class="field">
+                <label>Es un campo?</label><br>
+                <button (click)="selectEsDestinoCampo(true)"
+                    class="{{datosCPE.es_destino_campo == true ? 'select-button-active' : 'select-button-disabled'}}">SI</button>
+                <button (click)="selectEsDestinoCampo(false)"
+                    class="{{datosCPE.es_destino_campo == false ? 'select-button-active' : 'select-button-disabled'}}">NO</button>
+            </div>
+        </div>
+        <div class="field col-8" *ngIf="datosCPE.es_destino_campo">
+            <div class="field">
+                <label>Establecimiento:</label>
+                <br>
+                <select [(ngModel)]="datosCPE.cod_grano" class="select-class" style="width: 600px;">
+                    <option value=""></option>
+                    <option *ngFor="let campo of cpeCamposDestino" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{campo.codProvincia}} - Loc.: {{campo.codLocalidad}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="field col-8" *ngIf="!datosCPE.es_destino_campo">
+            <div class="field">
+                <label>Planta:</label><br>
+                <select [(ngModel)]="datosCPE.cod_grano" class="select-class" style="width: 600px;">
+                    <option value=""></option>
+                    <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N° {{planta.nroPlanta}}. Prov.: {{planta.codProvincia}} - Loc.: {{planta.codLocalidad}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <p-divider align="center">
         <b>E - DATOS DEL TRANSPORTE</b>
     </p-divider>
-    <p-divider align="center">
-        <b>F - CONTINGENCIAS</b>
-    </p-divider>
-    <p-divider align="center">
-        <b>G - DESCARGA</b>
-    </p-divider>
+
+    <div class="formgrid row">
+        <div class="field col-2">
+            <div class="field">
+                <label>Dominio Chasis</label><br>
+                <input type="text" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+        <div class="field col-2">
+            <div class="field">
+                <label>Dominio Acoplado</label><br>
+                <input type="text" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+        <div class="field col-2">
+            <div class="field">
+                <label>Dominio Otro</label><br>
+                <input type="text" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+        <div class="field col-3">
+            <div class="field">
+                <label>Partida:</label><br>
+                <input type="datetime-local" [(ngModel)]="datosMovimiento.fecha" class="select-class">
+            </div>
+        </div>
+        <div class="field col-3">
+            <div class="field">
+                <label>Kms. a recorrer:</label><br>
+                <input type="number" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>N° de Turno:</label><br>
+                <input type="text" class="input-text-codigo" style="width: 500px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>Tarifa Referencia</label><br>
+                <input type="text" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>Tarifa</label><br>
+                <input type="text" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.provincia">
+            </div>
+        </div>
+    </div>
 
 
 
