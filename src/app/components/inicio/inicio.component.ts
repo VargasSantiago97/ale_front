@@ -1158,8 +1158,7 @@ export class InicioComponent {
                 mercaderia_fumigada: true,
             }
         }
-        */
-        var data:any = {
+                var data:any = {
             cuit: 30715327720,
             ejecutar: "anular_cpe",
             data: {
@@ -1208,10 +1207,19 @@ export class InicioComponent {
                 dominio: null
             }
         }
+        */
 
 
 
 
+        var data = {
+            cuit: 20319442473,
+            ejecutar: "consultar_cpe_automotor",
+            data: {
+                sucursal: 0,
+                nro_orden: 700
+            }
+        }
 
 
 
