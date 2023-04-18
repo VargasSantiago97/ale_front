@@ -15,6 +15,8 @@ var vars = {
 
     ORDEN_CARGA: 'http://localhost/api/pdf',
 
+    SUCURSAL: 1,
+
 
     //TABLAS GENERALES CPE - AFIP
     CPE_PROVINCIAS: [
@@ -114,5 +116,5 @@ var vars = {
           descripcion: "TUCUMAN",
           codigo: 14
         }
-      ]
+      ],
 }
