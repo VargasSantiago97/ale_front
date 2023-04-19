@@ -1132,7 +1132,7 @@
                 <br>
                 <select [(ngModel)]="datosCPE.cod_localidad_productor" class="select-class" style="width: 600px;">
                     <option value=""></option>
-                    <option *ngFor="let campo of cpeCamposOrigen" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{campo.codProvincia}} - Loc.: {{campo.codLocalidad}}</option>
+                    <option *ngFor="let campo of cpeCamposOrigen" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{transformarDatoMostrar(campo.codProvincia, 'provinciaCPE')}} - Loc.: {{campo.codLocalidad}}</option>
                 </select>
             </div>
         </div>
@@ -1172,7 +1172,7 @@
                 <br>
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
-                    <option *ngFor="let campo of cpeCamposDestino" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{campo.codProvincia}} - Loc.: {{campo.codLocalidad}}</option>
+                    <option *ngFor="let campo of cpeCamposDestino" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{transformarDatoMostrar(campo.codProvincia, 'provinciaCPE')}} - Loc.: {{campo.codLocalidad}}</option>
                 </select>
             </div>
         </div>
@@ -1181,7 +1181,7 @@
                 <label>Planta:</label><br>
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
-                    <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N° {{planta.nroPlanta}}. Prov.: {{planta.codProvincia}} - Loc.: {{planta.codLocalidad}}</option>
+                    <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N° {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}} - Loc.: {{planta.codLocalidad}}</option>
                 </select>
             </div>
         </div>

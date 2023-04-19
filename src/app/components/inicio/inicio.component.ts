@@ -9,7 +9,7 @@ declare var vars: any;
 
 const API_URI = vars.API_URI;
 const ORDEN_CARGA = vars.ORDEN_CARGA;
-const CPE_PROVINCIAS = vars.CPE_PROVINCIAS;
+const CPE_PROVINCIAS:any = vars.CPE_PROVINCIAS;
 const SUCURSAL = vars.SUCURSAL;
 
 @Component({
@@ -902,6 +902,10 @@ export class InicioComponent {
             return this.optionsDe.some((e: any) => { return e.id == dato }) ? this.optionsDe.find((e: any) => { return e.id == dato }).label : '-'
         }
 
+        if (tipo == 'provinciaCPE') {
+            return CPE_PROVINCIAS.some((e: any) => { return e.codigo == dato }) ? CPE_PROVINCIAS.find((e: any) => { return e.codigo == dato }).descripcion : dato
+        }
+
         return dato
     }
     transformarDatoMostrarTabla(registro: any, tipo: any) {
@@ -1219,12 +1223,11 @@ export class InicioComponent {
         */
 
 
-
         var data = {
             cuit: 30715327720,
-            ejecutar: "plantas",
+            ejecutar: "consultar_cpe_automotor",
             data: {
-                cuit: 20329623514
+                ctg: 10108540384,
             }
         }
 
@@ -1473,6 +1476,9 @@ export class InicioComponent {
         if(this.datosCPE.es_destino_campo){
             data.data.es_destino_campo = true
 
+            data.data.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad : null
+            data.data.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia : null
+
 
         } else {
             data.data.es_destino_campo = false
@@ -1481,11 +1487,11 @@ export class InicioComponent {
 
 
 /*      //AGREGAR DESTINO
-        es_destino_campo: false,
+
 
         planta_destino: 1,
-        cod_localidad: 1,
-        cod_provincia: 1,
+        : 1,
+        : 1,
  */
 
 
