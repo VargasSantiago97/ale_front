@@ -11,6 +11,7 @@ const API_URI = vars.API_URI;
 const ORDEN_CARGA = vars.ORDEN_CARGA;
 const CPE_PROVINCIAS:any = vars.CPE_PROVINCIAS;
 const SUCURSAL = vars.SUCURSAL;
+const PDF_CPE_URI = vars.PDF_CPE_URI;
 
 @Component({
     selector: 'app-inicio',
@@ -1222,21 +1223,22 @@ export class InicioComponent {
         }
         */
 
-
         var data = {
             cuit: 30715327720,
             ejecutar: "consultar_cpe_automotor",
             data: {
-                ctg: 10108540384,
+                sucursal: 0,
+                nro_orden: 568
             }
         }
-
-
 
 
         this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
             (res: any) => {
                 console.log(res)
+                if(res.mensaje.toString().length == 11){
+                    window.open(PDF_CPE_URI + '/' + res.mensaje + '.pdf', '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
+                }
             },
             (err: any) => {
                 console.log(err)
@@ -1272,6 +1274,7 @@ export class InicioComponent {
         this.datosCPE.es_destino_campo = false
         this.datosCPE.corresponde_retiro_productor = false
         this.datosCPE.certificado_coe = null
+        this.datosCPE.mercaderia_fumigada = false
 
         if (mov.id_socio) {
             this.datosCPE.cuit_solicitante = this.db_socios.some((e: any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e: any) => { return e.id == mov.id_socio }).cuit : null;
@@ -1291,9 +1294,9 @@ export class InicioComponent {
         }
         if (mov.id_camion) {
             var camion = this.db_camiones.some((e: any) => { return e.id == mov.id_socio }) ? this.db_camiones.find((e: any) => { return e.id == mov.id_camion }) : null;
-            this.datosCPE.dominio = camion ? (camion.patente_chasis ? camion.patente_chasis : '') : ''
-            this.datosCPE.dominio2 = camion ? (camion.patente_acoplado ? camion.patente_acoplado : '') : ''
-            this.datosCPE.dominio3 = camion ? (camion.patente_otro ? camion.patente_otro : '') : ''
+            this.datosCPE.dominio = camion ? (camion.patente_chasis ? camion.patente_chasis : null) : null
+            this.datosCPE.dominio2 = camion ? (camion.patente_acoplado ? camion.patente_acoplado : null) : null
+            this.datosCPE.dominio3 = camion ? (camion.patente_otro ? camion.patente_otro : null) : null
         }
         if (mov.id_grano) {
             this.datosCPE.cod_grano = this.db_granos.some((e: any) => { return e.id == mov.id_grano }) ? this.db_granos.find((e: any) => { return e.id == mov.id_grano }).codigo : null;
@@ -1478,75 +1481,72 @@ export class InicioComponent {
 
             data.data.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad : null
             data.data.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia : null
-
+            data.data.planta_destino = 1
 
         } else {
             data.data.es_destino_campo = false
+
+            data.data.cod_localidad = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codLocalidad : null
+            data.data.cod_provincia = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codProvincia : null
+            data.data.planta_destino = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.datosCPE.cod_destino : null
         }
 
+        //INTERVINIENTES
+        data.data.cuit_corredor_venta_primaria = this.datosCPE.cuit_corredor_venta_primaria ? this.datosCPE.cuit_corredor_venta_primaria : null
+        data.data.cuit_corredor_venta_secundaria = this.datosCPE.cuit_corredor_venta_secundaria ? this.datosCPE.cuit_corredor_venta_secundaria : null
+        data.data.cuit_mercado_a_termino = this.datosCPE.cuit_mercado_a_termino ? this.datosCPE.cuit_mercado_a_termino : null
+        data.data.cuit_remitente_comercial_venta_primaria = this.datosCPE.cuit_remitente_comercial_venta_primaria ? this.datosCPE.cuit_remitente_comercial_venta_primaria : null
+        data.data.cuit_remitente_comercial_venta_secundaria = this.datosCPE.cuit_remitente_comercial_venta_secundaria ? this.datosCPE.cuit_remitente_comercial_venta_secundaria : null
+        data.data.cuit_remitente_comercial_venta_secundaria2 = this.datosCPE.cuit_remitente_comercial_venta_secundaria2 ? this.datosCPE.cuit_remitente_comercial_venta_secundaria2 : null
+        data.data.cuit_representante_entregador = this.datosCPE.cuit_representante_entregador ? this.datosCPE.cuit_representante_entregador : null
+        data.data.cuit_representante_recibidor = this.datosCPE.cuit_representante_recibidor ? this.datosCPE.cuit_representante_recibidor : null
 
+        //DATOS CARGA
+        data.data.peso_tara = this.datosCPE.peso_tara ? this.datosCPE.peso_tara : null
+        data.data.peso_bruto = this.datosCPE.peso_bruto ? this.datosCPE.peso_bruto : null
+        data.data.cod_grano = this.datosCPE.cod_grano ? this.datosCPE.cod_grano : null
+        data.data.cosecha = this.datosCPE.cosecha ? this.datosCPE.cosecha : null
 
-/*      //AGREGAR DESTINO
+        //AGREGAR TRANSPORTE
+        data.data.cuit_transportista = this.datosCPE.cuit_transportista ? this.datosCPE.cuit_transportista : null
+        data.data.cuit_pagador_flete = this.datosCPE.cuit_pagador_flete ? this.datosCPE.cuit_pagador_flete : null
+        data.data.cuit_intermediario_flete = this.datosCPE.cuit_intermediario_flete ? this.datosCPE.cuit_intermediario_flete : null
+        data.data.cuit_chofer = this.datosCPE.cuit_chofer ? this.datosCPE.cuit_chofer : null
 
+        data.data.mercaderia_fumigada = this.datosCPE.mercaderia_fumigada ? true : false
+        data.data.km_recorrer = this.datosCPE.km_recorrer ? parseFloat(this.datosCPE.km_recorrer) : null
+        data.data.tarifa_referencia = this.datosCPE.tarifa_referencia ? parseFloat(this.datosCPE.tarifa_referencia) : null
+        data.data.tarifa = this.datosCPE.tarifa ? parseFloat(this.datosCPE.tarifa) : null
+        data.data.codigo_turno = this.datosCPE.codigo_turno ? this.datosCPE.codigo_turno : null
+        data.data.fecha_hora_partida = this.datosCPE.fecha_hora_partida ? this.datosCPE.fecha_hora_partida : null
 
-        planta_destino: 1,
-        : 1,
-        : 1,
- */
+        data.data.dominio = []
 
+        this.datosCPE.dominio ? data.data.dominio.push(this.datosCPE.dominio) : null
+        this.datosCPE.dominio2 ? data.data.dominio.push(this.datosCPE.dominio2) : null
+        this.datosCPE.dominio3 ? data.data.dominio.push(this.datosCPE.dominio3) : null
 
-    /* 
-
-        data = {
-            data: {
-
-                //AGREGAR DESTINO
-                planta_destino: 1,
-                cod_provincia: 1,
-                es_destino_campo: false,
-                cod_localidad: 1,
-                cuit_destino: 123,
-                cuit_destinatario: 123,
-
-
-                //AGREGAR INTERVINIENTES
-                cuit_corredor_venta_primaria: null,
-                cuit_corredor_venta_secundaria: null,
-                cuit_mercado_a_termino: null,
-                cuit_remitente_comercial_venta_primaria: null,
-                cuit_remitente_comercial_venta_secundaria: null,
-                cuit_remitente_comercial_venta_secundaria2: null,
-                cuit_representante_entregador: null,
-                cuit_representante_recibidor: null,
-
-                //AGREGAR DATOS CARGA
-                peso_tara: 1,
-                peso_bruto: 1,
-                cod_grano: 23,
-                cosecha: 2223,
-
-                //AGREGAR TRANSPORTE
-                cuit_transportista: 20120372913,
-                fecha_hora_partida: 1, //ver formato
-                codigo_turno: "00",
-                dominio: ["AB001ST", "AB001TS"],
-                km_recorrer: 500, //obligatorio
-                cuit_chofer: 20333333334,
-                tarifa_referencia: 100.10,
-                tarifa: 100.10,
-                cuit_pagador_flete: 20333333334,
-                cuit_intermediario_flete: 20333333334,
-                mercaderia_fumigada: true,
-            }
-        } */
 
         if(errores.length){
             console.log('Error!')
+            alert('Error!, ver consola')
             errores.forEach(element => {
                 console.log(element)
             });
         } else {
-            console.log(data['data'])
+            if(confirm("Desea realizar CPE?")){
+                console.log(data['data'])
+
+                this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+                    (res: any) => {
+                        console.log(res)
+                    },
+                    (err: any) => {
+                        console.log(err)
+                    }
+                )
+
+            }
         }
 
         

@@ -14,6 +14,8 @@ var vars = {
     API_CPE: 'http://localhost/cpe',
 
     ORDEN_CARGA: 'http://localhost/api/pdf',
+  
+    PDF_CPE_URI: 'http://localhost/cpe/pdf_cpe',
 
     SUCURSAL: 1,
 

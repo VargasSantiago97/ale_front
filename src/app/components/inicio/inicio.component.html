@@ -45,7 +45,7 @@
     <ng-template pTemplate="body" let-registro let-columns="columns">
         <tr (dblclick)="mostrarMovimiento(registro)">
             <td>
-                <input type="checkbox" style="width: 20px;">
+                <input type="checkbox">
             </td>
             <td *ngFor="let col of columns">
                 {{transformarDatoMostrarTabla(registro, col.field)}}
@@ -1246,10 +1246,16 @@
     </div>
     <br>
     <div class="formgrid row">
-        <div class="field col">
+        <div class="field col-9">
             <div class="field">
                 <label>Observaciones:</label><br>
                 <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosCPE.observaciones">
+            </div>
+        </div>
+        <div class="field col-3">
+            <div class="field">
+                <label>Mercadería fumigada:</label><br>
+                <input type="checkbox" [(ngModel)]="datosCPE.mercaderia_fumigada">
             </div>
         </div>
     </div>
