@@ -1,5 +1,5 @@
 <div style="text-align: center;"
-    *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_corredores || load_acopios || load_movimientos">
+    *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_corredores || load_acopios || load_ordenes_carga || load_intervinientes || load_movimientos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -36,7 +36,6 @@
     </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
-            <th>#</th>
             <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
                 {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
             </th>
@@ -44,15 +43,19 @@
     </ng-template>
     <ng-template pTemplate="body" let-registro let-columns="columns">
         <tr (dblclick)="mostrarMovimiento(registro)">
-            <td>
-                <input type="checkbox">
-            </td>
             <td *ngFor="let col of columns">
                 {{transformarDatoMostrarTabla(registro, col.field)}}
+
                 <div *ngIf="col.field == 'orden'">
-                    <button class="button-tabla"><i class="pi pi-download"></i></button>
-                    <button class="button-tabla"><i class="pi pi-eye"></i></button>
+                    <button *ngIf="!transformarDatoMostrarTabla(registro.id, 'existeOrdenCarga')"
+                        class="button-tabla"><i class="pi pi-plus-circle"
+                            (click)="agregarOrdenCargaRegistro(registro)"></i></button>
+                    <a *ngIf="transformarDatoMostrarTabla(registro.id, 'existeOrdenCarga')" href="#"
+                        onclick="event.preventDefault();"
+                        (click)="mostrarModalOrdenCarga(registro.id)">{{transformarDatoMostrarTabla(registro,
+                        'ordenNumero')}}</a>
                 </div>
+
                 <div *ngIf="col.field == 'ctg' && permiteCrearCTG[registro.id]">
                     <button class="button-tabla" (click)="abrirModalCrearCPE(registro)"><i
                             class="pi pi-plus-circle"></i></button>
@@ -642,6 +645,8 @@
             (click)="guardarOrdenCarga('guardar_ver')"></button>
         <button pButton pRipple type="button" label="GUARDAR Y DESCARGAR" class="p-button-success bott"
             (click)="guardarOrdenCarga('guardar_descargar')"></button>
+        <button *ngIf="datosOrdenCarga.id" (click)="borrarOrdenCarga(datosOrdenCarga.id)" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+            (click)="displayOrdenCarga = false"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
             (click)="displayOrdenCarga = false"></button>
     </ng-template>
@@ -674,7 +679,8 @@
         <div class="field col">
             <div class="field">
                 <label>Titular</label><br>
-                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class" style="width: 300px;" (ngModelChange)="onSelectSolicitante()">
+                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class" style="width: 300px;"
+                    (ngModelChange)="onSelectSolicitante()">
                     <option *ngFor="let socio of db_socios" value="{{socio.cuit}}">{{socio.razon_social}}</option>
                 </select>
             </div>
@@ -1132,7 +1138,9 @@
                 <br>
                 <select [(ngModel)]="datosCPE.cod_localidad_productor" class="select-class" style="width: 600px;">
                     <option value=""></option>
-                    <option *ngFor="let campo of cpeCamposOrigen" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{transformarDatoMostrar(campo.codProvincia, 'provinciaCPE')}} - Loc.: {{campo.codLocalidad}}</option>
+                    <option *ngFor="let campo of cpeCamposOrigen" value="{{campo.codLocalidad}}">{{campo.descripcion}}.
+                        Prov.: {{transformarDatoMostrar(campo.codProvincia, 'provinciaCPE')}} - Loc.:
+                        {{campo.codLocalidad}}</option>
                 </select>
             </div>
         </div>
@@ -1172,7 +1180,9 @@
                 <br>
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
-                    <option *ngFor="let campo of cpeCamposDestino" value="{{campo.codLocalidad}}">{{campo.descripcion}}. Prov.: {{transformarDatoMostrar(campo.codProvincia, 'provinciaCPE')}} - Loc.: {{campo.codLocalidad}}</option>
+                    <option *ngFor="let campo of cpeCamposDestino" value="{{campo.codLocalidad}}">{{campo.descripcion}}.
+                        Prov.: {{transformarDatoMostrar(campo.codProvincia, 'provinciaCPE')}} - Loc.:
+                        {{campo.codLocalidad}}</option>
                 </select>
             </div>
         </div>
@@ -1181,7 +1191,9 @@
                 <label>Planta:</label><br>
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
-                    <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N° {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}} - Loc.: {{planta.codLocalidad}}</option>
+                    <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N°
+                        {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}} -
+                        Loc.: {{planta.codLocalidad}}</option>
                 </select>
             </div>
         </div>
@@ -1234,7 +1246,8 @@
         <div class="field col">
             <div class="field">
                 <label>Tarifa Referencia</label><br>
-                <input type="number" class="input-text-codigo" style="width: 150px;" [(ngModel)]="datosCPE.tarifa_referencia">
+                <input type="number" class="input-text-codigo" style="width: 150px;"
+                    [(ngModel)]="datosCPE.tarifa_referencia">
             </div>
         </div>
         <div class="field col">
@@ -1262,8 +1275,10 @@
 
 
     <ng-template pTemplate="footer">
-        <button (click)="mostrar(datosCPE)" pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"></button>
-        <button (click)="autorizarGuardarCPE()" pButton pRipple type="button" label="AUTORIZAR Y GUARDAR" class="p-button-success bott"></button>
+        <button (click)="mostrar(datosCPE)" pButton pRipple type="button" label="GUARDAR"
+            class="p-button-success bott"></button>
+        <button (click)="autorizarGuardarCPE()" pButton pRipple type="button" label="AUTORIZAR Y GUARDAR"
+            class="p-button-success bott"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
             (click)="displayCPE = false"></button>
     </ng-template>

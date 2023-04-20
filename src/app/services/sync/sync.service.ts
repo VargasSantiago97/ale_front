@@ -84,7 +84,6 @@ export class SyncService {
     
                 if(ult_mod_local != ult_mod_server){
                     this.tablasAModificar.push(tabla)
-                    console.log(tabla)
                 }
             }
         });

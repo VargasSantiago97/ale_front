@@ -18,6 +18,7 @@ var vars = {
     PDF_CPE_URI: 'http://localhost/cpe/pdf_cpe',
 
     SUCURSAL: 1,
+    PUNTO_ORDEN_CARGA: 1,
 
 
     //TABLAS GENERALES CPE - AFIP

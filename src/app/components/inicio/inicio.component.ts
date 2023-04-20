@@ -12,6 +12,7 @@ const ORDEN_CARGA = vars.ORDEN_CARGA;
 const CPE_PROVINCIAS:any = vars.CPE_PROVINCIAS;
 const SUCURSAL = vars.SUCURSAL;
 const PDF_CPE_URI = vars.PDF_CPE_URI;
+const PUNTO_ORDEN_CARGA = vars.PUNTO_ORDEN_CARGA;
 
 @Component({
     selector: 'app-inicio',
@@ -50,7 +51,9 @@ export class InicioComponent {
     db_banderas: any = []
     db_corredores: any = []
     db_acopios: any = []
+    db_ordenes_carga: any = []
     db_movimientos: any = []
+    db_intervinientes: any = []
 
 
     load_camiones: any = true
@@ -66,7 +69,9 @@ export class InicioComponent {
     load_banderas: any = true
     load_corredores: any = true
     load_acopios: any = true
+    load_ordenes_carga: any = true
     load_movimientos: any = true
+    load_intervinientes: any = true
 
 
     datosRegistro: any;
@@ -182,6 +187,8 @@ export class InicioComponent {
         this.obtenerBanderas()
         this.obtenerCorredores()
         this.obtenerAcopios()
+        this.obtenerOrdenesCarga()
+        this.obtenerIntervinientes()
         this.obtenerMovimientos()
 
         this.datosMovimiento = {
@@ -388,6 +395,31 @@ export class InicioComponent {
             }
         )
     }
+    obtenerOrdenesCarga(){
+        this.comunicacionService.getDB('orden_carga').subscribe(
+            (res: any) => {
+                this.db_ordenes_carga = res;
+                this.load_ordenes_carga = false;
+                this.datosParaTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerIntervinientes(){
+        this.comunicacionService.getDB('intervinientes').subscribe(
+            (res: any) => {
+                console.log(res)
+                this.db_intervinientes = res;
+                this.load_intervinientes = false;
+                this.datosParaTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
     obtenerMovimientos() {
         this.comunicacionService.getDB('movimientos').subscribe(
             (res: any) => {
@@ -438,7 +470,7 @@ export class InicioComponent {
     }
 
     datosParaTabla() {
-        if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_corredores || this.load_acopios || this.load_movimientos)) {
+        if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_corredores || this.load_acopios || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
             this.db_movimientos.forEach((e: any) => {
@@ -792,11 +824,14 @@ export class InicioComponent {
 
     //ORDEN CARGA
     nuevaOrdenCarga() {
+
         var fecha = new Date(this.datosMovimiento.fecha);
         const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
 
         this.datosOrdenCarga = {
-            numero: '01-0001',
+            id: null,
+            id_movimiento: this.datosMovimiento.id,
+            numero: this.generateNumeroOrdenDeCarga(),
             fecha: fechaFormateada,
             beneficiario: this.transformarDatoMostrar(this.datosMovimiento.id_socio, "socio").toUpperCase(),
             transportista: this.transformarDatoMostrar(this.datosMovimiento.id_transporte, "transporte").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
@@ -817,6 +852,14 @@ export class InicioComponent {
     }
 
     guardarOrdenCarga(accion: any) {
+
+
+        if(this.datosOrdenCarga.id){
+            this.editarOrdenCargaEnDB()
+        } else {
+            this.guardarOrdenCargaEnDB()
+        }
+
         if (accion == 'guardar_ver') {
             this.mostrarOrdenCarga('ver')
         }
@@ -826,6 +869,92 @@ export class InicioComponent {
 
         this.displayOrdenCarga = false
 
+    }
+
+    agregarOrdenCargaRegistro(registro:any){
+
+        var fecha = new Date(registro.fecha);
+        const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
+
+        this.datosOrdenCarga = {
+            id: null,
+            id_movimiento: registro.id,
+            numero: this.generateNumeroOrdenDeCarga(),
+            fecha: fechaFormateada,
+            beneficiario: this.transformarDatoMostrar(registro.id_socio, "socio").toUpperCase(),
+            transportista: this.transformarDatoMostrar(registro.id_transporte, "transporte").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            conductor: this.transformarDatoMostrar(registro.id_chofer, "chofer").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            patentes: this.transformarDatoMostrar(registro.id_camion, "patentes"),
+            establecimiento: this.transformarDatoMostrar(registro.id_origen, "establecimiento").toUpperCase(),
+            cultivo: this.transformarDatoMostrar(registro.id_grano, "grano").toUpperCase(),
+            trilla_silo: this.transformarDatoMostrar(registro.tipo_origen, "tipo_origen").toUpperCase(),
+            tara: this.transformarDatoMostrar(registro.kg_tara, "kilos"),
+            bruto: this.transformarDatoMostrar(registro.kg_bruto, "kilos"),
+            neto: this.transformarDatoMostrar(registro.kg_neto, "kilos"),
+            firma1: this.transformarDatoMostrar(registro.id_chofer, "chofer").split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" "),
+            firma2: 'cargador',
+            observaciones: ''
+        }
+
+        this.displayOrdenCarga = true
+    }
+    mostrarModalOrdenCarga(registro:any){
+        var ordenCarga:any = this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == registro })
+
+        this.datosOrdenCarga = ordenCarga
+
+        this.displayOrdenCarga = true
+    }
+
+    guardarOrdenCargaEnDB(){
+        var idd = this.generateUUID()
+        if (this.db_ordenes_carga.some((e: any) => { return e.id == idd })) {
+            this.guardarOrdenCargaEnDB()
+            return
+        }
+
+        this.datosOrdenCarga.id = idd
+
+        this.datosOrdenCarga.activo = 1
+
+        this.comunicacionService.createDB("orden_carga", this.datosOrdenCarga).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.obtenerOrdenesCarga()
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+    }
+    editarOrdenCargaEnDB(){
+        this.comunicacionService.updateDB("orden_carga", this.datosOrdenCarga).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.obtenerOrdenesCarga()
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+    }
+
+    borrarOrdenCarga(ordenCarga:any){
+        if (confirm('Desea eliminar elemento?')) {
+            ordenCarga.estado = 0
+            this.comunicacionService.updateDB("orden_carga", ordenCarga).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.obtenerOrdenesCarga()
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
     }
 
     //plantilla
@@ -848,6 +977,20 @@ export class InicioComponent {
             return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return uuid;
+    }
+    generateNumeroOrdenDeCarga() {
+
+        const numeroMasGrande = this.db_ordenes_carga.reduce((acumulado:any, objetoActual:any) => {
+            if(parseInt(objetoActual.numero.split("-")[0]) == parseInt(PUNTO_ORDEN_CARGA)){
+                const valor = parseInt(objetoActual.numero.split("-")[1])
+                return Math.max(acumulado, valor);
+            }
+            return false
+        }, 0);
+
+        const punto = PUNTO_ORDEN_CARGA.toString().padStart(2, '0');
+        const numero = (numeroMasGrande+1).toString().padStart(5, '0');
+        return punto + "-" + numero;
     }
 
     transformarDatoMostrar(dato: any, tipo: any) {
@@ -922,7 +1065,17 @@ export class InicioComponent {
             return this.db_socios.some((e: any) => { return e.id == registro.id_socio }) ? this.db_socios.find((e: any) => { return e.id == registro.id_socio }).alias : '-'
         }
         if (tipo == 'orden') {
-            return '~orden~'
+            return ""
+        }
+        if (tipo == 'ordenNumero') {
+            if(this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == registro.id})){
+                return this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == registro.id}).numero
+            } else {
+                return ""
+            }
+        }
+        if (tipo == 'existeOrdenCarga') {
+            return this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == registro})
         }
         if (tipo == 'cpe') {
             return '~cpe~'
@@ -1249,22 +1402,24 @@ export class InicioComponent {
 
     abrirModalCrearCPE(mov: any) {
         this.intervinientesCPE = {
-            destinatario: [... this.db_socios],
-            destino: [... this.db_socios],
-            corredor_venta_primaria: [... this.db_socios],
-            corredor_venta_secundaria: [... this.db_socios],
-            mercado_a_termino: [... this.db_socios],
-            remitente_comercial_venta_primaria: [... this.db_socios],
-            remitente_comercial_venta_secundaria: [... this.db_socios],
-            remitente_comercial_venta_secundaria2: [... this.db_socios],
-            representante_entregador: [... this.db_socios],
-            representante_recibidor: [... this.db_socios],
-            remitente_comercial_productor: [... this.db_socios],
+            destinatario: [... this.db_intervinientes.filter((e:any) => { return e.dstro == 1})],
+            destino: [... this.db_intervinientes.filter((e:any) => { return e.dstno == 1})],
+            corredor_venta_primaria: [... this.db_intervinientes.filter((e:any) => { return e.corvtapri == 1})],
+            corredor_venta_secundaria: [... this.db_intervinientes.filter((e:any) => { return e.corvtasec == 1})],
+            mercado_a_termino: [... this.db_intervinientes.filter((e:any) => { return e.mertermino == 1})],
+            remitente_comercial_venta_primaria: [... this.db_intervinientes.filter((e:any) => { return e.rtecomvtapri == 1})],
+            remitente_comercial_venta_secundaria: [... this.db_intervinientes.filter((e:any) => { return e.rtecomvtasec == 1})],
+            remitente_comercial_venta_secundaria2: [... this.db_intervinientes.filter((e:any) => { return e.rtecomvtasec2 == 1})],
+            representante_entregador: [... this.db_intervinientes.filter((e:any) => { return e.rteent == 1})],
+            representante_recibidor: [... this.db_intervinientes.filter((e:any) => { return e.rterec == 1})],
+            remitente_comercial_productor: [... this.db_intervinientes.filter((e:any) => { return e.rtecomprod == 1})],
+            intermediario_flete: [... this.db_intervinientes.filter((e:any) => { return e.intflet == 1})],
+            pagador_flete: [... this.db_intervinientes.filter((e:any) => { return e.pagflet == 1})],
             chofer: [... this.db_choferes],
-            intermediario_flete: [... this.db_socios],
-            pagador_flete: [... this.db_socios],
             transportista: [... this.db_transportistas]
         }
+
+
 
         this.datosCPE = {}
 
@@ -1744,5 +1899,10 @@ export class InicioComponent {
             "dominio": "AC001ST"
         }
     ]
+
+    {
+        "tabla": "orden_carga",
+        "columnas": ["id", "id_movimiento", "numero", "fecha", "beneficiario", "transportista", "conductor", "patentes", "establecimiento", "cultivo", "trilla_silo", "tara", "bruto", "neto", "firma1", "firma2", "observaciones", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
+    },
 }
  */
