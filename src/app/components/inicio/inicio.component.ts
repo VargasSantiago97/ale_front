@@ -1224,11 +1224,11 @@ export class InicioComponent {
         */
 
         var data = {
-            cuit: 30715327720,
+            cuit: 20319442473,
             ejecutar: "consultar_cpe_automotor",
             data: {
                 sucursal: 0,
-                nro_orden: 568
+                nro_orden: 205
             }
         }
 
@@ -1536,7 +1536,7 @@ export class InicioComponent {
         } else {
             if(confirm("Desea realizar CPE?")){
                 console.log(data['data'])
-
+/* 
                 this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                     (res: any) => {
                         console.log(res)
@@ -1545,7 +1545,7 @@ export class InicioComponent {
                         console.log(err)
                     }
                 )
-
+ */
             }
         }
 
