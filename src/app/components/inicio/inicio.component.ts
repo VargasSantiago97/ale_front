@@ -1429,7 +1429,7 @@ export class InicioComponent {
         this.datosCPE.es_destino_campo = false
         this.datosCPE.corresponde_retiro_productor = false
         this.datosCPE.certificado_coe = null
-        this.datosCPE.mercaderia_fumigada = false
+        this.datosCPE.mercaderia_fumigada = true
 
         if (mov.id_socio) {
             this.datosCPE.cuit_solicitante = this.db_socios.some((e: any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e: any) => { return e.id == mov.id_socio }).cuit : null;
@@ -1740,6 +1740,54 @@ export class InicioComponent {
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
 
 /*
+CPE DB:
+"creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado", "data"
+nro_cpe
+nro_ctg
+id_movimiento
+cuit_solicitante
+tipo_cpe
+observaciones
+es_solicitante_campo
+cod_localidad_productor
+planta_origen
+cod_provincia_operador
+cod_localidad_operador
+cod_provincia_productor
+cod_localidad_productor
+corresponde_retiro_productor
+certificado_coe
+cuit_remitente_comercial_productor
+cuit_destino
+cuit_destinatario
+es_destino_campo
+cod_localidad
+cod_provincia
+planta_destino
+cuit_corredor_venta_primaria
+cuit_corredor_venta_secundaria
+cuit_mercado_a_termino
+cuit_remitente_comercial_venta_primaria
+cuit_remitente_comercial_venta_secundaria
+cuit_remitente_comercial_venta_secundaria2
+cuit_representante_entregador
+cuit_representante_recibidor
+peso_tara
+peso_bruto
+cod_grano
+cosecha
+cuit_transportista
+cuit_pagador_flete
+cuit_intermediario_flete
+cuit_chofer
+mercaderia_fumigada
+km_recorrer
+tarifa_referencia
+tarifa
+codigo_turno
+fecha_hora_partida
+dominio
+
 {
     "contingencia": [
         {
@@ -1788,7 +1836,7 @@ export class InicioComponent {
             "cod_localidad_productor": 14310, 
             "cod_provincia_productor": 1
         }
-    ], 
+    ],
     "retiro_productor": [
         {
             "certificado_coe": null, 
@@ -1796,9 +1844,9 @@ export class InicioComponent {
             "cuit_remitente_comercial_productor": null, 
             "es_solicitante_campo": "true"
         }
-    ], 
-    "sucursal": 222, 
-    "": 74, 
+    ],
+    "sucursal": 222,
+    "": 74,
     "transporte": [
         {
             "codigo_turno": null, 
@@ -1812,7 +1860,7 @@ export class InicioComponent {
             "mercaderia_fumigada": "true", 
             "tarifa": null, 
             "tarifa_referencia": 1234.5
-        }, 
+        },
         {
             "dominio": "AC001ST"
         }

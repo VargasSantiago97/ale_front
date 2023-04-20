@@ -9,6 +9,7 @@ import { UnloginComponent } from './components/login/unlogin/unlogin.component';
 import { TablasComponent } from './components/tablas/tablas.component';
 import { TransportistasComponent } from './components/transportistas/transportistas.component';
 import { IntervinientesComponent } from './components/intervinientes/intervinientes.component';
+import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
 
 
 const routes: Routes = [
@@ -28,6 +29,7 @@ const routes: Routes = [
 
   { path: 'tablas', component: TablasComponent },
   { path: 'intervinientes', component: IntervinientesComponent },
+  { path: 'ctasctes', component: CuentasCorrientesComponent },
 
 ];
 

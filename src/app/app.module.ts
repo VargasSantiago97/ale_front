@@ -71,6 +71,7 @@ import { GastosComponent } from './components/tablas/gastos/gastos.component';
 import { UnloginComponent } from './components/login/unlogin/unlogin.component';
 import { TransportistasComponent } from './components/transportistas/transportistas.component';
 import { IntervinientesComponent } from './components/intervinientes/intervinientes.component';
+import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
 
 
 
@@ -91,7 +92,8 @@ import { IntervinientesComponent } from './components/intervinientes/intervinien
     GastosComponent,
     UnloginComponent,
     TransportistasComponent,
-    IntervinientesComponent
+    IntervinientesComponent,
+    CuentasCorrientesComponent
   ],
   imports: [
     BrowserModule,
