@@ -70,6 +70,7 @@ import { CondicionIvaComponent } from './components/tablas/condicion-iva/condici
 import { GastosComponent } from './components/tablas/gastos/gastos.component';
 import { UnloginComponent } from './components/login/unlogin/unlogin.component';
 import { TransportistasComponent } from './components/transportistas/transportistas.component';
+import { IntervinientesComponent } from './components/intervinientes/intervinientes.component';
 
 
 
@@ -89,7 +90,8 @@ import { TransportistasComponent } from './components/transportistas/transportis
     CondicionIvaComponent,
     GastosComponent,
     UnloginComponent,
-    TransportistasComponent
+    TransportistasComponent,
+    IntervinientesComponent
   ],
   imports: [
     BrowserModule,

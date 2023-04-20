@@ -956,7 +956,7 @@
                 <td style="text-align: right; padding: 0px 20px 0px 0px;">Destino:</td>
                 <td>
                     <div class="field">
-                        <select [(ngModel)]="datosCPE.cuit_destino" class="select-class">
+                        <select [(ngModel)]="datosCPE.cuit_destino" class="select-class" (ngModelChange)="selectEsDestinoCampo(false)">
                             <option value=""></option>
                             <option *ngFor="let destino of intervinientesCPE.destino" value="{{destino.cuit}}">
                                 {{destino.alias}}

@@ -1,0 +1,181 @@
+<div style="text-align: center;"
+    *ngIf="load_intervinientes">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+<button pButton pRipple type="button" label="NUEVO" class="p-button-success bott"
+    (click)="nuevoInterviniente()"></button>
+
+
+<br><br>
+
+<p-table #th [columns]="selectedColumns" [value]="db_intervinientes" selectionMode="single"
+    [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+    [paginator]="true" [rows]="25" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
+    <ng-template pTemplate="caption">
+        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+            selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
+            placeholder="Seleccionar columnas"></p-multiSelect>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-registro let-columns="columns">
+        <tr (dblclick)="editarInterviniente(registro)">
+            <td *ngFor="let col of columns">
+                <div *ngIf="col.field == 'alias' || col.field == 'cuit'">
+                    {{transformarDatoMostrarTabla(registro[col.field], col.field)}}
+                </div>
+                
+                <div *ngIf="col.field != 'alias' && col.field != 'cuit'">
+                    <p-checkbox name="groupname" value="1" [ngModel]="registro[col.field]" [disabled]="true"></p-checkbox>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<br><br>
+
+
+<p-dialog header="INTERVINIENTE" [(visible)]="displayInterviniente" [modal]="true" [style]="{width: '800px', height: '95%'}"
+    [draggable]="true" [resizable]="true" [maximizable]="true">
+    <div class="formgrid row">
+        <div class="col-3">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Cód.</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosInterviniente.codigo"/>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Alias</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosInterviniente.alias"/>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <div style="text-align: center;" *ngIf="spinnerIntervinienteCUIT">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="col-4">
+            <div class="p-inputgroup">
+                <input type="number" pInputText placeholder="CUIT" (keydown.enter)="buscarIntervinienteCUIT()" [(ngModel)]="datosInterviniente.cuit">   
+                <button (click)="buscarIntervinienteCUIT()" type="button" pButton pRipple label="BUSCAR" styleClass="p-button-warn"></button>      
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row"> 
+        <div class="col">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">Razon Social</span>
+                <input type="text" class="p-inputtext-sm" pInputText [(ngModel)]="datosInterviniente.razon_social" />  
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <h4 style="text-align: center;">Interviene como:</h4>
+    
+    <table>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">DESTINO</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.dstno" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">DESTINATARIO</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.dstro" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">CORREDOR DE VENTA PRIMARIA</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.corvtapri" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">CORREDOR DE VENTA SECUNDARIA</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.corvtasec" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">MERCADO A TERMINO</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.mertermino" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">REMITENTE COMERCIAL PRODUCTOR</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.rtecomprod" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">REMITENTE COMERCIAL DE VENTA PRIMARIA</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.rtecomvtapri" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">REMITENTE COMERCIAL DE VENTA SECUNDARIA</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.rtecomvtasec" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">REMITENTE COMERCIAL DE VENTA SECUNDARIA 2</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.rtecomvtasec2" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">REPRESENTANTE ENTREGADOR</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.rteent" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">REPRESENTANTE RECIBIDOR</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.rterec" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">INTERMEDIARIO FLETE</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.intflet" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">FLETE PAGADOR</td>
+            <td>
+                <p-selectButton [options]="opciones" [(ngModel)]="datosInterviniente.pagflet" optionValue="codigo" optionLabel="alias"></p-selectButton>
+            </td>
+        </tr>
+    </table>
+    
+    <br>
+    <ng-template pTemplate="footer">
+        <button *ngIf="datosInterviniente.id" pButton pRipple type="button" label="EDITAR" class="p-button-success bott"
+        (click)="guardarInterviniente()"></button>
+        <button *ngIf="!datosInterviniente.id" pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+        (click)="guardarInterviniente()"></button>
+        <button *ngIf="datosInterviniente.id" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+        (click)="borrarInterviniente()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayInterviniente = false"></button>
+    </ng-template>
+</p-dialog>
