@@ -2,3 +2,36 @@
     margin: 3px;
     padding: 5px 20px;
 }
+
+.select-class {
+    width: 200px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+  
+.select-class option {
+  font-size: 16px;
+}
+
+.input-text-codigo {
+    width: 100px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #007bff;
+}
+input[type="checkbox"]:checked {
+    border-color: #007bff;
+}
+input[type="checkbox"]:hover {
+    cursor: pointer;
+}
+input[type="checkbox"] {
+    transform: scale(1.5);
+}

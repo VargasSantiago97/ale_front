@@ -1,4 +1,5 @@
-<div style="text-align: center;" *ngIf="load_camiones || load_choferes || load_condicion_iva || load_transportistas">
+<div style="text-align: center;"
+    *ngIf="load_ordenes_carga || load_camiones || load_choferes || load_condicion_iva || load_transportistas || load_movimientos || load_granos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -9,7 +10,8 @@
     <div class="field col-3">
 
 
-        <p-dropdown (onChange)="onSelectSocio()" [options]="db_socios" [(ngModel)]="socio" optionLabel="alias"></p-dropdown>
+        <p-dropdown (onChange)="onSelectSocio()" [options]="db_socios" [(ngModel)]="socio"
+            optionLabel="alias"></p-dropdown>
 
         <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
             [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
@@ -25,7 +27,8 @@
     <div class="field col-9">
         <p-card header="{{transportista ? transportista.alias : ''}}">
             <div *ngIf="transportista">
-                <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"></button>
+                <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"
+                    (click)="nuevoAsientoViaje()"></button>
                 <button pButton pRipple type="button" label="GASTO" class="p-button-success bott"></button>
                 <button pButton pRipple type="button" label="ORDEN DE PAGO" class="p-button-success bott"></button>
 
@@ -53,7 +56,7 @@
                     }
                 </style>
 
-                <h1>Resumen de cuenta corriente</h1>
+                <h1>Resumen de cuenta</h1>
                 <table>
                     <thead>
                         <tr>
@@ -72,83 +75,6 @@
                             <td></td>
                             <td>$3,000.00</td>
                         </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>05/04/2023</td>
-                            <td>Compra de suministros de oficina</td>
-                            <td></td>
-                            <td>$500.00</td>
-                            <td>$2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>10/04/2023</td>
-                            <td>Pago de factura de luz</td>
-                            <td></td>
-                            <td>$200.00</td>
-                            <td>$2,300.00</td>
-                        </tr>
-                        <tr>
-                            <td>15/04/2023</td>
-                            <td>Depósito de cliente</td>
-                            <td>$1,000.00</td>
-                            <td></td>
-                            <td>$3,300.00</td>
-                        </tr>
-                        <tr>
-                            <td>20/04/2023</td>
-                            <td>Compra de equipo de oficina</td>
-                            <td></td>
-                            <td>$2,000.00</td>
-                            <td>$1,300.00</td>
-                        </tr>
                     </tbody>
                     <tfoot>
                         <tr>
@@ -165,3 +91,125 @@
         </p-card>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+<p-dialog header="NUEVO VIAJE" [(visible)]="displayNuevoViaje" [modal]="true" [style]="{width: '95vw'}"
+    [draggable]="true" [resizable]="false">
+
+    <div class="formgrid row">
+        <p-table #th [columns]="selectedColumns" [value]="dataMovimientosASeleccionar" selectionMode="single"
+            [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+            [paginator]="true" [rows]="25" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
+            <ng-template pTemplate="caption">
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+                    selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
+                    placeholder="Seleccionar columnas"></p-multiSelect>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>
+                        Select
+                    </th>
+                    <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                        {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-registro let-columns="columns">
+                <tr>
+                    <td>
+                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott" (click)="agregarMovimiento(registro)"></button>
+                    </td>
+                    <td *ngFor="let col of columns">
+                        {{transformarDatoMostrarTabla(registro[col.field], col.field)}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <br>
+    <hr>
+    <h6>Viajes Seleccionados:</h6>
+    <p *ngFor="let mov of dataMovimientosSeleccionados">
+        {{mov.fecha}} - {{mov.cultivo}} - CTG: {{mov.ctg}} - CPE: {{mov.cpe}} - $ {{mov.monto_final}}
+    </p>
+    <br>
+    <h6>Total Seleccionado: ${{datosAsiento.montoTotal}}</h6>
+    
+    <br>
+    <hr>
+    <br>
+    <h5>Comprobante</h5>
+    <div class="formgrid row">
+        <div class="field col">
+            <label>Ticket/Factura</label><br>
+            <div class="formgrid row">
+                <div class="field col-3">
+                    <select class="select-class" style="width: 100px;" [(ngModel)]="datosAsiento.letra">
+                        <option value=A selected>A</option>
+                        <option value=B>B</option>
+                        <option value=C>C</option>
+                        <option value=X>X</option>
+                    </select>
+                </div>
+                <div class="field col-3">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.punto">
+                </div>
+                <div class="field col-6">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.numero">
+                </div>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>Monto Total</label><br>
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsiento.montoFactura">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>Fecha</label><br>
+                <input type="date" class="select-class" [(ngModel)]="datosAsiento.fecha">
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <h5>Datos Asiento</h5>
+    <div class="formgrid row">
+        <label>Descripcion</label><br>
+        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.descripcion">
+    </div>
+    <div class="formgrid row">
+        <label>Observaciones</label><br>
+        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.observaciones">
+    </div>
+    
+    <br>
+    <hr>
+    <br>
+    <h5>Archivos:</h5>
+    <div class="formgrid row">
+        <p-fileUpload name="demo[]" url="{{API_URI}}/uploadPrecios.php" (onUpload)="onUpload($event)" [multiple]="true">
+            <ng-template pTemplate="content">
+            </ng-template>
+        </p-fileUpload>
+    </div>
+
+
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="verVars()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoViaje=false"></button>
+    </ng-template>
+</p-dialog>
