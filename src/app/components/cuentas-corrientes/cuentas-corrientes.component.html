@@ -8,8 +8,6 @@
 <br>
 <div class="formgrid row">
     <div class="field col-3">
-
-
         <p-dropdown (onChange)="onSelectSocio()" [options]="db_socios" [(ngModel)]="socio"
             optionLabel="alias"></p-dropdown>
 
@@ -68,7 +66,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let dato of datosCuentaCorriente">
+                        <tr *ngFor="let dato of datosCuentaCorriente" (dblclick)="mostrarAsiento(dato)">
                             <td>{{dato.fecha}}</td>
                             <td>{{dato.descripcion}}</td>
                             <td>{{transformarDatoMostrarTabla(dato.ingreso, 'moneda')}}</td>
@@ -85,8 +83,6 @@
                         </tr>
                     </tfoot>
                 </table>
-
-
             </div>
         </p-card>
     </div>
@@ -102,7 +98,6 @@
 
 <p-dialog header="NUEVO VIAJE" [(visible)]="displayNuevoViaje" [modal]="true" [style]="{width: '95vw'}"
     [draggable]="true" [resizable]="false">
-
     <div class="formgrid row">
         <p-table #th [columns]="selectedColumns" [value]="dataMovimientosASeleccionar" selectionMode="single"
             [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
@@ -136,6 +131,7 @@
             </ng-template>
         </p-table>
     </div>
+    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-success bott" (click)="verViajesPreviamenteAfectados()"></button>
     <br>
     <hr>
     <h6>Viajes Seleccionados:</h6>
@@ -154,7 +150,7 @@
             <label>Ticket/Factura</label><br>
             <div class="formgrid row">
                 <div class="field col-3">
-                    <select class="select-class" style="width: 100px;" [(ngModel)]="datosAsiento.letra">
+                    <select class="select-class" style="width: 100px;" [(ngModel)]="datosAsiento.cpte_letra">
                         <option value=A selected>A</option>
                         <option value=B>B</option>
                         <option value=C>C</option>
@@ -162,10 +158,10 @@
                     </select>
                 </div>
                 <div class="field col-3">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.punto" (ngModelChange)="cambiaNumFactura()">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.cpte_punto" (ngModelChange)="cambiaNumFactura()">
                 </div>
                 <div class="field col-6">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.numero" (ngModelChange)="cambiaNumFactura()">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.cpte_numero" (ngModelChange)="cambiaNumFactura()">
                 </div>
             </div>
         </div>
@@ -192,7 +188,7 @@
     </div>
     <div class="formgrid row">
         <label>Observaciones</label><br>
-        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.observaciones">
+        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.observacion">
     </div>
 
     <br>
@@ -200,7 +196,7 @@
     <br>
     <h5>Archivos:</h5>
     <div class="formgrid row">
-        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{datosAsiento.fecha}}_{{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
+        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{fechaDeHoy}}_{{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
             <ng-template pTemplate="content">
             </ng-template>
         </p-fileUpload>
@@ -209,7 +205,93 @@
 
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="verVars()"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarAsiento()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoViaje=false"></button>
     </ng-template>
 </p-dialog>
+
+
+
+<p-dialog header="VER ASIENTO - ID {{datosAsientoMostrar.id}}" [(visible)]="displayVerAsiento" [modal]="true" [style]="{width: '95vw'}"
+    [draggable]="true" [resizable]="false">
+    <div class="formgrid row">
+        <h4>Movimientos afectados:</h4>
+        <p *ngFor="let mov of datosAsientoMostrar.afectar">
+            {{mov}}
+        </p>
+    </div>
+    <hr>
+    <br>
+    <h5>Comprobante</h5>
+    <div class="formgrid row">
+        <div class="field col">
+            <label>Ticket/Factura</label><br>
+            <div class="formgrid row">
+                <div class="field col-3">
+                    <select class="select-class" style="width: 100px;" [(ngModel)]="datosAsientoMostrar.cpte_letra">
+                        <option value=A selected>A</option>
+                        <option value=B>B</option>
+                        <option value=C>C</option>
+                        <option value=X>X</option>
+                    </select>
+                </div>
+                <div class="field col-3">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsientoMostrar.cpte_punto">
+                </div>
+                <div class="field col-6">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsientoMostrar.cpte_numero">
+                </div>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>DEBE</label><br>
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsientoMostrar.debe">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>HABER</label><br>
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsientoMostrar.haber">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>Fecha</label><br>
+                <input type="text" class="select-class" [(ngModel)]="datosAsientoMostrar.fecha">
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <h5>Datos Asiento</h5>
+    <div class="formgrid row">
+        <label>Descripcion</label><br>
+        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsientoMostrar.descripcion">
+    </div>
+    <div class="formgrid row">
+        <label>Observaciones</label><br>
+        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsientoMostrar.observacion">
+    </div>
+
+    <br>
+    <hr>
+    <br>
+    <div *ngIf="datosAsientoMostrar.archivos">
+        <h5>Archivos:</h5>
+        <div class="formgrid row">
+
+        </div>
+    </div>
+
+
+
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="BORRAR" class="p-button-danger bott" (click)="borrarAsiento(datosAsientoMostrar.id)"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayVerAsiento=false"></button>
+    </ng-template>
+</p-dialog>
+
+

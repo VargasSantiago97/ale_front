@@ -29,9 +29,12 @@ export class CuentasCorrientesComponent {
     dataMovimientosSeleccionados: any = []
 
     datosAsiento: any = {}
+    datosAsientoMostrar: any = {}
 
     datosCuentaCorriente: any = []
     datosCuentaCorrienteTotales: any = {}
+
+    arrastreDeSaldo:any = 0
 
     transportista: any;
     socio: any;
@@ -50,7 +53,12 @@ export class CuentasCorrientesComponent {
     load_asientos: any = true
     load_ordenes_carga: any = true
 
+    verViajesPreviamenteAfec:any = false
+
     displayNuevoViaje: any = false
+    displayVerAsiento: any = false
+
+    fechaDeHoy: any
 
     cols: any = []
     selectedColumns: any = []
@@ -103,6 +111,8 @@ export class CuentasCorrientesComponent {
         this.obtenerGranos()
         this.obtenerAsientos()
         this.obtenerOrdenesCarga()
+
+        this.fechaDeHoy = new Date().toISOString().slice(0, 10);
     }
 
     //CONEXION A BASE DE DATOS
@@ -219,41 +229,65 @@ export class CuentasCorrientesComponent {
         //INFORMACION PARA MOSTRAR EN TABLA CTA CTE
         this.datosCuentaCorriente = []
         this.datosCuentaCorrienteTotales = {
-            ingreso: 0,
-            gasto: 0,
-            saldo: 0
+            ingreso: 0.0,
+            gasto: 0.0,
+            saldo: 0.0
         }
+        this.arrastreDeSaldo = 0
 
         var asientos_filtrados:any = []
+        var movimientosPreviamenteAfectados:any = []
 
         //filtramos por SOCIO y TRANSPORTISTA
-        asientos_filtrados = this.db_asientos.forEach((e:any) => {
+        asientos_filtrados = this.db_asientos.filter((e:any) => {
             return (e.id_socio == this.socio.id) && (e.id_transportista == this.transportista.id)
         });
 
+        //ordenamos por fecha
+        asientos_filtrados.sort((ann:any, bnn:any) => { 
+            const fecha1:any = new Date(ann.fecha)
+            const fecha2:any = new Date(bnn.fecha)
+            return  fecha1 - fecha2
+        });
+
         asientos_filtrados.forEach((e:any) => {
+            if(e.afecta != null && !this.verViajesPreviamenteAfec){
+                if(JSON.parse(e.afecta).length > 0){
+                    movimientosPreviamenteAfectados.push( ... JSON.parse(e.afecta))
+                }
+            }
             const dateObj = new Date(e.fecha);
             const year = dateObj.getFullYear();
             const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
             const day = dateObj.getDate().toString().padStart(2, '0');
             const dateString = `${year}/${month}/${day}`;
 
+            const nuevoIngreso = parseFloat(e.haber) ? parseFloat(e.haber) : 0
+            const nuevoGasto = parseFloat(e.debe) ? parseFloat(e.debe) : 0
+    
+            const saldoCalculo = nuevoIngreso - nuevoGasto
+            this.arrastreDeSaldo += saldoCalculo
+
             this.datosCuentaCorriente.push(
                 {
+                    id_asiento: e.id,
                     fecha: dateString,
                     descripcion: e.descripcion,
-                    ingreso: e.haber,
-                    gasto: e.debe,
-                    saldo: 0
+                    ingreso: parseFloat(e.haber),
+                    gasto: parseFloat(e.debe),
+                    saldo: this.arrastreDeSaldo
                 }
             )
+
+            this.datosCuentaCorrienteTotales = {
+                ingreso: this.datosCuentaCorrienteTotales.ingreso + nuevoIngreso,
+                gasto: this.datosCuentaCorrienteTotales.gasto + nuevoGasto,
+                saldo: this.arrastreDeSaldo
+            }
         });
 
-        this.datosCuentaCorrienteTotales = {
-            ingreso: 123321,
-            gasto: 123321,
-            saldo: 123321
-        }
+
+        console.log(movimientosPreviamenteAfectados)
 
         //movimientos para seleccionar
         this.dataMovimientosASeleccionar = []
@@ -268,27 +302,29 @@ export class CuentasCorrientesComponent {
 
             const patentes = this.db_camiones.some((f:any) => {return f.id == e.id_camion}) ? this.db_camiones.find((f:any) => {return f.id == e.id_camion}).patente_chasis +' / '+ this.db_camiones.find((f:any) => {return f.id == e.id_camion}).patente_acoplado : ''
 
-            this.dataMovimientosASeleccionar.push({
-                id: e.id,
-                fecha : dateString,
-                cultivo : this.db_granos.some((f:any) => {return f.id == e.id_grano}) ? this.db_granos.find((f:any) => {return f.id == e.id_grano}).alias : '-',
-                orden : this.db_ordenes_carga.some((f:any) => {return f.id_movimiento == e.id}) ? this.db_ordenes_carga.find((f:any) => {return f.id_movimiento == e.id}).numero : '',
-                ctg : '10105050505',
-                cpe : '001-5555',
-                campo : e.campo,
-                pat : patentes,
-                kg_neto_final : e.kg_neto_final,
-                tarifa : 7000,
-                kg_descarga : 35.20,
-                monto_final : 246400
-            })
+            if( ! movimientosPreviamenteAfectados.includes(e.id) ){
+                this.dataMovimientosASeleccionar.push({
+                    id: e.id,
+                    fecha : dateString,
+                    cultivo : this.db_granos.some((f:any) => {return f.id == e.id_grano}) ? this.db_granos.find((f:any) => {return f.id == e.id_grano}).alias : '-',
+                    orden : this.db_ordenes_carga.some((f:any) => {return f.id_movimiento == e.id}) ? this.db_ordenes_carga.find((f:any) => {return f.id_movimiento == e.id}).numero : '',
+                    ctg : '10105050505',
+                    cpe : '001-5555',
+                    campo : e.campo,
+                    pat : patentes,
+                    kg_neto_final : e.kg_neto_final,
+                    tarifa : 7000,
+                    kg_descarga : 35.20,
+                    monto_final : 246400
+                })
+            }
         })
     }
 
     transformarDatoMostrarTabla(dato:any, tipo:any){
         if(tipo=='moneda'){
             const number = parseFloat(dato);
-            if(number == 0){
+            if(number == 0 || number == null || !number){
                 return ''
             }
             const options = {
@@ -338,39 +374,133 @@ export class CuentasCorrientesComponent {
             valorDesc += ctg + cpe
         });
 
-        const letra = this.datosAsiento.letra ? 'F'+this.datosAsiento.letra : ''
-        const punto = this.datosAsiento.punto ? this.datosAsiento.punto.toString().padStart(4, "0") : ''
-        const numero = this.datosAsiento.numero ? this.datosAsiento.numero.toString().padStart(8, "0") : ''
+        const letra = this.datosAsiento.cpte_letra ? 'F'+this.datosAsiento.cpte_letra : ''
+        const punto = this.datosAsiento.cpte_punto ? this.datosAsiento.cpte_punto.toString().padStart(4, "0") : ''
+        const numero = this.datosAsiento.cpte_numero ? this.datosAsiento.cpte_numero.toString().padStart(8, "0") : ''
 
         this.datosAsiento.descripcion = valorDesc + '/' + letra + ' ' + punto + '-' + numero
     }
 
-    onUpload(event: any) {
-        console.log(event.originalEvent.body.mensaje)
-        alert('Cargado')
-    }
-
-    verVars(){
-        console.log(this.datosAsiento)
-        this.uploader.upload();
-    }
-
     nuevoAsientoViaje(){
+
+        var idd = this.generateUUID()
+        if (this.db_asientos.some((e: any) => { return e.id == idd })) {
+            this.nuevoAsientoViaje()
+            return
+        }
+
         this.dataMovimientosSeleccionados = []
         this.displayNuevoViaje = true
 
         const fecha = new Date().toISOString().slice(0, 10);
 
         this.datosAsiento = {
-            id: this.generateUUID(),
+            id: idd,
+            tipo: "MOV",
+            id_socio: this.socio.id,
+            id_transportista: this.transportista.id,
             montoTotal: 0,
-            letra: 'A',
-            punto: null,
-            numero: null,
+            cpte_letra: 'A',
+            cpte_punto: null,
+            cpte_numero: null,
             montoFactura: 0,
             fecha: fecha,
             descripcion: null,
-            observaciones: null
+            observacion: null
+        }
+    }
+
+    guardarAsiento(){
+
+        this.datosAsiento.activo = 1
+
+        var fechaHora = new Date(this.datosAsiento.fecha);
+        this.datosAsiento.fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+        this.datosAsiento.cpte_fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        var afecta:any = []
+        this.dataMovimientosSeleccionados.forEach((e:any) => { afecta.push(e.id) });
+        this.datosAsiento.afecta = JSON.stringify(afecta)
+
+        this.datosAsiento.haber = null
+        this.datosAsiento.debe = null
+        this.datosAsiento.montoFactura < 0 ? (this.datosAsiento.debe = -1*this.datosAsiento.montoFactura) : (this.datosAsiento.haber = this.datosAsiento.montoFactura)
+
+
+        this.comunicacionService.createDB("asientos", this.datosAsiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.obtenerAsientos()
+                setTimeout(() => {
+                    this.buscarDatosTransportista()
+                    this.displayNuevoViaje = false
+                }, 100)
+
+
+                //subir archivos
+                this.uploader.upload();
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+    }
+
+    mostrarAsiento(asiento:any){
+        this.datosAsientoMostrar = this.db_asientos.find((e:any) => { return e.id == asiento.id_asiento })
+        this.displayVerAsiento = true
+
+        const dateObj = new Date(this.datosAsientoMostrar.fecha);
+        const year = dateObj.getFullYear();
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const day = dateObj.getDate().toString().padStart(2, '0');
+        const dateString = `${year}-${month}-${day}_${this.datosAsientoMostrar.id}`;
+    
+        console.log(dateString)
+        this.datosAsientoMostrar.archivos = dateString
+
+        this.comunicacionService.getDir(dateString).subscribe(
+            (res: any) => {
+                console.log(res)
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+
+    }
+
+    borrarAsiento(id_asiento:any){
+        if (confirm('Desea eliminar elemento?')) {
+            var asientoEliminar = this.db_asientos.find((e:any) => { return e.id == id_asiento })
+
+            console.log(asientoEliminar)
+
+            asientoEliminar.estado = 0
+
+            this.comunicacionService.updateDB("asientos", asientoEliminar).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.obtenerAsientos()
+                    setTimeout(() => {
+                        this.buscarDatosTransportista()
+                        this.displayVerAsiento = false
+                    }, 100)                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
+    }
+
+    
+    onUpload(event: any) {
+        if(event.originalEvent.body.mensaje){
+            this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivos cargados con exito' })
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al cargar archivos' })
         }
     }
 
@@ -382,6 +512,11 @@ export class CuentasCorrientesComponent {
             return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return uuid;
+    }
+
+    verViajesPreviamenteAfectados(){
+        this.verViajesPreviamenteAfec = !this.verViajesPreviamenteAfec
+        this.buscarDatosTransportista()
     }
 
 }

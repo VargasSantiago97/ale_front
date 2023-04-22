@@ -30,6 +30,11 @@ export class ComunicacionService {
         return this.http.post(`${this.API_URI}/index.php?op=update&tabla=${tabla}`, this.transEdit(tabla, data));
     }
 
+    //Consultas a DB
+    getDir(dir: any) {
+        return this.http.get(`${this.API_URI}/listar.php?&dir=${dir}`);
+    }
+
 
     trans(tabla:any, dato:any){
         dato.estado = 1;
