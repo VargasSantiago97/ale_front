@@ -1,5 +1,5 @@
 <div style="text-align: center;"
-    *ngIf="load_ordenes_carga || load_camiones || load_choferes || load_condicion_iva || load_transportistas || load_movimientos || load_granos">
+    *ngIf="load_asientos || load_ordenes_carga || load_camiones || load_choferes || load_condicion_iva || load_transportistas || load_movimientos || load_granos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -56,7 +56,7 @@
                     }
                 </style>
 
-                <h1>Resumen de cuenta</h1>
+                <h3>Resumen de cuenta</h3>
                 <table>
                     <thead>
                         <tr>
@@ -68,20 +68,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>01/04/2023</td>
-                            <td>Pago de sueldo</td>
-                            <td>$3,000.00</td>
-                            <td></td>
-                            <td>$3,000.00</td>
+                        <tr *ngFor="let dato of datosCuentaCorriente">
+                            <td>{{dato.fecha}}</td>
+                            <td>{{dato.descripcion}}</td>
+                            <td>{{transformarDatoMostrarTabla(dato.ingreso, 'moneda')}}</td>
+                            <td>{{transformarDatoMostrarTabla(dato.gasto, 'moneda')}}</td>
+                            <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
                             <th colspan="2">Total</th>
-                            <td>$4,000.00</td>
-                            <td>$2,700.00</td>
-                            <td>$1,300.00</td>
+                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.ingreso, 'moneda')}}</strong></td>
+                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.gasto, 'moneda')}}</strong></td>
+                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo, 'moneda')}}</strong></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -162,10 +162,10 @@
                     </select>
                 </div>
                 <div class="field col-3">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.punto">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.punto" (ngModelChange)="cambiaNumFactura()">
                 </div>
                 <div class="field col-6">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.numero">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.numero" (ngModelChange)="cambiaNumFactura()">
                 </div>
             </div>
         </div>
@@ -194,13 +194,13 @@
         <label>Observaciones</label><br>
         <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.observaciones">
     </div>
-    
+
     <br>
     <hr>
     <br>
     <h5>Archivos:</h5>
     <div class="formgrid row">
-        <p-fileUpload name="demo[]" url="{{API_URI}}/uploadPrecios.php" (onUpload)="onUpload($event)" [multiple]="true">
+        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{datosAsiento.fecha}}_{{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
             <ng-template pTemplate="content">
             </ng-template>
         </p-fileUpload>

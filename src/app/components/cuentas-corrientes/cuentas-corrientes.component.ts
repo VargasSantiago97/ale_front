@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 
@@ -11,8 +11,9 @@ declare var vars: any;
     styleUrls: ['./cuentas-corrientes.component.css']
 })
 export class CuentasCorrientesComponent {
+    @ViewChild('myCargador') uploader: any;
 
-    API_URI = vars.API_URI_CONAGRO;
+    API_URI = vars.API_URI_UPLOAD;
 
     db_camiones: any = []
     db_choferes: any = []
@@ -21,12 +22,16 @@ export class CuentasCorrientesComponent {
     db_socios: any = []
     db_movimientos: any = []
     db_granos: any = []
+    db_asientos: any = []
     db_ordenes_carga: any = []
 
     dataMovimientosASeleccionar: any = []
     dataMovimientosSeleccionados: any = []
 
     datosAsiento: any = {}
+
+    datosCuentaCorriente: any = []
+    datosCuentaCorrienteTotales: any = {}
 
     transportista: any;
     socio: any;
@@ -42,6 +47,7 @@ export class CuentasCorrientesComponent {
     load_condicion_iva: any = true
     load_movimientos: any = true
     load_granos: any = true
+    load_asientos: any = true
     load_ordenes_carga: any = true
 
     displayNuevoViaje: any = false
@@ -95,6 +101,7 @@ export class CuentasCorrientesComponent {
         this.obtenerSocios()
         this.obtenerMovimientos()
         this.obtenerGranos()
+        this.obtenerAsientos()
         this.obtenerOrdenesCarga()
     }
 
@@ -175,6 +182,17 @@ export class CuentasCorrientesComponent {
             }
         )
     }
+    obtenerAsientos(){
+        this.comunicacionService.getDB('asientos').subscribe(
+            (res: any) => {
+                this.db_asientos = res;
+                this.load_asientos = false;
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
     obtenerOrdenesCarga(){
         this.comunicacionService.getDB('orden_carga').subscribe(
             (res: any) => {
@@ -198,6 +216,46 @@ export class CuentasCorrientesComponent {
     }
 
     buscarDatosTransportista(){
+        //INFORMACION PARA MOSTRAR EN TABLA CTA CTE
+        this.datosCuentaCorriente = []
+        this.datosCuentaCorrienteTotales = {
+            ingreso: 0,
+            gasto: 0,
+            saldo: 0
+        }
+
+        var asientos_filtrados:any = []
+
+        //filtramos por SOCIO y TRANSPORTISTA
+        asientos_filtrados = this.db_asientos.forEach((e:any) => {
+            return (e.id_socio == this.socio.id) && (e.id_transportista == this.transportista.id)
+        });
+
+        asientos_filtrados.forEach((e:any) => {
+            const dateObj = new Date(e.fecha);
+            const year = dateObj.getFullYear();
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObj.getDate().toString().padStart(2, '0');
+            const dateString = `${year}/${month}/${day}`;
+
+            this.datosCuentaCorriente.push(
+                {
+                    fecha: dateString,
+                    descripcion: e.descripcion,
+                    ingreso: e.haber,
+                    gasto: e.debe,
+                    saldo: 0
+                }
+            )
+        });
+
+        this.datosCuentaCorrienteTotales = {
+            ingreso: 123321,
+            gasto: 123321,
+            saldo: 123321
+        }
+
+        //movimientos para seleccionar
         this.dataMovimientosASeleccionar = []
 
         this.db_movimientos.filter((e:any) => { return (( e.id_socio == this.socio.id) && (e.id_transporte==this.transportista.id)) }).map((e:any) => {
@@ -228,6 +286,19 @@ export class CuentasCorrientesComponent {
     }
 
     transformarDatoMostrarTabla(dato:any, tipo:any){
+        if(tipo=='moneda'){
+            const number = parseFloat(dato);
+            if(number == 0){
+                return ''
+            }
+            const options = {
+                style: 'currency',
+                currency: 'ARS',
+                useGrouping: true,
+                maximumFractionDigits: 2
+            };
+            return number.toLocaleString('es-AR', options);
+        }
         return dato
     }
 
@@ -235,30 +306,63 @@ export class CuentasCorrientesComponent {
         this.dataMovimientosSeleccionados.push(mov)
 
         var valorSuma = 0
+        var valorDesc:any = ''
         this.dataMovimientosSeleccionados.forEach((e:any) => {
             const valorActual = parseFloat(e.monto_final) ? parseFloat(e.monto_final) : 0
             valorSuma = valorSuma + valorActual
+
+            if(valorDesc == ''){
+                valorDesc = e.cultivo ? 'FLETE ' + e.cultivo.toUpperCase() : null
+            }
+            const ctg = e.ctg ? " / CTG "+e.ctg : ""
+            const cpe = e.cpe ? " - CP "+e.cpe : ""
+
+            valorDesc += ctg + cpe
         });
 
         this.datosAsiento.montoTotal = valorSuma.toFixed(2)
         this.datosAsiento.montoFactura = valorSuma.toFixed(2)
-        this.datosAsiento.descripcion = 'FLETE'
+        this.datosAsiento.descripcion = valorDesc
+    }
+
+    cambiaNumFactura(){
+        var valorDesc:any = ''
+        this.dataMovimientosSeleccionados.forEach((e:any) => {
+
+            if(valorDesc == ''){
+                valorDesc = e.cultivo ? 'FLETE ' + e.cultivo.toUpperCase() : null
+            }
+            const ctg = e.ctg ? " / CTG "+e.ctg : ""
+            const cpe = e.cpe ? " - CP "+e.cpe : ""
+
+            valorDesc += ctg + cpe
+        });
+
+        const letra = this.datosAsiento.letra ? 'F'+this.datosAsiento.letra : ''
+        const punto = this.datosAsiento.punto ? this.datosAsiento.punto.toString().padStart(4, "0") : ''
+        const numero = this.datosAsiento.numero ? this.datosAsiento.numero.toString().padStart(8, "0") : ''
+
+        this.datosAsiento.descripcion = valorDesc + '/' + letra + ' ' + punto + '-' + numero
     }
 
     onUpload(event: any) {
-        alert('Cargado 🫶')
+        console.log(event.originalEvent.body.mensaje)
+        alert('Cargado')
     }
 
     verVars(){
         console.log(this.datosAsiento)
+        this.uploader.upload();
     }
 
     nuevoAsientoViaje(){
+        this.dataMovimientosSeleccionados = []
         this.displayNuevoViaje = true
 
         const fecha = new Date().toISOString().slice(0, 10);
 
         this.datosAsiento = {
+            id: this.generateUUID(),
             montoTotal: 0,
             letra: 'A',
             punto: null,
@@ -268,6 +372,16 @@ export class CuentasCorrientesComponent {
             descripcion: null,
             observaciones: null
         }
+    }
+
+    generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
     }
 
 }
