@@ -35,3 +35,11 @@ input[type="checkbox"]:hover {
 input[type="checkbox"] {
     transform: scale(1.5);
 }
+
+.tarjeta {
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+    padding: 5px 20px;
+    margin: 5px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
