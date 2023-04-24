@@ -196,7 +196,7 @@
     <br>
     <h5>Archivos:</h5>
     <div class="formgrid row">
-        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{fechaDeHoy}}_{{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
+        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
             <ng-template pTemplate="content">
             </ng-template>
         </p-fileUpload>
@@ -281,7 +281,9 @@
     <div *ngIf="datosAsientoMostrar.archivos">
         <h5>Archivos:</h5>
         <div class="formgrid row">
-
+            <a *ngFor="let archivo of datosAsientoMostrar.archivos" href="{{API_URI}}/download.php?folder={{datosAsientoMostrar.id}}&file={{archivo}}">
+                {{archivo}}
+            </a>
         </div>
     </div>
 

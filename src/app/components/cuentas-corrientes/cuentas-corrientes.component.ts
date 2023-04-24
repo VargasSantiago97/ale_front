@@ -58,8 +58,6 @@ export class CuentasCorrientesComponent {
     displayNuevoViaje: any = false
     displayVerAsiento: any = false
 
-    fechaDeHoy: any
-
     cols: any = []
     selectedColumns: any = []
 
@@ -111,8 +109,6 @@ export class CuentasCorrientesComponent {
         this.obtenerGranos()
         this.obtenerAsientos()
         this.obtenerOrdenesCarga()
-
-        this.fechaDeHoy = new Date().toISOString().slice(0, 10);
     }
 
     //CONEXION A BASE DE DATOS
@@ -392,7 +388,10 @@ export class CuentasCorrientesComponent {
         this.dataMovimientosSeleccionados = []
         this.displayNuevoViaje = true
 
-        const fecha = new Date().toISOString().slice(0, 10);
+        var fecha = new Date()
+        fecha.setHours(fecha.getHours() - 3);
+        const fechaISO = fecha.toISOString().slice(0, 10);
+
 
         this.datosAsiento = {
             id: idd,
@@ -404,7 +403,7 @@ export class CuentasCorrientesComponent {
             cpte_punto: null,
             cpte_numero: null,
             montoFactura: 0,
-            fecha: fecha,
+            fecha: fechaISO,
             descripcion: null,
             observacion: null
         }
@@ -451,18 +450,14 @@ export class CuentasCorrientesComponent {
         this.datosAsientoMostrar = this.db_asientos.find((e:any) => { return e.id == asiento.id_asiento })
         this.displayVerAsiento = true
 
-        const dateObj = new Date(this.datosAsientoMostrar.fecha);
-        const year = dateObj.getFullYear();
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-        const day = dateObj.getDate().toString().padStart(2, '0');
-        const dateString = `${year}-${month}-${day}_${this.datosAsientoMostrar.id}`;
-    
-        console.log(dateString)
-        this.datosAsientoMostrar.archivos = dateString
 
-        this.comunicacionService.getDir(dateString).subscribe(
+        this.datosAsientoMostrar.archivos = false
+
+        this.comunicacionService.getDir(this.datosAsientoMostrar.id).subscribe(
             (res: any) => {
-                console.log(res)
+                if(res.mensaje){
+                    this.datosAsientoMostrar.archivos = res.ruta
+                }
             },
             (err: any) => {
                 console.log(err)
