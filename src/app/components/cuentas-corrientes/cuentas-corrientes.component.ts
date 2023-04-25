@@ -5,6 +5,7 @@ import { NumeroLetrasService } from 'src/app/services/numeroLetras/numero-letras
 
 declare var vars: any;
 const ORDEN_PAGO = vars.ORDEN_CARGA;
+const PUNTO_ORDEN_PAGO = vars.PUNTO_ORDEN_PAGO;
 
 @Component({
     selector: 'app-cuentas-corrientes',
@@ -42,6 +43,12 @@ export class CuentasCorrientesComponent {
 
     ordenDePago_pagarParaSeleccionar: any = []
     ordenDePago_descontarParaSeleccionar: any = []
+    ordenDePago_conceptosAfectados: any = []
+    ordenDePago_mediosPago: any = []
+    ordenDePago_saldoFinalAfectar: any = 0
+    ordenDePago_saldoFinalPagando: any = 0
+    ordenDePago_datos: any = {}
+    ordenDePago_idAsientoCreado: any = 0
 
     arrastreDeSaldo: any = 0
 
@@ -70,6 +77,7 @@ export class CuentasCorrientesComponent {
     displayVerAsiento: any = false
     displayNuevoGasto: any = false
     displayOrdenPago: any = false
+    displayVerOrdenPago: any = false
 
     cols: any = []
     selectedColumns: any = []
@@ -287,11 +295,6 @@ export class CuentasCorrientesComponent {
         });
 
         asientos_filtrados.forEach((e: any) => {
-            if (e.afecta != null && !this.verViajesPreviamenteAfec) {
-                if (JSON.parse(e.afecta).length > 0) {
-                    movimientosPreviamenteAfectados.push(...JSON.parse(e.afecta))
-                }
-            }
             const dateObj = new Date(e.fecha);
             const year = dateObj.getFullYear();
             const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
@@ -401,6 +404,9 @@ export class CuentasCorrientesComponent {
                 maximumFractionDigits: 2
             };
             return number.toLocaleString('es-AR', options);
+        }
+        if (tipo == 'numToLet') {
+            return this.numToLet.numeroALetras(dato)
         }
         return dato
     }
@@ -530,7 +536,6 @@ export class CuentasCorrientesComponent {
             this.datosAsiento.montoFactura < 0 ? (this.datosAsiento.haber = -1 * this.datosAsiento.montoFactura) : (this.datosAsiento.debe = this.datosAsiento.montoFactura)
         }
 
-
         this.comunicacionService.createDB("asientos", this.datosAsiento).subscribe(
             (res: any) => {
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -541,9 +546,9 @@ export class CuentasCorrientesComponent {
                     this.displayNuevoGasto = false
                 }, 100)
 
-
                 //subir archivos
-                this.datosAsiento.tipo == "MOV" ? this.uploader.upload() : this.uploaderGasto.upload()
+                this.datosAsiento.tipo == "MOV" ? this.uploader.upload() : null;
+                this.datosAsiento.tipo == "GAS" ? this.uploaderGasto.upload() : null;
             },
             (err: any) => {
                 console.log(err)
@@ -554,22 +559,63 @@ export class CuentasCorrientesComponent {
 
     mostrarAsiento(asiento: any) {
         this.datosAsientoMostrar = this.db_asientos.find((e: any) => { return e.id == asiento.id_asiento })
-        this.displayVerAsiento = true
+        if(this.datosAsientoMostrar.tipo != 'ODP'){
+            this.displayVerAsiento = true
 
-
-        this.datosAsientoMostrar.archivos = false
-
-        this.comunicacionService.getDir(this.datosAsientoMostrar.id).subscribe(
-            (res: any) => {
-                if (res.mensaje) {
-                    this.datosAsientoMostrar.archivos = res.ruta
+            this.datosAsientoMostrar.archivos = false
+    
+            this.comunicacionService.getDir(this.datosAsientoMostrar.id).subscribe(
+                (res: any) => {
+                    if (res.mensaje) {
+                        this.datosAsientoMostrar.archivos = res.ruta
+                    }
+                },
+                (err: any) => {
+                    console.log(err)
                 }
-            },
-            (err: any) => {
-                console.log(err)
-            }
-        )
+            )
+        } else {
+            this.ordenDePago_datos = this.db_ordenes_pago.find((e:any) => { return e.id_asiento == asiento.id_asiento })
+            this.ordenDePago_mediosPago = this.db_medios_pago.filter((e:any) => { return e.id_orden == this.ordenDePago_datos.id })
 
+            var concepts = []
+            if (this.ordenDePago_datos.afecta != null) {
+                if (JSON.parse(this.ordenDePago_datos.afecta).length > 0) {
+                    concepts.push(...JSON.parse(this.ordenDePago_datos.afecta))
+                }
+            }
+
+            this.ordenDePago_conceptosAfectados = []
+            var saldo = 0
+
+            concepts.forEach((id_asiento:any) => {
+
+                const asiento = this.db_asientos.find((e: any) => { return e.id == id_asiento })
+
+                const dateObj = new Date(asiento.fecha);
+                const year = dateObj.getFullYear();
+                const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+                const day = dateObj.getDate().toString().padStart(2, '0');
+                const dateString = `${day}/${month}/${year}`;
+        
+                var descripcion = "(" + dateString + ") - " + asiento.descripcion
+        
+                var debe = asiento.debe ? parseFloat(asiento.debe) : 0
+                var haber = asiento.haber ? parseFloat(asiento.haber) : 0
+                saldo = saldo - debe + haber
+        
+                this.ordenDePago_conceptosAfectados.push({
+                    id: asiento.id,
+                    descripcion: descripcion,
+                    debe: debe,
+                    haber: haber,
+                    saldo: saldo
+                })
+            })
+            this.ordenDePago_saldoFinalAfectar = saldo
+
+            this.displayVerOrdenPago = true
+        }
     }
 
     borrarAsiento(id_asiento: any) {
@@ -655,73 +701,56 @@ export class CuentasCorrientesComponent {
     }
 
 
+    //ORDENES DE PAGO
     nuevoOrdenDePago() {
 
-        /*
-
-        {
-            "tabla": "medios_pago",
-
-            "id"
-            "id_orden"
-            "fecha"
-            "descripcion"
-            "serie"
-            "emisor"
-            "numero"
-            "tipo"
-            "valor"
-            "creado_por"
-            "creado_el"
-            "editado_por"
-            "editado_el"
-            "activo"
-            "estado"
-        },
-        {
-            "tabla": "orden_pago",
-
-            "id"
-            "id_asiento"
-            "id_socio"
-            "id_transportista"
-            "fecha"
-            "beneficiario_razon"
-            "beneficiario_domicilio"
-            "beneficiario_codigo"
-            "beneficiario_cuit"
-            "total_letras"
-            "total"
-            "observacion"
-            "fondo"
-            "afecta"
-            "punto"
-            "numero"
-            "creado_por"
-            "creado_el"
-            "editado_por"
-            "editado_el"
-            "activo"
-            "estado"
+        var idd = this.generateUUID()
+        if (this.db_ordenes_pago.some((e: any) => { return e.id == idd })) {
+            this.nuevoOrdenDePago()
+            return
         }
-        */
+
         this.ordenDePago_pagarParaSeleccionar = []
         this.ordenDePago_descontarParaSeleccionar = []
+        this.ordenDePago_mediosPago = []
+        this.ordenDePago_conceptosAfectados = []
+        this.ordenDePago_saldoFinalAfectar = 0
+        this.ordenDePago_saldoFinalPagando = 0
 
-        var este = {
-            fecha: "20/20/2020",
-            tipo: "MOV",
-            descripcion: "ASDASDASD",
-            saldo: "150550",
-            afectar: 0
+        const transp = this.db_transportistas.find((e:any) => { return e.id == this.transportista.id})
+        const numero = this.generateNumeroOrdenDePago()
+        
+        var fechaHora = new Date();
+        const fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        this.ordenDePago_datos = {
+            id: idd,
+            id_asiento: 0,
+            id_socio: this.socio.id,
+            fondo: this.socio.id + ".png",
+            id_transportista: this.transportista.id,
+            fecha: fecha,
+            afecta: [],
+
+
+            beneficiario_razon: transp.razon_social,
+            beneficiario_cuit: transp.cuit,
+            beneficiario_domicilio: transp.direccion + ", " + transp.localidad + " (" + transp.codigoPostal + ") - " + transp.descripcionProvincia,
+            beneficiario_codigo: transp.codigo,
+
+            punto: PUNTO_ORDEN_PAGO,
+            numero: numero,
+
+            total: 0,
+            total_letras: '',
+
+            descripcion: "ORDEN DE PAGO - N° " + PUNTO_ORDEN_PAGO.toString().padStart(2, '0') + "-" + numero.toString().padStart(5, '0'),
+            observacion: "",
         }
-        this.ordenDePago_pagarParaSeleccionar.push({ ... este})
-        this.ordenDePago_pagarParaSeleccionar.push({ ... este})
-        this.ordenDePago_pagarParaSeleccionar.push({ ... este})
 
         //filtramos por SOCIO y TRANSPORTISTA
         var asientos_filtrados:any = this.db_asientos.filter((e: any) => {
-            return (e.id_socio == this.socio.id) && (e.id_transportista == this.transportista.id)
+            return (e.id_socio == this.socio.id) && (e.id_transportista == this.transportista.id) && (e.tipo != 'ODP')
         });
 
         //ordenamos por fecha
@@ -731,62 +760,316 @@ export class CuentasCorrientesComponent {
             return fecha1 - fecha2
         });
 
+        var movimientosPreviamenteAfectados: any = []
+        this.db_ordenes_pago.forEach((e: any) => {
+            if (e.afecta != null && !this.verViajesPreviamenteAfec) {
+                if (JSON.parse(e.afecta).length > 0) {
+                    movimientosPreviamenteAfectados.push(...JSON.parse(e.afecta))
+                }
+            }
+        })
+
+        asientos_filtrados.forEach((e: any) => {
+
+            const dateObj = new Date(e.fecha);
+            const year = dateObj.getFullYear();
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObj.getDate().toString().padStart(2, '0');
+            const dateString = `${year}/${month}/${day}`;
+
+            const patentes = this.db_camiones.some((f: any) => { return f.id == e.id_camion }) ? this.db_camiones.find((f: any) => { return f.id == e.id_camion }).patente_chasis + ' / ' + this.db_camiones.find((f: any) => { return f.id == e.id_camion }).patente_acoplado : ''
+
+            if (!movimientosPreviamenteAfectados.includes(e.id)) {
+
+                if(e.haber){
+                    this.ordenDePago_pagarParaSeleccionar.push({
+                        id: e.id,
+                        fecha: dateString,
+                        tipo: e.tipo,
+                        descripcion: e.descripcion,
+                        saldo: e.haber,
+                        afectar: 0
+                    })
+                }
+                if(e.debe){
+                    this.ordenDePago_descontarParaSeleccionar.push({
+                        id: e.id,
+                        fecha: dateString,
+                        tipo: e.tipo,
+                        descripcion: e.descripcion,
+                        saldo: e.debe,
+                        afectar: 0
+                    })
+                }
+            }
+        })
 
 
         this.displayOrdenPago = true
     }
-    agregarConceptoPagar(concepto:any){
-        
+    calcularDatosOrdenPago(){
+
+        var conceptosAfectados:any = []
+
+        this.ordenDePago_pagarParaSeleccionar.filter((e:any)=>{ return e.afectar != 0 }).forEach((e:any) => {
+            conceptosAfectados.push({
+                id: e.id,
+                fecha: e.fecha,
+                tipo: e.tipo,
+                descripcion: e.descripcion,
+                debe: 0,
+                haber: e.afectar,
+            })
+        })
+        this.ordenDePago_descontarParaSeleccionar.filter((e:any)=>{ return e.afectar != 0 }).forEach((e:any) => {
+            conceptosAfectados.push({
+                id: e.id,
+                fecha: e.fecha,
+                tipo: e.tipo,
+                descripcion: e.descripcion,
+                debe: e.afectar,
+                haber: 0,
+            })
+        })
+
+        //ordenamos por fecha
+        conceptosAfectados.sort((ann: any, bnn: any) => {
+            const fecha1: any = new Date(ann.fecha)
+            const fecha2: any = new Date(bnn.fecha)
+            return fecha1 - fecha2
+        });
+
+        this.ordenDePago_conceptosAfectados = []
+        var saldo = 0
+
+        conceptosAfectados.forEach((e:any) => {
+            const dateObj = new Date(e.fecha);
+            const year = dateObj.getFullYear();
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObj.getDate().toString().padStart(2, '0');
+            const dateString = `${day}/${month}/${year}`;
+
+            var descripcion = "(" + dateString + ") - " + e.descripcion
+
+            var debe = e.debe ? parseFloat(e.debe) : 0
+            var haber = e.haber ? parseFloat(e.haber) : 0
+            saldo = saldo - debe + haber
+
+            this.ordenDePago_conceptosAfectados.push({
+                id: e.id,
+                descripcion: descripcion,
+                debe: debe,
+                haber: haber,
+                saldo: saldo
+            })
+        })
+        this.ordenDePago_saldoFinalAfectar = saldo
     }
-    agregarConceptoDescontar(concepto:any){
-        
+
+    agregarMedioPagoOrdenPago(tipo:any, detalle:any){
+
+        var idd = this.generateUUID()
+        if (this.db_medios_pago.some((e: any) => { return e.id == idd })) {
+            this.agregarMedioPagoOrdenPago(tipo, detalle)
+            return
+        }
+    
+        var fecha = new Date()
+        fecha.setHours(fecha.getHours() - 3);
+        const fechaISO = fecha.toISOString().slice(0, 10);
+
+        var saldoPagado = 0
+        this.ordenDePago_mediosPago.forEach((e:any) => {
+            const sald = e.valor ? parseFloat(e.valor) : 0
+            saldoPagado += sald
+        })
+
+        this.ordenDePago_mediosPago.push({
+            id: idd,
+            id_orden: this.ordenDePago_datos.id,
+            descripcion: detalle,
+            emisor: null,
+            numero: null,
+            serie: null,
+            tipo: tipo,
+            fecha: fechaISO,
+            valor: this.ordenDePago_saldoFinalAfectar - saldoPagado
+        })
+
+        this.calcularSaldoFinalPagando()
+    }
+    calcularSaldoFinalPagando(){
+        var saldoPagado:any = 0
+        this.ordenDePago_mediosPago.forEach((e:any) => {
+            const sald = e.valor ? parseFloat(e.valor) : 0
+            saldoPagado += sald
+        })
+        this.ordenDePago_saldoFinalPagando = saldoPagado
+        this.ordenDePago_datos.total_letras = this.numToLet.numeroALetras(saldoPagado)
+        this.ordenDePago_datos.total = saldoPagado
     }
 
     guardarOrdenPago(){
-        console.log(this.ordenDePago_pagarParaSeleccionar)
+
+        //guardamos el asiento
+        this.guardarAsientoOrdenPagoDB()
+
+        //medios de pago
+        this.ordenDePago_mediosPago.forEach((e:any) => {
+            this.guardarMedioPagoDB(e)
+        })
+
+        //agregamos los asientos afectados
+        this.ordenDePago_datos.afecta = []
+        this.ordenDePago_conceptosAfectados.forEach((e:any) => {
+            this.ordenDePago_datos.afecta.push(e.id)
+        })
+        this.ordenDePago_datos.afecta = JSON.stringify(this.ordenDePago_datos.afecta)
+
+        var dataEnviar:any = {}
+        dataEnviar = this.ordenDePago_datos
+
+        var fechaHora = new Date(this.ordenDePago_datos.fecha);
+        dataEnviar.fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        dataEnviar.activo = 1;
+        dataEnviar.id_asiento = this.ordenDePago_idAsientoCreado
+
+        this.comunicacionService.createDB("orden_pago", dataEnviar).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Orden de pago creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Orden de Pago' })
+                this.displayOrdenPago = false
+                this.displayVerOrdenPago = true
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Orden de Pago' })
+            }
+        )
+
+    }
+
+    guardarMedioPagoDB(dato:any) : any{
+
+        var fechaHora = new Date(dato.fecha);
+        dato.fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        dato.activo = 1;
+
+        this.comunicacionService.createDB("medios_pago", dato).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Medio de pago creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Medio de Pago' })
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Medio de Pago' })
+            }
+        )
+    }
+    guardarAsientoOrdenPagoDB() : any{
+
+        var idd = this.generateUUID()
+        if (this.db_asientos.some((e: any) => { return e.id == idd })) {
+            this.guardarAsientoOrdenPagoDB()
+            return
+        }
+
+        this.ordenDePago_idAsientoCreado = idd
+
+        var fechaHora = new Date(this.ordenDePago_datos.fecha);
+        var fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
+
+        var datosAsiento = {
+            id: idd,
+            tipo: "ODP",
+            id_socio: this.socio.id,
+            id_transportista: this.transportista.id,
+            fecha: fecha,
+            descripcion: this.ordenDePago_datos.descripcion,
+            observacion: this.ordenDePago_datos.observacion,
+            afecta: null,
+            cpte_letra: null,
+            cpte_punto: null,
+            cpte_numero: null,
+            cpte_fecha: fecha,
+            debe: this.ordenDePago_datos.total,
+            haber: null,
+            activo: 1,
+            estado: 1
+        }
+
+        this.comunicacionService.createDB("asientos", datosAsiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Asiento creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend ASIENTO' })
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend ASIENTO' })
+            }
+        )
+    }
+
+    generateNumeroOrdenDePago() {
+        const numeroMasGrande = this.db_ordenes_pago.reduce((acumulado:any, objetoActual:any) => {
+            if(parseInt(objetoActual.punto) == parseInt(PUNTO_ORDEN_PAGO)){
+                const valor = parseInt(objetoActual.numero)
+                return Math.max(acumulado, valor);
+            }
+            return false
+        }, 0);
+
+        return numeroMasGrande + 1;
     }
 
     mostrarOrdenPago(ver: any) {
-        const data: any = {
-            numero: '01-12345',
-            fecha: '25/05/2023',
-            fondo: 'odp_norte.png',
-            beneficiario_razon: 'VARGAS, SANTIAGO MANUELÑñó',
-            beneficiario_cuit: '20-40500364-4',
-            beneficiario_codigo: '01234',
-            beneficiario_domicilio: 'LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM ',
+        var pagos:any = []
+        this.ordenDePago_mediosPago.forEach((e:any) => {
+            const dateObj = new Date(e.fecha);
+            const year = dateObj.getFullYear();
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObj.getDate().toString().padStart(2, '0');
+            const dateString = `${day}/${month}/${year}`;
 
-            conceptos: [{
-                concepto: "FLETE MAIZ - \nCPE 1234 - CTG 10105050505 - FA 004-00000099",
-                debe: '',
-                haber: '4000000',
-                saldo: '400000'
-            }, {
-                concepto: "FLETE MAIZ - CPE 1234 - CTG 10105050505 - FA 004-00000099",
-                debe: '',
-                haber: '4000000',
-                saldo: '400000'
-            }, {
-                concepto: "FLETE MAIZ - CPE 1234 - CTG 10105050505 - FA 004-00000099",
-                debe: '',
-                haber: '4000000',
-                saldo: '400000'
-            },
-            {
-                concepto: "COMBUSTIBLE - TICKET N 1234",
-                debe: '100000',
-                haber: '',
-                saldo: '300000'
-            }],
-            pagos: [{
-                tipo: "CHEQUE",
-                detalle: "BANCO NACION - NRO: 12121212",
-                fecha: '27/02/2023',
-                valor: '300000'
-            }],
-            total: 1234567.89,
-            total_letras: this.numToLet.numeroALetras(1234567.89),
-            observaciones: 'Observaciones'
+            pagos.push({
+                tipo: e.tipo,
+                detalle: e.descripcion,
+                fecha: dateString,
+                valor: e.valor
+            })
+        })
+        
+        var conceptos:any = []
+        this.ordenDePago_conceptosAfectados.forEach((e:any) => {
+            conceptos.push({
+                concepto: e.descripcion,
+                debe: e.debe,
+                haber: e.haber,
+                saldo: e.saldo
+            })
+        })
+
+
+        const dateObj = new Date(this.ordenDePago_datos.fecha);
+        const year = dateObj.getFullYear();
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const day = dateObj.getDate().toString().padStart(2, '0');
+        const dateString = `${day}/${month}/${year}`;
+
+        const data: any = {
+            numero: this.ordenDePago_datos.punto.toString().padStart(2, '0') + "-" + this.ordenDePago_datos.numero.toString().padStart(5, '0'),
+            fecha: dateString,
+            fondo: this.ordenDePago_datos.fondo,
+            beneficiario_razon: this.ordenDePago_datos.beneficiario_razon,
+            beneficiario_cuit: this.ordenDePago_datos.beneficiario_cuit,
+            beneficiario_codigo: this.ordenDePago_datos.beneficiario_codigo,
+            beneficiario_domicilio: this.ordenDePago_datos.beneficiario_domicilio,
+
+            total: this.ordenDePago_datos.total,
+            total_letras: this.ordenDePago_datos.total_letras,
+            observaciones: this.ordenDePago_datos.observacion,
+
+            conceptos: conceptos,
+            pagos: pagos,
         }
 
         var url = `${ORDEN_PAGO}/orden_pago.php?&o=${this.objUtf8ToBase64(data)}`
@@ -796,7 +1079,6 @@ export class CuentasCorrientesComponent {
             window.open(url + '&D=I', '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
         }
     }
-
 
     objUtf8ToBase64(ent: any) {
         let str = JSON.stringify(ent)

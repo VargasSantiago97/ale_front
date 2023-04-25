@@ -67,8 +67,6 @@ export class InicioComponent {
     load_gastos: any = true
     load_granos: any = true
     load_banderas: any = true
-    load_corredores: any = true
-    load_acopios: any = true
     load_ordenes_carga: any = true
     load_movimientos: any = true
     load_intervinientes: any = true
@@ -185,8 +183,6 @@ export class InicioComponent {
         this.obtenerGastos()
         this.obtenerGranos()
         this.obtenerBanderas()
-        this.obtenerCorredores()
-        this.obtenerAcopios()
         this.obtenerOrdenesCarga()
         this.obtenerIntervinientes()
         this.obtenerMovimientos()
@@ -371,30 +367,6 @@ export class InicioComponent {
             }
         )
     }
-    obtenerCorredores() {
-        this.comunicacionService.getDB('corredores').subscribe(
-            (res: any) => {
-                this.db_corredores = res;
-                this.load_corredores = false;
-                this.datosParaTabla()
-            },
-            (err: any) => {
-                console.log(err)
-            }
-        )
-    }
-    obtenerAcopios() {
-        this.comunicacionService.getDB('acopios').subscribe(
-            (res: any) => {
-                this.db_acopios = res;
-                this.load_acopios = false;
-                this.datosParaTabla()
-            },
-            (err: any) => {
-                console.log(err)
-            }
-        )
-    }
     obtenerOrdenesCarga(){
         this.comunicacionService.getDB('orden_carga').subscribe(
             (res: any) => {
@@ -412,6 +384,8 @@ export class InicioComponent {
             (res: any) => {
                 console.log(res)
                 this.db_intervinientes = res;
+                this.db_acopios = [... res.filter((e:any) => { return e.dstno == 1})]
+                this.db_corredores = [... res.filter((e:any) => { return e.corvtapri == 1})]
                 this.load_intervinientes = false;
                 this.datosParaTabla()
             },
@@ -470,7 +444,7 @@ export class InicioComponent {
     }
 
     datosParaTabla() {
-        if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_corredores || this.load_acopios || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
+        if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
             this.db_movimientos.forEach((e: any) => {

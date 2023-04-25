@@ -93,10 +93,6 @@
 </div>
 
 
-
-
-
-
 <p-dialog header="NUEVO VIAJE" [(visible)]="displayNuevoViaje" [modal]="true" [style]="{width: '95vw'}"
     [draggable]="true" [resizable]="false">
     <div class="formgrid row">
@@ -132,7 +128,7 @@
             </ng-template>
         </p-table>
     </div>
-    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-success bott" (click)="verViajesPreviamenteAfectados()"></button>
+    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-{{verViajesPreviamenteAfec ? 'danger' : 'success'}} bott" (click)="verViajesPreviamenteAfectados()"></button>
     <br>
     <hr>
     <h6>Viajes Seleccionados:</h6>
@@ -329,7 +325,7 @@
             </ng-template>
         </p-table>
     </div>
-    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-success bott" (click)="verViajesPreviamenteAfectados()"></button>
+    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-{{verViajesPreviamenteAfec ? 'danger' : 'success'}} bott" (click)="verViajesPreviamenteAfectados()"></button>
     <br>
     <hr>
     <h6>Viajes Seleccionados:</h6>
@@ -421,20 +417,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let dato of ordenDePago_pagarParaSeleccionar" (dblclick)="dato.afectar = dato.saldo">
+                <tr *ngFor="let dato of ordenDePago_pagarParaSeleccionar" (dblclick)="(dato.afectar = dato.saldo) && calcularDatosOrdenPago()">
                     <td>{{dato.fecha}}</td>
                     <td>{{dato.tipo}}</td>
                     <td>{{dato.descripcion}}</td>
                     <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
-                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar"></td>
+                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar" (ngModelChange)="calcularDatosOrdenPago()"></td>
                 </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="3">Total</th>
-                    <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo, 'moneda')}}</strong></td>
-                </tr>
-            </tfoot>
         </table>
         <hr>
         <br>
@@ -445,45 +435,135 @@
         <table>
             <thead>
                 <tr>
-                    <th>Seleccionar</th>
                     <th>Fecha</th>
                     <th>Tipo</th>
                     <th>Descripción</th>
                     <th>Monto</th>
+                    <th>Afectar</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let dato of ordenDePago_descontarParaSeleccionar">
-                    <td>
-                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott" (click)="agregarConceptoDescontar(dato.id)"></button>
-                    </td>
+                <tr *ngFor="let dato of ordenDePago_descontarParaSeleccionar"  (dblclick)="(dato.afectar = dato.saldo) && calcularDatosOrdenPago()">
                     <td>{{dato.fecha}}</td>
                     <td>{{dato.tipo}}</td>
                     <td>{{dato.descripcion}}</td>
+                    <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
+                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar" (ngModelChange)="calcularDatosOrdenPago()"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <hr>
+    <hr>
+    <hr>
+    <br>
+    <h3 style="text-align: center;"><strong>ORDEN DE PAGO</strong></h3>
+    <div class="formgrid row">
+        <table>
+            <thead>
+                <tr>
+                    <th>CONCEPTOS AFECTADOS</th>
+                    <th>DEBE</th>
+                    <th>HABER</th>
+                    <th>SALDO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let dato of ordenDePago_conceptosAfectados">
+                    <td>{{dato.descripcion}}</td>
+                    <td>{{transformarDatoMostrarTabla(dato.debe, 'moneda')}}</td>
+                    <td>{{transformarDatoMostrarTabla(dato.haber, 'moneda')}}</td>
                     <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="4">Total</th>
-                    <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo, 'moneda')}}</strong></td>
+                    <th colspan="3">Total</th>
+                    <td><strong>{{transformarDatoMostrarTabla(ordenDePago_saldoFinalAfectar, 'moneda')}}</strong></td>
                 </tr>
             </tfoot>
         </table>
     </div>
-    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-success bott" (click)="verViajesPreviamenteAfectados()"></button>
+
     <br>
     <hr>
     <br>
+    <h5>DETALLE MEDIOS DE PAGO</h5>
+    <button pButton type="button" label="AGREGAR CHEQUE BNA" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('CHEQUE', 'BANCO NACION - Nro: ')"></button>
+    <button pButton type="button" label="AGREGAR CHEQUE NBCH" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('CHEQUE', 'NUEVO BANCO DEL CHACO - Nro: ')"></button>
+    <button pButton type="button" label="AGREGAR EFECTIVO" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('EFECTIVO', 'CAJA 1')"></button>
+    <button pButton type="button" label="AGREGAR OTRO" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('OTRO', '')"></button>
+
+    <div class="formgrid row">
+        <table>
+            <thead>
+                <tr>
+                    <th>TIPO</th>
+                    <th>DETALLE</th>
+                    <th>FECHA</th>
+                    <th>VALOR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let dato of ordenDePago_mediosPago">
+                    <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.tipo"></td>
+                    <td><input type="text" class="input-text-codigo" style="width: 600px;" [(ngModel)]="dato.descripcion"></td>
+                    <td><input type="date" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.fecha"></td>
+                    <td><input type="number" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.valor" (ngModelChange)="calcularSaldoFinalPagando()"></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3">Total (el total a pagar es: {{transformarDatoMostrarTabla(ordenDePago_saldoFinalAfectar, 'moneda')}} )</th>
+                    <td><strong>{{transformarDatoMostrarTabla(ordenDePago_saldoFinalPagando, 'moneda')}}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <br><br><br>
+    <h5>Datos RECEPTOR</h5>
+    <div class="formgrid row">
+        <div class="col-4">
+            <label>Razon Social</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_razon">
+        </div>
+        <div class="col-2">
+            <label>CUIT</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_cuit">
+        </div>
+        <div class="col-5">
+            <label>DOMICILIO</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_domicilio">
+        </div>
+        <div class="col-1">
+            <label>CODIGO</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_codigo">
+        </div>
+    </div>
+    <br>
+    <div class="formgrid row">
+        <div class="col">
+            <label>Observaciones</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.observacion">
+        </div>
+    </div>
+    <div class="formgrid row">
+        <div class="col">
+            <label>Numero en letras</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.total_letras">
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+
     <h5>Datos Asiento</h5>
     <div class="formgrid row">
         <label>Descripcion</label><br>
-        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.descripcion">
+        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.descripcion">
     </div>
-    <div class="formgrid row">
-        <label>Observaciones</label><br>
-        <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosAsiento.observacion">
-    </div>
+
 
     <br>
     <hr>
@@ -496,4 +576,83 @@
     </ng-template>
 </p-dialog>
 
-<button (click)="mostrarOrdenPago(1)">IMP</button>
+
+<p-dialog header="VER ORDEN DE PAGO" [(visible)]="displayVerOrdenPago" [modal]="true" [style]="{width: '1200px'}"
+    [draggable]="true" [resizable]="false">
+
+    <h3 style="text-align: center;"><strong>ORDEN DE PAGO</strong></h3>
+    <div class="formgrid row">
+        <table>
+            <thead>
+                <tr>
+                    <th>CONCEPTOS AFECTADOS</th>
+                    <th>DEBE</th>
+                    <th>HABER</th>
+                    <th>SALDO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let dato of ordenDePago_conceptosAfectados">
+                    <td>{{dato.descripcion}}</td>
+                    <td>{{transformarDatoMostrarTabla(dato.debe, 'moneda')}}</td>
+                    <td>{{transformarDatoMostrarTabla(dato.haber, 'moneda')}}</td>
+                    <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3">Total</th>
+                    <td><strong>{{transformarDatoMostrarTabla(ordenDePago_saldoFinalAfectar, 'moneda')}}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <br>
+    <hr>
+    <br>
+    <h5>DETALLE MEDIOS DE PAGO</h5>
+
+    <div class="formgrid row">
+        <table>
+            <thead>
+                <tr>
+                    <th>TIPO</th>
+                    <th>DETALLE</th>
+                    <th>FECHA</th>
+                    <th>VALOR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let dato of ordenDePago_mediosPago">
+                    <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.tipo"></td>
+                    <td><input type="text" class="input-text-codigo" style="width: 600px;" [(ngModel)]="dato.descripcion"></td>
+                    <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.fecha"></td>
+                    <td><input type="number" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.valor" (ngModelChange)="calcularSaldoFinalPagando()"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <br>
+    <div class="formgrid row">
+        <div class="col">
+            <label>Observaciones</label><br>
+            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.observacion">
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    
+    <div class="formgrid row">
+        <div class="col">
+            <p-button label="VER" icon="pi pi-eye" styleClass="p-button-lg" style="margin: 10px;" (click)="mostrarOrdenPago('ver')"></p-button>
+            <p-button label="DESCARGAR" icon="pi pi-download" styleClass="p-button-lg" style="margin: 10px;" (click)="mostrarOrdenPago('descargar')"></p-button>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayVerOrdenPago=false"></button>
+    </ng-template>
+</p-dialog>

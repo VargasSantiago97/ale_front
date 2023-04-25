@@ -20,6 +20,7 @@ var vars = {
 
     SUCURSAL: 1,
     PUNTO_ORDEN_CARGA: 1,
+    PUNTO_ORDEN_PAGO: 1,
 
 
     //TABLAS GENERALES CPE - AFIP

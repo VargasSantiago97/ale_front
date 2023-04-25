@@ -1,5 +1,5 @@
 <div style="text-align: center;"
-    *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_corredores || load_acopios || load_ordenes_carga || load_intervinientes || load_movimientos">
+    *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_ordenes_carga || load_intervinientes || load_movimientos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -645,7 +645,7 @@
             (click)="guardarOrdenCarga('guardar_ver')"></button>
         <button pButton pRipple type="button" label="GUARDAR Y DESCARGAR" class="p-button-success bott"
             (click)="guardarOrdenCarga('guardar_descargar')"></button>
-        <button *ngIf="datosOrdenCarga.id" (click)="borrarOrdenCarga(datosOrdenCarga.id)" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+        <button *ngIf="datosOrdenCarga.id" (click)="borrarOrdenCarga(datosOrdenCarga)" pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
             (click)="displayOrdenCarga = false"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
             (click)="displayOrdenCarga = false"></button>
