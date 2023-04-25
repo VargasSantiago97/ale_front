@@ -40,6 +40,9 @@ export class CuentasCorrientesComponent {
     datosCuentaCorriente: any = []
     datosCuentaCorrienteTotales: any = {}
 
+    ordenDePago_pagarParaSeleccionar: any = []
+    ordenDePago_descontarParaSeleccionar: any = []
+
     arrastreDeSaldo: any = 0
 
     transportista: any;
@@ -653,6 +656,69 @@ export class CuentasCorrientesComponent {
 
 
     nuevoOrdenDePago() {
+
+        /*
+
+        {
+            "tabla": "medios_pago",
+
+            "id"
+            "id_orden"
+            "fecha"
+            "descripcion"
+            "serie"
+            "emisor"
+            "numero"
+            "tipo"
+            "valor"
+            "creado_por"
+            "creado_el"
+            "editado_por"
+            "editado_el"
+            "activo"
+            "estado"
+        },
+        {
+            "tabla": "orden_pago",
+
+            "id"
+            "id_asiento"
+            "id_socio"
+            "id_transportista"
+            "fecha"
+            "beneficiario_razon"
+            "beneficiario_domicilio"
+            "beneficiario_codigo"
+            "beneficiario_cuit"
+            "total_letras"
+            "total"
+            "observacion"
+            "fondo"
+            "afecta"
+            "punto"
+            "numero"
+            "creado_por"
+            "creado_el"
+            "editado_por"
+            "editado_el"
+            "activo"
+            "estado"
+        }
+        */
+        this.ordenDePago_pagarParaSeleccionar = []
+        this.ordenDePago_descontarParaSeleccionar = []
+
+        var este = {
+            fecha: "20/20/2020",
+            tipo: "MOV",
+            descripcion: "ASDASDASD",
+            saldo: "150550",
+            afectar: 0
+        }
+        this.ordenDePago_pagarParaSeleccionar.push({ ... este})
+        this.ordenDePago_pagarParaSeleccionar.push({ ... este})
+        this.ordenDePago_pagarParaSeleccionar.push({ ... este})
+
         //filtramos por SOCIO y TRANSPORTISTA
         var asientos_filtrados:any = this.db_asientos.filter((e: any) => {
             return (e.id_socio == this.socio.id) && (e.id_transportista == this.transportista.id)
@@ -668,6 +734,16 @@ export class CuentasCorrientesComponent {
 
 
         this.displayOrdenPago = true
+    }
+    agregarConceptoPagar(concepto:any){
+        
+    }
+    agregarConceptoDescontar(concepto:any){
+        
+    }
+
+    guardarOrdenPago(){
+        console.log(this.ordenDePago_pagarParaSeleccionar)
     }
 
     mostrarOrdenPago(ver: any) {

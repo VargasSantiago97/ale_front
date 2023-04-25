@@ -13,7 +13,7 @@
 
         <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
             [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"
-            [listStyle]="{'max-height':'600px'}" [style]="{'width':'100%'}" (onChange)="onSelectTransporte()">
+            [listStyle]="{'max-height':'100%'}" [style]="{'width':'100%'}" (onChange)="onSelectTransporte()">
             <ng-template let-transport pTemplate="item">
                 <div class="transport-item">
                     <div>{{transport.alias}} - {{transport.cuit}}</div>
@@ -413,69 +413,59 @@
         <table>
             <thead>
                 <tr>
-                    <th>Afectar</th>
                     <th>Fecha</th>
                     <th>Tipo</th>
                     <th>Descripción</th>
                     <th>Monto</th>
-                    <th>Monto Afectar</th>
+                    <th>Afectar</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let dato of datosCuentaCorriente">
-                    <td>
-                        <input type="checkbox">
-                    </td>
+                <tr *ngFor="let dato of ordenDePago_pagarParaSeleccionar" (dblclick)="dato.afectar = dato.saldo">
                     <td>{{dato.fecha}}</td>
                     <td>{{dato.tipo}}</td>
                     <td>{{dato.descripcion}}</td>
                     <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
-                    <td><input type="number"></td>
+                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar"></td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="4">Total</th>
+                    <th colspan="3">Total</th>
                     <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo, 'moneda')}}</strong></td>
-                    <td><strong>0.0</strong></td>
                 </tr>
             </tfoot>
         </table>
-        <br>
         <hr>
+        <br>
+        <br>
         <br>
 
         <h5 style="text-align: center;">CONCEPTOS A DESCONTAR</h5>
         <table>
             <thead>
                 <tr>
-                    <th>Afectar</th>
+                    <th>Seleccionar</th>
                     <th>Fecha</th>
                     <th>Tipo</th>
                     <th>Descripción</th>
-                    <th>Ingreso</th>
-                    <th>Gasto</th>
-                    <th>Saldo</th>
+                    <th>Monto</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let dato of datosCuentaCorriente">
+                <tr *ngFor="let dato of ordenDePago_descontarParaSeleccionar">
                     <td>
-                        <input type="checkbox">
+                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott" (click)="agregarConceptoDescontar(dato.id)"></button>
                     </td>
                     <td>{{dato.fecha}}</td>
                     <td>{{dato.tipo}}</td>
                     <td>{{dato.descripcion}}</td>
-                    <td>{{transformarDatoMostrarTabla(dato.ingreso, 'moneda')}}</td>
-                    <td>{{transformarDatoMostrarTabla(dato.gasto, 'moneda')}}</td>
                     <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
                     <th colspan="4">Total</th>
-                    <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.ingreso, 'moneda')}}</strong></td>
-                    <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.gasto, 'moneda')}}</strong></td>
                     <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo, 'moneda')}}</strong></td>
                 </tr>
             </tfoot>
@@ -501,7 +491,7 @@
 
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarAsiento()"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarOrdenPago()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayOrdenPago=false"></button>
     </ng-template>
 </p-dialog>
