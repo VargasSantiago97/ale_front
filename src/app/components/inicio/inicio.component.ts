@@ -107,6 +107,15 @@ export class InicioComponent {
     cpePlantasDestino: any = [];
     cpeCamposDestino: any = [];
 
+    datosFiltro:any = {
+        fechaDesde: new Date('01/01/2023'),
+        fechaHasta: new Date('12/31/2023'),
+        granos: [{alias:'[VACIO]', id:null}],
+        socios: [],
+        establecimientos: [],
+        transportistas: [],
+    };
+
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
@@ -276,6 +285,11 @@ export class InicioComponent {
             (res: any) => {
                 this.db_socios = res;
                 this.load_socios = false;
+
+                res.forEach((e:any) => {
+                    this.datosFiltro.socios.push(e.id)
+                })
+
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -288,6 +302,11 @@ export class InicioComponent {
             (res: any) => {
                 this.db_transportistas = res;
                 this.load_transportistas = false;
+
+                res.forEach((e:any) => {
+                    this.datosFiltro.transportistas.push(e.id)
+                })
+
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -324,6 +343,11 @@ export class InicioComponent {
             (res: any) => {
                 this.db_establecimientos = res;
                 this.load_establecimientos = false;
+
+                res.forEach((e:any) => {
+                    this.datosFiltro.establecimientos.push(e.id)
+                })
+
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -348,6 +372,10 @@ export class InicioComponent {
             (res: any) => {
                 this.db_granos = res;
                 this.load_granos = false;
+
+                res.forEach((e:any) => {
+                    this.datosFiltro.granos.push(e.id)
+                })
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -443,16 +471,30 @@ export class InicioComponent {
         )
     }
 
-    datosParaTabla() {
+    datosParaTabla(mantenerFiltro:any = false) {
         if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
             this.db_movimientos.forEach((e: any) => {
-                this.dataParaMostrarTabla.push(e)
+
+                const ok_grano = e.id_grano ? this.datosFiltro.granos.includes(e.id_grano) : true
+                const ok_socio = e.id_socio ? this.datosFiltro.socios.includes(e.id_socio) : true
+                const ok_establecimiento = e.id_origen ? this.datosFiltro.establecimientos.includes(e.id_origen) : true
+                const ok_transportista = e.id_transporte ? this.datosFiltro.transportistas.includes(e.id_transporte) : true
+                const ok_fechaDesde = e.fecha ? (new Date(e.fecha) >= new Date(this.datosFiltro.fechaDesde)) : true
+                const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
+
+                if(ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
+                    this.dataParaMostrarTabla.push(e)
+                }
             });
+
+
+            if(mantenerFiltro){
+                this.displayFiltros = false
+            }
         }
     }
-
 
     buscarTransporte() {
         if (this.db_transportistas.some((e: any) => { return e.codigo.toUpperCase() == this.cod_transporte.toUpperCase() })) {
