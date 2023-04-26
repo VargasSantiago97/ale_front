@@ -948,8 +948,20 @@ export class CuentasCorrientesComponent {
         )
 
     }
+    borrarOrdenPago(){
+        if(confirm('Desea eliminar?')){
+            this.ordenDePago_mediosPago.forEach((e:any) => {
+                this.eliminarMedioPagoDB(e)
+            })
 
-    guardarMedioPagoDB(dato:any) : any{
+            this.eliminarAsientoOrdenPagoDB()
+
+            this.eliminarOrdenPagoDB()
+    
+        }
+    }
+
+    guardarMedioPagoDB(dato:any){
 
         var fechaHora = new Date(dato.fecha);
         dato.fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
@@ -966,7 +978,21 @@ export class CuentasCorrientesComponent {
             }
         )
     }
-    guardarAsientoOrdenPagoDB() : any{
+    eliminarMedioPagoDB(dato:any){
+
+        dato.estado = 0;
+
+        this.comunicacionService.updateDB("medios_pago", dato).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Medio de pago eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Medio de Pago' })
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Medio de Pago' })
+            }
+        )
+    }
+    guardarAsientoOrdenPagoDB(){
 
         var idd = this.generateUUID()
         if (this.db_asientos.some((e: any) => { return e.id == idd })) {
@@ -987,7 +1013,7 @@ export class CuentasCorrientesComponent {
             fecha: fecha,
             descripcion: this.ordenDePago_datos.descripcion,
             observacion: this.ordenDePago_datos.observacion,
-            afecta: null,
+            afecta: JSON.stringify([]),
             cpte_letra: null,
             cpte_punto: null,
             cpte_numero: null,
@@ -1005,6 +1031,34 @@ export class CuentasCorrientesComponent {
             (err: any) => {
                 console.log(err)
                 this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend ASIENTO' })
+            }
+        )
+    }
+    eliminarAsientoOrdenPagoDB(){
+
+        var asiento = this.db_asientos.find((e:any) => { return e.id == this.ordenDePago_datos.id_asiento})
+        asiento.estado = 0
+
+        this.comunicacionService.updateDB("asientos", asiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Asiento eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend ASIENTO' })
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend ASIENTO' })
+            }
+        )
+    }
+    eliminarOrdenPagoDB(){
+        this.ordenDePago_datos.estado = 0
+        this.comunicacionService.updateDB("orden_pago", this.ordenDePago_datos).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Orden de pago eliminada con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Orden de Pago' })
+                this.displayVerOrdenPago = false
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend Orden de Pago' })
             }
         )
     }

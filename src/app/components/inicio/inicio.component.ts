@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
@@ -14,19 +14,23 @@ const SUCURSAL = vars.SUCURSAL;
 const PDF_CPE_URI = vars.PDF_CPE_URI;
 const PUNTO_ORDEN_CARGA = vars.PUNTO_ORDEN_CARGA;
 
+
 @Component({
     selector: 'app-inicio',
     templateUrl: './inicio.component.html',
     styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent {
+    @ViewChild('myCargador') uploader: any;
+
+    API_URI_UPLOAD = vars.API_URI_UPLOAD;
 
     cols: any = [];
     selectedColumns: any = [];
 
     dataParaMostrarTabla: any = []
 
-    displayFiltros: Boolean = true;
+    displayFiltros: Boolean = false;
     displayNuevoMovimiento: Boolean = false;
     displayBanderas: Boolean = false;
     displayBanderasDis: Boolean = false;
@@ -54,6 +58,9 @@ export class InicioComponent {
     db_ordenes_carga: any = []
     db_movimientos: any = []
     db_intervinientes: any = []
+    db_carta_porte: any = []
+    db_asientos: any = []
+    db_ordenes_pago: any = []
 
 
     load_camiones: any = true
@@ -70,6 +77,9 @@ export class InicioComponent {
     load_ordenes_carga: any = true
     load_movimientos: any = true
     load_intervinientes: any = true
+    load_carta_porte: any = true
+    load_asientos: any = true
+    load_ordenes_pago: any = true
 
 
     datosRegistro: any;
@@ -97,10 +107,6 @@ export class InicioComponent {
 
     existePlantilla = false;
 
-    permiteCrearCTG: any = {
-        "9a869d84b572": true,
-        "93ff9dd068be": true
-    }
     intervinientesCPE: any = {};
 
     cpeCamposOrigen: any = [];
@@ -110,7 +116,7 @@ export class InicioComponent {
     datosFiltro:any = {
         fechaDesde: new Date('01/01/2023'),
         fechaHasta: new Date('12/31/2023'),
-        granos: [{alias:'[VACIO]', id:null}],
+        granos: [],
         socios: [],
         establecimientos: [],
         transportistas: [],
@@ -148,7 +154,7 @@ export class InicioComponent {
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
 
-            { field: "factura", header: "Factura" },
+            { field: "factura", header: "Facturas" },
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
         ];
@@ -166,7 +172,6 @@ export class InicioComponent {
             { field: "patAc", header: "Pat. Ac." },
             { field: "transporte", header: "Transporte" },
             { field: "cuit_transp", header: "CUIT Transp" },
-            { field: "gastos", header: "Gastos" },
             { field: "id_corredor", header: "Corredor" },
             { field: "id_acopio", header: "Acopio" },
 
@@ -175,8 +180,9 @@ export class InicioComponent {
             { field: "kg_neto", header: "Neto" },
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
-
-            { field: "factura", header: "Factura" },
+            
+            { field: "factura", header: "Facturas" },
+            { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
         ];
@@ -195,6 +201,9 @@ export class InicioComponent {
         this.obtenerOrdenesCarga()
         this.obtenerIntervinientes()
         this.obtenerMovimientos()
+        this.obtenerCartasPorte()
+        this.obtenerAsientos()
+        this.obtenerOrdenesPago()
 
         this.datosMovimiento = {
             id: null,
@@ -410,7 +419,6 @@ export class InicioComponent {
     obtenerIntervinientes(){
         this.comunicacionService.getDB('intervinientes').subscribe(
             (res: any) => {
-                console.log(res)
                 this.db_intervinientes = res;
                 this.db_acopios = [... res.filter((e:any) => { return e.dstno == 1})]
                 this.db_corredores = [... res.filter((e:any) => { return e.corvtapri == 1})]
@@ -427,6 +435,42 @@ export class InicioComponent {
             (res: any) => {
                 this.db_movimientos = res;
                 this.load_movimientos = false;
+                this.datosParaTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerCartasPorte() {
+        this.comunicacionService.getDB('carta_porte').subscribe(
+            (res: any) => {
+                this.db_carta_porte = res;
+                this.load_carta_porte = false;
+                this.datosParaTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerAsientos(){
+        this.comunicacionService.getDB('asientos').subscribe(
+            (res: any) => {
+                this.db_asientos = res;
+                this.load_asientos = false;
+                this.datosParaTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerOrdenesPago(){
+        this.comunicacionService.getDB('orden_pago').subscribe(
+            (res: any) => {
+                this.db_ordenes_pago = res;
+                this.load_ordenes_pago = false;
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -472,7 +516,7 @@ export class InicioComponent {
     }
 
     datosParaTabla(mantenerFiltro:any = false) {
-        if (!(this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
+        if (!(this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
             this.db_movimientos.forEach((e: any) => {
@@ -485,7 +529,7 @@ export class InicioComponent {
                 const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
 
                 if(ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
-                    this.dataParaMostrarTabla.push(e)
+                    this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
                 }
             });
 
@@ -494,6 +538,159 @@ export class InicioComponent {
                 this.displayFiltros = false
             }
         }
+    }
+    movimientoToMostrarTabla(mov:any){
+        var dato:any = {
+            id: mov.id,
+            cultivo: mov.id_grano ? this.transformDatoTabla(mov.id_grano,"grano") : "-",
+            fecha: mov.fecha ? this.transformDatoTabla(mov.fecha,"fecha") : "-",
+            orden: this.transformDatoTabla(mov.id,"ordenNumero"),
+            benef_orden: mov.id_socio ? this.transformDatoTabla(mov.id_socio,"socio") : "-",
+            campo: mov.id_origen ? this.transformDatoTabla(mov.id_origen,"campo") : "-",
+            tipo_orig: mov.tipo_origen ? this.transformDatoTabla(mov.tipo_origen,"tipo_orig") : "-",
+            pat: mov.id_camion ? this.transformDatoTabla(mov.id_camion,"pat") : "-",
+            patAc: mov.id_camion ? this.transformDatoTabla(mov.id_camion,"patAc") : "-",
+            transporte: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte,"transporte") : "-",
+            cuit_transp: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte,"cuit_transp") : "-",
+            id_corredor: mov.id_corredor ? this.transformDatoTabla(mov.id_corredor,"intervinientes") : "-",
+            id_acopio: mov.id_acopio ? this.transformDatoTabla(mov.id_acopio,"intervinientes") : "-",
+
+            kg_tara: mov.kg_tara ? this.transformDatoTabla(mov.kg_tara,"kg") : "-",
+            kg_bruto: mov.kg_bruto ? this.transformDatoTabla(mov.kg_bruto,"kg") : "-",
+            kg_neto: mov.kg_neto ? this.transformDatoTabla(mov.kg_neto,"kg") : "-",
+            kg_regulacion: mov.kg_regulacion ? this.transformDatoTabla(mov.kg_regulacion,"kg") : "-",
+            kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final,"kg") : "-",
+
+            observaciones:  mov.observaciones ? mov.observaciones : "-",
+
+            permiteCrearCTG: true,
+            existeOrdenDeCarga: this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == mov.id}),
+            
+            gastos: '',
+            factura: '',
+            pagado: 'NO',
+
+            cpe: '',
+            benef: '',
+            ctg: '',
+
+        }
+
+        var haber = 0.0
+        var debe = 0.0
+
+        if(this.db_carta_porte.some((e:any) => { return e.id_movimiento == mov.id})){
+            const carta_porte = this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov.id})
+            if(carta_porte.length == 1){
+                var sucursal:any = carta_porte[0].sucursal ? carta_porte[0].sucursal.toString().padStart(2, '0') : ''
+                var cpe:any = carta_porte[0].nro_cpe ? carta_porte[0].nro_cpe.toString().padStart(5, '0') : ''
+
+                dato.cpe= sucursal + "-" + cpe
+                dato.benef= carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante,"socioCuit") : "-"
+                dato.ctg= carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
+                dato.permiteCrearCTG = false
+            } else {
+                var cpe:any = ""
+                var benef:any = ""
+                var ctg:any = ""
+                carta_porte.forEach((e:any) => {
+                    cpe += e.sucursal.toString().padStart(2, '0') + "-" + e.nro_cpe.toString().padStart(5, '0') + " "
+                    ctg += e.nro_ctg.toString() + " "
+                    benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"
+                })
+
+                dato.cpe= cpe
+                dato.benef= benef
+                dato.ctg= ctg
+                dato.permiteCrearCTG = false
+            }
+        }
+
+        var asientosAfectados:any = []
+        if(this.db_asientos.some((e:any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false})){
+            const asientos = this.db_asientos.filter((e:any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false})
+            asientos.forEach((e:any) => {
+
+                if(e.haber){
+                    asientosAfectados.push(e.id)
+                    haber += parseFloat(e.haber)
+                }
+                if(e.debe){
+                    debe += parseFloat(e.debe)
+                }
+            })
+            dato.gastos = this.transformDatoTabla(debe,"moneda")
+            dato.factura = this.transformDatoTabla(haber,"moneda")
+        }
+
+        for (let i = 0; i < asientosAfectados.length; i++) {
+            if(this.db_ordenes_pago.some((e:any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(asientosAfectados[i])) : false) : false })){
+                dato.pagado = "SI"
+            }
+        }
+
+        return dato
+    }
+    transformDatoTabla(dato: any, tipo: any, registro:any=0) {
+        if (tipo == 'grano') {
+            return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'fecha') {
+            var fecha = new Date(dato)
+            const datePipe = new DatePipe('en-US');
+            return datePipe.transform(fecha, 'yyyy-MM-dd');
+        }
+        if (tipo == 'campo') {
+            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'tipo_orig') {
+            return this.optionsDe.some((e: any) => { return e.id == dato }) ? this.optionsDe.find((e: any) => { return e.id == dato }).label : '-'
+        }
+        if (tipo == 'pat') {
+            return this.db_camiones.some((e: any) => { return e.id == dato }) ? this.db_camiones.find((e: any) => { return e.id == dato }).patente_chasis : '-'
+        }
+        if (tipo == 'patAc') {
+            return this.db_camiones.some((e: any) => { return e.id == dato }) ? this.db_camiones.find((e: any) => { return e.id == dato }).patente_acoplado : '-'
+        }
+        if (tipo == 'transporte') {
+            return this.db_transportistas.some((e: any) => { return e.id == dato }) ? this.db_transportistas.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'cuit_transp') {
+            return this.db_transportistas.some((e: any) => { return e.id == dato }) ? this.db_transportistas.find((e: any) => { return e.id == dato }).cuit : '-'
+        }
+        if (tipo == 'intervinientes') {
+            return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato}).alias : '-'
+        }
+        if (tipo == 'kg') {
+            return dato ? dato.toLocaleString("es-AR") : '-'
+        }
+        if (tipo == 'socio') {
+            return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'socioCuit') {
+            return this.db_socios.some((e: any) => { return e.cuit.toString() == dato.toString() }) ? this.db_socios.find((e: any) => { return e.cuit.toString() == dato.toString() }).alias : '-'
+        }
+        if (tipo == 'ordenNumero') {
+            if(this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == dato})){
+                return this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == dato}).numero
+            } else {
+                return ""
+            }
+        }
+        if (tipo == 'moneda') {
+            const number = parseFloat(dato);
+            if (number == 0 || number == null || !number) {
+                return ''
+            }
+            const options = {
+                style: 'currency',
+                currency: 'ARS',
+                useGrouping: true,
+                maximumFractionDigits: 2
+            };
+            return number.toLocaleString('es-AR', options);
+        }
+        return registro.id
     }
 
     buscarTransporte() {
@@ -733,8 +930,8 @@ export class InicioComponent {
             )
         }
     }
-    mostrarMovimiento(mov: any) {
-        this.datosMovimiento = { ...mov }
+    mostrarMovimiento(mov_id: any) {
+        this.datosMovimiento = this.db_movimientos.find((e:any) => { return e.id == mov_id})
 
         var fecha = new Date(this.datosMovimiento.fecha)
         const datePipe = new DatePipe('en-US');
@@ -887,7 +1084,8 @@ export class InicioComponent {
 
     }
 
-    agregarOrdenCargaRegistro(registro:any){
+    agregarOrdenCargaRegistro(registro_id:any){
+        const registro = this.db_movimientos.find((e:any) => { return e.id == registro_id })
 
         var fecha = new Date(registro.fecha);
         const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
@@ -1416,7 +1614,16 @@ export class InicioComponent {
     }
 
 
-    abrirModalCrearCPE(mov: any) {
+    abrirModalCrearCPE(mov_id: any) {
+
+        const idd = this.generateUUID()
+        if (this.db_carta_porte.some((e: any) => { return e.id == idd })) {
+            this.abrirModalCrearCPE(mov_id)
+            return
+        }
+
+        const mov = this.db_movimientos.find((e:any) => { return e.id == mov_id })
+
         this.intervinientesCPE = {
             destinatario: [... this.db_intervinientes.filter((e:any) => { return e.dstro == 1})],
             destino: [... this.db_intervinientes.filter((e:any) => { return e.dstno == 1})],
@@ -1435,27 +1642,78 @@ export class InicioComponent {
             transportista: [... this.db_transportistas]
         }
 
+        this.datosCPE = {
+            id: idd,
+            sucursal: SUCURSAL,
+            nro_cpe: null,
+            nro_ctg: null,
+            tipo_cpe: 74,
+            id_movimiento: mov_id,
+            es_solicitante_campo: true,
+            es_destino_campo: false,
+            corresponde_retiro_productor: false,
+            certificado_coe: null,
+            mercaderia_fumigada: true,
 
-
-        this.datosCPE = {}
-
-        this.datosCPE.tipo_cpe = 74
-        this.datosCPE.sucursal = SUCURSAL
-        this.datosCPE.es_solicitante_campo = true
-        this.datosCPE.es_destino_campo = false
-        this.datosCPE.corresponde_retiro_productor = false
-        this.datosCPE.certificado_coe = null
-        this.datosCPE.mercaderia_fumigada = true
+            cuit_solicitante: null,
+            observaciones: null,
+            planta_origen: null,
+            cod_provincia_operador: null,
+            cod_localidad_operador: null,
+            cod_provincia_productor: null,
+            cod_localidad_productor: null,
+            cuit_remitente_comercial_productor: null,
+            cuit_destino: null,
+            cuit_destinatario: null,
+            cod_localidad: null,
+            cod_provincia: null,
+            planta_destino: null,
+            cuit_corredor_venta_primaria: null,
+            cuit_corredor_venta_secundaria: null,
+            cuit_mercado_a_termino: null,
+            cuit_remitente_comercial_venta_primaria: null,
+            cuit_remitente_comercial_venta_secundaria: null,
+            cuit_remitente_comercial_venta_secundaria2: null,
+            cuit_representante_entregador: null,
+            cuit_representante_recibidor: null,
+            peso_tara: null,
+            peso_bruto: null,
+            cod_grano: null,
+            cosecha: null,
+            cuit_transportista: null,
+            cuit_pagador_flete: null,
+            cuit_intermediario_flete: null,
+            cuit_chofer: null,
+            km_recorrer: null,
+            tarifa_referencia: null,
+            tarifa: null,
+            codigo_turno: null,
+            fecha_hora_partida: null,
+            dominio: null,
+            datos: null,
+            creado_por: null,
+            creado_el: null,
+            editado_por: null,
+            editado_el: null,
+            activo: null,
+            estado: null,
+            terminada: null,
+            controlada: null,
+            controlada_final: null,
+            sistema: null,
+            observaciones_sistema: null,
+            data: null,
+        }
 
         if (mov.id_socio) {
             this.datosCPE.cuit_solicitante = this.db_socios.some((e: any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e: any) => { return e.id == mov.id_socio }).cuit : null;
             this.onSelectSolicitante()
         }
         if (mov.id_corredor) {
-            //this.datosCPE.cuit_corredor_venta_primaria = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
+            this.datosCPE.cuit_corredor_venta_primaria = this.db_intervinientes.some((e:any) => { return e.id == mov.id_corredor }) ? this.db_intervinientes.find((e:any) => { return e.id == mov.id_corredor }).cuit : null;
         }
         if (mov.id_acopio) {
-            //this.datosCPE.cuit_solicitante = this.db_socios.some((e:any) => { return e.id == mov.id_socio }) ? this.db_socios.find((e:any) => { return e.id == mov.id_socio }).cuit : null;
+            this.datosCPE.cuit_destino = this.db_intervinientes.some((e:any) => { return e.id == mov.id_acopio }) ? this.db_intervinientes.find((e:any) => { return e.id == mov.id_acopio }).cuit : null;
         }
         if (mov.id_transporte) {
             this.datosCPE.cuit_transportista = this.db_transportistas.some((e: any) => { return e.id == mov.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == mov.id_transporte }).cuit : null;
@@ -1483,7 +1741,6 @@ export class InicioComponent {
             var tara = mov.kg_tara ? parseInt(mov.kg_tara) : 0;
             this.datosCPE.peso_bruto = neto_final + tara
         }
-
 
         this.displayCPE = true
     }
@@ -1723,6 +1980,33 @@ export class InicioComponent {
         
     }
 
+    CPE_guardarDB(){
+        this.datosCPE.activo = 1
+        this.datosCPE.estado = 1
+
+        console.log(this.datosCPE)
+
+        this.comunicacionService.createDB("carta_porte", this.datosCPE).subscribe(
+            (res: any) => {
+                console.log(res)
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+
+                this.obtenerCartasPorte()
+                this.displayCPE = false
+
+                //subir archivos
+                if(this.datosCPE.nro_ctg){
+                    this.uploader.upload()
+                }
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
+
+    }
+
     buscarCUIT(cuit: any, razon_social: any) {
         this.datosCPE[razon_social] = 'buscando...'
 
@@ -1751,58 +2035,80 @@ export class InicioComponent {
             }
         )
     }
+
+    onUpload(event:any) {
+        if (event.originalEvent.body.mensaje) {
+            this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivos cargados con exito' })
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al cargar archivos' })
+        }
+    }
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
 
 /*
 CPE DB:
-"creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado", "data"
-nro_cpe
-nro_ctg
-id_movimiento
-cuit_solicitante
-tipo_cpe
-observaciones
-es_solicitante_campo
-cod_localidad_productor
-planta_origen
-cod_provincia_operador
-cod_localidad_operador
-cod_provincia_productor
-cod_localidad_productor
-corresponde_retiro_productor
-certificado_coe
-cuit_remitente_comercial_productor
-cuit_destino
-cuit_destinatario
-es_destino_campo
-cod_localidad
-cod_provincia
-planta_destino
-cuit_corredor_venta_primaria
-cuit_corredor_venta_secundaria
-cuit_mercado_a_termino
-cuit_remitente_comercial_venta_primaria
-cuit_remitente_comercial_venta_secundaria
-cuit_remitente_comercial_venta_secundaria2
-cuit_representante_entregador
-cuit_representante_recibidor
-peso_tara
-peso_bruto
-cod_grano
-cosecha
-cuit_transportista
-cuit_pagador_flete
-cuit_intermediario_flete
-cuit_chofer
-mercaderia_fumigada
-km_recorrer
-tarifa_referencia
-tarifa
-codigo_turno
-fecha_hora_partida
-dominio
+
+    `id` VARCHAR(12) NOT NULL,
+    `sucursal` VARCHAR(5) NOT NULL,
+    `nro_cpe` VARCHAR(15) NOT NULL,
+    `nro_ctg` VARCHAR(15) NOT NULL,
+    `id_movimiento` VARCHAR(12) NOT NULL,
+    `cuit_solicitante` VARCHAR(12) NOT NULL,
+    `tipo_cpe` VARCHAR(10) NOT NULL,
+    `observaciones` VARCHAR(100) NOT NULL,
+    `es_solicitante_campo` VARCHAR(10) NOT NULL,
+    `planta_origen` VARCHAR(10) NOT NULL,
+    `cod_provincia_operador` VARCHAR(10) NOT NULL,
+    `cod_localidad_operador` VARCHAR(10) NOT NULL,
+    `cod_provincia_productor` VARCHAR(10) NOT NULL,
+    `cod_localidad_productor` VARCHAR(10) NOT NULL,
+    `corresponde_retiro_productor` VARCHAR(10) NOT NULL,
+    `certificado_coe` VARCHAR(30) NOT NULL,
+    `cuit_remitente_comercial_productor` VARCHAR(12) NOT NULL,
+    `cuit_destino` VARCHAR(12) NOT NULL,
+    `cuit_destinatario` VARCHAR(12) NOT NULL,
+    `es_destino_campo` VARCHAR(10) NOT NULL,
+    `cod_localidad` VARCHAR(10) NOT NULL,
+    `cod_provincia` VARCHAR(10) NOT NULL,
+    `planta_destino` VARCHAR(10) NOT NULL,
+    `cuit_corredor_venta_primaria` VARCHAR(12) NOT NULL,
+    `cuit_corredor_venta_secundaria` VARCHAR(12) NOT NULL,
+    `cuit_mercado_a_termino` VARCHAR(12) NOT NULL,
+    `cuit_remitente_comercial_venta_primaria` VARCHAR(12) NOT NULL,
+    `cuit_remitente_comercial_venta_secundaria` VARCHAR(12) NOT NULL,
+    `cuit_remitente_comercial_venta_secundaria2` VARCHAR(12) NOT NULL,
+    `cuit_representante_entregador` VARCHAR(12) NOT NULL,
+    `cuit_representante_recibidor` VARCHAR(12) NOT NULL,
+    `peso_tara` FLOAT NOT NULL,
+    `peso_bruto` FLOAT NOT NULL,
+    `cod_grano` VARCHAR(10) NOT NULL,
+    `cosecha` VARCHAR(10) NOT NULL,
+    `cuit_transportista` VARCHAR(12) NOT NULL,
+    `cuit_pagador_flete` VARCHAR(12) NOT NULL,
+    `cuit_intermediario_flete` VARCHAR(12) NOT NULL,
+    `cuit_chofer` VARCHAR(12) NOT NULL,
+    `mercaderia_fumigada` VARCHAR(10) NOT NULL,
+    `km_recorrer` FLOAT NOT NULL,
+    `tarifa_referencia` FLOAT NOT NULL,
+    `tarifa` FLOAT NOT NULL,
+    `codigo_turno` VARCHAR(30) NOT NULL,
+    `fecha_hora_partida` VARCHAR(30) NOT NULL,
+    `dominio` VARCHAR(50) NOT NULL,
+    `datos` TEXT NOT NULL,
+    `creado_por` VARCHAR(12) NULL DEFAULT NULL,
+    `creado_el` DATETIME NULL DEFAULT NULL,
+    `editado_por`VARCHAR(12) NULL DEFAULT NULL,
+    `editado_el` DATETIME NULL DEFAULT NULL,
+    `activo` INT(11) NULL DEFAULT NULL,
+    `estado` INT(11) NULL DEFAULT NULL,
+    `terminada` INT(11) NULL DEFAULT NULL,
+    `controlada` INT(11) NULL DEFAULT NULL,
+    `controlada_final` INT(11) NULL DEFAULT NULL,
+    `sistema` INT(11) NULL DEFAULT NULL,
+    `observaciones_sistema` TEXT NULL DEFAULT NULL,
+    `data` TEXT NULL DEFAULT NULL,
 
 {
     "contingencia": [
@@ -1861,7 +2167,7 @@ dominio
             "es_solicitante_campo": "true"
         }
     ],
-    "sucursal": 222,
+    "": 222,
     "": 74,
     "transporte": [
         {

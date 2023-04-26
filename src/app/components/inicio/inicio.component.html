@@ -1,25 +1,27 @@
 <div style="text-align: center;"
-    *ngIf="load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_ordenes_carga || load_intervinientes || load_movimientos">
+    *ngIf="load_ordenes_pago || load_asientos || load_carta_porte || load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_ordenes_carga || load_intervinientes || load_movimientos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
-<button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
-    (click)="displayFiltros=true"></button>
+<div #BOTONES>
+    <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
+        (click)="displayFiltros=true"></button>
 
-<button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"
-    (click)="nuevoMovimiento()"></button>
+    <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"
+        (click)="nuevoMovimiento()"></button>
 
-<button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott"
-    (click)="displayBanderas=true"></button>
+    <button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott"
+        (click)="displayBanderas=true"></button>
 
-<button pButton pRipple type="button" label="NUEVA OC" class="p-button-success bott"
-    (click)="nuevaOrdenCarga()"></button>
+    <button pButton pRipple type="button" label="NUEVA OC" class="p-button-success bott"
+        (click)="nuevaOrdenCarga()"></button>
 
-<button pButton pRipple type="button" label="COLUMNAS" class="p-button-success bott"
-    (click)="displayVistas=true"></button>
+    <button pButton pRipple type="button" label="COLUMNAS" class="p-button-success bott"
+        (click)="displayVistas=true"></button>
 
 
-<button pButton pRipple type="button" label="CPE" class="p-button-success bott" (click)="mostrat(0)"></button>
+    <button pButton pRipple type="button" label="CPE" class="p-button-success bott" (click)="mostrat(0)"></button>
+</div>
 
 
 <br><br>
@@ -42,23 +44,26 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-registro let-columns="columns">
-        <tr (dblclick)="mostrarMovimiento(registro)">
+        <tr (dblclick)="mostrarMovimiento(registro.id)">
             <td *ngFor="let col of columns">
-                {{transformarDatoMostrarTabla(registro, col.field)}}
+                {{registro[col.field]}}
 
                 <div *ngIf="col.field == 'orden'">
-                    <button *ngIf="!transformarDatoMostrarTabla(registro.id, 'existeOrdenCarga')"
-                        class="button-tabla"><i class="pi pi-plus-circle"
-                            (click)="agregarOrdenCargaRegistro(registro)"></i></button>
-                    <a *ngIf="transformarDatoMostrarTabla(registro.id, 'existeOrdenCarga')" href="#"
-                        onclick="event.preventDefault();"
-                        (click)="mostrarModalOrdenCarga(registro.id)">{{transformarDatoMostrarTabla(registro,
-                        'ordenNumero')}}</a>
+                    <button *ngIf="!registro.existeOrdenDeCarga" class="button-tabla">
+                        <i class="pi pi-plus-circle" (click)="agregarOrdenCargaRegistro(registro.id)"></i>
+                    </button>
+                    <button *ngIf="registro.existeOrdenDeCarga" class="button-tabla"
+                        style="background-color: rgba(255, 238, 0, 0.233);">
+                        <i class="pi pi-eye" (click)="mostrarModalOrdenCarga(registro.id)"></i>
+                    </button>
                 </div>
 
-                <div *ngIf="col.field == 'ctg' && permiteCrearCTG[registro.id]">
-                    <button class="button-tabla" (click)="abrirModalCrearCPE(registro)"><i
-                            class="pi pi-plus-circle"></i></button>
+                <div *ngIf="col.field == 'ctg'">
+                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla"
+                        (click)="abrirModalCrearCPE(registro.id)"><i class="pi pi-plus-circle"></i></button>
+                    <button *ngIf="!registro.permiteCrearCTG" class="button-tabla"
+                        style="background-color: rgba(255, 238, 0, 0.233);"><i
+                            class="pi pi-eye"></i></button>
                 </div>
             </td>
         </tr>
@@ -66,8 +71,8 @@
 </p-table>
 <br><br>
 
-<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw', height: '900px'}" [draggable]="true"
-    [resizable]="false">
+<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw', height: '900px'}"
+    [draggable]="true" [resizable]="false">
 
     <div class="formgrid row">
         <div class="field col">
@@ -84,8 +89,8 @@
         <div class="field col">
             <div class="field">
                 <label>CULTIVO</label><br>
-                <p-listbox [options]="db_granos" [(ngModel)]="datosFiltro.granos"
-                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                <p-listbox [options]="db_granos" [(ngModel)]="datosFiltro.granos" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
                     [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-grano pTemplate="item">
                         <div class="grano-item">
@@ -98,8 +103,8 @@
         <div class="field col">
             <div class="field">
                 <label>SOCIO</label><br>
-                <p-listbox [options]="db_socios" [(ngModel)]="datosFiltro.socios"
-                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                <p-listbox [options]="db_socios" [(ngModel)]="datosFiltro.socios" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
                     [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-socio pTemplate="item">
                         <div class="socio-item">
@@ -113,8 +118,8 @@
             <div class="field">
                 <label>ESTABLECIMIENTO</label><br>
                 <p-listbox [options]="db_establecimientos" [(ngModel)]="datosFiltro.establecimientos"
-                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                    optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-establecimiento pTemplate="item">
                         <div class="establecimiento-item">
                             <div>{{establecimiento.alias}}</div>
@@ -127,8 +132,8 @@
             <div class="field">
                 <label>TRANSPORTE</label><br>
                 <p-listbox [options]="db_transportistas" [(ngModel)]="datosFiltro.transportistas"
-                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                    optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-transportista pTemplate="item">
                         <div class="transportista-item">
                             <div>{{transportista.alias}}</div>
@@ -603,6 +608,27 @@
 <p-dialog header="CPE" [(visible)]="displayCPE" [modal]="true" [style]="{width: '1100px'}" [draggable]="true"
     [resizable]="true" [maximizable]="true">
 
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>NRO CTG</label><br>
+                <input type="text" class="input-text-codigo" style="width: 140px;" [(ngModel)]="datosCPE.nro_ctg">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>SUCURSAL</label><br>
+                <input type="text" class="input-text-codigo" style="width: 100px;" [(ngModel)]="datosCPE.sucursal">
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>NRO CPE</label><br>
+                <input type="text" class="input-text-codigo" style="width: 140px;" [(ngModel)]="datosCPE.nro_cpe">
+            </div>
+        </div>
+    </div>
+    <br>
     <div class="formgrid row">
         <div class="field col">
             <div class="field">
@@ -1125,7 +1151,7 @@
         </div>
         <div class="field col-8" *ngIf="!datosCPE.es_destino_campo">
             <div class="field">
-                <label>Planta:</label><br>
+                <label>Planta: (Si no carga, presionar "NO" es un campo)</label><br>
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
                     <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N°
@@ -1198,7 +1224,7 @@
     <div class="formgrid row">
         <div class="field col-9">
             <div class="field">
-                <label>Observaciones:</label><br>
+                <label>Observaciones CPE:</label><br>
                 <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosCPE.observaciones">
             </div>
         </div>
@@ -1209,10 +1235,30 @@
             </div>
         </div>
     </div>
-
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>Observaciones sistema (No salen en CPE)</label><br>
+                <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosCPE.observaciones_sistema">
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <div *ngIf="datosCPE.nro_ctg">
+        <h5>Archivos (PDF CPE):</h5>
+        <div class="formgrid row">
+            <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI_UPLOAD}}/upload.php?folder={{datosCPE.nro_ctg}}" (onUpload)="onUpload($event)" [multiple]="true">
+                <ng-template pTemplate="content">
+                </ng-template>
+            </p-fileUpload>
+        </div>
+    </div>
 
     <ng-template pTemplate="footer">
-        <button (click)="mostrar(datosCPE)" pButton pRipple type="button" label="GUARDAR"
+        <button (click)="CPE_guardarDB()" pButton pRipple type="button" label="GUARDAR"
             class="p-button-success bott"></button>
         <button (click)="autorizarGuardarCPE()" pButton pRipple type="button" label="AUTORIZAR Y GUARDAR"
             class="p-button-success bott"></button>
