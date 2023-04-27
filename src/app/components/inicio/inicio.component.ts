@@ -37,6 +37,7 @@ export class InicioComponent {
     displayOrdenCarga: Boolean = false;
     displayVistas: Boolean = false;
     displayCPE: Boolean = false;
+    displayVerCPE: Boolean = false;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
     optionsDe: any = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
@@ -82,6 +83,8 @@ export class InicioComponent {
     load_ordenes_pago: any = true
 
 
+
+
     datosRegistro: any;
 
     transportista: any;
@@ -104,6 +107,8 @@ export class InicioComponent {
     datosMovimiento: any;
     datosOrdenCarga: any = {};
     datosCPE: any = {};
+    
+    datosVerCPE: any = {};
 
     existePlantilla = false;
 
@@ -1591,11 +1596,11 @@ export class InicioComponent {
         */
 
         var data = {
-            cuit: 20319442473,
+            cuit: 30714518549,
             ejecutar: "consultar_cpe_automotor",
             data: {
                 sucursal: 0,
-                nro_orden: 205
+                nro_orden: 851
             }
         }
 
@@ -1743,6 +1748,27 @@ export class InicioComponent {
         }
 
         this.displayCPE = true
+    }
+    abrirModalVerCPE(mov_id:any){
+
+        this.datosVerCPE = this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })
+
+        this.datosVerCPE.forEach((e:any) => {
+            this.comunicacionService.getDir(e.nro_ctg).subscribe(
+                (res: any) => {
+                    if (res.mensaje) {
+                        e.archivos = res.ruta
+                    }
+                },
+                (err: any) => {
+                    console.log(err)
+                }
+            )
+        })
+
+
+
+        this.displayVerCPE = true
     }
 
     selectEsSolicitanteCampo() {

@@ -62,7 +62,7 @@
                     <button *ngIf="registro.permiteCrearCTG" class="button-tabla"
                         (click)="abrirModalCrearCPE(registro.id)"><i class="pi pi-plus-circle"></i></button>
                     <button *ngIf="!registro.permiteCrearCTG" class="button-tabla"
-                        style="background-color: rgba(255, 238, 0, 0.233);"><i
+                        (click)="abrirModalVerCPE(registro.id)" style="background-color: rgba(255, 238, 0, 0.233);"><i
                             class="pi pi-eye"></i></button>
                 </div>
             </td>
@@ -1240,7 +1240,8 @@
         <div class="field col">
             <div class="field">
                 <label>Observaciones sistema (No salen en CPE)</label><br>
-                <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="datosCPE.observaciones_sistema">
+                <input type="text" class="input-text-codigo" style="width: 100%;"
+                    [(ngModel)]="datosCPE.observaciones_sistema">
             </div>
         </div>
     </div>
@@ -1250,7 +1251,9 @@
     <div *ngIf="datosCPE.nro_ctg">
         <h5>Archivos (PDF CPE):</h5>
         <div class="formgrid row">
-            <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI_UPLOAD}}/upload.php?folder={{datosCPE.nro_ctg}}" (onUpload)="onUpload($event)" [multiple]="true">
+            <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false"
+                url="{{API_URI_UPLOAD}}/upload.php?folder={{datosCPE.nro_ctg}}" (onUpload)="onUpload($event)"
+                [multiple]="true">
                 <ng-template pTemplate="content">
                 </ng-template>
             </p-fileUpload>
@@ -1266,4 +1269,32 @@
             (click)="displayCPE = false"></button>
     </ng-template>
 
+</p-dialog>
+
+
+<p-dialog header="VER CPE" [(visible)]="displayVerCPE" [modal]="true" [style]="{width: '95vw', height: '900px'}"
+    [draggable]="true" [resizable]="false">
+
+
+    <div *ngFor="let datoVerCPE of datosVerCPE" class="tarjeta" style="margin: 0px 0px 30px 0px;">
+        <h5>CTG N°: {{datoVerCPE.nro_ctg}} - CPE N°: {{datoVerCPE.sucursal ? datoVerCPE.sucursal.toString().padStart(2,'0') : ''}}-{{datoVerCPE.nro_cpe ? datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
+        <p *ngIf="datoVerCPE.observaciones_sistema">
+            {{datoVerCPE.observaciones_sistema}}
+        </p>
+        <div class="formgrid row">
+            <a *ngFor="let archivo of datoVerCPE.archivos"
+                href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
+                <div class="tarjeta">
+                    {{archivo}}
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="AGREGAR" class="p-button-success bott"
+            (click)="abrirModalCrearCPE(datosVerCPE[0].id_movimiento)"></button>
+        <button pButton pRipple type="button" label="CERRAR" class="p-button-danger bott"
+            (click)="displayVerCPE = false"></button>
+    </ng-template>
 </p-dialog>
