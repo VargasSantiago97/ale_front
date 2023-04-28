@@ -1281,10 +1281,18 @@
         <p *ngIf="datoVerCPE.observaciones_sistema">
             {{datoVerCPE.observaciones_sistema}}
         </p>
-        <div class="formgrid row">
+        <div class="formgrid row" *ngIf="!datoVerCPE.sistema">
             <a *ngFor="let archivo of datoVerCPE.archivos"
                 href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
                 <div class="tarjeta">
+                    {{archivo}}
+                </div>
+            </a>
+        </div>
+        <div class="formgrid row" *ngIf="datoVerCPE.sistema">
+            <a *ngFor="let archivo of datoVerCPE.archivos"
+                href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
+                <div class="tarjeta" style="background-color: rgba(56, 228, 65, 0.247);">
                     {{archivo}}
                 </div>
             </a>

@@ -1705,7 +1705,7 @@ export class InicioComponent {
             terminada: null,
             controlada: null,
             controlada_final: null,
-            sistema: null,
+            sistema: null, //1 si la carta de porte se hace desde el sistema
             observaciones_sistema: null,
             data: null,
         }
@@ -1873,17 +1873,19 @@ export class InicioComponent {
             data: {}
         }
         var errores = []
+        data.data.sucursal = parseInt(SUCURSAL)
+
 
         //CABECERA
         if(this.datosCPE.cuit_solicitante){
-            data.cuit = this.datosCPE.cuit_solicitante
-            data.data.cuit_solicitante = this.datosCPE.cuit_solicitante
+            data.cuit = parseInt(this.datosCPE.cuit_solicitante)
+            data.data.cuit_solicitante = parseInt(this.datosCPE.cuit_solicitante)
         } else {
             errores.push('No existe CUIT Solicitante')
         }
 
         if(this.datosCPE.tipo_cpe){
-            data.data.tipo_cpe = this.datosCPE.tipo_cpe
+            data.data.tipo_cpe = parseInt(this.datosCPE.tipo_cpe)
         } else {
             errores.push('No existe Tipo Cpe')
         }
@@ -1892,87 +1894,87 @@ export class InicioComponent {
 
         //ORIGEN
         if(this.datosCPE.es_solicitante_campo){
-            data.data.es_solicitante_campo = true
 
             if(this.datosCPE.cod_localidad_productor){
-                data.data.planta_origen= false
-                data.data.cod_provincia_operador= false
-                data.data.cod_localidad_operador= false
-    
-                data.data.cod_provincia_productor= this.cpeCamposOrigen.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? this.cpeCamposOrigen.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia : null
-                data.data.cod_localidad_productor= this.datosCPE.cod_localidad_productor
+                data.data.cod_provincia_productor= this.cpeCamposOrigen.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? parseInt(this.cpeCamposOrigen.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia) : null
+                data.data.cod_localidad_productor= parseInt(this.datosCPE.cod_localidad_productor)
             } else {
                 errores.push('Solicitante: Campo - no se selecciono Localidad de solicitante')
             }
-
         } else {
-            data.data.es_solicitante_campo = false
-
-            data.data.cod_provincia_productor= false
-            data.data.cod_localidad_productor= false
-
-            if(this.datosCPE.corresponde_retiro_productor){
-                data.data.corresponde_retiro_productor = true
-                data.data.certificado_coe = this.datosCPE.certificado_coe
-                data.data.cuit_remitente_comercial_productor = this.datosCPE.cuit_remitente_comercial_productor ? this.datosCPE.cuit_remitente_comercial_productor : null
-            } else {
-                data.data.corresponde_retiro_productor = false
-                data.data.certificado_coe = false
-                data.data.cuit_remitente_comercial_productor = null
-            }
-            data.data.planta_origen= ""
-            data.data.cod_provincia_operador= ""
-            data.data.cod_localidad_operador= ""
+            errores.push('Solicitante: Por el sistema solo se puede hacer CPE cuando el solicitante es un Campo.')
         }
 
 
         //DESTINO
-        data.data.cuit_destino = this.datosCPE.cuit_destino ? this.datosCPE.cuit_destino : null
-        data.data.cuit_destinatario = this.datosCPE.cuit_destinatario ? this.datosCPE.cuit_destinatario : null
+        data.data.cuit_destino = this.datosCPE.cuit_destino ? parseInt(this.datosCPE.cuit_destino) : false
+        data.data.cuit_destinatario = this.datosCPE.cuit_destinatario ? parseInt(this.datosCPE.cuit_destinatario) : false
 
         if(this.datosCPE.es_destino_campo){
             data.data.es_destino_campo = true
 
-            data.data.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad : null
-            data.data.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia : null
-            data.data.planta_destino = 1
+            data.data.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? parseInt(this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad) : false
+            data.data.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? parseInt(this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia) : false
+            data.data.planta_destino = false
 
         } else {
             data.data.es_destino_campo = false
 
-            data.data.cod_localidad = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codLocalidad : null
-            data.data.cod_provincia = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codProvincia : null
-            data.data.planta_destino = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.datosCPE.cod_destino : null
+            data.data.cod_localidad = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? parseInt(this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codLocalidad) : false
+            data.data.cod_provincia = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? parseInt(this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codProvincia) : false
+            data.data.planta_destino = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? parseInt(this.datosCPE.cod_destino) : false
         }
 
         //INTERVINIENTES
-        data.data.cuit_corredor_venta_primaria = this.datosCPE.cuit_corredor_venta_primaria ? this.datosCPE.cuit_corredor_venta_primaria : null
-        data.data.cuit_corredor_venta_secundaria = this.datosCPE.cuit_corredor_venta_secundaria ? this.datosCPE.cuit_corredor_venta_secundaria : null
-        data.data.cuit_mercado_a_termino = this.datosCPE.cuit_mercado_a_termino ? this.datosCPE.cuit_mercado_a_termino : null
-        data.data.cuit_remitente_comercial_venta_primaria = this.datosCPE.cuit_remitente_comercial_venta_primaria ? this.datosCPE.cuit_remitente_comercial_venta_primaria : null
-        data.data.cuit_remitente_comercial_venta_secundaria = this.datosCPE.cuit_remitente_comercial_venta_secundaria ? this.datosCPE.cuit_remitente_comercial_venta_secundaria : null
-        data.data.cuit_remitente_comercial_venta_secundaria2 = this.datosCPE.cuit_remitente_comercial_venta_secundaria2 ? this.datosCPE.cuit_remitente_comercial_venta_secundaria2 : null
-        data.data.cuit_representante_entregador = this.datosCPE.cuit_representante_entregador ? this.datosCPE.cuit_representante_entregador : null
-        data.data.cuit_representante_recibidor = this.datosCPE.cuit_representante_recibidor ? this.datosCPE.cuit_representante_recibidor : null
+        data.data.cuit_corredor_venta_primaria = this.datosCPE.cuit_corredor_venta_primaria ? parseInt(this.datosCPE.cuit_corredor_venta_primaria) : false
+        data.data.cuit_corredor_venta_secundaria = this.datosCPE.cuit_corredor_venta_secundaria ? parseInt(this.datosCPE.cuit_corredor_venta_secundaria) : false
+        data.data.cuit_mercado_a_termino = this.datosCPE.cuit_mercado_a_termino ? parseInt(this.datosCPE.cuit_mercado_a_termino) : false
+        data.data.cuit_remitente_comercial_venta_primaria = this.datosCPE.cuit_remitente_comercial_venta_primaria ? parseInt(this.datosCPE.cuit_remitente_comercial_venta_primaria) : false
+        data.data.cuit_remitente_comercial_venta_secundaria = this.datosCPE.cuit_remitente_comercial_venta_secundaria ? parseInt(this.datosCPE.cuit_remitente_comercial_venta_secundaria) : false
+        data.data.cuit_remitente_comercial_venta_secundaria2 = this.datosCPE.cuit_remitente_comercial_venta_secundaria2 ? parseInt(this.datosCPE.cuit_remitente_comercial_venta_secundaria2) : false
+        data.data.cuit_representante_entregador = this.datosCPE.cuit_representante_entregador ? parseInt(this.datosCPE.cuit_representante_entregador) : false
+        data.data.cuit_representante_recibidor = this.datosCPE.cuit_representante_recibidor ? parseInt(this.datosCPE.cuit_representante_recibidor) : false
+
 
         //DATOS CARGA
-        data.data.peso_tara = this.datosCPE.peso_tara ? this.datosCPE.peso_tara : null
-        data.data.peso_bruto = this.datosCPE.peso_bruto ? this.datosCPE.peso_bruto : null
-        data.data.cod_grano = this.datosCPE.cod_grano ? this.datosCPE.cod_grano : null
-        data.data.cosecha = this.datosCPE.cosecha ? this.datosCPE.cosecha : null
+        data.data.peso_tara = this.datosCPE.peso_tara ? parseInt(this.datosCPE.peso_tara) : 0
+        data.data.peso_bruto = this.datosCPE.peso_bruto ? parseInt(this.datosCPE.peso_bruto) : 0
+        data.data.cod_grano = this.datosCPE.cod_grano ? parseInt(this.datosCPE.cod_grano) : 0
+        data.data.cosecha = this.datosCPE.cosecha ? parseInt(this.datosCPE.cosecha) : 0
 
         //AGREGAR TRANSPORTE
-        data.data.cuit_transportista = this.datosCPE.cuit_transportista ? this.datosCPE.cuit_transportista : null
-        data.data.cuit_pagador_flete = this.datosCPE.cuit_pagador_flete ? this.datosCPE.cuit_pagador_flete : null
-        data.data.cuit_intermediario_flete = this.datosCPE.cuit_intermediario_flete ? this.datosCPE.cuit_intermediario_flete : null
-        data.data.cuit_chofer = this.datosCPE.cuit_chofer ? this.datosCPE.cuit_chofer : null
+        data.data.cuit_transportista = this.datosCPE.cuit_transportista ? parseInt(this.datosCPE.cuit_transportista) : false
+        data.data.cuit_pagador_flete = this.datosCPE.cuit_pagador_flete ? parseInt(this.datosCPE.cuit_pagador_flete) : false
+        data.data.cuit_intermediario_flete = this.datosCPE.cuit_intermediario_flete ? parseInt(this.datosCPE.cuit_intermediario_flete) : false
+        data.data.cuit_chofer = this.datosCPE.cuit_chofer ? parseInt(this.datosCPE.cuit_chofer) : false
 
         data.data.mercaderia_fumigada = this.datosCPE.mercaderia_fumigada ? true : false
-        data.data.km_recorrer = this.datosCPE.km_recorrer ? parseFloat(this.datosCPE.km_recorrer) : null
-        data.data.tarifa_referencia = this.datosCPE.tarifa_referencia ? parseFloat(this.datosCPE.tarifa_referencia) : null
-        data.data.tarifa = this.datosCPE.tarifa ? parseFloat(this.datosCPE.tarifa) : null
-        data.data.codigo_turno = this.datosCPE.codigo_turno ? this.datosCPE.codigo_turno : null
+        data.data.km_recorrer = this.datosCPE.km_recorrer ? parseFloat(this.datosCPE.km_recorrer) : 0
+        data.data.tarifa_referencia = this.datosCPE.tarifa_referencia ? parseFloat(this.datosCPE.tarifa_referencia) : false
+        data.data.tarifa = this.datosCPE.tarifa ? parseFloat(this.datosCPE.tarifa) : false
+        data.data.codigo_turno = this.datosCPE.codigo_turno ? this.datosCPE.codigo_turno : false
+
         data.data.fecha_hora_partida = this.datosCPE.fecha_hora_partida ? this.datosCPE.fecha_hora_partida : null
+        if(this.datosCPE.fecha_hora_partida){
+    
+            let fecha = this.datosCPE.fecha_hora_partida.split("T")[0];
+            let hora = this.datosCPE.fecha_hora_partida.split("T")[1];
+    
+            let ano = parseInt(fecha.split("-")[0]);
+            let mes = parseInt(fecha.split("-")[1]);
+            let dia = parseInt(fecha.split("-")[2]);
+    
+            let horaNum = parseInt(hora.split(":")[0]);
+            let minuto = parseInt(hora.split(":")[1]);
+
+            data.data.fecha_hora_partida_ano = ano
+            data.data.fecha_hora_partida_mes = mes
+            data.data.fecha_hora_partida_dia = dia
+            data.data.fecha_hora_partida_hora = horaNum
+            data.data.fecha_hora_partida_minuto = minuto
+        } else {
+            errores.push('Transporte: Fecha/Hora partida')
+        }
 
         data.data.dominio = []
 
@@ -1982,39 +1984,72 @@ export class InicioComponent {
 
 
         if(errores.length){
-            console.log('Error!')
-            alert('Error!, ver consola')
-            errores.forEach(element => {
-                console.log(element)
-            });
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al crear CPE: ' + errores.join(" - ")})
         } else {
             if(confirm("Desea realizar CPE?")){
                 console.log(data['data'])
-/* 
+
                 this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                     (res: any) => {
                         console.log(res)
+
+                        if(res){
+                            if(res.mensaje){
+                                this.messageService.add({ severity: 'success', summary: 'CREADO CORRECTAMENTE!', detail: 'Se creo la CPE: ' + res.nro_cpe + " - CTG: " + res.nro_ctg})
+                                this.datosCPE.sistema = 1 //la carta de porse se hace desde el sistema
+                                this.CPE_guardarDB()
+                            }
+                        }
                     },
                     (err: any) => {
                         console.log(err)
                     }
                 )
- */
             }
         }
 
         
     }
-
     CPE_guardarDB(){
         this.datosCPE.activo = 1
         this.datosCPE.estado = 1
 
-        console.log(this.datosCPE)
+        //DOMINIOS
+        var dominios = []
+        this.datosCPE.dominio ? dominios.push(this.datosCPE.dominio) : null
+        this.datosCPE.dominio2 ? dominios.push(this.datosCPE.dominio2) : null
+        this.datosCPE.dominio3 ? dominios.push(this.datosCPE.dominio3) : null
+        this.datosCPE.dominio = JSON.stringify(dominios)
+
+        //DESTINO
+        if(this.datosCPE.es_destino_campo){
+            this.datosCPE.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad : null
+            this.datosCPE.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia : null
+            this.datosCPE.planta_destino = 1
+        } else {
+            this.datosCPE.cod_localidad = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codLocalidad : null
+            this.datosCPE.cod_provincia = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codProvincia : null
+            this.datosCPE.planta_destino = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.datosCPE.cod_destino : null
+        }
+
+        //ORIGEN
+        if(this.datosCPE.es_solicitante_campo){
+            if(this.datosCPE.cod_localidad_productor){
+                this.datosCPE.planta_origen= false
+                this.datosCPE.cod_provincia_operador= false
+                this.datosCPE.cod_localidad_operador= false
+                this.datosCPE.cod_provincia_productor= this.cpeCamposOrigen.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? this.cpeCamposOrigen.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia : null
+            }
+        } else {
+            this.datosCPE.cod_provincia_productor= false
+            this.datosCPE.cod_localidad_productor= false
+            this.datosCPE.planta_origen= ""
+            this.datosCPE.cod_provincia_operador= ""
+            this.datosCPE.cod_localidad_operador= ""
+        }
 
         this.comunicacionService.createDB("carta_porte", this.datosCPE).subscribe(
             (res: any) => {
-                console.log(res)
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Creado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
 
                 this.obtenerCartasPorte()

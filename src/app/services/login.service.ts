@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+declare var vars: any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
+  CLAVE_PASS = vars.CLAVE_PASS;
+  CODIGO_USER = vars.CODIGO_USER;
 
   esSessionIniciada: any = false;
   esUsuario: any = '0';
@@ -32,11 +35,11 @@ export class LoginService {
   }
 
   logueoClave(pass:any){
-    if(pass == 'ale1'){
+    if(pass == this.CLAVE_PASS){
       sessionStorage.setItem('session', 'true')
-      localStorage.setItem('user', '10')
+      localStorage.setItem('user', this.CODIGO_USER)
       this.esSessionIniciada = true
-      this.esUsuario = '10'
+      this.esUsuario = this.CODIGO_USER
       window.location.reload();
     } else {
       alert('Contraseña incorrecta')

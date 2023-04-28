@@ -29,6 +29,7 @@ export class CuentasCorrientesComponent {
     db_ordenes_carga: any = []
     db_ordenes_pago: any = []
     db_medios_pago: any = []
+    db_carta_porte: any = []
 
     dataMovimientosASeleccionar: any = []
     dataMovimientosASeleccionarGastos: any = []
@@ -70,6 +71,7 @@ export class CuentasCorrientesComponent {
     load_ordenes_carga: any = true
     load_ordenes_pago: any = true
     load_medios_pago: any = true
+    load_carta_porte: any = true
 
     verViajesPreviamenteAfec: any = false
 
@@ -134,6 +136,7 @@ export class CuentasCorrientesComponent {
 
         this.obtenerOrdenesPago()
         this.obtenerMediosPago()
+        this.obtenerCartasPorte()
     }
 
     //CONEXION A BASE DE DATOS
@@ -257,6 +260,17 @@ export class CuentasCorrientesComponent {
             }
         )
     }
+    obtenerCartasPorte() {
+        this.comunicacionService.getDB('carta_porte').subscribe(
+            (res: any) => {
+                this.db_carta_porte = res;
+                this.load_carta_porte = false;
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
 
     onSelectTransporte() {
         this.buscarDatosTransportista()
@@ -356,20 +370,53 @@ export class CuentasCorrientesComponent {
 
             const patentes = this.db_camiones.some((f: any) => { return f.id == e.id_camion }) ? this.db_camiones.find((f: any) => { return f.id == e.id_camion }).patente_chasis + ' / ' + this.db_camiones.find((f: any) => { return f.id == e.id_camion }).patente_acoplado : ''
 
+            var constDatosCPE = this.db_carta_porte.filter((f:any) => { return f.id_movimiento == e.id })
+
+            var ctg:any = ''
+            var cpe:any = ''
+            var tarifa:any = 0
+            var kg_descarga:any = ''
+            var monto_final:any = ''
+
+            if(constDatosCPE.length == 1){
+                ctg = constDatosCPE[0].nro_ctg
+                cpe = constDatosCPE[0].nro_cpe
+                tarifa = constDatosCPE[0].tarifa
+
+                kg_descarga = 0
+                monto_final = 0
+
+                this.transportista
+
+                if(constDatosCPE[0].data){
+                    if(JSON.parse(constDatosCPE[0].data)){
+                        if(JSON.parse(constDatosCPE[0].data).kg_descarga){
+                            kg_descarga = parseFloat(JSON.parse(constDatosCPE[0].data).kg_descarga)
+
+                            const iva = this.db_condicion_iva.find((f:any) => { return f.id == this.transportista.condicion_iva }).iva
+
+                            monto_final = ((kg_descarga * parseFloat(tarifa)) * (iva==1 ? 1.21 : 1) / 1000).toFixed(2)
+                        }
+                    }
+                }
+            }
+
+
+
             if (!movimientosPreviamenteAfectados.includes(e.id)) {
                 this.dataMovimientosASeleccionar.push({
                     id: e.id,
                     fecha: dateString,
                     cultivo: this.db_granos.some((f: any) => { return f.id == e.id_grano }) ? this.db_granos.find((f: any) => { return f.id == e.id_grano }).alias : '-',
                     orden: this.db_ordenes_carga.some((f: any) => { return f.id_movimiento == e.id }) ? this.db_ordenes_carga.find((f: any) => { return f.id_movimiento == e.id }).numero : '',
-                    ctg: '10105050505',
-                    cpe: '001-5555',
+                    ctg: ctg,
+                    cpe: cpe,
                     campo: e.campo,
                     pat: patentes,
                     kg_neto_final: e.kg_neto_final,
-                    tarifa: 7000,
-                    kg_descarga: 35.20,
-                    monto_final: 246400
+                    tarifa: tarifa,
+                    kg_descarga: kg_descarga,
+                    monto_final: monto_final
                 })
             }
             if (!movimientosPreviamenteAfectadosGastos.includes(e.id)) {
@@ -378,14 +425,14 @@ export class CuentasCorrientesComponent {
                     fecha: dateString,
                     cultivo: this.db_granos.some((f: any) => { return f.id == e.id_grano }) ? this.db_granos.find((f: any) => { return f.id == e.id_grano }).alias : '-',
                     orden: this.db_ordenes_carga.some((f: any) => { return f.id_movimiento == e.id }) ? this.db_ordenes_carga.find((f: any) => { return f.id_movimiento == e.id }).numero : '',
-                    ctg: '10105050505',
-                    cpe: '001-5555',
+                    ctg: ctg,
+                    cpe: cpe,
                     campo: e.campo,
                     pat: patentes,
                     kg_neto_final: e.kg_neto_final,
-                    tarifa: 7000,
-                    kg_descarga: 35.20,
-                    monto_final: 246400
+                    tarifa: tarifa,
+                    kg_descarga: kg_descarga,
+                    monto_final: monto_final
                 })
             }
         })
