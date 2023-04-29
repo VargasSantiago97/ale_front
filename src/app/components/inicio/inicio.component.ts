@@ -809,7 +809,7 @@ export class InicioComponent {
 
 
         if (ingresa == 'kilos_carga_descarga') {
-            this.datosMovimiento.kg_regulacion = event
+            this.datosMovimiento.kg_regulacion = parseInt(event)
         }
         if (this.datosMovimiento.kg_neto) {
             this.datosMovimiento.kg_neto_final = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_regulacion
@@ -1695,6 +1695,9 @@ export class InicioComponent {
             codigo_turno: null,
             fecha_hora_partida: null,
             dominio: null,
+            dominio1:null,
+            dominio2:null,
+            dominio3:null,
             datos: null,
             creado_por: null,
             creado_el: null,
@@ -1728,7 +1731,7 @@ export class InicioComponent {
         }
         if (mov.id_camion) {
             var camion = this.db_camiones.some((e: any) => { return e.id == mov.id_socio }) ? this.db_camiones.find((e: any) => { return e.id == mov.id_camion }) : null;
-            this.datosCPE.dominio = camion ? (camion.patente_chasis ? camion.patente_chasis : null) : null
+            this.datosCPE.dominio1 = camion ? (camion.patente_chasis ? camion.patente_chasis : null) : null
             this.datosCPE.dominio2 = camion ? (camion.patente_acoplado ? camion.patente_acoplado : null) : null
             this.datosCPE.dominio3 = camion ? (camion.patente_otro ? camion.patente_otro : null) : null
         }

@@ -1,0 +1,94 @@
+.bott {
+    margin: 3px;
+    padding: 5px 20px;
+}
+
+.bot {
+    margin: 50px;
+    padding: 10px;
+}
+
+
+.select-class {
+    width: 200px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+  
+.select-class option {
+  font-size: 16px;
+}
+
+.input-text-codigo {
+    width: 100px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+  
+
+.select-button-active {
+    width: 60px;
+    height: 35px;
+    background-color: rgba(0, 255, 115, 0.733);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+.select-button-disabled {
+    width: 60px;
+    height: 35px;
+    background-color: rgb(165, 11, 11);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    color: aliceblue;
+}
+.button-tabla {
+    width: 27px;
+    height: 27px;
+    background-color: rgba(0, 255, 115, 0.233);
+    border: 0px solid #ccc;
+    border-radius: 4px;
+    margin: 0px 2px;
+    padding: 0px;
+    text-align: center;
+}
+.button-ver-todo {
+    width: 80px;
+    height: 27px;
+    background-color: rgba(0, 255, 115, 0.233);
+    border: 1px solid #72727223;
+    border-radius: 4px;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+.tarjeta {
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input[type="checkbox"]:checked {
+    background-color: #007bff;
+}
+input[type="checkbox"]:checked {
+    border-color: #007bff;
+}
+input[type="checkbox"]:hover {
+    cursor: pointer;
+}
+input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
+.colorSI {
+    background-color: rgba(96, 245, 116, 0.199);
+}
+.colorNO {
+    background-color: rgba(245, 96, 96, 0.199);
+}

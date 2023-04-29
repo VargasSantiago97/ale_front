@@ -18,12 +18,12 @@ var vars = {
   
     PDF_CPE_URI: 'http://localhost/cpe/pdf_cpe',
 
-    SUCURSAL: 1,
-    PUNTO_ORDEN_CARGA: 1,
+    SUCURSAL: 2,
+    PUNTO_ORDEN_CARGA: 2,
     PUNTO_ORDEN_PAGO: 1,
 
     CLAVE_PASS: 'ale1',
-    CODIGO_USER: '10',
+    CODIGO_USER: '1',
 
 
     //TABLAS GENERALES CPE - AFIP

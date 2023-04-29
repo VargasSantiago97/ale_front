@@ -48,8 +48,8 @@ import {DropdownModule} from 'primeng/dropdown';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {ColorPickerModule} from 'primeng/colorpicker';
 import {InputTextareaModule} from 'primeng/inputtextarea';
-
-
+import {ScrollerModule} from 'primeng/scroller';
+import {SplitButtonModule} from 'primeng/splitbutton';
 
 
 
@@ -72,6 +72,7 @@ import { UnloginComponent } from './components/login/unlogin/unlogin.component';
 import { TransportistasComponent } from './components/transportistas/transportistas.component';
 import { IntervinientesComponent } from './components/intervinientes/intervinientes.component';
 import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
+import { CamionesComponent } from './components/super/camiones/camiones.component';
 
 
 
@@ -93,7 +94,8 @@ import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuen
     UnloginComponent,
     TransportistasComponent,
     IntervinientesComponent,
-    CuentasCorrientesComponent
+    CuentasCorrientesComponent,
+    CamionesComponent
   ],
   imports: [
     BrowserModule,
@@ -140,7 +142,9 @@ import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuen
     DropdownModule,
     InputNumberModule,
     ColorPickerModule,
-    InputTextareaModule
+    InputTextareaModule,
+    ScrollerModule,
+    SplitButtonModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
