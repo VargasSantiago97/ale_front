@@ -4,6 +4,7 @@ import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
 import { PadronService } from 'src/app/services/padron.service';
 import { CpeService } from 'src/app/services/cpe/cpe.service';
+import { LoginService } from 'src/app/services/login.service';
 
 declare var vars: any;
 
@@ -124,11 +125,12 @@ export class CamionesComponent {
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
-        private padronService: PadronService,
-        private cpeService: CpeService
+        private loginService: LoginService
     ) { }
 
     ngOnInit() {
+        this.loginService.verificarSessionSuperUsuario();
+
         this.cols = [
             { field: "cultivo", header: "Cultivo" },
             { field: "fecha", header: "Fecha" },

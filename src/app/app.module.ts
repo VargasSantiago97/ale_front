@@ -73,6 +73,7 @@ import { TransportistasComponent } from './components/transportistas/transportis
 import { IntervinientesComponent } from './components/intervinientes/intervinientes.component';
 import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
 import { CamionesComponent } from './components/super/camiones/camiones.component';
+import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
 
 
 
@@ -95,7 +96,8 @@ import { CamionesComponent } from './components/super/camiones/camiones.componen
     TransportistasComponent,
     IntervinientesComponent,
     CuentasCorrientesComponent,
-    CamionesComponent
+    CamionesComponent,
+    PagosEmitidosComponent
   ],
   imports: [
     BrowserModule,

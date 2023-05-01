@@ -20,18 +20,18 @@
             font-size: 14px;
             color: #333;
         }
-    
+
         table th,
         table td {
             border: 1px solid #ccc;
             padding: 8px;
             text-align: left;
         }
-    
+
         table th {
             background-color: #f2f2f2;
         }
-    
+
         table tr:nth-child(even) {
             background-color: #f8f8f8;
         }
@@ -48,10 +48,13 @@
         <tbody>
             <tr *ngFor="let registro of dataParaMostrarTabla">
                 <td style="position: sticky; left: 0; padding: 0px;">
-                    <button style="margin: 0px; border: none; outline: none; width: 40px;" (click)="verDatosRegistro(registro.id)">VER</button>
+                    <button style="margin: 0px; border: none; outline: none; width: 40px;"
+                        (click)="verDatosRegistro(registro.id)">VER</button>
                 </td>
                 <td *ngFor="let col of cols" style="padding: 1px;">
-                    <input type="text" [(ngModel)]="registro[col.field]" style="width: 100%; margin: 0px; border: none; outline: none; min-width: 100px;" class="{{registro[col.field] == 'SI' ? 'colorSI' : (registro[col.field] == 'NO' ? 'colorNO' : '') }}">
+                    <input type="text" [(ngModel)]="registro[col.field]"
+                        style="width: 100%; margin: 0px; border: none; outline: none; min-width: 100px;"
+                        class="{{registro[col.field] == 'SI' ? 'colorSI' : (registro[col.field] == 'NO' ? 'colorNO' : '') }}">
                 </td>
             </tr>
         </tbody>
@@ -64,24 +67,30 @@
         <div class="field col">
             <div class="field">
                 <p-card header="Rindes" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
+                        repudiandae numquam deserunt
+                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
+                        cupiditate neque quas!</p>
                 </p-card>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <p-card header="Destinos" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
+                        repudiandae numquam deserunt
+                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
+                        cupiditate neque quas!</p>
                 </p-card>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <p-card header="Retiros Socios" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
+                        repudiandae numquam deserunt
+                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
+                        cupiditate neque quas!</p>
                 </p-card>
             </div>
         </div>
@@ -90,172 +99,164 @@
 
 
 <p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw', height: '900px'}"
-        [draggable]="true" [resizable]="false">
+    [draggable]="true" [resizable]="false">
 
-        <div class="formgrid row">
-            <div class="field col">
-                <div class="field">
-                    <label>FECHA DESDE</label><br>
-                    <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaDesde" dateFormat="dd/mm/yy"></p-calendar>
-                </div>
-                <br>
-                <div class="field">
-                    <label>FECHA HASTA</label><br>
-                    <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaHasta" dateFormat="dd/mm/yy"></p-calendar>
-                </div>
-                <br>
-                <div class="field">
-                    <label>ORDENAR</label><br>
-                    <select [(ngModel)]="ordenarPor" style="width: 180px;">
-                        <option value="fecha">Fecha</option>
-                        <option value="ctg">CTG</option>
-                        <option value="cpe">CPE</option>
-                        <option value="cultivo">Cultivo</option>
-                        <option value="orden">Orden Carga</option>
-                        <option value="campo">Establecimiento</option>
-                        <option value="pat">Patente</option>
-                        <option value="id_corredor">Corredor</option>
-                        <option value="id_acopio">Destino</option>
-                    </select>
-                    
-                </div>
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="field">
+                <label>FECHA DESDE</label><br>
+                <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaDesde" dateFormat="dd/mm/yy"></p-calendar>
             </div>
-            <div class="field col">
-                <div class="field">
-                    <label>CULTIVO</label><br>
-                    <p-listbox [options]="db_granos" [(ngModel)]="datosFiltro.granos" [metaKeySelection]="false"
-                        [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                        [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                        <ng-template let-grano pTemplate="item">
-                            <div class="grano-item">
-                                <div>{{grano.alias}}</div>
-                            </div>
-                        </ng-template>
-                    </p-listbox>
-                </div>
+            <br>
+            <div class="field">
+                <label>FECHA HASTA</label><br>
+                <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaHasta" dateFormat="dd/mm/yy"></p-calendar>
             </div>
-            <div class="field col">
-                <div class="field">
-                    <label>SOCIO</label><br>
-                    <p-listbox [options]="db_socios" [(ngModel)]="datosFiltro.socios" [metaKeySelection]="false"
-                        [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                        [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                        <ng-template let-socio pTemplate="item">
-                            <div class="socio-item">
-                                <div>{{socio.alias}}</div>
-                            </div>
-                        </ng-template>
-                    </p-listbox>
-                </div>
-            </div>
-            <div class="field col">
-                <div class="field">
-                    <label>ESTABLECIMIENTO</label><br>
-                    <p-listbox [options]="db_establecimientos" [(ngModel)]="datosFiltro.establecimientos"
-                        [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true"
-                        optionLabel="alias" optionValue="id" [listStyle]="{'max-height':'600px'}"
-                        [style]="{'width':'15rem'}">
-                        <ng-template let-establecimiento pTemplate="item">
-                            <div class="establecimiento-item">
-                                <div>{{establecimiento.alias}}</div>
-                            </div>
-                        </ng-template>
-                    </p-listbox>
-                </div>
-            </div>
-            <div class="field col">
-                <div class="field">
-                    <label>TRANSPORTE</label><br>
-                    <p-listbox [options]="db_transportistas" [(ngModel)]="datosFiltro.transportistas"
-                        [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true"
-                        optionLabel="alias" optionValue="id" [listStyle]="{'max-height':'600px'}"
-                        [style]="{'width':'15rem'}">
-                        <ng-template let-transportista pTemplate="item">
-                            <div class="transportista-item">
-                                <div>{{transportista.alias}}</div>
-                            </div>
-                        </ng-template>
-                    </p-listbox>
-                </div>
+            <br>
+            <div class="field">
+                <label>ORDENAR</label><br>
+                <select [(ngModel)]="ordenarPor" style="width: 180px;">
+                    <option value="fecha">Fecha</option>
+                    <option value="ctg">CTG</option>
+                    <option value="cpe">CPE</option>
+                    <option value="cultivo">Cultivo</option>
+                    <option value="orden">Orden Carga</option>
+                    <option value="campo">Establecimiento</option>
+                    <option value="pat">Patente</option>
+                    <option value="id_corredor">Corredor</option>
+                    <option value="id_acopio">Destino</option>
+                </select>
+
             </div>
         </div>
+        <div class="field col">
+            <div class="field">
+                <label>CULTIVO</label><br>
+                <p-listbox [options]="db_granos" [(ngModel)]="datosFiltro.granos" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-grano pTemplate="item">
+                        <div class="grano-item">
+                            <div>{{grano.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>SOCIO</label><br>
+                <p-listbox [options]="db_socios" [(ngModel)]="datosFiltro.socios" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-socio pTemplate="item">
+                        <div class="socio-item">
+                            <div>{{socio.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>ESTABLECIMIENTO</label><br>
+                <p-listbox [options]="db_establecimientos" [(ngModel)]="datosFiltro.establecimientos"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                    optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-establecimiento pTemplate="item">
+                        <div class="establecimiento-item">
+                            <div>{{establecimiento.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>TRANSPORTE</label><br>
+                <p-listbox [options]="db_transportistas" [(ngModel)]="datosFiltro.transportistas"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                    optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-transportista pTemplate="item">
+                        <div class="transportista-item">
+                            <div>{{transportista.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+    </div>
 
-        <ng-template pTemplate="footer">
-            <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott"
-                (click)="datosParaTabla(true)"></button>
-        </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott"
+            (click)="datosParaTabla(true)"></button>
+    </ng-template>
 </p-dialog>
 
 <p-dialog header="Datos" [(visible)]="displayDatos" [modal]="true" [style]="{width: '95vw', height: '95vw'}"
-        [draggable]="true" [resizable]="false">
-
-
-
-
-
-
-creado
-modificado
-
-
-cultivo
-existeOrdenDeCarga
-factura
-fecha
-gastos
-id
-id_acopio
-id_corredor
-
-
-observaciones
-orden
-permiteCrearCTG
-tipo_orig
-
-
-    <h6>Datos Movimiento:</h6>
-        <div class="tarjeta">
-            <div class="formgrid row">
-                <div class="field col">
-                    <div class="field">
-                        <p>Origen: <strong>{{datosParaMostrarRegistro.campo}} ({{datosParaMostrarRegistro.tipo_orig}})</strong></p>
-                        <p>Origen: <strong>{{datosParaMostrarRegistro.campo}}</strong></p>
-                        <p>Origen: <strong>{{datosParaMostrarRegistro.campo}}</strong></p>
-                        <p>Benef: <strong>{{datosParaMostrarRegistro.benef}}</strong></p>
-                        <p>Benef Orden: {{datosParaMostrarRegistro.benef_orden}}</p>
-                        <p>Origen: <strong>{{datosParaMostrarRegistro.campo}}</strong></p>
-                    </div>
+    [draggable]="true" [resizable]="false">
+    <h6>Datos Movimiento: {{datosParaMostrarRegistro.fecha}}</h6>
+    <div class="tarjeta">
+        <div class="formgrid row">
+            <div class="field col">
+                <div class="field">
+                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}} </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
+                    <p>Cultivo: <strong>{{datosParaMostrarRegistro.cultivo}}</strong></p>
+                    <p>Orden: <strong>{{datosParaMostrarRegistro.orden}}</strong></p>
+                    <p>Benef Orden: {{datosParaMostrarRegistro.benef_orden}}</p>
+                    <p>Obs: <strong>{{datosParaMostrarRegistro.observaciones}}</strong></p>
                 </div>
-                <div class="field col">
-                    <div class="field">
-                        <p>CTG: <strong>{{datosParaMostrarRegistro.ctg}}</strong></p>
-                        <p>CPE:: <strong>{{datosParaMostrarRegistro.cpe}}</strong></p>
-                    </div>
+            </div>
+            <div class="field col">
+                <div class="field">
+                    <p>EMISOR: <strong>{{datosParaMostrarRegistro.benef}}</strong></p>
+                    <p>CTG: <strong>{{datosParaMostrarRegistro.ctg}}</strong></p>
+                    <p>CPE:: <strong>{{datosParaMostrarRegistro.cpe}}</strong></p>
+                    <p>Corredor: <strong>{{datosParaMostrarRegistro.id_corredor}}</strong></p>
+                    <p>Destino: <strong>{{datosParaMostrarRegistro.id_acopio}}</strong></p>
                 </div>
-                <div class="field col">
-                    <div class="field">
-                        <p>Transponer: <strong>{{datosParaMostrarRegistro.transporte}}</strong></p>
-                        <p>CUIT: {{datosParaMostrarRegistro.cuit_transp}}</p>
-                        <p>Patentes: <strong>{{datosParaMostrarRegistro.pat}} - {{datosParaMostrarRegistro.patAc}}</strong></p>
-                        <p>Pagado: {{datosParaMostrarRegistro.pagado}}</p>
-                    </div>
+            </div>
+            <div class="field col">
+                <div class="field">
+                    <p>Transponer: <strong>{{datosParaMostrarRegistro.transporte}}</strong></p>
+                    <p>CUIT: {{datosParaMostrarRegistro.cuit_transp}}</p>
+                    <p>Patentes: <strong>{{datosParaMostrarRegistro.pat}} - {{datosParaMostrarRegistro.patAc}}</strong>
+                    </p>
+                    <p>Factura: {{datosParaMostrarRegistro.factura}}</p>
+                    <p>Gastos: {{datosParaMostrarRegistro.gastos}}</p>
+                    <p>Pagado: {{datosParaMostrarRegistro.pagado}}</p>
                 </div>
-                <div class="field col">
-                    <div class="field">
-                        <p>KG Bruto: <strong>{{datosParaMostrarRegistro.kg_bruto}}</strong></p>
-                        <p>KG Tara: <strong>{{datosParaMostrarRegistro.kg_tara}}</strong></p>
-                        <p>KG Neto: {{datosParaMostrarRegistro.kg_neto}}</p>
-                        <p>KG Regulado: <strong>{{datosParaMostrarRegistro.kg_regulacion}}</strong></p>
-                        <p>KG Neto Final: {{datosParaMostrarRegistro.kg_neto_final}}</p>
-                    </div>
+            </div>
+            <div class="field col">
+                <div class="field">
+                    <p>KG Bruto: {{datosParaMostrarRegistro.kg_bruto}}</p>
+                    <p>KG Tara: {{datosParaMostrarRegistro.kg_tara}}</p>
+                    <p>KG Neto: <strong>{{datosParaMostrarRegistro.kg_neto}}</strong></p>
+                    <p>KG Regulado: {{datosParaMostrarRegistro.kg_regulacion}}</p>
+                    <p>KG Neto Final: <strong>{{datosParaMostrarRegistro.kg_neto_final}}</strong></p>
                 </div>
             </div>
         </div>
-        <ng-template pTemplate="footer">
-            <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott"
-                (click)="datosParaTabla(true)"></button>
-        </ng-template>
+    </div>
+    <br>
+    <h6>Datos CPE: {{datosParaMostrarRegistro.fecha}}</h6>
+    <div class="tarjeta">
+        <div class="formgrid row">
+            <div class="field col">
+                <div class="field">
+                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}} </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
+                    <p>Cultivo: <strong>{{datosParaMostrarRegistro.cultivo}}</strong></p>
+                    <p>Orden: <strong>{{datosParaMostrarRegistro.orden}}</strong></p>
+                    <p>Benef Orden: {{datosParaMostrarRegistro.benef_orden}}</p>
+                    <p>Obs: <strong>{{datosParaMostrarRegistro.observaciones}}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott"
+            (click)="datosParaTabla(true)"></button>
+    </ng-template>
 </p-dialog>
 
 

@@ -33,6 +33,12 @@ export class LoginService {
     }
   }
 
+  verificarSessionSuperUsuario(){
+    if(sessionStorage.getItem('session') != 'true' || sessionStorage.getItem('super') != 'true'){
+      this.router.navigate(['inicio'])
+    }
+  }
+
   sessionIniciada(){
     return this.esSessionIniciada
   }

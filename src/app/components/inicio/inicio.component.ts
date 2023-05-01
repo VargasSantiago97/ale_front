@@ -1730,7 +1730,7 @@ export class InicioComponent {
             this.datosCPE.cuit_chofer = this.db_choferes.some((e: any) => { return e.id == mov.id_chofer }) ? this.db_choferes.find((e: any) => { return e.id == mov.id_chofer }).cuit : null;
         }
         if (mov.id_camion) {
-            var camion = this.db_camiones.some((e: any) => { return e.id == mov.id_socio }) ? this.db_camiones.find((e: any) => { return e.id == mov.id_camion }) : null;
+            var camion = this.db_camiones.some((e: any) => { return e.id == mov.id_camion }) ? this.db_camiones.find((e: any) => { return e.id == mov.id_camion }) : null;
             this.datosCPE.dominio1 = camion ? (camion.patente_chasis ? camion.patente_chasis : null) : null
             this.datosCPE.dominio2 = camion ? (camion.patente_acoplado ? camion.patente_acoplado : null) : null
             this.datosCPE.dominio3 = camion ? (camion.patente_otro ? camion.patente_otro : null) : null
