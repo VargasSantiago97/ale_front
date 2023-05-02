@@ -25,6 +25,8 @@ var vars = {
     CLAVE_PASS: 'ale1',
     CODIGO_USER: '1',
 
+    messageBienvenida: 'Bienvenido, Santiago',
+
 
     //TABLAS GENERALES CPE - AFIP
     CPE_PROVINCIAS: [

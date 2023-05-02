@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
 
+declare var vars: any;
+const messageBienvenida = vars.messageBienvenida;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -10,6 +13,8 @@ import { LoginService } from 'src/app/services/login.service';
 export class LoginComponent {
   showPass:any;
   pass:any = ''
+
+  messageBienvenida: any = messageBienvenida;
 
   constructor(private login: LoginService, private router: Router){}
 
