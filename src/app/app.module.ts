@@ -38,6 +38,7 @@ import {CardModule} from 'primeng/card';
 import {DockModule} from 'primeng/dock';
 import {ContextMenuModule} from 'primeng/contextmenu';
 import {MessageService} from 'primeng/api';
+import {ConfirmationService} from 'primeng/api';
 import {ToastModule} from 'primeng/toast';
 import {PasswordModule} from 'primeng/password';
 import {AvatarModule} from 'primeng/avatar';
@@ -50,7 +51,7 @@ import {ColorPickerModule} from 'primeng/colorpicker';
 import {InputTextareaModule} from 'primeng/inputtextarea';
 import {ScrollerModule} from 'primeng/scroller';
 import {SplitButtonModule} from 'primeng/splitbutton';
-
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
 
 
 
@@ -146,9 +147,10 @@ import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-
     ColorPickerModule,
     InputTextareaModule,
     ScrollerModule,
-    SplitButtonModule
+    SplitButtonModule,
+    ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

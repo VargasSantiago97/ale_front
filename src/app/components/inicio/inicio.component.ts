@@ -29,6 +29,7 @@ export class InicioComponent {
     selectedColumns: any = [];
 
     dataParaMostrarTabla: any = []
+    dataParaMostrarTablaTotales: any = []
 
     displayFiltros: Boolean = false;
     displayNuevoMovimiento: Boolean = false;
@@ -158,6 +159,7 @@ export class InicioComponent {
             { field: "kg_neto", header: "Neto" },
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
+            { field: "kg_campo", header: "Neto Campo" },
 
             { field: "factura", header: "Facturas" },
             { field: "pagado", header: "Pagado" },
@@ -185,6 +187,7 @@ export class InicioComponent {
             { field: "kg_neto", header: "Neto" },
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
+            { field: "kg_campo", header: "Neto Campo" },
             
             { field: "factura", header: "Facturas" },
             { field: "gastos", header: "Gastos" },
@@ -229,6 +232,7 @@ export class InicioComponent {
             kg_neto: null,
             kg_regulacion: null,
             kg_neto_final: null,
+            kg_campo: null,
             observaciones: null,
             tipo_origen: 'T',
             creado_por: null,
@@ -524,6 +528,13 @@ export class InicioComponent {
         if (!(this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
+            var kg_tara = 0.0;
+            var kg_bruto = 0.0;
+            var kg_neto = 0.0;
+            var kg_regulacion = 0.0;
+            var kg_neto_final = 0.0;
+            var kg_campo = 0.0;
+
             this.db_movimientos.forEach((e: any) => {
 
                 const ok_grano = e.id_grano ? this.datosFiltro.granos.includes(e.id_grano) : true
@@ -535,8 +546,24 @@ export class InicioComponent {
 
                 if(ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
+
+                    kg_tara += e.kg_tara ? parseInt(e.kg_tara) : 0;
+                    kg_bruto += e.kg_bruto ? parseInt(e.kg_bruto) : 0;
+                    kg_neto += e.kg_neto ? parseInt(e.kg_neto) : 0;
+                    kg_regulacion += e.kg_regulacion ? parseInt(e.kg_regulacion) : 0;
+                    kg_neto_final += e.kg_neto_final ? parseInt(e.kg_neto_final) : 0;
+                    kg_campo += e.kg_campo ? parseInt(e.kg_campo) : 0;
                 }
             });
+
+            this.dataParaMostrarTablaTotales = {
+                kg_tara: kg_tara,
+                kg_bruto: kg_bruto,
+                kg_neto: kg_neto,
+                kg_regulacion: kg_regulacion,
+                kg_neto_final: kg_neto_final,
+                kg_campo: kg_campo,
+            }
 
 
             if(mantenerFiltro){
@@ -565,6 +592,7 @@ export class InicioComponent {
             kg_neto: mov.kg_neto ? this.transformDatoTabla(mov.kg_neto,"kg") : "-",
             kg_regulacion: mov.kg_regulacion ? this.transformDatoTabla(mov.kg_regulacion,"kg") : "-",
             kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final,"kg") : "-",
+            kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo,"kg") : "-",
 
             observaciones:  mov.observaciones ? mov.observaciones : "-",
 
@@ -852,6 +880,7 @@ export class InicioComponent {
             kg_neto: null,
             kg_regulacion: null,
             kg_neto_final: null,
+            kg_campo: null,
             observaciones: null,
             tipo_origen: null,
             creado_por: null,
@@ -936,11 +965,15 @@ export class InicioComponent {
         }
     }
     mostrarMovimiento(mov_id: any) {
-        this.datosMovimiento = this.db_movimientos.find((e:any) => { return e.id == mov_id})
+        this.datosMovimiento = { ... this.db_movimientos.find((e:any) => { return e.id == mov_id}) }
 
-        var fecha = new Date(this.datosMovimiento.fecha)
-        const datePipe = new DatePipe('en-US');
-        const fechaMov = datePipe.transform(fecha, 'yyyy-MM-dd');
+        const fecha = new Date(this.datosMovimiento.fecha);
+
+        const yyyy = fecha.getFullYear().toString().padStart(4, '0');
+        const MM = (fecha.getMonth() + 1).toString().padStart(2, '0');
+        const dd = fecha.getDate().toString().padStart(2, '0');     
+
+        const fechaMov = `${yyyy}-${MM}-${dd}`;
 
         this.datosMovimiento.fecha = fechaMov;
 

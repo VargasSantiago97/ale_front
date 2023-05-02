@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
+
 declare var vars: any;
 
 @Injectable({
@@ -26,7 +28,8 @@ export class SyncService {
 
     constructor(
         private http: HttpClient,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private confirmationService : ConfirmationService
     ) {
         this.USER_ID = localStorage.getItem('user')
     }
@@ -300,7 +303,9 @@ export class SyncService {
             if(dato.ult_mod < ult_mod){
                 dato.ult_mod = ult_mod
                 this.local_update('sync', dato).subscribe(
-                    (resp:any) => {}, (errr:any) => {console.log(errr)}
+                    (resp:any) => {
+                        this.confirmPosition()
+                    }, (errr:any) => {console.log(errr)}
                 )
             }
         }
@@ -315,5 +320,17 @@ export class SyncService {
                 )
             }
         }
+    }
+
+    confirmPosition() {
+        this.confirmationService.confirm({
+            message: 'Desea recargar pagina?',
+            header: 'Nueva actualizacion detectada',
+            icon: 'pi pi-info-circle',
+            accept: () => {
+                window.location.reload();
+            },
+            key: "positionDialog"
+        });
     }
 }

@@ -2,8 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
-import { PadronService } from 'src/app/services/padron.service';
-import { CpeService } from 'src/app/services/cpe/cpe.service';
 import { LoginService } from 'src/app/services/login.service';
 
 declare var vars: any;
@@ -154,6 +152,8 @@ export class CamionesComponent {
             { field: "kg_neto", header: "Neto" },
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Salida" },
+            { field: "kg_campo", header: "Neto Campo" },
+            { field: "dif_balanza_tolva", header: "Balanza-Tolva" },
             { field: "kg_neto_descarga", header: "Neto Descarga" },
             { field: "kg_mermas", header: "Mermas" },
             { field: "kg_final", header: "Neto FINAL" },
@@ -473,6 +473,9 @@ export class CamionesComponent {
             kg_neto: mov.kg_neto ? this.transformDatoTabla(mov.kg_neto, "kg") : "-",
             kg_regulacion: mov.kg_regulacion ? this.transformDatoTabla(mov.kg_regulacion, "kg") : "-",
             kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final, "kg") : "-",
+            kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo, "kg") : "NO",
+            dif_balanza_tolva: (mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : "",
+            dif_balanza_tolva_pintar: Math.abs((mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : 0) > 200,
 
             kg_neto_descarga: 0,
             kg_mermas: 0,

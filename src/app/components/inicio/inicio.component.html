@@ -63,6 +63,13 @@
             </td>
         </tr>
     </ng-template>
+    <ng-template pTemplate="footer" let-columns>
+        <tr>
+            <td *ngFor="let col of columns">
+                {{dataParaMostrarTablaTotales[col.field]}}
+            </td>
+        </tr>
+    </ng-template>
 </p-table>
 <br><br>
 
@@ -332,6 +339,14 @@
                         <td><input type="number" step="10" class="input-text-codigo"
                                 [(ngModel)]="datosMovimiento.kg_neto_final"
                                 (ngModelChange)="calcularKilos($event, 'kilos_neto_final')"><br></td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <td><strong>NETO CAMPO</strong></td>
+                        <td><input type="number" step="10" class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.kg_campo">
+                            <br>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -1272,7 +1287,9 @@
 
 
     <div *ngFor="let datoVerCPE of datosVerCPE" class="tarjeta" style="margin: 0px 0px 30px 0px;">
-        <h5>CTG N°: {{datoVerCPE.nro_ctg}} - CPE N°: {{datoVerCPE.sucursal ? datoVerCPE.sucursal.toString().padStart(2,'0') : ''}}-{{datoVerCPE.nro_cpe ? datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
+        <h5>CTG N°: {{datoVerCPE.nro_ctg}} - CPE N°: {{datoVerCPE.sucursal ?
+            datoVerCPE.sucursal.toString().padStart(2,'0') : ''}}-{{datoVerCPE.nro_cpe ?
+            datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
         <p *ngIf="datoVerCPE.observaciones_sistema">
             {{datoVerCPE.observaciones_sistema}}
         </p>
