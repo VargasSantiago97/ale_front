@@ -304,7 +304,9 @@ export class SyncService {
                 dato.ult_mod = ult_mod
                 this.local_update('sync', dato).subscribe(
                     (resp:any) => {
-                        this.confirmPosition()
+                        if(sessionStorage.getItem('session') == 'true'){
+                            this.confirmReload()
+                        }
                     }, (errr:any) => {console.log(errr)}
                 )
             }
@@ -322,7 +324,7 @@ export class SyncService {
         }
     }
 
-    confirmPosition() {
+    confirmReload() {
         this.confirmationService.confirm({
             message: 'Desea recargar pagina?',
             header: 'Nueva actualizacion detectada',

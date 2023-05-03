@@ -149,6 +149,7 @@ export class InicioComponent {
             { field: "pat", header: "Pat." },
             { field: "patAc", header: "Pat. Ac." },
             { field: "transporte", header: "Transporte" },
+            { field: "chofer", header: "Chofer" },
             { field: "cuit_transp", header: "CUIT Transp" },
             { field: "gastos", header: "Gastos" },
             { field: "id_corredor", header: "Corredor" },
@@ -178,6 +179,7 @@ export class InicioComponent {
             { field: "pat", header: "Pat." },
             { field: "patAc", header: "Pat. Ac." },
             { field: "transporte", header: "Transporte" },
+            { field: "chofer", header: "Chofer" },
             { field: "cuit_transp", header: "CUIT Transp" },
             { field: "id_corredor", header: "Corredor" },
             { field: "id_acopio", header: "Acopio" },
@@ -584,6 +586,7 @@ export class InicioComponent {
             patAc: mov.id_camion ? this.transformDatoTabla(mov.id_camion,"patAc") : "-",
             transporte: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte,"transporte") : "-",
             cuit_transp: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte,"cuit_transp") : "-",
+            chofer: mov.id_chofer ? this.transformDatoTabla(mov.id_chofer,"chofer") : "-",
             id_corredor: mov.id_corredor ? this.transformDatoTabla(mov.id_corredor,"intervinientes") : "-",
             id_acopio: mov.id_acopio ? this.transformDatoTabla(mov.id_acopio,"intervinientes") : "-",
 
@@ -690,6 +693,9 @@ export class InicioComponent {
         }
         if (tipo == 'cuit_transp') {
             return this.db_transportistas.some((e: any) => { return e.id == dato }) ? this.db_transportistas.find((e: any) => { return e.id == dato }).cuit : '-'
+        }
+        if (tipo == 'chofer') {
+            return this.db_choferes.some((e: any) => { return e.id == dato }) ? this.db_choferes.find((e: any) => { return e.id == dato }).alias : '-'
         }
         if (tipo == 'intervinientes') {
             return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato}).alias : '-'

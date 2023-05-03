@@ -11,6 +11,7 @@ import { IntervinientesComponent } from './components/intervinientes/intervinien
 import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
 import { CamionesComponent } from './components/super/camiones/camiones.component';
 import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
+import { PdfComponent } from './components/modals/pdf/pdf.component';
 
 
 const routes: Routes = [
@@ -33,6 +34,7 @@ const routes: Routes = [
   //superUser
   { path: 'camiones', component: CamionesComponent },
   { path: 'pagosEmitidos', component: PagosEmitidosComponent },
+  { path: 'pdf', component: PdfComponent },
 
 ];
 

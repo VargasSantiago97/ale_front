@@ -357,12 +357,12 @@
     </p-divider>
     <div class="formgrid row">
         <div class="col">
-            <label>CORREDOR:</label><br>
+            <label>CORREDOR: <strong>{{datosMovimiento.id_corredor ? transformDatoTabla(datosMovimiento.id_corredor,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias"
                 optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
         </div>
         <div class="col">
-            <label>ACOPIO:</label><br>
+            <label>ACOPIO: <strong>{{datosMovimiento.id_acopio ? transformDatoTabla(datosMovimiento.id_acopio,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias"
                 optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
         </div>

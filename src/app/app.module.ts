@@ -75,8 +75,10 @@ import { IntervinientesComponent } from './components/intervinientes/intervinien
 import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
 import { CamionesComponent } from './components/super/camiones/camiones.component';
 import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
+import { PdfComponent } from './components/modals/pdf/pdf.component';
 
 
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -98,13 +100,15 @@ import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-
     IntervinientesComponent,
     CuentasCorrientesComponent,
     CamionesComponent,
-    PagosEmitidosComponent
+    PagosEmitidosComponent,
+    PdfComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    NgxExtendedPdfViewerModule,
 
     //PRIMENG
     ButtonModule,
