@@ -12,6 +12,7 @@ import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuen
 import { CamionesComponent } from './components/super/camiones/camiones.component';
 import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
 import { PdfComponent } from './components/modals/pdf/pdf.component';
+import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
 
 
 const routes: Routes = [
@@ -34,7 +35,7 @@ const routes: Routes = [
   //superUser
   { path: 'camiones', component: CamionesComponent },
   { path: 'pagosEmitidos', component: PagosEmitidosComponent },
-  { path: 'pdf', component: PdfComponent },
+  { path: 'resumenCuentas', component: ResumenCuentasComponent },
 
 ];
 

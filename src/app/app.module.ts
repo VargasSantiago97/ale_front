@@ -76,6 +76,7 @@ import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuen
 import { CamionesComponent } from './components/super/camiones/camiones.component';
 import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
 import { PdfComponent } from './components/modals/pdf/pdf.component';
+import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
 
 
 @NgModule({
@@ -99,7 +100,8 @@ import { PdfComponent } from './components/modals/pdf/pdf.component';
     CuentasCorrientesComponent,
     CamionesComponent,
     PagosEmitidosComponent,
-    PdfComponent
+    PdfComponent,
+    ResumenCuentasComponent
   ],
   imports: [
     BrowserModule,
