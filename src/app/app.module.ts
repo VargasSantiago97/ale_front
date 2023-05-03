@@ -78,8 +78,6 @@ import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-
 import { PdfComponent } from './components/modals/pdf/pdf.component';
 
 
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -108,7 +106,6 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgxExtendedPdfViewerModule,
 
     //PRIMENG
     ButtonModule,

@@ -22,6 +22,7 @@ const PUNTO_ORDEN_CARGA = vars.PUNTO_ORDEN_CARGA;
 })
 export class InicioComponent {
     @ViewChild('myCargador') uploader: any;
+    @ViewChild('iframeVisor', { static: true }) iframeVisor: any;
 
     API_URI_UPLOAD = vars.API_URI_UPLOAD;
 
@@ -109,7 +110,7 @@ export class InicioComponent {
     datosOrdenCarga: any = {};
     datosCPE: any = {};
     
-    datosVerCPE: any = {};
+    datosVerCPE: any = [];
 
     existePlantilla = false;
 
@@ -126,6 +127,8 @@ export class InicioComponent {
         socios: [],
         establecimientos: [],
         transportistas: [],
+        corredores: [],
+        acopios: []
     };
 
     constructor(
@@ -433,6 +436,14 @@ export class InicioComponent {
                 this.db_intervinientes = res;
                 this.db_acopios = [... res.filter((e:any) => { return e.dstno == 1})]
                 this.db_corredores = [... res.filter((e:any) => { return e.corvtapri == 1})]
+
+                this.db_corredores.forEach((e:any) => {
+                    this.datosFiltro.corredores.push(e.id)
+                })
+                this.db_acopios.forEach((e:any) => {
+                    this.datosFiltro.acopios.push(e.id)
+                })
+
                 this.load_intervinientes = false;
                 this.datosParaTabla()
             },
@@ -545,8 +556,11 @@ export class InicioComponent {
                 const ok_transportista = e.id_transporte ? this.datosFiltro.transportistas.includes(e.id_transporte) : true
                 const ok_fechaDesde = e.fecha ? (new Date(e.fecha) >= new Date(this.datosFiltro.fechaDesde)) : true
                 const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
+                const ok_corredor = e.id_corredor ? this.datosFiltro.corredores.includes(e.id_corredor) : true
+                const ok_acopio = e.id_acopio ? this.datosFiltro.acopios.includes(e.id_acopio) : true
 
-                if(ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
+
+                if(ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
 
                     kg_tara += e.kg_tara ? parseInt(e.kg_tara) : 0;
@@ -826,19 +840,26 @@ export class InicioComponent {
 
     calcularKilos(event: any, ingresa: any) {
 
+        //kg_bruto
+        //kg_tara
+        //kg_neto
+        //kg_regulacion
+        //id_deposito
+        //kg_neto_final
+
         this.datosMovimiento
 
         if (ingresa == 'kilos_bruto') {
-            this.datosMovimiento.kg_bruto = event
-            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - this.datosMovimiento.kg_tara
+            this.datosMovimiento.kg_bruto = parseInt(event)
+            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - parseInt(this.datosMovimiento.kg_tara)
         }
         if (ingresa == 'kilos_tara' && this.datosMovimiento.kg_bruto) {
-            this.datosMovimiento.kg_tara = event
-            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - this.datosMovimiento.kg_tara
+            this.datosMovimiento.kg_tara = parseInt(event)
+            this.datosMovimiento.kg_neto = parseInt(this.datosMovimiento.kg_bruto) - this.datosMovimiento.kg_tara
         }
         if (ingresa == 'kilos_neto') {
-            this.datosMovimiento.kg_neto = event
-            this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_tara
+            this.datosMovimiento.kg_neto = parseInt(event)
+            this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + parseInt(this.datosMovimiento.kg_tara)
         }
 
 
@@ -846,13 +867,13 @@ export class InicioComponent {
             this.datosMovimiento.kg_regulacion = parseInt(event)
         }
         if (this.datosMovimiento.kg_neto) {
-            this.datosMovimiento.kg_neto_final = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_regulacion
+            this.datosMovimiento.kg_neto_final = parseInt(this.datosMovimiento.kg_neto) + parseInt(this.datosMovimiento.kg_regulacion)
         }
 
         if (ingresa == 'kilos_neto_final') {
-            this.datosMovimiento.kg_neto_final = event
-            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_neto_final - this.datosMovimiento.kg_regulacion
-            this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + this.datosMovimiento.kg_tara
+            this.datosMovimiento.kg_neto_final = parseInt(event)
+            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_neto_final - parseInt(this.datosMovimiento.kg_regulacion)
+            this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + parseInt(this.datosMovimiento.kg_tara)
         }
     }
     save(event: any) {
@@ -1792,10 +1813,19 @@ export class InicioComponent {
         this.displayCPE = true
     }
     abrirModalVerCPE(mov_id:any){
-
-        this.datosVerCPE = this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })
+        this.datosVerCPE = []
+        this.datosVerCPE = [ ... this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })]
 
         this.datosVerCPE.forEach((e:any) => {
+            if(e.data){
+                if(typeof(e.data) == 'string'){
+                    e.data = JSON.parse(e.data)
+                } else {
+                    const datoJson = JSON.stringify(e.data)
+                    e.data = JSON.parse(datoJson)
+                }
+            }
+
             this.comunicacionService.getDir(e.nro_ctg).subscribe(
                 (res: any) => {
                     if (res.mensaje) {
@@ -1808,9 +1838,8 @@ export class InicioComponent {
             )
         })
 
-
-
         this.displayVerCPE = true
+        this.iframeVisor.nativeElement.src = ''
     }
 
     selectEsSolicitanteCampo() {
@@ -2146,6 +2175,20 @@ export class InicioComponent {
             this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al cargar archivos' })
         }
     }
+
+    irAURL(dato:any, archivo:any, descargar:any){
+        if(descargar){
+            const uri = this.API_URI_UPLOAD + '/download.php?folder=' + dato.nro_ctg + '&file=' + archivo
+            window.open(uri);
+        } else {
+            const uri = this.API_URI_UPLOAD + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo
+            window.open(uri, '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
+        }
+    }
+    setearUrl(dato:any, archivo:any){
+        this.iframeVisor.nativeElement.src = this.API_URI_UPLOAD + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo + '#zoom=125'
+    }
+
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]

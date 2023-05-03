@@ -73,21 +73,24 @@
 </p-table>
 <br><br>
 
-<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw', height: '900px'}"
+<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '98vw', height: '900px'}"
     [draggable]="true" [resizable]="false">
-
     <div class="formgrid row">
         <div class="field col">
             <div class="field">
                 <label>FECHA DESDE</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaDesde" dateFormat="dd/mm/yy"></p-calendar>
             </div>
-            <br>
+        </div>
+        <br>
+        <div class="field col">
             <div class="field">
                 <label>FECHA HASTA</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaHasta" dateFormat="dd/mm/yy"></p-calendar>
             </div>
         </div>
+    </div>
+    <div class="formgrid row">
         <div class="field col">
             <div class="field">
                 <label>CULTIVO</label><br>
@@ -139,6 +142,34 @@
                     <ng-template let-transportista pTemplate="item">
                         <div class="transportista-item">
                             <div>{{transportista.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>CORREDOR</label><br>
+                <p-listbox [options]="db_corredores" [(ngModel)]="datosFiltro.corredores" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-corredor pTemplate="item">
+                        <div class="corredor-item">
+                            <div>{{corredor.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>DESTINO</label><br>
+                <p-listbox [options]="db_acopios" [(ngModel)]="datosFiltro.acopios" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-acopio pTemplate="item">
+                        <div class="acopio-item">
+                            <div>{{acopio.alias}}</div>
                         </div>
                     </ng-template>
                 </p-listbox>
@@ -303,25 +334,23 @@
                 <table>
                     <tr>
                         <td>KG BRUTO</td>
-                        <td><input type="number" step="10" class="input-text-codigo"
+                        <td><input type="number" step=10 class="input-text-codigo"
                                 [(ngModel)]="datosMovimiento.kg_bruto"
                                 (ngModelChange)="calcularKilos($event, 'kilos_bruto')"><br></td>
                     </tr>
                     <tr>
                         <td>KG TARA</td>
-                        <td><input type="number" step="10" class="input-text-codigo"
-                                [(ngModel)]="datosMovimiento.kg_tara"
+                        <td><input type="number" step=10 class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_tara"
                                 (ngModelChange)="calcularKilos($event, 'kilos_tara')"><br></td>
                     </tr>
                     <tr>
                         <td><strong>NETO</strong></td>
-                        <td><input type="number" step="10" class="input-text-codigo"
-                                [(ngModel)]="datosMovimiento.kg_neto"
+                        <td><input type="number" step=10 class="input-text-codigo" [(ngModel)]="datosMovimiento.kg_neto"
                                 (ngModelChange)="calcularKilos($event, 'kilos_neto')"><br></td>
                     </tr>
                     <tr>
                         <td>CARG/DESC</td>
-                        <td><input type="number" step="10" class="input-text-codigo"
+                        <td><input type="number" step=10 class="input-text-codigo"
                                 [(ngModel)]="datosMovimiento.kg_regulacion"
                                 (ngModelChange)="calcularKilos($event, 'kilos_carga_descarga')"><br></td>
                     </tr>
@@ -336,14 +365,14 @@
                     </tr>
                     <tr>
                         <td><strong>NETO FINAL</strong></td>
-                        <td><input type="number" step="10" class="input-text-codigo"
+                        <td><input type="number" step=10 class="input-text-codigo"
                                 [(ngModel)]="datosMovimiento.kg_neto_final"
                                 (ngModelChange)="calcularKilos($event, 'kilos_neto_final')"><br></td>
                     </tr>
                     <br>
                     <tr>
                         <td><strong>NETO CAMPO</strong></td>
-                        <td><input type="number" step="10" class="input-text-codigo"
+                        <td><input type="number" step=10 class="input-text-codigo"
                                 [(ngModel)]="datosMovimiento.kg_campo">
                             <br>
                         </td>
@@ -357,12 +386,14 @@
     </p-divider>
     <div class="formgrid row">
         <div class="col">
-            <label>CORREDOR: <strong>{{datosMovimiento.id_corredor ? transformDatoTabla(datosMovimiento.id_corredor,"intervinientes") : ''}}</strong></label><br>
+            <label>CORREDOR: <strong>{{datosMovimiento.id_corredor ?
+                    transformDatoTabla(datosMovimiento.id_corredor,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias"
                 optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
         </div>
         <div class="col">
-            <label>ACOPIO: <strong>{{datosMovimiento.id_acopio ? transformDatoTabla(datosMovimiento.id_acopio,"intervinientes") : ''}}</strong></label><br>
+            <label>ACOPIO: <strong>{{datosMovimiento.id_acopio ?
+                    transformDatoTabla(datosMovimiento.id_acopio,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias"
                 optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
         </div>
@@ -1282,32 +1313,58 @@
 </p-dialog>
 
 
-<p-dialog header="VER CPE" [(visible)]="displayVerCPE" [modal]="true" [style]="{width: '95vw', height: '900px'}"
+<p-dialog header="VER CPE" [(visible)]="displayVerCPE" [modal]="true" [style]="{width: '95vw', height: '95vw'}"
     [draggable]="true" [resizable]="false">
 
+    <div class="formgrid row">
+        <div class="field col-3">
+            <div *ngFor="let datoVerCPE of datosVerCPE" class="tarjeta" style="margin: 0px 0px 30px 0px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <h5>CTG N°: {{datoVerCPE.nro_ctg}}</h5>
+                        </td>
+                        <td style="text-align: right; width: 35px;">
+                            <p-tag *ngIf="datoVerCPE.data" styleClass="mr-2" severity="{{datoVerCPE.data.estado == 'AN' ? 'danger' : (datoVerCPE.data.estado == 'CN' ? 'success' : 'info')}}" value="{{datoVerCPE.data.estado}}"></p-tag>
+                        </td>
+                    </tr>
+                </table>
+                <h5>CPE N°: {{datoVerCPE.sucursal ? datoVerCPE.sucursal.toString().padStart(2,'0') :
+                    ''}}-{{datoVerCPE.nro_cpe ? datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
 
-    <div *ngFor="let datoVerCPE of datosVerCPE" class="tarjeta" style="margin: 0px 0px 30px 0px;">
-        <h5>CTG N°: {{datoVerCPE.nro_ctg}} - CPE N°: {{datoVerCPE.sucursal ?
-            datoVerCPE.sucursal.toString().padStart(2,'0') : ''}}-{{datoVerCPE.nro_cpe ?
-            datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
-        <p *ngIf="datoVerCPE.observaciones_sistema">
-            {{datoVerCPE.observaciones_sistema}}
-        </p>
-        <div class="formgrid row" *ngIf="!datoVerCPE.sistema">
-            <a *ngFor="let archivo of datoVerCPE.archivos"
-                href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
-                <div class="tarjeta">
-                    {{archivo}}
+
+                <p *ngIf="datoVerCPE.observaciones_sistema">
+                    {{datoVerCPE.observaciones_sistema}}
+                </p>
+
+                <div class="formgrid row" *ngIf="!datoVerCPE.sistema">
+                    <div *ngFor="let archivo of datoVerCPE.archivos">
+                        <div class="tarjeta" style="padding: 3px; margin: 0px 0px 5px 0px;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>{{archivo}}</td>
+                                    <td style="text-align: right; width: 85px">
+                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, false)"><i class="pi pi-eye" style="font-size: 12px;"></i></button>
+                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, true)"><i class="pi pi-download" style="font-size: 12px;"></i></button>
+                                        <button class="boton-redondo" (click)="setearUrl(datoVerCPE, archivo)"><i class="pi pi-arrow-right" style="font-size: 12px;"></i></button>            
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </a>
+                <div class="formgrid row" *ngIf="datoVerCPE.sistema">
+                    <a *ngFor="let archivo of datoVerCPE.archivos"
+                        href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
+                        <div class="tarjeta" style="background-color: rgba(56, 228, 65, 0.247);">
+                            {{archivo}}
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="formgrid row" *ngIf="datoVerCPE.sistema">
-            <a *ngFor="let archivo of datoVerCPE.archivos"
-                href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
-                <div class="tarjeta" style="background-color: rgba(56, 228, 65, 0.247);">
-                    {{archivo}}
-                </div>
-            </a>
+        <div class="field col-9">
+            <iframe #iframeVisor frameborder="0" style="width: 100%; height: 500px;"></iframe>
         </div>
     </div>
 

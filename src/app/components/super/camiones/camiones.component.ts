@@ -154,6 +154,7 @@ export class CamionesComponent {
             { field: "kg_neto_final", header: "Neto Salida" },
             { field: "kg_campo", header: "Neto Campo" },
             { field: "dif_balanza_tolva", header: "Balanza-Tolva" },
+            { field: "dif_destino_balanza", header: "Destino-Balanza" },
             { field: "kg_neto_descarga", header: "Neto Descarga" },
             { field: "kg_mermas", header: "Mermas" },
             { field: "kg_final", header: "Neto FINAL" },
@@ -162,7 +163,10 @@ export class CamionesComponent {
             { field: "pagado", header: "Pagado" },
 
             { field: "creado", header: "Creado" },
+            { field: "creado_el", header: "Creado el" },
+
             { field: "modificado", header: "Modificado" },
+            { field: "modificado_el", header: "Modificado el" },
 
             { field: "observaciones", header: "Obser" },
 
@@ -451,6 +455,7 @@ export class CamionesComponent {
                 this.displayFiltros = false
             }
         }
+
     }
     movimientoToMostrarTabla(mov: any) {
         var dato: any = {
@@ -476,15 +481,13 @@ export class CamionesComponent {
             kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo, "kg") : "NO",
             dif_balanza_tolva: (mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : "",
             dif_balanza_tolva_pintar: Math.abs((mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : 0) > 200,
+            dif_destino_balanza: (mov.kg_neto_final ),
 
             kg_neto_descarga: 0,
             kg_mermas: 0,
             kg_final: 0,
 
             observaciones: mov.observaciones ? mov.observaciones : "-",
-
-            permiteCrearCTG: true,
-            existeOrdenDeCarga: this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == mov.id }),
 
             gastos: '',
             factura: '',
@@ -495,7 +498,9 @@ export class CamionesComponent {
             ctg: '',
 
             creado: this.transformDatoTabla(mov.creado_por, "user"),
+            creado_el: mov.creado_el ? mov.creado_el : '',
             modificado: this.transformDatoTabla(mov.editado_por, "user"),
+            modificado_el: mov.editado_el ? mov.editado_el : '',
 
         }
 

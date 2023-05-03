@@ -42,7 +42,7 @@ export class SyncService {
         this.obtenerDatosLocales()
         setInterval(() => {
             this.obtenerDatosLocales()
-        }, 300000)
+        }, 60000)
     }
     recibirVariable(dato:any){
         this.actualizarFechaHora = dato

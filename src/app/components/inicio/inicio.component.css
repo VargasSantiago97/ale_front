@@ -85,3 +85,10 @@ input[type="checkbox"]:hover {
 input[type="checkbox"] {
     transform: scale(1.5);
 }
+.boton-redondo {
+    border-radius: 20%;
+    padding: 0px 5px;
+    margin: 1px;
+    background-color: #007bff;
+    color: aliceblue;
+  }
