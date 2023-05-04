@@ -2215,6 +2215,7 @@ export class InicioComponent {
 
     compararDatosCPE(ant:any, act:any){
         this.cambiosDetectadosCPE = []
+        
 
         if(act.nroCTG != 8){
             this.cambiosDetectadosCPE.push({
