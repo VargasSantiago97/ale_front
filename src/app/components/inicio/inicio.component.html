@@ -1318,6 +1318,9 @@
 
     <div class="formgrid row">
         <div class="field col-3">
+            <div style="text-align: center;" *ngIf="spinnerActualizarCPE">
+                <br><br><p-progressSpinner></p-progressSpinner><br><br>
+            </div>
             <div *ngFor="let datoVerCPE of datosVerCPE" class="tarjeta" style="margin: 0px 0px 30px 0px;">
                 <table style="width: 100%;">
                     <tr>
@@ -1325,13 +1328,22 @@
                             <h5>CTG N°: {{datoVerCPE.nro_ctg}}</h5>
                         </td>
                         <td style="text-align: right; width: 35px;">
-                            <p-tag *ngIf="datoVerCPE.data" styleClass="mr-2" severity="{{datoVerCPE.data.estado == 'AN' ? 'danger' : (datoVerCPE.data.estado == 'CN' ? 'success' : 'info')}}" value="{{datoVerCPE.data.estado}}"></p-tag>
+                            <p-tag *ngIf="datoVerCPE.data" styleClass="mr-2"
+                                severity="{{datoVerCPE.data.estado == 'AN' ? 'danger' : (datoVerCPE.data.estado == 'CN' ? 'success' : 'info')}}"
+                                value="{{datoVerCPE.data.estado}}"></p-tag>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h5>CPE N°: {{datoVerCPE.sucursal ? datoVerCPE.sucursal.toString().padStart(2,'0') :
+                                ''}}-{{datoVerCPE.nro_cpe ? datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
+                        </td>
+                        <td style="text-align: right; width: 35px;">
+                            <button class="boton-redondo" (click)="cpeActualizarPDF(datoVerCPE)"><i
+                                    class="pi pi-refresh" style="font-size: 12px;"></i></button>
                         </td>
                     </tr>
                 </table>
-                <h5>CPE N°: {{datoVerCPE.sucursal ? datoVerCPE.sucursal.toString().padStart(2,'0') :
-                    ''}}-{{datoVerCPE.nro_cpe ? datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
-
 
                 <p *ngIf="datoVerCPE.observaciones_sistema">
                     {{datoVerCPE.observaciones_sistema}}
@@ -1344,9 +1356,12 @@
                                 <tr>
                                     <td>{{archivo}}</td>
                                     <td style="text-align: right; width: 85px">
-                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, false)"><i class="pi pi-eye" style="font-size: 12px;"></i></button>
-                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, true)"><i class="pi pi-download" style="font-size: 12px;"></i></button>
-                                        <button class="boton-redondo" (click)="setearUrl(datoVerCPE, archivo)"><i class="pi pi-arrow-right" style="font-size: 12px;"></i></button>            
+                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, false)"><i
+                                                class="pi pi-eye" style="font-size: 12px;"></i></button>
+                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, true)"><i
+                                                class="pi pi-download" style="font-size: 12px;"></i></button>
+                                        <button class="boton-redondo" (click)="setearUrl(datoVerCPE, archivo)"><i
+                                                class="pi pi-arrow-right" style="font-size: 12px;"></i></button>
                                     </td>
                                 </tr>
                             </table>
@@ -1367,6 +1382,49 @@
             <iframe #iframeVisor frameborder="0" style="width: 100%; height: 500px;"></iframe>
         </div>
     </div>
+    <br><br>
+    <div *ngIf="cambiosDetectadosCPE.length" class="formgrid row">
+        <div class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px; width: 800px; text-align: center;">
+                <h5>CAMBIOS DETECTADOS</h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>
+                                <p>Tipo de dato:</p>
+                            </th>
+                            <th>
+                                <p>DATO ANTERIOR</p>
+                            </th>
+                            <th style="width: 20px;">
+                                <i class="pi pi-arrow-right" style="font-size: 12px;"></i>
+                            </th>
+                            <th>
+                                DATO DE CPE ACTUALIZADO
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let cambio of cambiosDetectadosCPE">
+                        <tr>
+                            <td>
+                                <label>{{cambio.tipoDato}}</label>
+                            </td>
+                            <td>
+                                <input type="text" class="input-text-codigo" style="width: auto;" [(ngModel)]="cambio.valorAnt" readonly>
+                            </td>
+                            <td style="width: 20px;">
+                                <i class="pi pi-arrow-right" style="font-size: 12px;"></i>
+                            </td>
+                            <td>
+                                <input type="text" class="input-text-codigo" style="width: auto;" [(ngModel)]="cambio.valor">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="AGREGAR" class="p-button-success bott"

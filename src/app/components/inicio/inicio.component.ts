@@ -40,6 +40,8 @@ export class InicioComponent {
     displayVistas: Boolean = false;
     displayCPE: Boolean = false;
     displayVerCPE: Boolean = false;
+    
+    spinnerActualizarCPE: Boolean = false;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
     optionsDe: any = [{ label: 'Silo', id: 'S' }, { label: 'Trilla', id: 'T' }, { label: 'Otro', id: 'O' }]
@@ -111,6 +113,7 @@ export class InicioComponent {
     datosCPE: any = {};
     
     datosVerCPE: any = [];
+    cambiosDetectadosCPE: any = [];
 
     existePlantilla = false;
 
@@ -1812,8 +1815,13 @@ export class InicioComponent {
 
         this.displayCPE = true
     }
-    abrirModalVerCPE(mov_id:any){
+    abrirModalVerCPE(mov_id:any, borrarCambiosDetectados=true){
         this.datosVerCPE = []
+
+        if(borrarCambiosDetectados){
+            this.cambiosDetectadosCPE = []
+        }
+
         this.datosVerCPE = [ ... this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })]
 
         this.datosVerCPE.forEach((e:any) => {
@@ -2139,6 +2147,199 @@ export class InicioComponent {
 
     }
 
+    cpeActualizarPDF(datoVerCPE:any){
+        this.spinnerActualizarCPE = true
+
+        if(!datoVerCPE.cuit_solicitante){
+            return
+        }
+
+        var data:any = {
+            cuit: parseInt(datoVerCPE.cuit_solicitante),
+            ejecutar: "consultar_cpe_automotor",
+            data: {}
+        }
+
+        if(datoVerCPE.nro_ctg){
+            data.data.ctg = parseInt(datoVerCPE.nro_ctg)
+        } else if (datoVerCPE.nro_cpe && datoVerCPE.sucursal){
+            data.data.nro_orden = parseInt(datoVerCPE.nro_cpe)
+            data.data.sucursal = parseInt(datoVerCPE.sucursal)
+        } else {
+            return
+        }
+
+        this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+            (res: any) => {
+                if(res){
+                    if(res.mensaje){
+                        if(res.mensaje.nroCTG){
+                            if(res.mensaje.nroCTG.toString().length == 11){
+                                this.compararDatosCPE(datoVerCPE, res.mensaje)
+                                if(res.mensaje.estado){
+                                    const nro_cpe = res.mensaje.sucursal.toString().padStart(2, '0') + "-" + res.mensaje.nroOrden.toString().padStart(5, '0')
+                                    this.cpeService.moverArchivo(res.mensaje.nroCTG.toString(), res.mensaje.estado, nro_cpe).subscribe(
+                                        (resp: any) => {
+                                            if(resp){
+                                                if(resp.mensaje){
+                                                    this.abrirModalVerCPE(datoVerCPE.id_movimiento, false)
+                                                    this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
+                                                } else {
+                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
+                                                }
+                                            } else {
+                                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
+                                            }
+                                        },
+                                        (errr: any) => {
+                                            console.log(errr)
+                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
+                                        },
+                                    )
+                                }
+
+                            }
+                        }
+                    }
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se encontraron datos' })
+                }
+                this.spinnerActualizarCPE = false
+            },
+            (err: any) => {
+                console.log(err)
+                this.spinnerActualizarCPE = false
+            }
+        )
+    }
+
+    compararDatosCPE(ant:any, act:any){
+        this.cambiosDetectadosCPE = []
+
+        if(act.nroCTG != 8){
+            this.cambiosDetectadosCPE.push({
+                tipo: 'nro_ctg',
+                tipoDato: 'NRO CTG',
+                valorAnt: ant.nro_ctg,
+                valor: act.nroCTG
+            })
+        }
+        /* 
+        {
+    "mensaje":
+    datosCarga.codGrano
+    datosCarga.pesoTaraDescarga
+    datosCarga.pesoBruto
+    datosCarga.pesoTara
+    datosCarga.cosecha
+    datosCarga.pesoBrutoDescarga
+    sucursal
+    correspondeRetiroProductor
+    nroOrden
+    estado
+    retiroProductor
+
+    destinatario.cuit
+
+    transporte.codigoTurno
+    transporte.tarifaReferencia
+    transporte.cuitTransportista
+    transporte.dominio
+    transporte.mercaderiaFumigada
+    transporte.cuitChofer
+    transporte.tarifa
+    transporte.kmRecorrer
+
+    destino.planta
+    destino.codProvincia
+    destino.codLocalidad
+    destino.cuit
+
+    intervinientes.cuitCorredorVentaPrimaria
+    intervinientes.cuitRepresentanteEntregador
+    intervinientes.cuitCorredorVentaSecundaria
+
+    }
+}
+
+
+{
+    "id": "846bdfcc03d7",
+    "sucursal": "0",
+    "nro_cpe": "1207",
+    "": "10109399145",
+    "id_movimiento": "756ff81d8192",
+    "cuit_solicitante": "30715327720",
+    "tipo_cpe": "74",
+    "observaciones": null,
+    "es_solicitante_campo": "1",
+    "planta_origen": null,
+    "cod_provincia_operador": null,
+    "cod_localidad_operador": null,
+    "cod_provincia_productor": null,
+    "cod_localidad_productor": null,
+    "corresponde_retiro_productor": "",
+    "certificado_coe": null,
+    "cuit_remitente_comercial_productor": null,
+    "cuit_destino": "30709590894",
+    "cuit_destinatario": "33502232229",
+    "es_destino_campo": "",
+    "cod_localidad": null,
+    "cod_provincia": null,
+    "planta_destino": null,
+    "cuit_corredor_venta_primaria": "23220029379",
+    "cuit_corredor_venta_secundaria": "23220029379",
+    "cuit_mercado_a_termino": null,
+    "cuit_remitente_comercial_venta_primaria": null,
+    "cuit_remitente_comercial_venta_secundaria": null,
+    "cuit_remitente_comercial_venta_secundaria2": null,
+    "cuit_representante_entregador": "30707386076",
+    "cuit_representante_recibidor": null,
+    "peso_tara": "15000",
+    "peso_bruto": "45000",
+    "cod_grano": "23",
+    "cosecha": "2223",
+    "cuit_transportista": "23136003119",
+    "cuit_pagador_flete": null,
+    "cuit_intermediario_flete": null,
+    "cuit_chofer": "20144129076",
+    "mercaderia_fumigada": "1",
+    "km_recorrer": "850",
+    "tarifa_referencia": "13847.9",
+    "tarifa": "9500",
+    "codigo_turno": "RTSO2304276556687",
+    "fecha_hora_partida": "2023-04-26T11:02",
+    "dominio": "[\"GTD444\",\"ELV966\"]",
+    "datos": null,
+    "creado_por": "10",
+    "creado_el": "2023-04-28 11:09:40",
+    "editado_por": "10",
+    "editado_el": "2023-04-28 11:09:45",
+    "activo": "1",
+    "estado": "1",
+    "terminada": null,
+    "controlada": null,
+    "controlada_final": null,
+    "sistema": null,
+    "observaciones_sistema": null,
+    "data": {
+        "kg_descarga": 30340,
+        "estado": "CN",
+        "kg_mermas": 0
+    },
+    "archivos": [
+        "CPE 00-01207 - CTG 10109399145 - CN.pdf",
+        "cpe-00000-00001207 FRANCOVIG DOMINGO.pdf"
+    ]
+}
+
+
+
+         */
+
+
+    }
+
     buscarCUIT(cuit: any, razon_social: any) {
         this.datosCPE[razon_social] = 'buscando...'
 
@@ -2194,6 +2395,58 @@ export class InicioComponent {
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
 
 /*
+CPE
+ret:
+'cabecera': {
+    'fechaEmision': datetime.datetime(2023, 4, 28, 17, 43, 47), 
+    'nroCTG': 10109471135L, 
+    'sucursal': 0, 
+    'tipoCartaPorte': 74, 
+    'fechaInicioEstado': datetime.datetime(2023, 5, 1, 13, 56, 52), 
+    'nroOrden': 1209L, 
+    'estado': u'CN', 
+    'fechaVencimiento': datetime.datetime(2023, 5, 4, 11, 5)}, 
+    'origen': {'codProvincia': 16, 'codLocalidad': 10583, 'cuit': 30715327720L}, 
+    'destinatario': {'cuit': 30715118773L}, 
+    'intervinientes': {
+        'cuitCorredorVentaPrimaria': 23220029379L, 
+        'cuitRepresentanteEntregador': 30707386076L, 
+        'cuitCorredorVentaSecundaria': 23220029379L
+    }
+'datosCarga': {
+    'codGrano': 23, 
+    'pesoTaraDescarga': 14000, 
+    'pesoBruto': 44100, 
+    'pesoTara': 14200, 
+    'cosecha': 2223, 
+    'pesoBrutoDescarga': 44200
+}
+'transporte': [
+    {
+        'codigoTurno': u'MOL0721/01052023', 
+        'tarifaReferencia': Decimal('13847.91'), 
+        'cuitTransportista': 23136003119L, 
+        'dominio': u'FFZ879', 
+        'mercaderiaFumigada': True, 
+        'fechaHoraPartida': datetime.datetime(2023, 4, 28, 17, 45), 
+        'cuitChofer': 20378287031L, 
+        'tarifa': Decimal('9500'), 
+        'kmRecorrer': 850
+    }
+], 
+'errores': [], 
+'correspondeRetiroProductor': False, 
+'metadata': {'servidor': u'santiago', 'fechaHora': datetime.datetime(2023, 5, 4, 9, 2, 31)}, 
+'destino': {
+    'planta': 408411, 
+    'codProvincia': 12, 
+    'codLocalidad': 18794, 
+    'cuit': 30715118773L
+}, 
+'retiroProductor': None,
+
+
+
 CPE DB:
 
     `id` VARCHAR(12) NOT NULL,
@@ -2420,5 +2673,118 @@ CPE DB:
         "tabla": "orden_carga",
         "columnas": ["id", "id_movimiento", "numero", "fecha", "beneficiario", "transportista", "conductor", "patentes", "establecimiento", "cultivo", "trilla_silo", "tara", "bruto", "neto", "firma1", "firma2", "observaciones", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
     },
+}
+
+
+
+
+
+DATOS DE CARTA DE PORTE QUE TRAE WSCPE
+    "mensaje":
+    nroCTG
+    datosCarga.codGrano
+    datosCarga.pesoTaraDescarga
+    datosCarga.pesoBruto
+    datosCarga.pesoTara
+    datosCarga.cosecha
+    datosCarga.pesoBrutoDescarga
+    sucursal
+    correspondeRetiroProductor
+    nroOrden
+    estado
+    retiroProductor
+
+    destinatario.cuit
+
+    transporte.codigoTurno
+    transporte.tarifaReferencia
+    transporte.cuitTransportista
+    transporte.dominio
+    transporte.mercaderiaFumigada
+    transporte.cuitChofer
+    transporte.tarifa
+    transporte.kmRecorrer
+
+    destino.planta
+    destino.codProvincia
+    destino.codLocalidad
+    destino.cuit
+
+    intervinientes.cuitCorredorVentaPrimaria
+    intervinientes.cuitRepresentanteEntregador
+    intervinientes.cuitCorredorVentaSecundaria
+
+    }
+}
+
+DATOS DE CPE QUE SE ARMA CON LA DB
+{
+    "id": "846bdfcc03d7",
+    "sucursal": "0",
+    "nro_cpe": "1207",
+    "nro_ctg": "10109399145",
+    "id_movimiento": "756ff81d8192",
+    "cuit_solicitante": "30715327720",
+    "tipo_cpe": "74",
+    "observaciones": null,
+    "es_solicitante_campo": "1",
+    "planta_origen": null,
+    "cod_provincia_operador": null,
+    "cod_localidad_operador": null,
+    "cod_provincia_productor": null,
+    "cod_localidad_productor": null,
+    "corresponde_retiro_productor": "",
+    "certificado_coe": null,
+    "cuit_remitente_comercial_productor": null,
+    "cuit_destino": "30709590894",
+    "cuit_destinatario": "33502232229",
+    "es_destino_campo": "",
+    "cod_localidad": null,
+    "cod_provincia": null,
+    "planta_destino": null,
+    "cuit_corredor_venta_primaria": "23220029379",
+    "cuit_corredor_venta_secundaria": "23220029379",
+    "cuit_mercado_a_termino": null,
+    "cuit_remitente_comercial_venta_primaria": null,
+    "cuit_remitente_comercial_venta_secundaria": null,
+    "cuit_remitente_comercial_venta_secundaria2": null,
+    "cuit_representante_entregador": "30707386076",
+    "cuit_representante_recibidor": null,
+    "peso_tara": "15000",
+    "peso_bruto": "45000",
+    "cod_grano": "23",
+    "cosecha": "2223",
+    "cuit_transportista": "23136003119",
+    "cuit_pagador_flete": null,
+    "cuit_intermediario_flete": null,
+    "cuit_chofer": "20144129076",
+    "mercaderia_fumigada": "1",
+    "km_recorrer": "850",
+    "tarifa_referencia": "13847.9",
+    "tarifa": "9500",
+    "codigo_turno": "RTSO2304276556687",
+    "fecha_hora_partida": "2023-04-26T11:02",
+    "dominio": "[\"GTD444\",\"ELV966\"]",
+    "datos": null,
+    "creado_por": "10",
+    "creado_el": "2023-04-28 11:09:40",
+    "editado_por": "10",
+    "editado_el": "2023-04-28 11:09:45",
+    "activo": "1",
+    "estado": "1",
+    "terminada": null,
+    "controlada": null,
+    "controlada_final": null,
+    "sistema": null,
+    "observaciones_sistema": null,
+    "data": {
+        "kg_descarga": 30340,
+        "estado": "CN",
+        "kg_mermas": 0
+    },
+    "archivos": [
+        "CPE 00-01207 - CTG 10109399145 - CN.pdf",
+        "cpe-00000-00001207 FRANCOVIG DOMINGO.pdf"
+    ]
 }
  */
