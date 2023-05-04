@@ -111,7 +111,7 @@ export class InicioComponent {
     datosMovimiento: any;
     datosOrdenCarga: any = {};
     datosCPE: any = {};
-    
+
     datosVerCPE: any = [];
     cambiosDetectadosCPE: any = [];
 
@@ -1261,13 +1261,14 @@ export class InicioComponent {
         return uuid;
     }
     generateNumeroOrdenDeCarga() {
+        var ordenes_carga:any = this.db_ordenes_carga.filter((e:any) => { 
+            const num = parseInt(e.numero.split("-")[0]) ? parseInt(e.numero.split("-")[0]) : 0
+            return num == parseInt(PUNTO_ORDEN_CARGA)
+        })
 
-        const numeroMasGrande = this.db_ordenes_carga.reduce((acumulado:any, objetoActual:any) => {
-            if(parseInt(objetoActual.numero.split("-")[0]) == parseInt(PUNTO_ORDEN_CARGA)){
-                const valor = parseInt(objetoActual.numero.split("-")[1])
-                return Math.max(acumulado, valor);
-            }
-            return false
+        const numeroMasGrande = ordenes_carga.reduce((acumulado:any, objetoActual:any) => {
+            const valor = parseInt(objetoActual.numero.split("-")[1])
+            return Math.max(acumulado, valor);
         }, 0);
 
         const punto = PUNTO_ORDEN_CARGA.toString().padStart(2, '0');
@@ -2215,59 +2216,270 @@ export class InicioComponent {
 
     compararDatosCPE(ant:any, act:any){
         this.cambiosDetectadosCPE = []
-        
 
-        if(act.nroCTG != 8){
+        if(act.nroCTG != ant.nro_ctg){
             this.cambiosDetectadosCPE.push({
+                modificar: true,
                 tipo: 'nro_ctg',
                 tipoDato: 'NRO CTG',
                 valorAnt: ant.nro_ctg,
                 valor: act.nroCTG
             })
         }
+        if(act.sucursal != ant.sucursal){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'sucursal',
+                tipoDato: 'SUCURSAL',
+                valorAnt: ant.sucursal,
+                valor: act.sucursal
+            })
+        }
+        if(act.nroOrden != ant.nro_cpe){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'nro_cpe',
+                tipoDato: 'NRO CPE',
+                valorAnt: ant.nro_cpe,
+                valor: act.nroOrden
+            })
+        }
+        if(act.datosCarga.codGrano != ant.cod_grano){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cod_grano',
+                tipoDato: 'Cod. GRANO',
+                valorAnt: ant.cod_grano,
+                valor: act.datosCarga.codGrano
+            })
+        }
+        if(act.destinatario.cuit != ant.cuit_destinatario){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cuit_destinatario',
+                tipoDato: 'CUIT DESTINATARIO',
+                valorAnt: ant.cuit_destinatario,
+                valor: act.destinatario.cuit
+            })
+        }
+        
+        if(act.transporte.codigoTurno != ant.codigo_turno){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'codigo_turno',
+                tipoDato: 'CODIGO TURNO',
+                valorAnt: ant.codigo_turno,
+                valor: act.transporte.codigoTurno
+            })
+        }
+        if(act.transporte.cuitTransportista != ant.cuit_transportista){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cuit_transportista',
+                tipoDato: 'CUIT TRANSPORTISTA',
+                valorAnt: ant.cuit_transportista,
+                valor: act.transporte.cuitTransportista
+            })
+        }
+        if(act.transporte.cuitChofer != ant.cuit_chofer){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cuit_chofer',
+                tipoDato: 'CUIT CHOFER',
+                valorAnt: ant.cuit_chofer,
+                valor: act.transporte.cuitChofer
+            })
+        }
+        if(act.transporte.tarifa != ant.tarifa){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'tarifa',
+                tipoDato: 'TARIFA',
+                valorAnt: ant.tarifa,
+                valor: act.transporte.tarifa
+            })
+        }
+        if(act.transporte.kmRecorrer != ant.km_recorrer){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'km_recorrer',
+                tipoDato: 'KM A RECORRER',
+                valorAnt: ant.km_recorrer,
+                valor: act.transporte.kmRecorrer
+            })
+        }
+
+        if(act.destino.planta != ant.planta_destino){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'planta_destino',
+                tipoDato: 'COD PLANTA DESTINO',
+                valorAnt: ant.planta_destino,
+                valor: act.destino.planta
+            })
+        }
+        if(act.destino.codProvincia != ant.cod_provincia){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cod_provincia',
+                tipoDato: 'COD PROVINCIA',
+                valorAnt: ant.cod_provincia,
+                valor: act.destino.codProvincia
+            })
+        }
+        if(act.destino.codLocalidad != ant.cod_localidad){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cod_localidad',
+                tipoDato: 'COD LOCALIDAD',
+                valorAnt: ant.cod_localidad,
+                valor: act.destino.codLocalidad
+            })
+        }
+        if(act.destino.cuit != ant.cuit_destino){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'cuit_destino',
+                tipoDato: 'CUIT DESTINO',
+                valorAnt: ant.cuit_destino,
+                valor: act.destino.cuit
+            })
+        }
+
+        if(act.codACTUAL != ant.codVIEJO){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'codVIEJO',
+                tipoDato: 'codVIEJO',
+                valorAnt: ant.codVIEJO,
+                valor: act.codACTUAL
+            })
+        }
+
+        if(!ant.data){
+            ant.data.kg_descarga = 0,
+            ant.data.estado = 0
+        }
+        const tara = act.datosCarga.pesoTaraDescarga ? parseInt(act.datosCarga.pesoTaraDescarga) : 0
+        const bruto = act.datosCarga.pesoBrutoDescarga ? parseInt(act.datosCarga.pesoBrutoDescarga) : 0
+        const neto = bruto - tara
+        if(neto != ant.data.kg_descarga){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'kg_descarga',
+                tipoDato: 'KGS DESCARGA',
+                valorAnt: ant.data.kg_descarga,
+                valor: neto
+            })
+        }
+        if(act.estado != ant.data.estado){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'estado',
+                tipoDato: 'ESTADO',
+                valorAnt: ant.data.estado,
+                valor: act.estado
+            })
+        }
+
+        if(act.intervinientes){
+            let int = act.intervinientes
+            if(int.cuitCorredorVentaPrimaria){
+                if(int.cuitCorredorVentaPrimaria != ant.cuit_corredor_venta_primaria){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_corredor_venta_primaria',
+                        tipoDato: 'CUIT CORREDOR VENTA PRIMARIA',
+                        valorAnt: ant.cuit_corredor_venta_primaria,
+                        valor: int.cuitCorredorVentaPrimaria
+                    })
+                }
+            }
+            if(int.cuitCorredorVentaSecundaria){
+                if(int.cuitCorredorVentaSecundaria != ant.cuit_corredor_venta_secundaria){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_corredor_venta_secundaria',
+                        tipoDato: 'CUIT CORREDOR VENTA SECUNDARIA',
+                        valorAnt: ant.cuit_corredor_venta_secundaria,
+                        valor: int.cuitCorredorVentaSecundaria
+                    })
+                }
+            }
+            if(int.cuitMercadoATermino){
+                if(int.cuitMercadoATermino != ant.cuit_mercado_a_termino){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_mercado_a_termino',
+                        tipoDato: 'CUIT MERCADO A TERMINO',
+                        valorAnt: ant.cuit_mercado_a_termino,
+                        valor: int.cuitMercadoATermino
+                    })
+                }
+            }
+            if(int.cuitRemitenteComercialVentaPrimaria){
+                if(int.cuitRemitenteComercialVentaPrimaria != ant.cuit_remitente_comercial_venta_primaria){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_remitente_comercial_venta_primaria',
+                        tipoDato: 'CUIT REMITENTE COMERCIAL VENTA PRIMARIA',
+                        valorAnt: ant.cuit_remitente_comercial_venta_primaria,
+                        valor: int.cuitRemitenteComercialVentaPrimaria
+                    })
+                }
+            }
+            if(int.cuitRemitenteComercialVentaSecundaria){
+                if(int.cuitRemitenteComercialVentaSecundaria != ant.cuit_remitente_comercial_venta_secundaria){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_remitente_comercial_venta_secundaria',
+                        tipoDato: 'CUIT REMITENTE COMERCIAL VENTA SECUNDARIA',
+                        valorAnt: ant.cuit_remitente_comercial_venta_secundaria,
+                        valor: int.cuitRemitenteComercialVentaSecundaria
+                    })
+                }
+            }
+            if(int.cuitRemitenteComercialVentaSecundaria2){
+                if(int.cuitRemitenteComercialVentaSecundaria2 != ant.cuit_remitente_comercial_venta_secundaria2){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_remitente_comercial_venta_secundaria2',
+                        tipoDato: 'CUIT REMITENTE COMERCIAL VENTA SECUNDARIA 2',
+                        valorAnt: ant.cuit_remitente_comercial_venta_secundaria2,
+                        valor: int.cuitRemitenteComercialVentaSecundaria2
+                    })
+                }
+            }
+            if(int.cuitRepresentanteEntregador){
+                if(int.cuitRepresentanteEntregador != ant.cuit_representante_entregador){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_representante_entregador',
+                        tipoDato: 'CUIT REPRESENTANTE ENTREGADOR',
+                        valorAnt: ant.cuit_representante_entregador,
+                        valor: int.cuitRepresentanteEntregador
+                    })
+                }
+            }
+            if(int.cuitRepresentanteRecibidor){
+                if(int.cuitRepresentanteRecibidor != ant.cuit_representante_recibidor){
+                    this.cambiosDetectadosCPE.push({
+                        modificar: true,
+                        tipo: 'cuit_representante_recibidor',
+                        tipoDato: 'CUIT REPRESENTANTE RECIBIDOR',
+                        valorAnt: ant.cuit_representante_recibidor,
+                        valor: int.cuitRepresentanteRecibidor
+                    })
+                }
+            }
+        }
         /* 
-        {
-    "mensaje":
-    datosCarga.codGrano
-    datosCarga.pesoTaraDescarga
-    datosCarga.pesoBruto
-    datosCarga.pesoTara
-    datosCarga.cosecha
-    datosCarga.pesoBrutoDescarga
-    sucursal
-    correspondeRetiroProductor
-    nroOrden
-    estado
-    retiroProductor
-
-    destinatario.cuit
-
-    transporte.codigoTurno
-    transporte.tarifaReferencia
-    transporte.cuitTransportista
-    transporte.dominio
-    transporte.mercaderiaFumigada
-    transporte.cuitChofer
-    transporte.tarifa
-    transporte.kmRecorrer
-
-    destino.planta
-    destino.codProvincia
-    destino.codLocalidad
-    destino.cuit
-
-    intervinientes.cuitCorredorVentaPrimaria
-    intervinientes.cuitRepresentanteEntregador
-    intervinientes.cuitCorredorVentaSecundaria
-
-    }
-}
 
 
 {
     "id": "846bdfcc03d7",
-    "sucursal": "0",
-    "nro_cpe": "1207",
+    "": "0",
+    "": "1207",
     "": "10109399145",
     "id_movimiento": "756ff81d8192",
     "cuit_solicitante": "30715327720",
@@ -2282,12 +2494,12 @@ export class InicioComponent {
     "corresponde_retiro_productor": "",
     "certificado_coe": null,
     "cuit_remitente_comercial_productor": null,
-    "cuit_destino": "30709590894",
-    "cuit_destinatario": "33502232229",
+    "": "30709590894",
+    "": "33502232229",
     "es_destino_campo": "",
-    "cod_localidad": null,
-    "cod_provincia": null,
-    "planta_destino": null,
+    "": null,
+    "": null,
+    "": null,
     "cuit_corredor_venta_primaria": "23220029379",
     "cuit_corredor_venta_secundaria": "23220029379",
     "cuit_mercado_a_termino": null,
@@ -2298,7 +2510,7 @@ export class InicioComponent {
     "cuit_representante_recibidor": null,
     "peso_tara": "15000",
     "peso_bruto": "45000",
-    "cod_grano": "23",
+    "": "23",
     "cosecha": "2223",
     "cuit_transportista": "23136003119",
     "cuit_pagador_flete": null,
@@ -2324,8 +2536,8 @@ export class InicioComponent {
     "sistema": null,
     "observaciones_sistema": null,
     "data": {
-        "kg_descarga": 30340,
-        "estado": "CN",
+        "": 30340,
+        "": "CN",
         "kg_mermas": 0
     },
     "archivos": [

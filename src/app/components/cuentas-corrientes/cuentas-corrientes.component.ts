@@ -1111,12 +1111,11 @@ export class CuentasCorrientesComponent {
     }
 
     generateNumeroOrdenDePago() {
-        const numeroMasGrande = this.db_ordenes_pago.reduce((acumulado:any, objetoActual:any) => {
-            if(parseInt(objetoActual.punto) == parseInt(PUNTO_ORDEN_PAGO)){
-                const valor = parseInt(objetoActual.numero)
-                return Math.max(acumulado, valor);
-            }
-            return false
+        var ordenesPago:any = this.db_ordenes_pago.filter((e:any) => { return parseInt(e.punto) == parseInt(PUNTO_ORDEN_PAGO) })
+
+        var numeroMasGrande:any = ordenesPago.reduce((acumulado:any, objetoActual:any) => {
+            const valor = parseInt(objetoActual.numero)
+            return Math.max(acumulado, valor);
         }, 0);
 
         return numeroMasGrande + 1;
