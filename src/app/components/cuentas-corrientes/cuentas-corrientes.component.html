@@ -8,8 +8,15 @@
 <br>
 <div class="formgrid row">
     <div class="field col-3">
-        <p-dropdown (onChange)="onSelectSocio()" [options]="db_socios" [(ngModel)]="socio"
-            optionLabel="alias"></p-dropdown>
+        <div class="formgrid row">
+            <div class="field col-6">
+                <p-dropdown (onChange)="onSelectSocio()" [options]="db_socios" [(ngModel)]="socio"
+                optionLabel="alias"></p-dropdown>
+            </div>
+            <div class="field col-6">
+                <button pButton pRipple type="button" label="LISTA SALDOS" class="p-button-primary bott" (click)="routerLinkIr('resumenCuentas')"></button>
+            </div>
+        </div>
 
         <p-listbox [options]="db_transportistas" [(ngModel)]="transportista" [metaKeySelection]="false"
             [checkbox]="false" [filter]="true" [multiple]="false" optionLabel="alias"

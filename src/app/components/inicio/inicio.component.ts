@@ -114,6 +114,7 @@ export class InicioComponent {
 
     datosVerCPE: any = [];
     cambiosDetectadosCPE: any = [];
+    datosParaActualizarCPE: any = {};
 
     existePlantilla = false;
 
@@ -2203,7 +2204,7 @@ export class InicioComponent {
                         }
                     }
                 } else {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se encontraron datos' })
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se encontraron datos dsa' })
                 }
                 this.spinnerActualizarCPE = false
             },
@@ -2216,6 +2217,7 @@ export class InicioComponent {
 
     compararDatosCPE(ant:any, act:any){
         this.cambiosDetectadosCPE = []
+        this.datosParaActualizarCPE = ant
 
         if(act.nroCTG != ant.nro_ctg){
             this.cambiosDetectadosCPE.push({
@@ -2357,8 +2359,10 @@ export class InicioComponent {
         }
 
         if(!ant.data){
-            ant.data.kg_descarga = 0,
-            ant.data.estado = 0
+            ant.data = {
+                kg_descarga: 0,
+                estado: ""
+            }
         }
         const tara = act.datosCarga.pesoTaraDescarga ? parseInt(act.datosCarga.pesoTaraDescarga) : 0
         const bruto = act.datosCarga.pesoBrutoDescarga ? parseInt(act.datosCarga.pesoBrutoDescarga) : 0
@@ -2473,84 +2477,31 @@ export class InicioComponent {
                 }
             }
         }
-        /* 
+    }
+    actualizarCPE(){
+        this.cambiosDetectadosCPE.forEach((e:any) => {
+            if(e.modificar){
+                if(e.tipo == "kg_descarga" || e.tipo == "estado"){
+                    this.datosParaActualizarCPE.data[e.tipo] = e.valor
+                } else {
+                    this.datosParaActualizarCPE[e.tipo] = e.valor
+                }
+            }
+        });
 
+        this.datosParaActualizarCPE.data = JSON.stringify(this.datosParaActualizarCPE.data)
+        delete this.datosParaActualizarCPE.archivos;
 
-{
-    "id": "846bdfcc03d7",
-    "": "0",
-    "": "1207",
-    "": "10109399145",
-    "id_movimiento": "756ff81d8192",
-    "cuit_solicitante": "30715327720",
-    "tipo_cpe": "74",
-    "observaciones": null,
-    "es_solicitante_campo": "1",
-    "planta_origen": null,
-    "cod_provincia_operador": null,
-    "cod_localidad_operador": null,
-    "cod_provincia_productor": null,
-    "cod_localidad_productor": null,
-    "corresponde_retiro_productor": "",
-    "certificado_coe": null,
-    "cuit_remitente_comercial_productor": null,
-    "": "30709590894",
-    "": "33502232229",
-    "es_destino_campo": "",
-    "": null,
-    "": null,
-    "": null,
-    "cuit_corredor_venta_primaria": "23220029379",
-    "cuit_corredor_venta_secundaria": "23220029379",
-    "cuit_mercado_a_termino": null,
-    "cuit_remitente_comercial_venta_primaria": null,
-    "cuit_remitente_comercial_venta_secundaria": null,
-    "cuit_remitente_comercial_venta_secundaria2": null,
-    "cuit_representante_entregador": "30707386076",
-    "cuit_representante_recibidor": null,
-    "peso_tara": "15000",
-    "peso_bruto": "45000",
-    "": "23",
-    "cosecha": "2223",
-    "cuit_transportista": "23136003119",
-    "cuit_pagador_flete": null,
-    "cuit_intermediario_flete": null,
-    "cuit_chofer": "20144129076",
-    "mercaderia_fumigada": "1",
-    "km_recorrer": "850",
-    "tarifa_referencia": "13847.9",
-    "tarifa": "9500",
-    "codigo_turno": "RTSO2304276556687",
-    "fecha_hora_partida": "2023-04-26T11:02",
-    "dominio": "[\"GTD444\",\"ELV966\"]",
-    "datos": null,
-    "creado_por": "10",
-    "creado_el": "2023-04-28 11:09:40",
-    "editado_por": "10",
-    "editado_el": "2023-04-28 11:09:45",
-    "activo": "1",
-    "estado": "1",
-    "terminada": null,
-    "controlada": null,
-    "controlada_final": null,
-    "sistema": null,
-    "observaciones_sistema": null,
-    "data": {
-        "": 30340,
-        "": "CN",
-        "kg_mermas": 0
-    },
-    "archivos": [
-        "CPE 00-01207 - CTG 10109399145 - CN.pdf",
-        "cpe-00000-00001207 FRANCOVIG DOMINGO.pdf"
-    ]
-}
-
-
-
-         */
-
-
+        this.comunicacionService.updateDB("carta_porte", this.datosParaActualizarCPE).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Modificado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                this.abrirModalVerCPE(this.datosParaActualizarCPE.id_movimiento)
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+            }
+        )
     }
 
     buscarCUIT(cuit: any, razon_social: any) {

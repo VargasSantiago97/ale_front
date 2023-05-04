@@ -154,8 +154,8 @@ export class CamionesComponent {
             { field: "kg_neto_final", header: "Neto Salida" },
             { field: "kg_campo", header: "Neto Campo" },
             { field: "dif_balanza_tolva", header: "Balanza-Tolva" },
-            { field: "dif_destino_balanza", header: "Destino-Balanza" },
             { field: "kg_neto_descarga", header: "Neto Descarga" },
+            { field: "dif_destino_balanza", header: "Destino-Balanza" },
             { field: "kg_mermas", header: "Mermas" },
             { field: "kg_final", header: "Neto FINAL" },
 
@@ -481,10 +481,10 @@ export class CamionesComponent {
             kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo, "kg") : "NO",
             dif_balanza_tolva: (mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : "",
             dif_balanza_tolva_pintar: Math.abs((mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : 0) > 200,
-            dif_destino_balanza: (mov.kg_neto_final ),
+            dif_destino_balanza: '',
 
-            kg_neto_descarga: 0,
-            kg_mermas: 0,
+            kg_neto_descarga: '',
+            kg_mermas: '',
             kg_final: 0,
 
             observaciones: mov.observaciones ? mov.observaciones : "-",
@@ -504,9 +504,8 @@ export class CamionesComponent {
 
         }
 
-        var haber = 0.0
-        var debe = 0.0
 
+        //DATOS CPE
         if (this.db_carta_porte.some((e: any) => { return e.id_movimiento == mov.id })) {
             const carta_porte = this.db_carta_porte.filter((e: any) => { return e.id_movimiento == mov.id })
             if (carta_porte.length == 1) {
@@ -532,8 +531,22 @@ export class CamionesComponent {
                 dato.ctg = ctg
                 dato.permiteCrearCTG = false
             }
+            //buscamos los kilos de descarga
+            if(carta_porte.some((e:any) => { return e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).kg_descarga) : false) : false })){
+                var datoParaDescarga:any = carta_porte.find((e:any) => { return e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).kg_descarga) : false) : false })
+                dato.kg_neto_descarga = parseInt(JSON.parse(datoParaDescarga.data).kg_descarga)
+            } else {
+                dato.kg_neto_descarga = 'NO'
+            }
+        }
+        if((dato.kg_neto_descarga != 'NO') && dato.kg_neto_final){
+            dato.dif_destino_balanza = parseInt(dato.kg_neto_descarga) - parseInt(dato.kg_neto_final)
         }
 
+
+        //DATOS CUENTA CORRIENTE / FACTURA - GASTOS - PAGADO
+        var haber = 0.0
+        var debe = 0.0
         var asientosAfectados: any = []
         if (this.db_asientos.some((e: any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false })) {
             const asientos = this.db_asientos.filter((e: any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false })
@@ -550,7 +563,6 @@ export class CamionesComponent {
             dato.gastos = this.transformDatoTabla(debe, "moneda")
             dato.factura = this.transformDatoTabla(haber, "moneda")
         }
-
         for (let i = 0; i < asientosAfectados.length; i++) {
             if (this.db_ordenes_pago.some((e: any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(asientosAfectados[i])) : false) : false })) {
                 dato.pagado = "SI"

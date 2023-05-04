@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { NumeroLetrasService } from 'src/app/services/numeroLetras/numero-letras.service';
@@ -87,7 +88,8 @@ export class CuentasCorrientesComponent {
     constructor(
         private messageService: MessageService,
         private comunicacionService: ComunicacionService,
-        private numToLet : NumeroLetrasService
+        private numToLet : NumeroLetrasService,
+        private router: Router
     ) { }
 
     ngOnInit() {
@@ -137,6 +139,10 @@ export class CuentasCorrientesComponent {
         this.obtenerOrdenesPago()
         this.obtenerMediosPago()
         this.obtenerCartasPorte()
+    }
+
+    routerLinkIr(ruta:any){
+        this.router.navigate([ruta])
     }
 
     //CONEXION A BASE DE DATOS

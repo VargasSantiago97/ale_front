@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
-import { LoginService } from 'src/app/services/login.service';
 
 @Component({
     selector: 'app-resumen-cuentas',
@@ -34,13 +33,10 @@ export class ResumenCuentasComponent {
     ordenarPor: any = 'razon_social'
 
     constructor(
-        private loginService: LoginService,
         private comunicacionService: ComunicacionService
     ) { }
 
     ngOnInit() {
-        this.loginService.verificarSessionSuperUsuario();
-
         this.obtenerSocios()
         this.obtenerAsientos()
         this.obtenerTransportistas()
