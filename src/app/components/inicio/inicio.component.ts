@@ -2185,6 +2185,11 @@ export class InicioComponent {
                                             if(resp){
                                                 if(resp.mensaje){
                                                     this.abrirModalVerCPE(datoVerCPE.id_movimiento, false)
+
+                                                    const setear = {nro_ctg: res.mensaje.nroCTG}
+                                                    const nombreArch = "CPE " + nro_cpe + " - CTG " + res.mensaje.nroCTG + " - " + res.mensaje.estado + ".pdf"
+                                                    this.setearUrl(setear, nombreArch)
+
                                                     this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
                                                 } else {
                                                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
