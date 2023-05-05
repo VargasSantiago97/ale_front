@@ -855,7 +855,7 @@ export class InicioComponent {
 
         if (ingresa == 'kilos_bruto') {
             this.datosMovimiento.kg_bruto = parseInt(event)
-            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - parseInt(this.datosMovimiento.kg_tara)
+            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_bruto - (this.datosMovimiento.kg_tara ? parseInt(this.datosMovimiento.kg_tara) : 0)
         }
         if (ingresa == 'kilos_tara' && this.datosMovimiento.kg_bruto) {
             this.datosMovimiento.kg_tara = parseInt(event)
@@ -871,13 +871,13 @@ export class InicioComponent {
             this.datosMovimiento.kg_regulacion = parseInt(event)
         }
         if (this.datosMovimiento.kg_neto) {
-            this.datosMovimiento.kg_neto_final = parseInt(this.datosMovimiento.kg_neto) + parseInt(this.datosMovimiento.kg_regulacion)
+            this.datosMovimiento.kg_neto_final = parseInt(this.datosMovimiento.kg_neto) + (this.datosMovimiento.kg_regulacion ? parseInt(this.datosMovimiento.kg_regulacion) : 0)
         }
 
         if (ingresa == 'kilos_neto_final') {
             this.datosMovimiento.kg_neto_final = parseInt(event)
-            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_neto_final - parseInt(this.datosMovimiento.kg_regulacion)
-            this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + parseInt(this.datosMovimiento.kg_tara)
+            this.datosMovimiento.kg_neto = this.datosMovimiento.kg_neto_final - (this.datosMovimiento.kg_regulacion ? parseInt(this.datosMovimiento.kg_regulacion) : 0)
+            this.datosMovimiento.kg_bruto = this.datosMovimiento.kg_neto + (this.datosMovimiento.kg_tara ? parseInt(this.datosMovimiento.kg_tara) : 0)
         }
     }
     save(event: any) {
@@ -2091,6 +2091,47 @@ export class InicioComponent {
 
         
     }
+    anularCPE(datoCPE:any){
+        const nrpCPE = (datoCPE.sucursal ? datoCPE.sucursal.toString().padStart(2,'0') : '') + (datoCPE.nro_cpe ? datoCPE.nro_cpe.toString().padStart(8, '0') : '')
+        if(confirm(`Desea ANULAR esta CARTA DE PORTE?\nCTG: ${datoCPE.nro_ctg}\nCPE: ${nrpCPE}`)){
+            console.log(datoCPE)
+
+            var data:any = {
+                cuit: datoCPE.cuit_solicitante,
+                ejecutar: "anular_cpe",
+                data: {
+                    cuit: datoCPE.cuit_solicitante,
+                    tipo_cpe: datoCPE.tipo_cpe,
+                    sucursal: datoCPE.sucursal,
+                    nro_orden: datoCPE.nro_cpe
+                }
+            }
+
+            this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+                (res: any) => {
+                    console.log(res)
+                    if(res){
+                        if(res.mensaje){
+                            this.messageService.add({ severity: 'success', summary: 'ANULADO CORRECTAMENTE!', detail: 'Se anulo la CPE: ' + nrpCPE + " - CTG: " + datoCPE.nro_ctg})
+
+                            this.cambiosDetectadosCPE = []
+                            if(!datoCPE.data){
+                                datoCPE.data = {
+                                    kg_descarga: 0,
+                                    estado: "AN"
+                                }
+                            }
+                            this.datosParaActualizarCPE = datoCPE
+                            this.actualizarCPE()
+                        }
+                    }
+                },
+                (err: any) => {
+                    console.log(err)
+                }
+            )
+        }
+    }
     CPE_guardarDB(){
         this.datosCPE.activo = 1
         this.datosCPE.estado = 1
@@ -2495,6 +2536,7 @@ export class InicioComponent {
         });
 
         this.datosParaActualizarCPE.data = JSON.stringify(this.datosParaActualizarCPE.data)
+
         delete this.datosParaActualizarCPE.archivos;
 
         this.comunicacionService.updateDB("carta_porte", this.datosParaActualizarCPE).subscribe(
@@ -2507,6 +2549,34 @@ export class InicioComponent {
                 this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
             }
         )
+    }
+    eliminarCPE(dato:any){
+        if(confirm('Desea elimar el registro de la carta de porte? \nLos archivos que se hayan subido quedarán guardados')){
+            dato.data = JSON.stringify(dato.data)
+            delete dato.archivos;
+
+            dato.estado = 0;
+    
+            this.comunicacionService.updateDB("carta_porte", dato).subscribe(
+                (res: any) => {
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+
+                    this.comunicacionService.getDB('carta_porte').subscribe(
+                        (resp: any) => {
+                            this.db_carta_porte = resp;
+                            this.abrirModalVerCPE(dato.id_movimiento);
+                        },
+                        (errr: any) => {
+                            console.log(errr)
+                        }
+                    )
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
+                }
+            )
+        }
     }
 
     buscarCUIT(cuit: any, razon_social: any) {

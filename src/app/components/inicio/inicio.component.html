@@ -1349,9 +1349,9 @@
                     {{datoVerCPE.observaciones_sistema}}
                 </p>
 
-                <div class="formgrid row" *ngIf="!datoVerCPE.sistema">
+                <div class="formgrid row">
                     <div *ngFor="let archivo of datoVerCPE.archivos">
-                        <div class="tarjeta" style="padding: 3px; margin: 0px 0px 5px 0px;">
+                        <div class="tarjeta" style="padding: 3px; margin: 0px 0px 5px 0px;" class="{{datoVerCPE.sistema ? 'cpeSistema' : ''}}">
                             <table style="width: 100%;">
                                 <tr>
                                     <td>{{archivo}}</td>
@@ -1368,13 +1368,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="formgrid row" *ngIf="datoVerCPE.sistema">
-                    <a *ngFor="let archivo of datoVerCPE.archivos"
-                        href="{{API_URI_UPLOAD}}/download.php?folder={{datoVerCPE.nro_ctg}}&file={{archivo}}">
-                        <div class="tarjeta" style="background-color: rgba(56, 228, 65, 0.247);">
-                            {{archivo}}
-                        </div>
-                    </a>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right;">
+                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'CN') : false" pButton pRipple type="button" icon="pi pi-exclamation-circle" label="ANULAR" class="p-button-danger" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="anularCPE(datoVerCPE)"></button>
+                        <button pButton pRipple type="button" icon="pi pi-exclamation-circle" label="prueba_borrar" class="p-button-danger" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="anularCPE(datoVerCPE)"></button>
+                        <button pButton pRipple type="button" label="ELIMINAR" class="p-button-danger" style="padding: 0px 7px; margin: 10px 0px 0px 0px;" (click)="eliminarCPE(datoVerCPE)"></button>
+                    </div>
                 </div>
             </div>
         </div>

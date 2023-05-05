@@ -6,6 +6,8 @@
 <div #BOTONES>
     <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
         (click)="displayFiltros=true"></button>
+    <button pButton pRipple type="button" label="XLSX" class="p-button-success bott"
+        (click)="exportToExcel()"></button>
     <br><br>
 </div>
 
@@ -54,10 +56,22 @@
                 <td *ngFor="let col of cols" style="padding: 1px;">
                     <input type="text" [(ngModel)]="registro[col.field]"
                         style="width: 100%; margin: 0px; border: none; outline: none; min-width: 100px;"
-                        class="{{registro[col.field] == 'SI' ? 'colorSI' : ((registro[col.field] == 'NO' || (col.field=='dif_balanza_tolva' && registro.dif_balanza_tolva_pintar)) ? 'colorNO' : '') }}">
+                        class="{{registro[col.field] == 'SI' ? 'colorSI' : ((registro[col.field] == 'NO' || (col.field=='dif_balanza_tolva' && registro.dif_balanza_tolva_pintar) || (col.field=='dif_destino_balanza' && registro.dif_destino_balanza_pintar)) ? 'colorNO' : '') }}">
                 </td>
             </tr>
         </tbody>
+        <tfoot>
+            <tr>
+                <td style="position: sticky; left: 0; padding: 0px;">
+                    <div style="margin: 0px; border: none; outline: none; width: 40px; background-color: #dfdfdf;">
+                    </div>
+                </td>
+                <td *ngFor="let col of cols" style="padding: 1px;">
+                    <input type="text" [(ngModel)]="dataParaMostrarTablaTotales[col.field]"
+                        style="width: 100%; margin: 0px; border: none; outline: none; min-width: 100px; font-weight: bold; background-color: #dfdfdf;">
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <br><br>
@@ -184,6 +198,34 @@
                 </p-listbox>
             </div>
         </div>
+        <div class="field col">
+            <div class="field">
+                <label>CORREDOR</label><br>
+                <p-listbox [options]="db_corredores" [(ngModel)]="datosFiltro.corredores" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-corredor pTemplate="item">
+                        <div class="corredor-item">
+                            <div>{{corredor.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <label>DESTINO</label><br>
+                <p-listbox [options]="db_acopios" [(ngModel)]="datosFiltro.acopios" [metaKeySelection]="false"
+                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                    <ng-template let-acopio pTemplate="item">
+                        <div class="acopio-item">
+                            <div>{{acopio.alias}}</div>
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </div>
+        </div>
     </div>
 
     <ng-template pTemplate="footer">
@@ -199,7 +241,8 @@
         <div class="formgrid row">
             <div class="field col">
                 <div class="field">
-                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}} </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
+                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}}
+                        </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
                     <p>Cultivo: <strong>{{datosParaMostrarRegistro.cultivo}}</strong></p>
                     <p>Orden: <strong>{{datosParaMostrarRegistro.orden}}</strong></p>
                     <p>Benef Orden: {{datosParaMostrarRegistro.benef_orden}}</p>
@@ -243,7 +286,8 @@
         <div class="formgrid row">
             <div class="field col">
                 <div class="field">
-                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}} </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
+                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}}
+                        </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
                     <p>Cultivo: <strong>{{datosParaMostrarRegistro.cultivo}}</strong></p>
                     <p>Orden: <strong>{{datosParaMostrarRegistro.orden}}</strong></p>
                     <p>Benef Orden: {{datosParaMostrarRegistro.benef_orden}}</p>

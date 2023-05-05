@@ -332,7 +332,8 @@ export class SyncService {
             accept: () => {
                 window.location.reload();
             },
-            key: "positionDialog"
+            key: "positionDialog",
+            acceptLabel: "Aceptar"
         });
     }
 }

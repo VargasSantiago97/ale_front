@@ -3,8 +3,13 @@ import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
 import { LoginService } from 'src/app/services/login.service';
+import * as XLSX from 'xlsx';
 
 declare var vars: any;
+
+//pitar de rojo diferencias mayores a: [KGs]
+const TOLERANCIA_BALANZA_TOLVA = 200;
+const TOLERANCIA_DESTINO_BALANZA = 100;
 
 const API_URI = vars.API_URI;
 const ORDEN_CARGA = vars.ORDEN_CARGA;
@@ -25,6 +30,7 @@ export class CamionesComponent {
     cols: any = [];
 
     dataParaMostrarTabla: any = []
+    dataParaMostrarTablaTotales: any = {}
 
     displayFiltros: Boolean = false;
     displayDatos: Boolean = false;
@@ -117,6 +123,8 @@ export class CamionesComponent {
         socios: [],
         establecimientos: [],
         transportistas: [],
+        corredores: [],
+        acopios: []
     };
     ordenarPor: any = "fecha"
 
@@ -368,6 +376,14 @@ export class CamionesComponent {
                 this.db_intervinientes = res;
                 this.db_acopios = [...res.filter((e: any) => { return e.dstno == 1 })]
                 this.db_corredores = [...res.filter((e: any) => { return e.corvtapri == 1 })]
+
+                this.db_corredores.forEach((e:any) => {
+                    this.datosFiltro.corredores.push(e.id)
+                })
+                this.db_acopios.forEach((e:any) => {
+                    this.datosFiltro.acopios.push(e.id)
+                })
+
                 this.load_intervinientes = false;
                 this.datosParaTabla()
             },
@@ -429,6 +445,21 @@ export class CamionesComponent {
     datosParaTabla(mantenerFiltro: any = false) {
         if (!(this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
+            this.dataParaMostrarTablaTotales = {
+                kg_tara: 0,
+                kg_bruto: 0,
+                kg_neto: 0,
+                kg_regulacion: 0,
+                kg_neto_final: 0,
+                kg_campo: 0,
+                dif_balanza_tolva: 0,
+                dif_balanza_tolva_pintar: 0,
+                dif_destino_balanza: 0,
+                dif_destino_balanza_pintar: 0,
+                kg_neto_descarga: 0,
+                kg_mermas: 0,
+                kg_final: 0
+            }
 
             this.db_movimientos.forEach((e: any) => {
 
@@ -438,8 +469,10 @@ export class CamionesComponent {
                 const ok_transportista = e.id_transporte ? this.datosFiltro.transportistas.includes(e.id_transporte) : true
                 const ok_fechaDesde = e.fecha ? (new Date(e.fecha) >= new Date(this.datosFiltro.fechaDesde)) : true
                 const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
+                const ok_corredor = e.id_corredor ? this.datosFiltro.corredores.includes(e.id_corredor) : true
+                const ok_acopio = e.id_acopio ? this.datosFiltro.acopios.includes(e.id_acopio) : true
 
-                if (ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta) {
+                if (ok_corredor && ok_acopio && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta) {
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
                 }
             });
@@ -451,9 +484,7 @@ export class CamionesComponent {
                 return 0;
             });
 
-            if (mantenerFiltro) {
-                this.displayFiltros = false
-            }
+            this.displayFiltros = !mantenerFiltro
         }
 
     }
@@ -480,8 +511,9 @@ export class CamionesComponent {
             kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final, "kg") : "-",
             kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo, "kg") : "NO",
             dif_balanza_tolva: (mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : "",
-            dif_balanza_tolva_pintar: Math.abs((mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : 0) > 200,
+            dif_balanza_tolva_pintar: Math.abs((mov.kg_neto && mov.kg_campo) ? parseInt(mov.kg_neto) - parseInt(mov.kg_campo) : 0) > TOLERANCIA_BALANZA_TOLVA,
             dif_destino_balanza: '',
+            dif_destino_balanza_pintar: false,
 
             kg_neto_descarga: '',
             kg_mermas: '',
@@ -536,11 +568,12 @@ export class CamionesComponent {
                 var datoParaDescarga:any = carta_porte.find((e:any) => { return e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).kg_descarga) : false) : false })
                 dato.kg_neto_descarga = parseInt(JSON.parse(datoParaDescarga.data).kg_descarga)
             } else {
-                dato.kg_neto_descarga = 'NO'
+                dato.kg_neto_descarga = ''
             }
         }
-        if((dato.kg_neto_descarga != 'NO') && dato.kg_neto_final){
+        if((dato.kg_neto_descarga != '') && dato.kg_neto_final){
             dato.dif_destino_balanza = parseInt(dato.kg_neto_descarga) - parseInt(dato.kg_neto_final)
+            dato.dif_destino_balanza_pintar = Math.abs(dato.dif_destino_balanza) > TOLERANCIA_DESTINO_BALANZA
         }
 
 
@@ -568,6 +601,35 @@ export class CamionesComponent {
                 dato.pagado = "SI"
             }
         }
+
+        //SUMAR TOTALES
+        const kg_tara = dato.kg_tara ? (parseInt(dato.kg_tara) ? parseInt(dato.kg_tara) : 0) : 0
+        const kg_bruto = dato.kg_bruto ? (parseInt(dato.kg_bruto) ? parseInt(dato.kg_bruto) : 0) : 0
+        const kg_neto = dato.kg_neto ? (parseInt(dato.kg_neto) ? parseInt(dato.kg_neto) : 0) : 0
+        const kg_regulacion = dato.kg_regulacion ? (parseInt(dato.kg_regulacion) ? parseInt(dato.kg_regulacion) : 0) : 0
+        const kg_neto_final = dato.kg_neto_final ? (parseInt(dato.kg_neto_final) ? parseInt(dato.kg_neto_final) : 0) : 0
+        const kg_campo = dato.kg_campo ? (parseInt(dato.kg_campo) ? parseInt(dato.kg_campo) : 0) : 0
+        const dif_balanza_tolva = dato.dif_balanza_tolva ? (parseInt(dato.dif_balanza_tolva) ? parseInt(dato.dif_balanza_tolva) : 0) : 0
+        const dif_balanza_tolva_pintar = dato.dif_balanza_tolva_pintar ? (parseInt(dato.dif_balanza_tolva_pintar) ? parseInt(dato.dif_balanza_tolva_pintar) : 0) : 0
+        const dif_destino_balanza = dato.dif_destino_balanza ? (parseInt(dato.dif_destino_balanza) ? parseInt(dato.dif_destino_balanza) : 0) : 0
+        const dif_destino_balanza_pintar = dato.dif_destino_balanza_pintar ? (parseInt(dato.dif_destino_balanza_pintar) ? parseInt(dato.dif_destino_balanza_pintar) : 0) : 0
+        const kg_neto_descarga = dato.kg_neto_descarga ? (parseInt(dato.kg_neto_descarga) ? parseInt(dato.kg_neto_descarga) : 0) : 0
+        const kg_mermas = dato.kg_mermas ? (parseInt(dato.kg_mermas) ? parseInt(dato.kg_mermas) : 0) : 0
+        const kg_final = dato.kg_final ? (parseInt(dato.kg_final) ? parseInt(dato.kg_final) : 0) : 0
+
+        this.dataParaMostrarTablaTotales.kg_tara += kg_tara
+        this.dataParaMostrarTablaTotales.kg_bruto += kg_bruto
+        this.dataParaMostrarTablaTotales.kg_neto += kg_neto
+        this.dataParaMostrarTablaTotales.kg_regulacion += kg_regulacion
+        this.dataParaMostrarTablaTotales.kg_neto_final += kg_neto_final
+        this.dataParaMostrarTablaTotales.kg_campo += kg_campo
+        this.dataParaMostrarTablaTotales.dif_balanza_tolva += dif_balanza_tolva
+        this.dataParaMostrarTablaTotales.dif_balanza_tolva_pintar += dif_balanza_tolva_pintar
+        this.dataParaMostrarTablaTotales.dif_destino_balanza += dif_destino_balanza
+        this.dataParaMostrarTablaTotales.dif_destino_balanza_pintar += dif_destino_balanza_pintar
+        this.dataParaMostrarTablaTotales.kg_neto_descarga += kg_neto_descarga
+        this.dataParaMostrarTablaTotales.kg_mermas += kg_mermas
+        this.dataParaMostrarTablaTotales.kg_final += kg_final
 
         return dato
     }
@@ -901,4 +963,18 @@ export class CamionesComponent {
         )
 
     }
+
+    exportToExcel() {
+        /* Crear un libro de trabajo */
+        const workbook = XLSX.utils.book_new();
+      
+        /* Crear una hoja de cálculo */
+        const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
+      
+        /* Agregar la hoja de cálculo al libro de trabajo */
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+      
+        /* Descargar el archivo */
+        XLSX.writeFile(workbook, 'datos.xlsx');
+      }
 }
