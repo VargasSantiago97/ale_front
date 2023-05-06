@@ -5,6 +5,8 @@ import { ConfirmationService } from 'primeng/api';
 
 declare var vars: any;
 
+const TIME_SYNC = 300000; // [milisegundos]
+
 @Injectable({
     providedIn: 'root'
 })
@@ -42,7 +44,7 @@ export class SyncService {
         this.obtenerDatosLocales()
         setInterval(() => {
             this.obtenerDatosLocales()
-        }, 60000)
+        }, TIME_SYNC)
     }
     recibirVariable(dato:any){
         this.actualizarFechaHora = dato

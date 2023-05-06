@@ -40,6 +40,7 @@ export class InicioComponent {
     displayVistas: Boolean = false;
     displayCPE: Boolean = false;
     displayVerCPE: Boolean = false;
+    displayEditarCPE: Boolean = false;
     
     spinnerActualizarCPE: Boolean = false;
 
@@ -87,8 +88,6 @@ export class InicioComponent {
     load_ordenes_pago: any = true
 
 
-
-
     datosRegistro: any;
 
     transportista: any;
@@ -113,6 +112,7 @@ export class InicioComponent {
     datosCPE: any = {};
 
     datosVerCPE: any = [];
+    datosEditarCPE: any = {};
     cambiosDetectadosCPE: any = [];
     datosParaActualizarCPE: any = {};
 
@@ -648,8 +648,8 @@ export class InicioComponent {
                 var benef:any = ""
                 var ctg:any = ""
                 carta_porte.forEach((e:any) => {
-                    cpe += e.sucursal.toString().padStart(2, '0') + "-" + e.nro_cpe.toString().padStart(5, '0') + " "
-                    ctg += e.nro_ctg.toString() + " "
+                    cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
+                    ctg += (e.nro_ctg ? e.nro_ctg.toString() : '') + " "
                     benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"
                 })
 
@@ -2059,7 +2059,7 @@ export class InicioComponent {
 
         data.data.dominio = []
 
-        this.datosCPE.dominio ? data.data.dominio.push(this.datosCPE.dominio) : null
+        this.datosCPE.dominio1 ? data.data.dominio.push(this.datosCPE.dominio1) : null
         this.datosCPE.dominio2 ? data.data.dominio.push(this.datosCPE.dominio2) : null
         this.datosCPE.dominio3 ? data.data.dominio.push(this.datosCPE.dominio3) : null
 
@@ -2092,7 +2092,7 @@ export class InicioComponent {
         
     }
     anularCPE(datoCPE:any){
-        const nrpCPE = (datoCPE.sucursal ? datoCPE.sucursal.toString().padStart(2,'0') : '') + (datoCPE.nro_cpe ? datoCPE.nro_cpe.toString().padStart(8, '0') : '')
+        const nrpCPE = (datoCPE.sucursal ? datoCPE.sucursal.toString().padStart(2,'0') : '') + "-" + (datoCPE.nro_cpe ? datoCPE.nro_cpe.toString().padStart(8, '0') : '')
         if(confirm(`Desea ANULAR esta CARTA DE PORTE?\nCTG: ${datoCPE.nro_ctg}\nCPE: ${nrpCPE}`)){
             console.log(datoCPE)
 
@@ -2128,6 +2128,100 @@ export class InicioComponent {
                 },
                 (err: any) => {
                     console.log(err)
+                }
+            )
+        }
+    }
+    editarCPE(datoCPE:any){
+        this.displayEditarCPE = true
+
+        this.datosEditarCPE = {
+            cuit_solicitante: datoCPE.cuit_solicitante,
+            nro_ctg: datoCPE.nro_ctg,
+            planta_destino: datoCPE.planta_destino,
+            cod_provincia: datoCPE.cod_provincia,
+            cod_localidad: datoCPE.cod_localidad,
+            cuit_destinatario: datoCPE.cuit_destinatario,
+            cuit_destino: datoCPE.cuit_destino,
+            es_destino_campo: false,
+            cuit_remitente_comercial_venta_primaria: datoCPE.cuit_remitente_comercial_venta_primaria,
+            cuit_remitente_comercial_venta_secundaria: datoCPE.cuit_remitente_comercial_venta_secundaria,
+            cuit_remitente_comercial_venta_secundaria2: datoCPE.cuit_remitente_comercial_venta_secundaria2,
+            cuit_corredor_venta_primaria: datoCPE.cuit_corredor_venta_primaria,
+            cuit_corredor_venta_secundaria: datoCPE.cuit_corredor_venta_secundaria,
+            cuit_chofer: datoCPE.cuit_chofer,
+            cuit_transportista: datoCPE.cuit_transportista,
+            cod_grano: datoCPE.cod_grano,
+            peso_bruto: datoCPE.peso_bruto,
+            peso_tara: datoCPE.peso_tara,
+        }
+
+        if(datoCPE.dominio){
+            const dominios = (typeof datoCPE.dominio == 'string') ? JSON.parse(datoCPE.dominio) : datoCPE.dominio
+            this.datosEditarCPE.dominio1 = dominios[0] ? dominios[0] : ''
+            this.datosEditarCPE.dominio2 = dominios[1] ? dominios[1] : ''
+            this.datosEditarCPE.dominio3 = dominios[2] ? dominios[2] : ''
+        }
+    }
+    autorizarEditarCPE(){
+
+        var data:any = {
+            cuit: this.datosEditarCPE.cuit_solicitante,
+            ejecutar: "editar_cpe_automotor",
+            data: {
+                //AGREGAR DESTINO
+                planta_destino: this.datosEditarCPE.cuit_solicitante,
+                cod_provincia: this.datosEditarCPE.cuit_solicitante,
+                es_destino_campo: this.datosEditarCPE.cuit_solicitante,
+                cod_localidad: this.datosEditarCPE.cuit_solicitante,
+                cuit_destino: this.datosEditarCPE.cuit_solicitante,
+                cuit_destinatario: this.datosEditarCPE.cuit_solicitante,
+
+                //AGREGAR INTERVINIENTES
+                cuit_corredor_venta_primaria: this.datosEditarCPE.cuit_corredor_venta_primaria,
+                cuit_corredor_venta_secundaria: this.datosEditarCPE.cuit_corredor_venta_secundaria,
+                cuit_remitente_comercial_venta_primaria: this.datosEditarCPE.cuit_remitente_comercial_venta_primaria,
+                cuit_remitente_comercial_venta_secundaria: this.datosEditarCPE.cuit_remitente_comercial_venta_secundaria,
+                cuit_remitente_comercial_venta_secundaria2: this.datosEditarCPE.cuit_remitente_comercial_venta_secundaria2,
+
+                nro_ctg: this.datosEditarCPE.nro_ctg,
+                cuit_chofer: this.datosEditarCPE.cuit_chofer,
+                cuit_transportista: this.datosEditarCPE.cuit_transportista,
+                peso_bruto: this.datosEditarCPE.peso_bruto,
+                cod_grano: this.datosEditarCPE.cod_grano,
+                dominio: []
+            }
+        }
+        if(this.datosEditarCPE.dominio1){
+            data.data.dominio.push(this.datosEditarCPE.dominio1)
+        }
+        if(this.datosEditarCPE.dominio2){
+            data.data.dominio.push(this.datosEditarCPE.dominio2)
+        }
+        if(this.datosEditarCPE.dominio3){
+            data.data.dominio.push(this.datosEditarCPE.dominio3)
+        }
+
+
+        if(confirm("Desea EDITAR CPE?")){
+            this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+                (res: any) => {
+                    console.log(res)
+
+                    if(res){
+                        if(res.mensaje){
+                            this.messageService.add({ severity: 'success', summary: 'EDITADO CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg})
+                            this.displayEditarCPE = false
+                        } else {
+                            this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
+                        }
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
+                    }
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
                 }
             )
         }

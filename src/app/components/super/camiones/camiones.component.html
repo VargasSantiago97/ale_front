@@ -26,7 +26,6 @@
         table th,
         table td {
             border: 1px solid #ccc;
-            padding: 8px;
             text-align: left;
         }
 
@@ -42,7 +41,7 @@
         <thead>
             <tr style="padding: 0px;">
                 <th style="position: sticky; left: 0;">#</th>
-                <th *ngFor="let col of cols" style="padding: 1px;">
+                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;">
                     {{col.header}}
                 </th>
             </tr>
@@ -112,7 +111,7 @@
 </div>
 
 
-<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '95vw', height: '900px'}"
+<p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '98vw', height: '900px'}"
     [draggable]="true" [resizable]="false">
 
     <div class="formgrid row">
@@ -121,27 +120,23 @@
                 <label>FECHA DESDE</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaDesde" dateFormat="dd/mm/yy"></p-calendar>
             </div>
-            <br>
+        </div>
+        <div class="field col">
             <div class="field">
                 <label>FECHA HASTA</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaHasta" dateFormat="dd/mm/yy"></p-calendar>
             </div>
-            <br>
+        </div>
+        <div class="field col">
             <div class="field">
                 <label>ORDENAR</label><br>
                 <select [(ngModel)]="ordenarPor" style="width: 180px;">
-                    <option value="fecha">Fecha</option>
-                    <option value="ctg">CTG</option>
-                    <option value="cpe">CPE</option>
-                    <option value="cultivo">Cultivo</option>
-                    <option value="orden">Orden Carga</option>
-                    <option value="campo">Establecimiento</option>
-                    <option value="pat">Patente</option>
-                    <option value="id_corredor">Corredor</option>
-                    <option value="id_acopio">Destino</option>
+                    <option *ngFor="let col of cols" value="{{col.field}}">{{col.header}}</option>
                 </select>
             </div>
         </div>
+    </div>
+    <div class="formgrid row">
         <div class="field col">
             <div class="field">
                 <label>CULTIVO</label><br>

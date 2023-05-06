@@ -163,7 +163,7 @@ export class CamionesComponent {
             { field: "kg_campo", header: "Neto Campo" },
             { field: "dif_balanza_tolva", header: "Balanza-Tolva" },
             { field: "kg_neto_descarga", header: "Neto Descarga" },
-            { field: "dif_destino_balanza", header: "Destino-Balanza" },
+            { field: "dif_destino_balanza", header: "Dest.-Balanza" },
             { field: "kg_mermas", header: "Mermas" },
             { field: "kg_final", header: "Neto FINAL" },
 

@@ -1196,7 +1196,7 @@
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
                     <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N°
-                        {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}} -
+                        {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}} ({{planta.codProvincia}}) -
                         Loc.: {{planta.codLocalidad}}</option>
                 </select>
             </div>
@@ -1370,8 +1370,8 @@
                 </div>
                 <div class="formgrid row">
                     <div class="field col" style="text-align: right;">
-                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'CN') : false" pButton pRipple type="button" icon="pi pi-exclamation-circle" label="ANULAR" class="p-button-danger" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="anularCPE(datoVerCPE)"></button>
-                        <button pButton pRipple type="button" icon="pi pi-exclamation-circle" label="prueba_borrar" class="p-button-danger" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="anularCPE(datoVerCPE)"></button>
+                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'AN') : false" pButton pRipple type="button" icon="pi pi-pencil" label="EDITAR" class="p-button-info" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="editarCPE(datoVerCPE)"></button>
+                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'AN') : false" pButton pRipple type="button" icon="pi pi-exclamation-circle" label="ANULAR" class="p-button-danger" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="anularCPE(datoVerCPE)"></button>
                         <button pButton pRipple type="button" label="ELIMINAR" class="p-button-danger" style="padding: 0px 7px; margin: 10px 0px 0px 0px;" (click)="eliminarCPE(datoVerCPE)"></button>
                     </div>
                 </div>
@@ -1440,4 +1440,170 @@
         <button pButton pRipple type="button" label="CERRAR" class="p-button-danger bott"
             (click)="displayVerCPE = false"></button>
     </ng-template>
+</p-dialog>
+
+
+<p-dialog header="EDITAR CPE" [(visible)]="displayEditarCPE" [modal]="true" [style]="{width: '700px'}" [draggable]="true"
+    [resizable]="true" [maximizable]="true">
+
+    <table style="width: 100%;">
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Nro CTG</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.nro_ctg">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Cod. Planta Destino</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.planta_destino">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Cod. Provincia</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cod_provincia">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Cod. Localidad</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cod_localidad">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Destinatario</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_destinatario">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Destino</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_destino">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Es destino campo?</h6>
+            </td>
+            <td>
+                <input type="checkbox" style="margin: 2px 5px;" [(ngModel)]="datosEditarCPE.es_destino_campo"> {{datosEditarCPE.es_destino_campo ? 'SI' : 'NO'}}
+            </td>
+        </tr>
+
+        
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Rte Comercial Venta Primaria</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_primaria">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Rte Comercial Venta Secundaria</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Rte Comercial Venta Secundaria 2</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Corredor Venta Primaria</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_corredor_venta_primaria">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Corredor Venta Secundaria</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_corredor_venta_secundaria">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Chofer</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_chofer">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">CUIT Transportista</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_transportista">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Cod. Grano</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cod_grano">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Peso Bruto</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.peso_bruto">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Peso Tara</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.peso_tara" readonly>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6 style="text-align: right; margin: 2px 20px;">Dominios</h6>
+            </td>
+            <td>
+                <input type="text" class="input-text-codigo" style="width: 90px;" [(ngModel)]="datosEditarCPE.dominio1">
+                <input type="text" class="input-text-codigo" style="width: 90px;" [(ngModel)]="datosEditarCPE.dominio2">
+                <input type="text" class="input-text-codigo" style="width: 90px;" [(ngModel)]="datosEditarCPE.dominio3">
+            </td>
+        </tr>
+    </table>
+
+    <br><br><br>
+
+    <ng-template pTemplate="footer">
+        <button (click)="autorizarEditarCPE()" pButton pRipple type="button" label="EDITAR CPE"
+            class="p-button-success bott"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayEditarCPE = false"></button>
+    </ng-template>
+
 </p-dialog>
