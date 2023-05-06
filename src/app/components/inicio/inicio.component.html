@@ -1452,7 +1452,126 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Nro CTG</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.nro_ctg">
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.nro_ctg" readonly>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Rte. Comercial Venta Primaria:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_primaria" class="select-class">
+                        <option value=""></option>
+                        <option
+                            *ngFor="let remitente_comercial_venta_primaria of intervinientesCPE.remitente_comercial_venta_primaria"
+                            value="{{remitente_comercial_venta_primaria.cuit}}">
+                            {{remitente_comercial_venta_primaria.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_primaria"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Rte. Comercial Venta Secundaria:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria" class="select-class">
+                        <option value=""></option>
+                        <option
+                            *ngFor="let remitente_comercial_venta_secundaria of intervinientesCPE.remitente_comercial_venta_secundaria"
+                            value="{{remitente_comercial_venta_secundaria.cuit}}">
+                            {{remitente_comercial_venta_secundaria.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Rte. Comercial Venta Secundaria 2:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria2" class="select-class">
+                        <option value=""></option>
+                        <option
+                            *ngFor="let remitente_comercial_venta_secundaria2 of intervinientesCPE.remitente_comercial_venta_secundaria2"
+                            value="{{remitente_comercial_venta_secundaria2.cuit}}">
+                            {{remitente_comercial_venta_secundaria2.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria2"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Corredor Venta Primaria:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_corredor_venta_primaria" class="select-class">
+                        <option value=""></option>
+                        <option *ngFor="let corredor_venta_primaria of intervinientesCPE.corredor_venta_primaria"
+                            value="{{corredor_venta_primaria.cuit}}">{{corredor_venta_primaria.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_corredor_venta_primaria"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Corredor Venta Secundaria:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_corredor_venta_secundaria" class="select-class">
+                        <option value=""></option>
+                        <option
+                            *ngFor="let corredor_venta_secundaria of intervinientesCPE.corredor_venta_secundaria"
+                            value="{{corredor_venta_secundaria.cuit}}">{{corredor_venta_secundaria.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_corredor_venta_secundaria"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Destinatario:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_destinatario" class="select-class">
+                        <option value=""></option>
+                        <option *ngFor="let destinatario of intervinientesCPE.destinatario"
+                            value="{{destinatario.cuit}}">{{destinatario.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_destinatario"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Destino:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_destino" class="select-class">
+                        <option value=""></option>
+                        <option *ngFor="let destino of intervinientesCPE.destino" value="{{destino.cuit}}">
+                            {{destino.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_destino"><br>
             </td>
         </tr>
         <tr>
@@ -1460,7 +1579,7 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Planta Destino</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.planta_destino">
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.planta_destino">
             </td>
         </tr>
         <tr>
@@ -1468,7 +1587,7 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Provincia</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cod_provincia">
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.cod_provincia">
             </td>
         </tr>
         <tr>
@@ -1476,23 +1595,7 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Localidad</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cod_localidad">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Destinatario</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_destinatario">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Destino</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_destino">
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.cod_localidad">
             </td>
         </tr>
         <tr>
@@ -1503,70 +1606,45 @@
                 <input type="checkbox" style="margin: 2px 5px;" [(ngModel)]="datosEditarCPE.es_destino_campo"> {{datosEditarCPE.es_destino_campo ? 'SI' : 'NO'}}
             </td>
         </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Empresa Transportista:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_transportista" class="select-class">
+                        <option value=""></option>
+                        <option *ngFor="let transportista of intervinientesCPE.transportista"
+                            value="{{transportista.cuit}}">{{transportista.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_transportista"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; padding: 0px 20px 0px 0px;">Chofer:</td>
+            <td>
+                <div class="field">
+                    <select [(ngModel)]="datosEditarCPE.cuit_chofer" class="select-class">
+                        <option value=""></option>
+                        <option *ngFor="let chofer of intervinientesCPE.chofer" value="{{chofer.cuit}}">
+                            {{chofer.alias}}
+                        </option>
+                    </select>
+                </div>
+            </td>
+            <td><input type="number" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cuit_chofer"><br>
+            </td>
+        </tr>
 
-        
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Rte Comercial Venta Primaria</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_primaria">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Rte Comercial Venta Secundaria</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Rte Comercial Venta Secundaria 2</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria2">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Corredor Venta Primaria</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_corredor_venta_primaria">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Corredor Venta Secundaria</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_corredor_venta_secundaria">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Chofer</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_chofer">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h6 style="text-align: right; margin: 2px 20px;">CUIT Transportista</h6>
-            </td>
-            <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cuit_transportista">
-            </td>
-        </tr>
         <tr>
             <td>
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Grano</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.cod_grano">
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.cod_grano">
             </td>
         </tr>
         <tr>
@@ -1574,7 +1652,7 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Peso Bruto</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.peso_bruto">
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.peso_bruto">
             </td>
         </tr>
         <tr>
@@ -1582,14 +1660,14 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Peso Tara</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 270px;" [(ngModel)]="datosEditarCPE.peso_tara" readonly>
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.peso_tara" readonly>
             </td>
         </tr>
         <tr>
             <td>
                 <h6 style="text-align: right; margin: 2px 20px;">Dominios</h6>
             </td>
-            <td>
+            <td colspan="2">
                 <input type="text" class="input-text-codigo" style="width: 90px;" [(ngModel)]="datosEditarCPE.dominio1">
                 <input type="text" class="input-text-codigo" style="width: 90px;" [(ngModel)]="datosEditarCPE.dominio2">
                 <input type="text" class="input-text-codigo" style="width: 90px;" [(ngModel)]="datosEditarCPE.dominio3">

@@ -448,6 +448,24 @@ export class InicioComponent {
                     this.datosFiltro.acopios.push(e.id)
                 })
 
+                this.intervinientesCPE = {
+                    destinatario: [... res.filter((e:any) => { return e.dstro == 1})],
+                    destino: [... res.filter((e:any) => { return e.dstno == 1})],
+                    corredor_venta_primaria: [... res.filter((e:any) => { return e.corvtapri == 1})],
+                    corredor_venta_secundaria: [... res.filter((e:any) => { return e.corvtasec == 1})],
+                    mercado_a_termino: [... res.filter((e:any) => { return e.mertermino == 1})],
+                    remitente_comercial_venta_primaria: [... res.filter((e:any) => { return e.rtecomvtapri == 1})],
+                    remitente_comercial_venta_secundaria: [... res.filter((e:any) => { return e.rtecomvtasec == 1})],
+                    remitente_comercial_venta_secundaria2: [... res.filter((e:any) => { return e.rtecomvtasec2 == 1})],
+                    representante_entregador: [... res.filter((e:any) => { return e.rteent == 1})],
+                    representante_recibidor: [... res.filter((e:any) => { return e.rterec == 1})],
+                    remitente_comercial_productor: [... res.filter((e:any) => { return e.rtecomprod == 1})],
+                    intermediario_flete: [... res.filter((e:any) => { return e.intflet == 1})],
+                    pagador_flete: [... res.filter((e:any) => { return e.pagflet == 1})],
+                    chofer: [... this.db_choferes],
+                    transportista: [... this.db_transportistas]
+                }
+
                 this.load_intervinientes = false;
                 this.datosParaTabla()
             },
@@ -2068,18 +2086,58 @@ export class InicioComponent {
             this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al crear CPE: ' + errores.join(" - ")})
         } else {
             if(confirm("Desea realizar CPE?")){
-                console.log(data['data'])
 
                 this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                     (res: any) => {
-                        console.log(res)
-
                         if(res){
                             if(res.mensaje){
-                                this.messageService.add({ severity: 'success', summary: 'CREADO CORRECTAMENTE!', detail: 'Se creo la CPE: ' + res.nro_cpe + " - CTG: " + res.nro_ctg})
-                                this.datosCPE.sistema = 1 //la carta de porse se hace desde el sistema
-                                this.CPE_guardarDB()
+                                if(res.datos){
+                                    const nro_ctg = res.datos.nro_ctg ? res.datos.nro_ctg : ''
+                                    const nro_cpe = res.datos.nro_cpe ? res.datos.nro_cpe : ''
+                                    const nro_cpe_completo = data.data.sucursal.toString().padStart(2, '0') + "-" + nro_cpe.toString().padStart(5, '0')
+
+                                    this.messageService.add({ severity: 'success', summary: 'CREADO CORRECTAMENTE!', detail: 'Se creo la CPE: ' + nro_cpe_completo + ' con CTG: ' + nro_ctg})
+
+                                    this.datosCPE.nro_ctg = nro_ctg
+                                    this.datosCPE.nro_cpe = nro_cpe
+                                    this.datosCPE.sistema = 1 //la carta de porse se hace desde el sistema
+                                    this.datosCPE.data = '{"kg_descarga":0,"estado":"AC"}'
+
+                                    //mover archivo
+                                    this.cpeService.moverArchivo(nro_ctg.toString(), "AC", nro_cpe_completo).subscribe(
+                                        (resp: any) => {
+                                            if(resp){
+                                                if(resp.mensaje){
+                                                    this.abrirModalVerCPE(this.datosCPE.id_movimiento, false)
+
+                                                    const setear = {nro_ctg: nro_ctg}
+                                                    const nombreArch = "CPE " + nro_cpe_completo + " - CTG " + nro_ctg + " - " + "AC" + ".pdf"
+                                                    this.setearUrl(setear, nombreArch)
+
+                                                    this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
+                                                } else {
+                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo. respuesta.mensaje = FALSO' })
+                                                }
+                                            } else {
+                                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo. No hay respuesta' })
+                                            }
+                                        },
+                                        (errr: any) => {
+                                            console.log(errr)
+                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo. (conectando con backend)' })
+                                        },
+                                    )
+
+                                    this.CPE_guardarDB()
+
+                                } else {
+                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor no envio respuesta.datos' })
+                                }
+                            } else {
+                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor envio respuesta.mensaje = "FALSO"' })
                             }
+                        } else {
+                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor no envio respuesta' })
                         }
                     },
                     (err: any) => {
@@ -2133,9 +2191,11 @@ export class InicioComponent {
         }
     }
     editarCPE(datoCPE:any){
+
         this.displayEditarCPE = true
 
         this.datosEditarCPE = {
+            id_movimiento: datoCPE.id_movimiento,
             cuit_solicitante: datoCPE.cuit_solicitante,
             nro_ctg: datoCPE.nro_ctg,
             planta_destino: datoCPE.planta_destino,
@@ -2170,12 +2230,12 @@ export class InicioComponent {
             ejecutar: "editar_cpe_automotor",
             data: {
                 //AGREGAR DESTINO
-                planta_destino: this.datosEditarCPE.cuit_solicitante,
-                cod_provincia: this.datosEditarCPE.cuit_solicitante,
-                es_destino_campo: this.datosEditarCPE.cuit_solicitante,
-                cod_localidad: this.datosEditarCPE.cuit_solicitante,
-                cuit_destino: this.datosEditarCPE.cuit_solicitante,
-                cuit_destinatario: this.datosEditarCPE.cuit_solicitante,
+                planta_destino: this.datosEditarCPE.planta_destino,
+                cod_provincia: this.datosEditarCPE.cod_provincia,
+                es_destino_campo: this.datosEditarCPE.es_destino_campo,
+                cod_localidad: this.datosEditarCPE.cod_localidad,
+                cuit_destino: this.datosEditarCPE.cuit_destino,
+                cuit_destinatario: this.datosEditarCPE.cuit_destinatario,
 
                 //AGREGAR INTERVINIENTES
                 cuit_corredor_venta_primaria: this.datosEditarCPE.cuit_corredor_venta_primaria,
@@ -2202,7 +2262,6 @@ export class InicioComponent {
             data.data.dominio.push(this.datosEditarCPE.dominio3)
         }
 
-
         if(confirm("Desea EDITAR CPE?")){
             this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                 (res: any) => {
@@ -2212,6 +2271,7 @@ export class InicioComponent {
                         if(res.mensaje){
                             this.messageService.add({ severity: 'success', summary: 'EDITADO CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg})
                             this.displayEditarCPE = false
+                            this.abrirModalVerCPE(this.datosEditarCPE.id_movimiento)
                         } else {
                             this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
                         }
@@ -2232,7 +2292,7 @@ export class InicioComponent {
 
         //DOMINIOS
         var dominios = []
-        this.datosCPE.dominio ? dominios.push(this.datosCPE.dominio) : null
+        this.datosCPE.dominio1 ? dominios.push(this.datosCPE.dominio1) : null
         this.datosCPE.dominio2 ? dominios.push(this.datosCPE.dominio2) : null
         this.datosCPE.dominio3 ? dominios.push(this.datosCPE.dominio3) : null
         this.datosCPE.dominio = JSON.stringify(dominios)
