@@ -33,32 +33,41 @@
     </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
-            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+            <th [style]="{padding: '2px', minWidth: tamanoCols[col.field]}" *ngFor="let col of columns" pSortableColumn="{{col.field}}">
                 {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
             </th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-registro let-columns="columns">
         <tr (dblclick)="mostrarMovimiento(registro.id)">
-            <td *ngFor="let col of columns">
-                {{registro[col.field]}}
+            <td *ngFor="let col of columns" [style]="{padding: '0px', height: '50px'}">
+
+                <div *ngIf="(col.field != 'orden') && (col.field != 'ctg') && (col.field != 'observaciones')">
+                    {{registro[col.field]}}
+                </div>
 
                 <div *ngIf="col.field == 'orden'">
+                    <a *ngIf="registro.existeOrdenDeCarga" (click)="mostrarModalOrdenCarga(registro.id, $event)" href="#">{{registro[col.field]}}</a>
+
                     <button *ngIf="!registro.existeOrdenDeCarga" class="button-tabla">
                         <i class="pi pi-plus-circle" (click)="agregarOrdenCargaRegistro(registro.id)"></i>
-                    </button>
-                    <button *ngIf="registro.existeOrdenDeCarga" class="button-tabla"
-                        style="background-color: rgba(255, 238, 0, 0.233);">
-                        <i class="pi pi-eye" (click)="mostrarModalOrdenCarga(registro.id)"></i>
                     </button>
                 </div>
 
                 <div *ngIf="col.field == 'ctg'">
-                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla"
-                        (click)="abrirModalCrearCPE(registro.id)"><i class="pi pi-plus-circle"></i></button>
-                    <button *ngIf="!registro.permiteCrearCTG" class="button-tabla"
-                        (click)="abrirModalVerCPE(registro.id)" style="background-color: rgba(255, 238, 0, 0.233);"><i
-                            class="pi pi-eye"></i></button>
+                    <a *ngIf="!registro.permiteCrearCTG" (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">{{registro[col.field]}}</a>
+
+                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla">
+                        <i class="pi pi-plus-circle" (click)="abrirModalCrearCPE(registro.id)"></i>
+                    </button>
+                </div>
+
+                <div *ngIf="col.field == 'observaciones' && registro.observaciones">
+                    {{registro.observaciones}}
+
+                    <button class="button-tabla" (click)="displayObservacion = true && datosObservacion = registro.observacionesCompleta">
+                        <i class="pi pi-comment"></i>
+                    </button>
                 </div>
             </td>
         </tr>
@@ -72,6 +81,13 @@
     </ng-template>
 </p-table>
 <br><br>
+
+<p-dialog header="Observaciones:" [(visible)]="displayObservacion" [style]="{width: '50vw'}">
+    <p>{{datosObservacion}}</p>
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="displayObservacion=false" label="Ok" styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>
 
 <p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '98vw', height: '900px'}"
     [draggable]="true" [resizable]="false">
@@ -184,7 +200,6 @@
             (click)="datosParaTabla(true)"></button>
     </ng-template>
 </p-dialog>
-
 
 <p-dialog header="{{datosMovimiento.id ? 'EDITAR' : 'NUEVO'}} MOVIMIENTO - VIAJE" [(visible)]="displayNuevoMovimiento"
     [modal]="true" [style]="{width: '95vw', height: '90vw'}" [draggable]="true" [resizable]="true" [maximizable]="true">

@@ -55,6 +55,9 @@
     padding: 0px;
     text-align: center;
 }
+.hovermano:hover {
+    cursor: wait;
+}
 .button-ver-todo {
     width: 80px;
     height: 27px;

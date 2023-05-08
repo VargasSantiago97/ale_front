@@ -28,12 +28,14 @@ export class InicioComponent {
 
     cols: any = [];
     selectedColumns: any = [];
+    tamanoCols: any = {};
 
     dataParaMostrarTabla: any = []
     dataParaMostrarTablaTotales: any = []
 
     displayFiltros: Boolean = false;
     displayNuevoMovimiento: Boolean = false;
+    displayObservacion: Boolean = false;
     displayBanderas: Boolean = false;
     displayBanderasDis: Boolean = false;
     displayOrdenCarga: Boolean = false;
@@ -89,6 +91,7 @@ export class InicioComponent {
 
 
     datosRegistro: any;
+    datosObservacion: any = '';
 
     transportista: any;
     chofer: any;
@@ -158,18 +161,18 @@ export class InicioComponent {
             { field: "transporte", header: "Transporte" },
             { field: "chofer", header: "Chofer" },
             { field: "cuit_transp", header: "CUIT Transp" },
-            { field: "gastos", header: "Gastos" },
             { field: "id_corredor", header: "Corredor" },
             { field: "id_acopio", header: "Acopio" },
-
+            
             { field: "kg_tara", header: "Tara" },
             { field: "kg_bruto", header: "Bruto" },
             { field: "kg_neto", header: "Neto" },
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
             { field: "kg_campo", header: "Neto Campo" },
-
+            
             { field: "factura", header: "Facturas" },
+            { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
         ];
@@ -203,6 +206,34 @@ export class InicioComponent {
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
         ];
+        this.tamanoCols = {
+            cultivo: '50px',
+            fecha: '90px',
+            orden: '90px',
+            benef_orden: '80px',
+            cpe: '100px',
+            benef: '80px',
+            ctg: '110px',
+            campo: '100px',
+            tipo_orig: '100px',
+            pat: '100px',
+            patAc: '100px',
+            transporte: '230px',
+            chofer: '230px',
+            cuit_transp: '100px',
+            id_corredor: '100px',
+            id_acopio: '100px',
+            kg_tara: '100px',
+            kg_bruto: '100px',
+            kg_neto: '100px',
+            kg_regulacion: '100px',
+            kg_neto_final: '100px',
+            kg_campo: '100px',
+            factura: '100px',
+            gastos: '100px',
+            pagado: '100px',
+            observaciones: '200px'
+        }
 
         this.obtenerCamiones()
         this.obtenerChoferes()
@@ -585,6 +616,7 @@ export class InicioComponent {
                 if(ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
 
+                    //totales
                     kg_tara += e.kg_tara ? parseInt(e.kg_tara) : 0;
                     kg_bruto += e.kg_bruto ? parseInt(e.kg_bruto) : 0;
                     kg_neto += e.kg_neto ? parseInt(e.kg_neto) : 0;
@@ -633,7 +665,8 @@ export class InicioComponent {
             kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final,"kg") : "-",
             kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo,"kg") : "-",
 
-            observaciones:  mov.observaciones ? mov.observaciones : "-",
+            observaciones:  mov.observaciones ? mov.observaciones.substring(0, 40) + (mov.observaciones.length > 40 ? " (...)" : "") : "",
+            observacionesCompleta: mov.observaciones ? mov.observaciones : "",
 
             permiteCrearCTG: true,
             existeOrdenDeCarga: this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == mov.id}),
@@ -1199,7 +1232,11 @@ export class InicioComponent {
 
         this.displayOrdenCarga = true
     }
-    mostrarModalOrdenCarga(registro:any){
+    mostrarModalOrdenCarga(registro:any, event:any = false){
+        if(event){
+            event.preventDefault()
+        }
+
         var ordenCarga:any = this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == registro })
 
         this.datosOrdenCarga = ordenCarga
@@ -1835,8 +1872,12 @@ export class InicioComponent {
 
         this.displayCPE = true
     }
-    abrirModalVerCPE(mov_id:any, borrarCambiosDetectados=true){
-        this.datosVerCPE = []
+    abrirModalVerCPE(mov_id:any, borrarCambiosDetectados=true, event:any = false){
+        if(event){
+            event.preventDefault();
+        }
+
+        this.datosVerCPE = [];
 
         if(borrarCambiosDetectados){
             this.cambiosDetectadosCPE = []
@@ -2564,9 +2605,11 @@ export class InicioComponent {
                 estado: ""
             }
         }
-        const tara = act.datosCarga.pesoTaraDescarga ? parseInt(act.datosCarga.pesoTaraDescarga) : 0
-        const bruto = act.datosCarga.pesoBrutoDescarga ? parseInt(act.datosCarga.pesoBrutoDescarga) : 0
-        const neto = bruto - tara
+        const tara = act.datosCarga.pesoTara ? parseInt(act.datosCarga.pesoTara) : 0
+        const bruto = act.datosCarga.pesoBruto ? parseInt(act.datosCarga.pesoBruto) : 0
+        const taraDesc = act.datosCarga.pesoTaraDescarga ? parseInt(act.datosCarga.pesoTaraDescarga) : 0
+        const brutoDesc = act.datosCarga.pesoBrutoDescarga ? parseInt(act.datosCarga.pesoBrutoDescarga) : 0
+        const neto = brutoDesc - taraDesc
         if(neto != ant.data.kg_descarga){
             this.cambiosDetectadosCPE.push({
                 modificar: true,
@@ -2574,6 +2617,24 @@ export class InicioComponent {
                 tipoDato: 'KGS DESCARGA',
                 valorAnt: ant.data.kg_descarga,
                 valor: neto
+            })
+        }
+        if(bruto != ant.peso_bruto){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'peso_bruto',
+                tipoDato: 'KGS BRUTO',
+                valorAnt: ant.peso_bruto,
+                valor: bruto
+            })
+        }
+        if(tara != ant.peso_tara){
+            this.cambiosDetectadosCPE.push({
+                modificar: true,
+                tipo: 'peso_tara',
+                tipoDato: 'KGS TARA',
+                valorAnt: ant.peso_tara,
+                valor: tara
             })
         }
         if(act.estado != ant.data.estado){
@@ -2782,7 +2843,6 @@ export class InicioComponent {
     setearUrl(dato:any, archivo:any){
         this.iframeVisor.nativeElement.src = this.API_URI_UPLOAD + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo + '#zoom=125'
     }
-
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
