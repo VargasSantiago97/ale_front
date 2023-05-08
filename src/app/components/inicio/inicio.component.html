@@ -49,16 +49,17 @@
                 <div *ngIf="col.field == 'orden'">
                     <a *ngIf="registro.existeOrdenDeCarga" (click)="mostrarModalOrdenCarga(registro.id, $event)" href="#">{{registro[col.field]}}</a>
 
-                    <button *ngIf="!registro.existeOrdenDeCarga" class="button-tabla">
-                        <i class="pi pi-plus-circle" (click)="agregarOrdenCargaRegistro(registro.id)"></i>
+                    <button *ngIf="!registro.existeOrdenDeCarga" class="button-tabla" (click)="agregarOrdenCargaRegistro(registro.id)">
+                        <i class="pi pi-plus-circle"></i>
                     </button>
                 </div>
 
                 <div *ngIf="col.field == 'ctg'">
-                    <a *ngIf="!registro.permiteCrearCTG" (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">{{registro[col.field]}}</a>
+                    <a *ngIf="(!registro.permiteCrearCTG) && registro[col.field]" (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">{{registro[col.field]}}</a>
+                    <a *ngIf="(!registro.permiteCrearCTG) && !(registro[col.field])" (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">SIN CTG</a>
 
-                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla">
-                        <i class="pi pi-plus-circle" (click)="abrirModalCrearCPE(registro.id)"></i>
+                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla" (click)="abrirModalCrearCPE(registro.id)">
+                        <i class="pi pi-plus-circle"></i>
                     </button>
                 </div>
 

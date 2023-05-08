@@ -80,26 +80,125 @@
         <div class="field col">
             <div class="field">
                 <p-card header="Rindes" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
-                        repudiandae numquam deserunt
-                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
-                        cupiditate neque quas!</p>
+                    <p></p>
                 </p-card>
             </div>
         </div>
         <div class="field col">
             <div class="field">
-                <p-card header="Destinos" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
-                        repudiandae numquam deserunt
-                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
-                        cupiditate neque quas!</p>
+                <p-card header="Producción" [style]="{'width': '100%', 'margin-bottom': '2em'}">
+                    <table>
+                        <thead>
+                            <tr style="padding: 0px;">
+                                <th style="padding: 0px; text-align: center;">
+                                    Socio
+                                </th>
+                                <th style="padding: 0px; text-align: center;">
+                                    Porcentaje
+                                </th>
+                                <th style="padding: 0px; text-align: center;">
+                                    Kgs
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let registro of [1, 2, 3, 4, 5]">
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot style="background-color: #dfdfdf;">
+                            <tr>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </p-card>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <p-card header="Retiros Socios" [style]="{'width': '100%', 'margin-bottom': '2em'}">
+                    <table>
+                        <thead>
+                            <tr style="padding: 0px;">
+                                <th style="padding: 0px; text-align: center;">
+                                    Socio
+                                </th>
+                                <th style="padding: 0px; text-align: center;">
+                                    Corresp.
+                                </th>
+                                <th style="padding: 0px; text-align: center;">
+                                    Retiro (kg)
+                                </th>
+                                <th style="padding: 0px; text-align: center;">
+                                    <i class="pi pi-truck"></i>
+                                </th>
+                                <th style="padding: 0px; text-align: center;">
+                                    Dif (kg)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let registro of [1, 2, 3, 4, 5]">
+                                <td style="padding: 1px;">
+                                    <p>Norte</p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p>100.000</p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p>100.000</p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p>10</p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p>100.000</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot style="background-color: #dfdfdf;">
+                            <tr>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                                <td style="padding: 1px;">
+                                    <p></p>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </p-card>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="field">
+                <p-card header="Destinos" [style]="{'width': '100%', 'margin-bottom': '2em'}">
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
                         repudiandae numquam deserunt
                         quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
