@@ -16,6 +16,7 @@ const PUNTO_ORDEN_PAGO = vars.PUNTO_ORDEN_PAGO;
 export class CuentasCorrientesComponent {
     @ViewChild('myCargador') uploader: any;
     @ViewChild('myCargadorGasto') uploaderGasto: any;
+    @ViewChild('iframeVisor', { static: true }) iframeVisor: any;
 
     API_URI = vars.API_URI_UPLOAD;
 
@@ -25,6 +26,7 @@ export class CuentasCorrientesComponent {
     db_condicion_iva: any = []
     db_socios: any = []
     db_movimientos: any = []
+    db_establecimientos: any = []
     db_granos: any = []
     db_asientos: any = []
     db_ordenes_carga: any = []
@@ -39,6 +41,11 @@ export class CuentasCorrientesComponent {
 
     datosAsiento: any = {}
     datosAsientoMostrar: any = {}
+
+    datosMostrarMovimientosAfectados: any = []
+    datosMostrarMovimientosAfectadosTotales: any = {}
+
+    datosVerCPE: any = []
 
     datosCuentaCorriente: any = []
     datosCuentaCorrienteTotales: any = {}
@@ -73,6 +80,7 @@ export class CuentasCorrientesComponent {
     load_ordenes_pago: any = true
     load_medios_pago: any = true
     load_carta_porte: any = true
+    load_establecimientos: any = true
 
     verViajesPreviamenteAfec: any = false
 
@@ -81,6 +89,7 @@ export class CuentasCorrientesComponent {
     displayNuevoGasto: any = false
     displayOrdenPago: any = false
     displayVerOrdenPago: any = false
+    displayVerCPE: any = false
 
     cols: any = []
     selectedColumns: any = []
@@ -135,6 +144,7 @@ export class CuentasCorrientesComponent {
         this.obtenerGranos()
         this.obtenerAsientos()
         this.obtenerOrdenesCarga()
+        this.obtenerEstablecimientos()
 
         this.obtenerOrdenesPago()
         this.obtenerMediosPago()
@@ -227,6 +237,17 @@ export class CuentasCorrientesComponent {
             (res: any) => {
                 this.db_asientos = res;
                 this.load_asientos = false;
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerEstablecimientos() {
+        this.comunicacionService.getDB('establecimientos').subscribe(
+            (res: any) => {
+                this.db_establecimientos = res;
+                this.load_establecimientos = false;
             },
             (err: any) => {
                 console.log(err)
@@ -461,6 +482,14 @@ export class CuentasCorrientesComponent {
         if (tipo == 'numToLet') {
             return this.numToLet.numeroALetras(dato)
         }
+        if (tipo == 'fecha') {
+            var fecha = new Date(dato)
+            fecha.setHours(fecha.getHours() + 3)
+            return fecha.toLocaleDateString('es-AR');
+        }
+        if (tipo == 'establecimiento') {
+            return this.db_establecimientos.some((e:any) => { return e.id == dato }) ? this.db_establecimientos.find((e:any) => { return e.id == dato }).alias : dato
+        }
         return dato
     }
 
@@ -627,6 +656,69 @@ export class CuentasCorrientesComponent {
                     console.log(err)
                 }
             )
+
+            this.datosMostrarMovimientosAfectados = []
+            
+            if(this.datosAsientoMostrar.afecta){
+                if(JSON.parse(this.datosAsientoMostrar.afecta)){
+                    const idMovimientosAfectados = JSON.parse(this.datosAsientoMostrar.afecta)
+
+                    //DATOS DE LAS CPE
+                    var balanzaTotal = 0
+                    var destinoTotal = 0
+                    var diferenciaTotal = 0
+                    var montoTotal = 0
+
+                    idMovimientosAfectados.forEach((e:any) => {
+
+                        //DATOS DEL MOVIMIENTO
+                        const movimiento = this.db_movimientos.find((mov:any) => { return mov.id == e})
+
+                        const data = {
+                            id_movimiento: movimiento.id,
+                            fecha: this.transformarDatoMostrarTabla(movimiento.fecha, 'fecha'),
+                            campo: this.transformarDatoMostrarTabla(movimiento.id_origen, 'establecimiento'),
+                            loteSilo: movimiento.tipo_origen,
+                            cpe: '',
+                            ctg: '',
+                            balanza: movimiento.kg_neto_final,
+                            destino: 0,
+                            diferencia: 0,
+                            monto: 0,
+                        }
+
+                        const cpes = [ ... this.db_carta_porte.filter((e:any) => { return e.id_movimiento == movimiento.id})]
+                        cpes.forEach((cpe:any) => {
+                            if(cpe.data){
+                                if(JSON.parse(cpe.data)){
+                                    const datosCPE = JSON.parse(cpe.data)
+                                    if(datosCPE.estado == 'CN'){
+                                        data.cpe = cpe.sucursal.toString() + '-' + cpe.nro_cpe.toString()
+                                        data.ctg = cpe.nro_ctg
+                                        data.destino = parseInt(datosCPE.kg_descarga)
+                                        data.diferencia = parseInt(datosCPE.kg_descarga) - parseInt(data.balanza)
+                                        data.monto = (parseInt(datosCPE.kg_descarga) * parseFloat(cpe.tarifa) / 1000) * 1.21
+
+                                        balanzaTotal += parseInt(data.balanza)
+                                        destinoTotal += parseInt(datosCPE.kg_descarga)
+                                        diferenciaTotal += (parseInt(datosCPE.kg_descarga) - parseInt(data.balanza))
+                                        montoTotal += ((parseInt(datosCPE.kg_descarga) * parseFloat(cpe.tarifa) / 1000) * 1.21)
+                                    }
+                                }
+                            }
+                            
+                        });
+                        this.datosMostrarMovimientosAfectados.push(data)
+                    })
+                    this.datosMostrarMovimientosAfectadosTotales = {
+                        balanza: balanzaTotal,
+                        destino: destinoTotal,
+                        diferencia: diferenciaTotal,
+                        monto: montoTotal,
+                    }
+                }
+            }
+
         } else {
             this.ordenDePago_datos = this.db_ordenes_pago.find((e:any) => { return e.id_asiento == asiento.id_asiento })
             this.ordenDePago_mediosPago = this.db_medios_pago.filter((e:any) => { return e.id_orden == this.ordenDePago_datos.id })
@@ -1197,6 +1289,57 @@ export class CuentasCorrientesComponent {
         let utf8String = decodeURIComponent(escape(json));
         let obj = JSON.parse(utf8String)
         return obj;
+    }
+    abrirModalVerCPE(mov_id:any, event:any){
+        if(event){
+            event.preventDefault();
+        }
+
+        this.datosVerCPE = [];
+
+        console.log(this.db_carta_porte)
+
+        //this.datosVerCPE = [ ... this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })]
+        const cartas_porte = this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })
+
+        this.datosVerCPE = JSON.parse(JSON.stringify(cartas_porte));
+
+        this.datosVerCPE.forEach((e:any) => {
+            if(e.data){
+                if((typeof e.data) == 'string'){
+                    e.data = JSON.parse(e.data)
+                } else {
+                    const datoJson = JSON.stringify(e.data)
+                    e.data = JSON.parse(datoJson)
+                }
+            }
+
+            this.comunicacionService.getDir(e.nro_ctg).subscribe(
+                (res: any) => {
+                    if (res.mensaje) {
+                        e.archivos = res.ruta
+                    }
+                },
+                (err: any) => {
+                    console.log(err)
+                }
+            )
+        })
+
+        this.displayVerCPE = true
+        this.iframeVisor.nativeElement.src = ''
+    }
+    irAURL(dato:any, archivo:any, descargar:any){
+        if(descargar){
+            const uri = this.API_URI + '/download.php?folder=' + dato.nro_ctg + '&file=' + archivo
+            window.open(uri);
+        } else {
+            const uri = this.API_URI + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo
+            window.open(uri, '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
+        }
+    }
+    setearUrl(dato:any, archivo:any){
+        this.iframeVisor.nativeElement.src = this.API_URI + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo + '#zoom=125'
     }
 
 }

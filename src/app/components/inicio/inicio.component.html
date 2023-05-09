@@ -698,10 +698,11 @@
         <div class="field col">
             <div class="field">
                 <label>Titular</label><br>
-                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class" style="width: 300px;"
+                <select [(ngModel)]="datosCPE.cuit_solicitante" class="select-class" style="width: 280px;"
                     (ngModelChange)="onSelectSolicitante()">
                     <option *ngFor="let socio of db_socios" value="{{socio.cuit}}">{{socio.razon_social}}</option>
                 </select>
+                <button (click)="dummy(datosCPE.cuit_solicitante)" class="button-tabla"><i class="pi pi-cog"></i></button>
             </div>
         </div>
         <div class="field col">

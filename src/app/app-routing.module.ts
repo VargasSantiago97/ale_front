@@ -11,8 +11,8 @@ import { IntervinientesComponent } from './components/intervinientes/intervinien
 import { CuentasCorrientesComponent } from './components/cuentas-corrientes/cuentas-corrientes.component';
 import { CamionesComponent } from './components/super/camiones/camiones.component';
 import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
-import { PdfComponent } from './components/modals/pdf/pdf.component';
 import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
+import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
 
 
 const routes: Routes = [
@@ -36,6 +36,8 @@ const routes: Routes = [
   { path: 'camiones', component: CamionesComponent },
   { path: 'pagosEmitidos', component: PagosEmitidosComponent },
   { path: 'resumenCuentas', component: ResumenCuentasComponent },
+
+  { path: 'prepararPagos', component: PrepararPagosComponent}
 
 ];
 

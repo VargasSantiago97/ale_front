@@ -49,7 +49,6 @@ export class PagosEmitidosComponent {
             (res: any) => {
                 this.db_transportistas = res;
                 this.load_transportistas = false;
-                console.log(res)
             },
             (err: any) => {
                 console.log(err)
@@ -61,7 +60,6 @@ export class PagosEmitidosComponent {
             (res: any) => {
                 this.db_ordenes_pago = res;
                 this.load_ordenes_pago = false;
-                console.log(res)
             },
             (err: any) => {
                 console.log(err)
@@ -73,7 +71,6 @@ export class PagosEmitidosComponent {
             (res: any) => {
                 this.db_medios_pago = res;
                 this.load_medios_pago = false;
-                console.log(res)
             },
             (err: any) => {
                 console.log(err)
@@ -91,8 +88,6 @@ export class PagosEmitidosComponent {
             }
         )
     }
-
-
 
 
     buscarPagosEmitidos(){
@@ -203,7 +198,5 @@ export class PagosEmitidosComponent {
         /* Descargar el archivo */
         XLSX.writeFile(workbook, 'Pagos emitidos.xlsx');
       }
-
-
 
 }

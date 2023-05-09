@@ -43,3 +43,20 @@ input[type="checkbox"] {
     margin: 5px;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
+.tarjetaCPE {
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cpeSistema {
+    background-color: rgba(56, 228, 65, 0.247);
+}
+.boton-redondo {
+    border-radius: 20%;
+    padding: 0px 5px;
+    margin: 1px;
+    background-color: #007bff;
+    color: aliceblue;
+}

@@ -1,5 +1,5 @@
 <div style="text-align: center;"
-    *ngIf="load_carta_porte || load_ordenes_pago ||  load_medios_pago || load_asientos || load_ordenes_carga || load_camiones || load_choferes || load_condicion_iva || load_transportistas || load_movimientos || load_granos">
+    *ngIf="load_establecimientos || load_carta_porte || load_ordenes_pago ||  load_medios_pago || load_asientos || load_ordenes_carga || load_camiones || load_choferes || load_condicion_iva || load_transportistas || load_movimientos || load_granos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -14,7 +14,8 @@
                 optionLabel="alias"></p-dropdown>
             </div>
             <div class="field col-6">
-                <button pButton pRipple type="button" label="LISTA SALDOS" class="p-button-primary bott" (click)="routerLinkIr('resumenCuentas')"></button>
+                <button pButton pRipple type="button" label="SALDOS" class="p-button-primary bott" style="padding: 0px 10px;" (click)="routerLinkIr('resumenCuentas')"></button>
+                <button pButton pRipple type="button" label="PAGOS" class="p-button-primary bott" style="padding: 0px 10px;" (click)="routerLinkIr('pagosEmitidos')"></button>
             </div>
         </div>
 
@@ -219,9 +220,43 @@
     [draggable]="true" [resizable]="false">
     <div class="formgrid row">
         <h4>Movimientos afectados:</h4>
-        <p *ngFor="let mov of datosAsientoMostrar.afectar">
-            {{mov}}
-        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Campo</th>
+                    <th>L/T</th>
+                    <th>CPE</th>
+                    <th>CTG</th>
+                    <th>Balanza</th>
+                    <th>Destino</th>
+                    <th>Dif</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let dato of datosMostrarMovimientosAfectados">
+                    <td>{{dato.fecha}}</td>
+                    <td>{{dato.campo}}</td>
+                    <td>{{dato.loteSilo}}</td>
+                    <td>{{dato.cpe}}</td>
+                    <td><a href="#" (click)="abrirModalVerCPE(dato.id_movimiento, $event)">{{dato.ctg}}</a></td>
+                    <td>{{dato.balanza}}</td>
+                    <td>{{dato.destino}}</td>
+                    <td>{{dato.diferencia}}</td>
+                    <td>{{dato.monto}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5"><strong>TOTALES</strong></td>
+                    <td><strong>{{datosMostrarMovimientosAfectadosTotales.balanza}}</strong></td>
+                    <td><strong>{{datosMostrarMovimientosAfectadosTotales.destino}}</strong></td>
+                    <td><strong>{{datosMostrarMovimientosAfectadosTotales.diferencia}}</strong></td>
+                    <td><strong>{{datosMostrarMovimientosAfectadosTotales.monto}}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
     <hr>
     <br>
@@ -663,5 +698,70 @@
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="BORRAR" class="p-button-danger bott" (click)="borrarOrdenPago()"></button>
         <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayVerOrdenPago=false"></button>
+    </ng-template>
+</p-dialog>
+
+
+
+<!-- CPES -->
+<p-dialog header="VER CPE" [(visible)]="displayVerCPE" [modal]="true" [style]="{width: '95vw', height: '95vw'}"
+    [draggable]="true" [resizable]="false">
+
+    <div class="formgrid row">
+        <div class="field col-3">
+            <div *ngFor="let datoVerCPE of datosVerCPE" class="tarjetaCPE" style="margin: 0px 0px 30px 0px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <h5>CTG N°: {{datoVerCPE.nro_ctg}}</h5>
+                        </td>
+                        <td style="text-align: right; width: 35px;">
+                            <p-tag *ngIf="datoVerCPE.data" styleClass="mr-2"
+                                severity="{{datoVerCPE.data.estado == 'AN' ? 'danger' : (datoVerCPE.data.estado == 'CN' ? 'success' : 'info')}}"
+                                value="{{datoVerCPE.data.estado}}"></p-tag>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h5>CPE N°: {{datoVerCPE.sucursal ? datoVerCPE.sucursal.toString().padStart(2,'0') :
+                                ''}}-{{datoVerCPE.nro_cpe ? datoVerCPE.nro_cpe.toString().padStart(8, '0') : ''}}</h5>
+                        </td>
+                    </tr>
+                </table>
+
+                <p *ngIf="datoVerCPE.observaciones_sistema">
+                    {{datoVerCPE.observaciones_sistema}}
+                </p>
+
+                <div class="formgrid row">
+                    <div *ngFor="let archivo of datoVerCPE.archivos">
+                        <div class="tarjetaCPE" style="padding: 3px; margin: 0px 0px 5px 0px;" class="{{datoVerCPE.sistema ? 'cpeSistema' : ''}}">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>{{archivo}}</td>
+                                    <td style="text-align: right; width: 85px">
+                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, false)"><i
+                                                class="pi pi-eye" style="font-size: 12px;"></i></button>
+                                        <button class="boton-redondo" (click)="irAURL(datoVerCPE, archivo, true)"><i
+                                                class="pi pi-download" style="font-size: 12px;"></i></button>
+                                        <button class="boton-redondo" (click)="setearUrl(datoVerCPE, archivo)"><i
+                                                class="pi pi-arrow-right" style="font-size: 12px;"></i></button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field col-9">
+            <iframe #iframeVisor frameborder="0" style="width: 100%; height: 500px;"></iframe>
+        </div>
+    </div>
+    <br>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="CERRAR" class="p-button-danger bott"
+            (click)="displayVerCPE = false"></button>
     </ng-template>
 </p-dialog>

@@ -2006,6 +2006,30 @@ export class InicioComponent {
         )
     }
 
+    dummy(cuit:any){
+        var data = {
+            cuit: cuit,
+            ejecutar: "dummy",
+            data: {}
+        }
+        this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+            (res: any) => {
+                if(res){
+                    res.app == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'APP -> Ok'}) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: APP'})
+                    res.db == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'DB -> Ok'}) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: DB'})
+                    res.auth == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'AUTH -> Ok'}) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: AUTH'})
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error en la peticion'})
+                }
+
+                //app: 'Ok', db: 'Ok', auth: 'Ok'}
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+
     autorizarGuardarCPE(){
         var data:any = {
             cuit: 0,

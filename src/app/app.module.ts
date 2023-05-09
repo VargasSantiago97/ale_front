@@ -77,6 +77,7 @@ import { CamionesComponent } from './components/super/camiones/camiones.componen
 import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-emitidos.component';
 import { PdfComponent } from './components/modals/pdf/pdf.component';
 import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
+import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
 
 
 @NgModule({
@@ -101,7 +102,8 @@ import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resu
     CamionesComponent,
     PagosEmitidosComponent,
     PdfComponent,
-    ResumenCuentasComponent
+    ResumenCuentasComponent,
+    PrepararPagosComponent
   ],
   imports: [
     BrowserModule,
