@@ -145,6 +145,7 @@ export class CamionesComponent {
             { field: "cpe", header: "N° C.P." },
             { field: "benef", header: "Benef C.P." },
             { field: "ctg", header: "C.T.G." },
+            { field: "estado", header: "Estado" },
             { field: "campo", header: "Campo" },
             { field: "tipo_orig", header: "Desde" },
             { field: "pat", header: "Pat." },
@@ -528,6 +529,7 @@ export class CamionesComponent {
             cpe: '',
             benef: '',
             ctg: '',
+            estado: '',
 
             creado: this.transformDatoTabla(mov.creado_por, "user"),
             creado_el: mov.creado_el ? mov.creado_el : '',
@@ -569,6 +571,15 @@ export class CamionesComponent {
                 dato.kg_neto_descarga = parseInt(JSON.parse(datoParaDescarga.data).kg_descarga)
             } else {
                 dato.kg_neto_descarga = ''
+            }
+            //buscamos estado
+            if(carta_porte.some((e:any) => { return e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado) : false) : false })){
+                var datoParaDescarga:any = carta_porte.filter((e:any) => { return e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado) : false) : false })
+                var estado = ''
+                datoParaDescarga.forEach((e:any) => {
+                    estado += e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado + ' ') : '') : '' 
+                });
+                dato.estado = estado
             }
         }
         if((dato.kg_neto_descarga != '') && dato.kg_neto_final){
