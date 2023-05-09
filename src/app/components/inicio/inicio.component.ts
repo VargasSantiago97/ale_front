@@ -2351,6 +2351,19 @@ export class InicioComponent {
             )
         }
     }
+    CPE_buscar_y_guardar(){
+        if(this.datosCPE.nro_ctg){
+            if(this.db_carta_porte.some((e:any) => { return e.nro_ctg == this.datosCPE.nro_ctg})){
+                if(confirm('ATENCION! Ya existe cargada una CPE con ese numero de CTG. Desea continuar?')){
+                    this.CPE_guardarDB()
+                }
+            } else {
+                this.CPE_guardarDB()
+            }
+        } else {
+            this.CPE_guardarDB()
+        }
+    }
     CPE_guardarDB(){
         this.datosCPE.activo = 1
         this.datosCPE.estado = 1
