@@ -79,6 +79,7 @@ import { PdfComponent } from './components/modals/pdf/pdf.component';
 import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
 import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
 import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actualizar-cpe.component';
+import { CamposComponent } from './components/super/campos/campos.component';
 
 
 @NgModule({
@@ -105,7 +106,8 @@ import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actual
     PdfComponent,
     ResumenCuentasComponent,
     PrepararPagosComponent,
-    ActualizarCPEComponent
+    ActualizarCPEComponent,
+    CamposComponent
   ],
   imports: [
     BrowserModule,

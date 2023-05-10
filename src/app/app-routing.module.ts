@@ -14,6 +14,7 @@ import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-
 import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
 import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
 import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actualizar-cpe.component';
+import { CamposComponent } from './components/super/campos/campos.component';
 
 
 const routes: Routes = [
@@ -40,6 +41,8 @@ const routes: Routes = [
 
   { path: 'prepararPagos', component: PrepararPagosComponent},
   { path: 'actualizarCPE', component: ActualizarCPEComponent},
+  
+  { path: 'campos', component: CamposComponent},
 
 ];
 

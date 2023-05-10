@@ -21,6 +21,7 @@ export class ActualizarCPEComponent {
     load_socios: boolean = false
 
     spinnerActualizarCPE: boolean = false
+    actualizarRecursivamente: boolean = false
 
     cambiosDetectadosCPE: any = []
     datosParaActualizarCPE: any = []
@@ -214,6 +215,8 @@ export class ActualizarCPEComponent {
         this.cambiosDetectadosCPE = []
         this.datosParaActualizarCPE = ant
 
+        var diferencias:any = 0
+
         if(act.nroCTG != ant.nro_ctg){
             this.cambiosDetectadosCPE.push({
                 modificar: true,
@@ -222,6 +225,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.nro_ctg,
                 valor: act.nroCTG
             })
+            diferencias += 1
         }
         if(act.sucursal != ant.sucursal){
             this.cambiosDetectadosCPE.push({
@@ -231,6 +235,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.sucursal,
                 valor: act.sucursal
             })
+            diferencias += 1
         }
         if(act.nroOrden != ant.nro_cpe){
             this.cambiosDetectadosCPE.push({
@@ -240,6 +245,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.nro_cpe,
                 valor: act.nroOrden
             })
+            diferencias += 1
         }
         if(act.datosCarga.codGrano != ant.cod_grano){
             this.cambiosDetectadosCPE.push({
@@ -249,6 +255,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cod_grano,
                 valor: act.datosCarga.codGrano
             })
+            diferencias += 1
         }
         if(act.destinatario.cuit != ant.cuit_destinatario){
             this.cambiosDetectadosCPE.push({
@@ -258,6 +265,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cuit_destinatario,
                 valor: act.destinatario.cuit
             })
+            diferencias += 1
         }
         
         if(act.transporte.codigoTurno != ant.codigo_turno){
@@ -268,6 +276,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.codigo_turno,
                 valor: act.transporte.codigoTurno
             })
+            diferencias += 1
         }
         if(act.transporte.cuitTransportista != ant.cuit_transportista){
             this.cambiosDetectadosCPE.push({
@@ -277,6 +286,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cuit_transportista,
                 valor: act.transporte.cuitTransportista
             })
+            diferencias += 1
         }
         if(act.transporte.cuitChofer != ant.cuit_chofer){
             this.cambiosDetectadosCPE.push({
@@ -286,6 +296,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cuit_chofer,
                 valor: act.transporte.cuitChofer
             })
+            diferencias += 1
         }
         if(act.transporte.tarifa != ant.tarifa){
             this.cambiosDetectadosCPE.push({
@@ -295,6 +306,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.tarifa,
                 valor: act.transporte.tarifa
             })
+            diferencias += 1
         }
         if(act.transporte.kmRecorrer != ant.km_recorrer){
             this.cambiosDetectadosCPE.push({
@@ -304,6 +316,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.km_recorrer,
                 valor: act.transporte.kmRecorrer
             })
+            diferencias += 1
         }
 
         if(act.destino.planta != ant.planta_destino){
@@ -314,6 +327,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.planta_destino,
                 valor: act.destino.planta
             })
+            diferencias += 1
         }
         if(act.destino.codProvincia != ant.cod_provincia){
             this.cambiosDetectadosCPE.push({
@@ -323,6 +337,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cod_provincia,
                 valor: act.destino.codProvincia
             })
+            diferencias += 1
         }
         if(act.destino.codLocalidad != ant.cod_localidad){
             this.cambiosDetectadosCPE.push({
@@ -332,6 +347,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cod_localidad,
                 valor: act.destino.codLocalidad
             })
+            diferencias += 1
         }
         if(act.destino.cuit != ant.cuit_destino){
             this.cambiosDetectadosCPE.push({
@@ -341,6 +357,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.cuit_destino,
                 valor: act.destino.cuit
             })
+            diferencias += 1
         }
 
         if(act.codACTUAL != ant.codVIEJO){
@@ -351,6 +368,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.codVIEJO,
                 valor: act.codACTUAL
             })
+            diferencias += 1
         }
 
         if(!ant.data){
@@ -376,6 +394,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.data.kg_descarga,
                 valor: neto
             })
+            diferencias += 1
         }
         if(bruto != ant.peso_bruto){
             this.cambiosDetectadosCPE.push({
@@ -385,6 +404,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.peso_bruto,
                 valor: bruto
             })
+            diferencias += 1
         }
         if(tara != ant.peso_tara){
             this.cambiosDetectadosCPE.push({
@@ -394,6 +414,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.peso_tara,
                 valor: tara
             })
+            diferencias += 1
         }
         if(act.estado != ant.data.estado){
             this.cambiosDetectadosCPE.push({
@@ -403,6 +424,7 @@ export class ActualizarCPEComponent {
                 valorAnt: ant.data.estado,
                 valor: act.estado
             })
+            diferencias += 1
         }
 
         if(act.intervinientes){
@@ -416,6 +438,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_corredor_venta_primaria,
                         valor: int.cuitCorredorVentaPrimaria
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitCorredorVentaSecundaria){
@@ -427,6 +450,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_corredor_venta_secundaria,
                         valor: int.cuitCorredorVentaSecundaria
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitMercadoATermino){
@@ -438,6 +462,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_mercado_a_termino,
                         valor: int.cuitMercadoATermino
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitRemitenteComercialVentaPrimaria){
@@ -449,6 +474,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_remitente_comercial_venta_primaria,
                         valor: int.cuitRemitenteComercialVentaPrimaria
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitRemitenteComercialVentaSecundaria){
@@ -460,6 +486,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_remitente_comercial_venta_secundaria,
                         valor: int.cuitRemitenteComercialVentaSecundaria
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitRemitenteComercialVentaSecundaria2){
@@ -471,6 +498,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_remitente_comercial_venta_secundaria2,
                         valor: int.cuitRemitenteComercialVentaSecundaria2
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitRepresentanteEntregador){
@@ -482,6 +510,7 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_representante_entregador,
                         valor: int.cuitRepresentanteEntregador
                     })
+                    diferencias += 1
                 }
             }
             if(int.cuitRepresentanteRecibidor){
@@ -493,12 +522,19 @@ export class ActualizarCPEComponent {
                         valorAnt: ant.cuit_representante_recibidor,
                         valor: int.cuitRepresentanteRecibidor
                     })
+                    diferencias += 1
                 }
             }
+        }
+
+        if(!diferencias && this.actualizarRecursivamente){
+            setTimeout(()=>{this.actualizarTodos()}, 1000)
         }
     }
 
     actualizarCPE(){
+        this.actualizarRecursivamente = false
+
         this.cambiosDetectadosCPE.forEach((e:any) => {
             if(e.modificar){
                 if(e.tipo == "kg_descarga" || e.tipo == "estado"){
@@ -526,6 +562,8 @@ export class ActualizarCPEComponent {
     }
 
     actualizarTodos(){
+        this.actualizarRecursivamente = true
+
         var datosActualizar:any = this.datosTabla.filter((e:any) => { return e.actualizado == false })
         if(datosActualizar.length){
             this.cpeActualizarPDF(datosActualizar[0])
