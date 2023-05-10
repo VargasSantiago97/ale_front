@@ -1,0 +1,113 @@
+<div style="text-align: center;"
+    *ngIf="load_carta_porte || load_socios">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+<div class="formgrid row">
+    <div class="field col-6">
+        <div #TABLA class="container" style="overflow: auto; height: 900px;">
+
+            <style>
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+        
+                th,
+                td {
+                    text-align: left;
+                    padding: 8px;
+                    border-bottom: 1px solid #ddd;
+                }
+        
+                th {
+                    background-color: #f2f2f2;
+                }
+        
+                tr:hover {
+                    background-color: #f5f5f5;
+                }
+            </style>
+        
+            <br>
+        
+            <h5 style="text-align: center; margin: 0px"><strong>CPEs</strong></h5>
+            <br>
+        
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="padding: 2px;" *ngFor="let col of cols">{{col.header}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let dato of datosTabla" class="{{dato.actualizado ? 'cpeSistema' : ''}}">
+                        <td style="padding: 0px; margin: 0px;"><button class="bott" (click)="cpeActualizarPDF(dato)">ACTUALIZAR</button></td>
+
+                        <td style="padding: 0px; margin: 0px;" *ngFor="let col of cols">{{dato[col.field]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="bott" (click)="actualizarTodos()">ACTUALIZAR TODO</button>
+        </div>
+    </div>
+    <div class="field col-5">
+        <div style="text-align: center;" *ngIf="spinnerActualizarCPE">
+            <br><p-progressSpinner></p-progressSpinner><br>
+        </div>
+
+        <div *ngIf="cambiosDetectadosCPE.length" class="formgrid row">
+            <div class="field col">
+                <div class="tarjeta" style="margin: 0px 0px 30px 0px; width: 800px; text-align: center;">
+                    <h5>CAMBIOS DETECTADOS</h5>
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <p>Tipo de dato:</p>
+                                </th>
+                                <th>
+                                    <p>DATO ANTERIOR</p>
+                                </th>
+                                <th style="width: 20px;">
+                                    <i class="pi pi-arrow-right" style="font-size: 12px;"></i>
+                                </th>
+                                <th>
+                                    DATO DE CPE ACTUALIZADO
+                                </th>
+                                <th>
+                                    Actualizar
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let cambio of cambiosDetectadosCPE">
+                            <tr>
+                                <td>
+                                    <label>{{cambio.tipoDato}}</label>
+                                </td>
+                                <td>
+                                    <input type="text" class="input-text-codigo" style="width: auto;" [(ngModel)]="cambio.valorAnt" readonly>
+                                </td>
+                                <td style="width: 20px;">
+                                    <i class="pi pi-arrow-right" style="font-size: 12px;"></i>
+                                </td>
+                                <td>
+                                    <input type="text" class="input-text-codigo" style="width: auto;" [(ngModel)]="cambio.valor">
+                                </td>
+                                <td>
+                                    <input type="checkbox" [(ngModel)]="cambio.modificar">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <button pButton pRipple type="button" label="GUARDAR CAMBIOS" class="p-button-success"
+                    (click)="actualizarCPE()"></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+

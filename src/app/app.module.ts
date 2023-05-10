@@ -78,6 +78,7 @@ import { PagosEmitidosComponent } from './components/super/pagos-emitidos/pagos-
 import { PdfComponent } from './components/modals/pdf/pdf.component';
 import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resumen-cuentas.component';
 import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
+import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actualizar-cpe.component';
 
 
 @NgModule({
@@ -103,7 +104,8 @@ import { PrepararPagosComponent } from './components/super/preparar-pagos/prepar
     PagosEmitidosComponent,
     PdfComponent,
     ResumenCuentasComponent,
-    PrepararPagosComponent
+    PrepararPagosComponent,
+    ActualizarCPEComponent
   ],
   imports: [
     BrowserModule,

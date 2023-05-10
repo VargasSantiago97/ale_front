@@ -152,10 +152,14 @@ export class CamionesComponent {
             { field: "patAc", header: "Pat. Ac." },
             { field: "transporte", header: "Transporte" },
             { field: "cuit_transp", header: "CUIT Transp" },
-            { field: "gastos", header: "Gastos" },
-            { field: "id_corredor", header: "Corredor" },
-            { field: "id_acopio", header: "Acopio" },
 
+            { field: "rteComVta", header: "Rte Com Vta" },
+            { field: "corredor_pri", header: "Corredor pri" },
+            { field: "corredor_sec", header: "Corredor sec" },
+            { field: "destino", header: "Destino" },
+            { field: "destinatario", header: "Destinatario" },
+            
+            
             { field: "kg_tara", header: "Tara" },
             { field: "kg_bruto", header: "Bruto" },
             { field: "kg_neto", header: "Neto" },
@@ -167,8 +171,9 @@ export class CamionesComponent {
             { field: "dif_destino_balanza", header: "Dest.-Balanza" },
             { field: "kg_mermas", header: "Mermas" },
             { field: "kg_final", header: "Neto FINAL" },
-
+            
             { field: "factura", header: "Facturas" },
+            { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
 
             { field: "creado", header: "Creado" },
@@ -502,8 +507,12 @@ export class CamionesComponent {
             patAc: mov.id_camion ? this.transformDatoTabla(mov.id_camion, "patAc") : "-",
             transporte: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte, "transporte") : "-",
             cuit_transp: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte, "cuit_transp") : "-",
-            id_corredor: mov.id_corredor ? this.transformDatoTabla(mov.id_corredor, "intervinientes") : "-",
-            id_acopio: mov.id_acopio ? this.transformDatoTabla(mov.id_acopio, "intervinientes") : "-",
+
+            rteComVta: '',
+            corredor_pri: '',
+            corredor_sec: '',
+            destino: '',
+            destinatario: '',
 
             kg_tara: mov.kg_tara ? this.transformDatoTabla(mov.kg_tara, "kg") : "-",
             kg_bruto: mov.kg_bruto ? this.transformDatoTabla(mov.kg_bruto, "kg") : "-",
@@ -577,7 +586,16 @@ export class CamionesComponent {
                 var datoParaDescarga:any = carta_porte.filter((e:any) => { return e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado) : false) : false })
                 var estado = ''
                 datoParaDescarga.forEach((e:any) => {
-                    estado += e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado + ' ') : '') : '' 
+                    const localEstado = e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado + ' ') : '') : '' 
+                    estado += localEstado
+
+                    if(localEstado != 'AN '){
+                        dato.rteComVta = e.cuit_remitente_comercial_venta_primaria ? this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria, "intervinientesCuit") : ''
+                        dato.corredor_pri = e.cuit_corredor_venta_primaria ? this.transformDatoTabla(e.cuit_corredor_venta_primaria, "intervinientesCuit") : ''
+                        dato.corredor_sec = e.cuit_corredor_venta_secundaria ? this.transformDatoTabla(e.cuit_corredor_venta_secundaria, "intervinientesCuit") : ''
+                        dato.destino = e.cuit_destino ? this.transformDatoTabla(e.cuit_destino, "intervinientesCuit") : ''
+                        dato.destinatario = e.cuit_destinatario ? this.transformDatoTabla(e.cuit_destinatario, "intervinientesCuit") : ''
+                    }
                 });
                 dato.estado = estado
             }
@@ -676,6 +694,9 @@ export class CamionesComponent {
         }
         if (tipo == 'intervinientes') {
             return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'intervinientesCuit') {
+            return this.db_intervinientes.some((e: any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e: any) => { return e.cuit == dato }).alias : dato
         }
         if (tipo == 'kg') {
             return dato ? dato.toLocaleString("es-AR") : '-'
