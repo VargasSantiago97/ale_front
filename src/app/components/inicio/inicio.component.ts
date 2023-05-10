@@ -1492,7 +1492,7 @@ export class InicioComponent {
         console.log(this.camion)
     }
 
-    mostrarOrdenCarga(ver: any) {
+    mostrarOrdenCarga(ver: any = 'ver') {
         var url = `${ORDEN_CARGA}/orden_carga.php?&o=${this.objUtf8ToBase64(this.datosOrdenCarga)}`
         if (ver == 'descargar') {
             window.open(url + '&D=D');
