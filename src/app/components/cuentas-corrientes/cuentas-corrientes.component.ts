@@ -377,7 +377,7 @@ export class CuentasCorrientesComponent {
                 }
             }
 
-            if (e.afecta != null && !this.verViajesPreviamenteAfec && e.tipo == 'GAS') {
+            if (e.afecta != null && !this.verViajesPreviamenteAfec && (e.tipo == 'GAS' || e.tipo == 'COMB')) {
                 if (JSON.parse(e.afecta).length > 0) {
                     movimientosPreviamenteAfectadosGastos.push(...JSON.parse(e.afecta))
                 }
@@ -550,6 +550,9 @@ export class CuentasCorrientesComponent {
                 if (this.datosAsiento.tipo == "GAS") {
                     valorDesc = 'GASTO'
                 }
+                if (this.datosAsiento.tipo == "COMB") {
+                    valorDesc = 'COMBUSTIBLE'
+                }
             }
             const ctg = e.ctg ? " / CTG " + e.ctg : ""
             const cpe = e.cpe ? " - CP " + e.cpe : ""
@@ -614,7 +617,7 @@ export class CuentasCorrientesComponent {
         if (this.datosAsiento.tipo == "MOV") {
             this.datosAsiento.montoFactura < 0 ? (this.datosAsiento.debe = -1 * this.datosAsiento.montoFactura) : (this.datosAsiento.haber = this.datosAsiento.montoFactura)
         }
-        if (this.datosAsiento.tipo == "GAS") {
+        if (this.datosAsiento.tipo == "GAS" || this.datosAsiento.tipo == "COMB") {
             this.datosAsiento.montoFactura < 0 ? (this.datosAsiento.haber = -1 * this.datosAsiento.montoFactura) : (this.datosAsiento.debe = this.datosAsiento.montoFactura)
         }
 
@@ -631,6 +634,7 @@ export class CuentasCorrientesComponent {
                 //subir archivos
                 this.datosAsiento.tipo == "MOV" ? this.uploader.upload() : null;
                 this.datosAsiento.tipo == "GAS" ? this.uploaderGasto.upload() : null;
+                this.datosAsiento.tipo == "COMB" ? this.uploaderGasto.upload() : null;
             },
             (err: any) => {
                 console.log(err)
@@ -813,7 +817,7 @@ export class CuentasCorrientesComponent {
     }
 
 
-    nuevoAsientoGasto() {
+    nuevoAsientoGasto(tipo:any='GAS') {
 
         var idd = this.generateUUID()
         if (this.db_asientos.some((e: any) => { return e.id == idd })) {
@@ -831,7 +835,7 @@ export class CuentasCorrientesComponent {
 
         this.datosAsiento = {
             id: idd,
-            tipo: "GAS",
+            tipo: tipo,
             id_socio: this.socio.id,
             id_transportista: this.transportista.id,
             montoTotal: 0,

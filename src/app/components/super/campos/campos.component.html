@@ -1,5 +1,306 @@
-<p>campos works!</p>
-<button (click)="leer()">LEER</button>
-<button (click)="crear()">CREAR</button>
-<button (click)="editar()">EDITAR</button>
-<button (click)="borrar()">BORRAR</button>
+<br>
+
+<div style="margin: 20px;">
+    <div *ngIf="campo_select">
+        <h3 style="text-align: center;">CAMPO SELECCIONADO: <strong>{{campo_select.alias}}</strong></h3>
+        <br>
+    </div>
+    <div *ngIf="!campo_select">
+        <h3 style="text-align: center;">SELECCIONE UN CAMPO</h3>
+        <br>
+    </div>
+    <div class="formgrid row">
+        <div #CAMPOS class="field col-2">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>CAMPOS</strong></h5>
+                <style>
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+            
+                    th,
+                    td {
+                        text-align: left;
+                        padding: 8px;
+                        border-bottom: 1px solid #ddd;
+                    }
+            
+                    th {
+                        background-color: #f2f2f2;
+                    }
+            
+                    tr:hover {
+                        background-color: #f5f5f5;
+                    }
+                </style>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;">
+                                ALIAS
+                            </th>
+                            <th style="padding: 3px;">
+                                HAS
+                            </th>
+                            <th style="padding: 3px;">
+                                ACT
+                            </th>
+                            <th style="padding: 3px;">
+                                EST
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let campo of db_campos" (click)="seleccionarCampo(campo)" class="{{campo_select ? (campo.id == campo_select.id ? 'fondoResaltado' : '') : ''}}">
+                            <td style="padding: 2px;">
+                                <label>{{campo.alias}}</label>
+                            </td>
+                            <td style="padding: 2px;">
+                                <label>{{campo.has}}</label>
+                            </td>
+                            <td style="padding: 2px;">
+                                <label>{{campo.activo}}</label>
+                            </td>
+                            <td style="padding: 2px;">
+                                <label>{{campo.estado}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div #LOTES class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px; text-align: center;">
+                <h5>LOTES</h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>
+                                Alias
+                            </th>
+                            <th>
+                                Has
+                            </th>
+                            <th>
+                                Act
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dataLote of lotes" (dblclick)="abrirModalLote(dataLote)">
+                            <td>
+                                {{dataLote.alias}}
+                            </td>
+                            <td>
+                                {{dataLote.has}}
+                            </td>
+                            <td>
+                                <input type="checkbox" [(ngModel)]="dataLote.activo" disabled>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <strong>TOTAL:</strong>
+                            </td>
+                            <td>
+                                <strong>{{transformarDatoMostrarTabla(totalHasLotes, 'numero')}}</strong>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br>
+                <button pButton pRipple type="button" label="NUEVO" class="p-button-success" (click)="abrirModalLote()"></button>
+            </div>
+        </div>
+        <div #SILOS class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px; text-align: center;">
+                <h5>SILOS</h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>
+                                Alias
+                            </th>
+                            <th>
+                                KGS
+                            </th>
+                            <th>
+                                Act
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let silo of silos" (dblclick)="abrirModalSilo(silo)">
+                            <td>
+                                {{silo.alias}}
+                            </td>
+                            <td>
+                                {{silo.kilos}}
+                            </td>
+                            <td>
+                                <input type="checkbox" [(ngModel)]="silo.activo" disabled>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <strong>TOTAL:</strong>
+                            </td>
+                            <td>
+                                <strong>{{transformarDatoMostrarTabla(totalKilosSilos, 'numero')}}</strong>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br>
+                <button pButton pRipple type="button" label="NUEVO" class="p-button-success" (click)="abrirModalSilo()"></button>
+            </div>
+        </div>
+        <div #SOCIOS class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px; text-align: center;">
+                <h5>PRODUCCION</h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>
+                                SOCIO
+                            </th>
+                            <th>
+                                PORCENTAJE
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let produce of produccion" (dblclick)="abrirModalProduce(produce)">
+                            <td>
+                                <label>{{transformarDatoMostrarTabla(produce.id_socio, 'socio')}}</label>
+                            </td>
+                            <td>
+                                <strong>{{produce.porcentaje}}%</strong> ({{transformarDatoMostrarTabla(produce.porcentaje, 'has')}} has)
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>TOTAL</td>
+                            <td><strong>{{transformarDatoMostrarTabla(totalPorcentaje, 'numero')}} %</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br>
+                <button pButton pRipple type="button" label="NUEVO" class="p-button-success" (click)="abrirModalProduce()"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<p-dialog header="LOTE" [(visible)]="displayLote" [style]="{width: '500px'}">
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            ALIAS
+        </div>
+        <div class="field col">
+            <input type="text" class="input-text-codigo" style="width: 300px;" [(ngModel)]="lote.alias">
+        </div>
+    </div>
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            HAS
+        </div>
+        <div class="field col">
+            <input type="number" step="10" class="input-text-codigo" style="width: 300px;" [(ngModel)]="lote.has">
+        </div>
+    </div>
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            ACTIVA
+        </div>
+        <div class="field col">
+            <input type="checkbox" [(ngModel)]="lote.activo">
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="borrarLote(lote.id)" label="Borrar" styleClass="p-button-danger"></p-button>
+        <p-button icon="pi pi-check" (click)="guardarEditarLote(lote)" label="Ok" styleClass="p-button-success"></p-button>
+    </ng-template>
+</p-dialog>
+<p-dialog header="SILO" [(visible)]="displaySilo" [style]="{width: '500px'}">
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            ALIAS
+        </div>
+        <div class="field col">
+            <input type="text" class="input-text-codigo" style="width: 300px;" [(ngModel)]="silo.alias">
+        </div>
+    </div>
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            KILOS CARGADOS
+        </div>
+        <div class="field col">
+            <input type="number" step="100" class="input-text-codigo" style="width: 300px;" [(ngModel)]="silo.kilos">
+        </div>
+    </div>
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            ACTIVO
+        </div>
+        <div class="field col">
+            <input type="checkbox" [(ngModel)]="silo.activo">
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="borrarSilo(silo.id)" label="Borrar" styleClass="p-button-danger"></p-button>
+        <p-button icon="pi pi-check" (click)="guardarEditarSilo(silo)" label="Ok" styleClass="p-button-success"></p-button>
+    </ng-template>
+</p-dialog>
+<p-dialog header="PRODUCE" [(visible)]="displayProduce" [style]="{width: '500px'}">
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            SOCIO
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="produce.id_socio">
+                <option *ngFor="let socio of db_socios" value="{{socio.id}}">{{socio.alias}}</option>
+            </select>
+        </div>
+    </div>
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            PORCENTAJE PRODUCCION
+        </div>
+        <div class="field col">
+            <input type="number" step="0.1" class="input-text-codigo" style="width: 300px;" [(ngModel)]="produce.porcentaje">
+        </div>
+    </div>
+    <br>
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="borrarProduce(produce.id)" label="Borrar" styleClass="p-button-danger"></p-button>
+        <p-button icon="pi pi-check" (click)="guardarEditarProduce(produce)" label="Ok" styleClass="p-button-success"></p-button>
+    </ng-template>
+</p-dialog>

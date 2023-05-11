@@ -452,6 +452,7 @@ export class CamionesComponent {
         if (!(this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
             this.dataParaMostrarTablaTotales = {
+                cultivo: 0,
                 kg_tara: 0,
                 kg_bruto: 0,
                 kg_neto: 0,
@@ -646,6 +647,7 @@ export class CamionesComponent {
         const kg_mermas = dato.kg_mermas ? (parseInt(dato.kg_mermas) ? parseInt(dato.kg_mermas) : 0) : 0
         const kg_final = dato.kg_final ? (parseInt(dato.kg_final) ? parseInt(dato.kg_final) : 0) : 0
 
+        this.dataParaMostrarTablaTotales.cultivo ++
         this.dataParaMostrarTablaTotales.kg_tara += kg_tara
         this.dataParaMostrarTablaTotales.kg_bruto += kg_bruto
         this.dataParaMostrarTablaTotales.kg_neto += kg_neto

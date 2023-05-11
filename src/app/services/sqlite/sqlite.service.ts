@@ -11,9 +11,12 @@ export class SqliteService {
     API_URI = vars.API_URI;
 
     formatoColumnas:any = {
-        establecimientos: ['id', 'alias', 'activo', 'estado']
+        establecimientos: ['id', 'alias', 'activo', 'estado'],
+        lotes: ["id", "id_establecimiento", "alias", "has", "activo", "estado"],
+        silos: ["id", "id_establecimiento", "alias", "kilos", "activo", "estado"],
+        produccion: ["id", "id_establecimiento", "id_socio", "porcentaje"],
     }
-
+ 
     constructor(
         private http: HttpClient,
     ){}
@@ -37,15 +40,23 @@ export class SqliteService {
 
         sent = sent.slice(0, -3) + ')'
 
-        console.log(sent)
         return this.http.post(`${this.API_URI}/sqlite.php`, {sentencia: sent});
     }
-    updateDB(data: any) {
-        const sent = "UPDATE 'establecimientos' SET activo = 2, alias = 'cambio' WHERE id = '123'"
+    updateDB(tabla:any, data: any) {
+        var sent = 'UPDATE "' + tabla + '" SET '
+
+        for (let i = 0; i < this.formatoColumnas[tabla].length; i++) {
+            const agregar = this.formatoColumnas[tabla][i] + ' = "' + data[this.formatoColumnas[tabla][i]] + '", '
+            sent += agregar
+        }
+
+        sent = sent.slice(0, -2)
+        sent += ' WHERE id = "' + data.id + '"'
+
         return this.http.put(`${this.API_URI}/sqlite.php`, {sentencia: sent});
     }
-    deleteDB(data: any) {
-        const sent = "DELETE FROM 'establecimientos' WHERE id = 123"
+    deleteDB(tabla:any, idd: any) {
+        const sent = 'DELETE FROM "' + tabla + '" WHERE id = "' + idd + '"'
         return this.http.delete(`${this.API_URI}/sqlite.php`, {body: {sentencia:sent}} );
     }
 

@@ -26,6 +26,19 @@ export class ActualizarCPEComponent {
     cambiosDetectadosCPE: any = []
     datosParaActualizarCPE: any = []
 
+    ESTADO_CPE:any = {
+        AC: "Activa",
+        AN: "Anulada",
+        BR: "Borrador",
+        CF: "Activa con confirmacion de arribo",
+        CN: "confirmada",
+        CO: "Activa con contingencia",
+        DE: "Desactivada",
+        RE: "Rechazada",
+        PA: "Pendiente de Aceptacion por el Productor",
+        AP: "Anulacion por el Productor",
+        DD: "Descargado en destino",
+    }
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -84,7 +97,7 @@ export class ActualizarCPEComponent {
                         nro_ctg: cpe.nro_ctg,
                         sucursal: cpe.sucursal,
                         nro_cpe: cpe.nro_cpe,
-                        estado: estado,
+                        estado: this.transformDatoTabla(estado, "estadoYDesc"),
                         datos: cpe,
                         actualizado: false,
                     }
@@ -185,6 +198,10 @@ export class ActualizarCPEComponent {
                 return '-'
             }
             return JSON.parse(dato).estado ? JSON.parse(dato).estado : ''
+        }
+        if (tipo == 'estadoYDesc'){
+            const desc = this.ESTADO_CPE[dato] ? ' - ' + this.ESTADO_CPE[dato] : ''
+            return dato + desc
         }
 
         if (tipo == 'moneda') {

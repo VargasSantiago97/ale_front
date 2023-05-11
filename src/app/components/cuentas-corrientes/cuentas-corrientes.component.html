@@ -11,11 +11,13 @@
         <div class="formgrid row">
             <div class="field col-6">
                 <p-dropdown (onChange)="onSelectSocio()" [options]="db_socios" [(ngModel)]="socio"
-                optionLabel="alias"></p-dropdown>
+                    optionLabel="alias"></p-dropdown>
             </div>
             <div class="field col-6">
-                <button pButton pRipple type="button" label="SALDOS" class="p-button-primary bott" style="padding: 0px 10px;" (click)="routerLinkIr('resumenCuentas')"></button>
-                <button pButton pRipple type="button" label="PAGOS" class="p-button-primary bott" style="padding: 0px 10px;" (click)="routerLinkIr('pagosEmitidos')"></button>
+                <button pButton pRipple type="button" label="SALDOS" class="p-button-primary bott"
+                    style="padding: 0px 10px;" (click)="routerLinkIr('resumenCuentas')"></button>
+                <button pButton pRipple type="button" label="PAGOS" class="p-button-primary bott"
+                    style="padding: 0px 10px;" (click)="routerLinkIr('pagosEmitidos')"></button>
             </div>
         </div>
 
@@ -35,8 +37,10 @@
             <div *ngIf="transportista">
                 <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"
                     (click)="nuevoAsientoViaje()"></button>
-                <button pButton pRipple type="button" label="GASTO" class="p-button-success bott" 
+                <button pButton pRipple type="button" label="GASTO" class="p-button-success bott"
                     (click)="nuevoAsientoGasto()"></button>
+                <button pButton pRipple type="button" label="COMBUSTIBLE" class="p-button-success bott"
+                    (click)="nuevoAsientoGasto('COMB')"></button>
                 <button pButton pRipple type="button" label="ORDEN DE PAGO" class="p-button-success bott"
                     (click)="nuevoOrdenDePago()"></button>
 
@@ -89,9 +93,12 @@
                     <tfoot>
                         <tr>
                             <th colspan="3">Total</th>
-                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.ingreso, 'moneda')}}</strong></td>
-                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.gasto, 'moneda')}}</strong></td>
-                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo, 'moneda')}}</strong></td>
+                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.ingreso,
+                                    'moneda')}}</strong></td>
+                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.gasto,
+                                    'moneda')}}</strong></td>
+                            <td><strong>{{transformarDatoMostrarTabla(datosCuentaCorrienteTotales.saldo,
+                                    'moneda')}}</strong></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -127,7 +134,8 @@
             <ng-template pTemplate="body" let-registro let-columns="columns">
                 <tr>
                     <td>
-                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott" (click)="agregarMovimiento(registro)"></button>
+                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott"
+                            (click)="agregarMovimiento(registro)"></button>
                     </td>
                     <td *ngFor="let col of columns">
                         {{transformarDatoMostrarTabla(registro[col.field], col.field)}}
@@ -136,7 +144,10 @@
             </ng-template>
         </p-table>
     </div>
-    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-{{verViajesPreviamenteAfec ? 'danger' : 'success'}} bott" (click)="verViajesPreviamenteAfectados()"></button>
+    <button pButton pRipple type="button"
+        label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}"
+        class="p-button-{{verViajesPreviamenteAfec ? 'danger' : 'success'}} bott"
+        (click)="verViajesPreviamenteAfectados()"></button>
     <br>
     <hr>
     <h6>Viajes Seleccionados:</h6>
@@ -145,7 +156,7 @@
     </p>
     <br>
     <h6>Total Seleccionado: ${{datosAsiento.montoTotal}}</h6>
-    
+
     <br>
     <hr>
     <br>
@@ -163,17 +174,20 @@
                     </select>
                 </div>
                 <div class="field col-3">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.cpte_punto" (ngModelChange)="cambiaNumFactura()">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto"
+                        [(ngModel)]="datosAsiento.cpte_punto" (ngModelChange)="cambiaNumFactura()">
                 </div>
                 <div class="field col-6">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.cpte_numero" (ngModelChange)="cambiaNumFactura()">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero"
+                        [(ngModel)]="datosAsiento.cpte_numero" (ngModelChange)="cambiaNumFactura()">
                 </div>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label>Monto Total</label><br>
-                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsiento.montoFactura">
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura"
+                    [(ngModel)]="datosAsiento.montoFactura">
             </div>
         </div>
         <div class="field col">
@@ -201,7 +215,8 @@
     <br>
     <h5>Archivos:</h5>
     <div class="formgrid row">
-        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
+        <p-fileUpload #myCargador name="demo[]" [showUploadButton]="false"
+            url="{{API_URI}}/upload.php?folder={{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
             <ng-template pTemplate="content">
             </ng-template>
         </p-fileUpload>
@@ -210,14 +225,16 @@
 
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarAsiento()"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoViaje=false"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+            (click)="guardarAsiento()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayNuevoViaje=false"></button>
     </ng-template>
 </p-dialog>
 
 
-<p-dialog header="VER ASIENTO {{datosAsientoMostrar.tipo}} - ID {{datosAsientoMostrar.id}}" [(visible)]="displayVerAsiento" [modal]="true" [style]="{width: '95vw'}"
-    [draggable]="true" [resizable]="false">
+<p-dialog header="VER ASIENTO {{datosAsientoMostrar.tipo}} - ID {{datosAsientoMostrar.id}}"
+    [(visible)]="displayVerAsiento" [modal]="true" [style]="{width: '95vw'}" [draggable]="true" [resizable]="false">
     <div class="formgrid row">
         <h4>Movimientos afectados:</h4>
         <table>
@@ -274,23 +291,27 @@
                     </select>
                 </div>
                 <div class="field col-3">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsientoMostrar.cpte_punto">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto"
+                        [(ngModel)]="datosAsientoMostrar.cpte_punto">
                 </div>
                 <div class="field col-6">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsientoMostrar.cpte_numero">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero"
+                        [(ngModel)]="datosAsientoMostrar.cpte_numero">
                 </div>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label>DEBE</label><br>
-                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsientoMostrar.debe">
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura"
+                    [(ngModel)]="datosAsientoMostrar.debe">
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label>HABER</label><br>
-                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsientoMostrar.haber">
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura"
+                    [(ngModel)]="datosAsientoMostrar.haber">
             </div>
         </div>
         <div class="field col">
@@ -319,7 +340,8 @@
     <div *ngIf="datosAsientoMostrar.archivos">
         <h5>Archivos:</h5>
         <div class="formgrid row">
-            <a *ngFor="let archivo of datosAsientoMostrar.archivos" href="{{API_URI}}/download.php?folder={{datosAsientoMostrar.id}}&file={{archivo}}">
+            <a *ngFor="let archivo of datosAsientoMostrar.archivos"
+                href="{{API_URI}}/download.php?folder={{datosAsientoMostrar.id}}&file={{archivo}}">
                 <div class="tarjeta">
                     {{archivo}}
                 </div>
@@ -327,8 +349,10 @@
         </div>
     </div>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="BORRAR" class="p-button-danger bott" (click)="borrarAsiento(datosAsientoMostrar.id)"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayVerAsiento=false"></button>
+        <button pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+            (click)="borrarAsiento(datosAsientoMostrar.id)"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayVerAsiento=false"></button>
     </ng-template>
 </p-dialog>
 
@@ -358,7 +382,8 @@
             <ng-template pTemplate="body" let-registro let-columns="columns">
                 <tr>
                     <td>
-                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott" (click)="agregarMovimientoGasto(registro)"></button>
+                        <button pButton pRipple type="button" label="SELEC" class="p-button-success bott"
+                            (click)="agregarMovimientoGasto(registro)"></button>
                     </td>
                     <td *ngFor="let col of columns">
                         {{transformarDatoMostrarTabla(registro[col.field], col.field)}}
@@ -367,13 +392,16 @@
             </ng-template>
         </p-table>
     </div>
-    <button pButton pRipple type="button" label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}" class="p-button-{{verViajesPreviamenteAfec ? 'danger' : 'success'}} bott" (click)="verViajesPreviamenteAfectados()"></button>
+    <button pButton pRipple type="button"
+        label="{{verViajesPreviamenteAfec ? 'NO VER VIAJES PREVIAMENTE AFECTADOS' : 'VER VIAJES PREVIAMENTE AFECTADOS'}}"
+        class="p-button-{{verViajesPreviamenteAfec ? 'danger' : 'success'}} bott"
+        (click)="verViajesPreviamenteAfectados()"></button>
     <br>
     <hr>
     <h6>Viajes Seleccionados:</h6>
     <p *ngFor="let mov of dataMovimientosSeleccionados">
         {{mov.fecha}} - {{mov.cultivo}} - CTG: {{mov.ctg}} - CPE: {{mov.cpe}}
-    </p>    
+    </p>
     <br>
     <hr>
     <br>
@@ -391,17 +419,20 @@
                     </select>
                 </div>
                 <div class="field col-3">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto" [(ngModel)]="datosAsiento.cpte_punto" (ngModelChange)="cambiaNumFactura()">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Punto"
+                        [(ngModel)]="datosAsiento.cpte_punto" (ngModelChange)="cambiaNumFactura()">
                 </div>
                 <div class="field col-6">
-                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero" [(ngModel)]="datosAsiento.cpte_numero" (ngModelChange)="cambiaNumFactura()">
+                    <input type="text" class="input-text-codigo" style="width: 100px;" placeholder="Numero"
+                        [(ngModel)]="datosAsiento.cpte_numero" (ngModelChange)="cambiaNumFactura()">
                 </div>
             </div>
         </div>
         <div class="field col">
             <div class="field">
                 <label>Monto Total</label><br>
-                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura" [(ngModel)]="datosAsiento.montoFactura">
+                <input type="number" class="input-text-codigo" style="width: 200px;" placeholder="Monto factura"
+                    [(ngModel)]="datosAsiento.montoFactura">
             </div>
         </div>
         <div class="field col">
@@ -429,7 +460,8 @@
     <br>
     <h5>Archivos:</h5>
     <div class="formgrid row">
-        <p-fileUpload #myCargadorGasto name="demo[]" [showUploadButton]="false" url="{{API_URI}}/upload.php?folder={{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
+        <p-fileUpload #myCargadorGasto name="demo[]" [showUploadButton]="false"
+            url="{{API_URI}}/upload.php?folder={{datosAsiento.id}}" (onUpload)="onUpload($event)" [multiple]="true">
             <ng-template pTemplate="content">
             </ng-template>
         </p-fileUpload>
@@ -438,8 +470,10 @@
 
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarAsiento()"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayNuevoGasto=false"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+            (click)="guardarAsiento()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayNuevoGasto=false"></button>
     </ng-template>
 </p-dialog>
 
@@ -459,12 +493,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let dato of ordenDePago_pagarParaSeleccionar" (dblclick)="(dato.afectar = dato.saldo) && calcularDatosOrdenPago()">
+                <tr *ngFor="let dato of ordenDePago_pagarParaSeleccionar"
+                    (dblclick)="(dato.afectar = dato.saldo) && calcularDatosOrdenPago()">
                     <td>{{dato.fecha}}</td>
                     <td>{{dato.tipo}}</td>
                     <td>{{dato.descripcion}}</td>
                     <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
-                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar" (ngModelChange)="calcularDatosOrdenPago()"></td>
+                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar"
+                            (ngModelChange)="calcularDatosOrdenPago()"></td>
                 </tr>
             </tbody>
         </table>
@@ -485,12 +521,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let dato of ordenDePago_descontarParaSeleccionar"  (dblclick)="(dato.afectar = dato.saldo) && calcularDatosOrdenPago()">
+                <tr *ngFor="let dato of ordenDePago_descontarParaSeleccionar"
+                    (dblclick)="(dato.afectar = dato.saldo) && calcularDatosOrdenPago()">
                     <td>{{dato.fecha}}</td>
                     <td>{{dato.tipo}}</td>
                     <td>{{dato.descripcion}}</td>
                     <td>{{transformarDatoMostrarTabla(dato.saldo, 'moneda')}}</td>
-                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar" (ngModelChange)="calcularDatosOrdenPago()"></td>
+                    <td><input type="number" class="input-text-codigo" style="width: 200px;" [(ngModel)]="dato.afectar"
+                            (ngModelChange)="calcularDatosOrdenPago()"></td>
                 </tr>
             </tbody>
         </table>
@@ -532,11 +570,16 @@
     <hr>
     <br>
     <h5>DETALLE MEDIOS DE PAGO</h5>
-    <button pButton type="button" label="AGREGAR CHEQUE BNA" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('CHEQUE', 'BANCO NACION - Nro: ')"></button>
-    <button pButton type="button" label="AGREGAR CHEQUE NBCH" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('CHEQUE', 'NUEVO BANCO DEL CHACO - Nro: ')"></button>
-    <button pButton type="button" label="AGREGAR E-CHEQ" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('ECHEQ', 'ECHEQ - Nro: ')"></button>
-    <button pButton type="button" label="AGREGAR EFECTIVO" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('EFECTIVO', 'CAJA 1')"></button>
-    <button pButton type="button" label="AGREGAR OTRO" class="p-button-success bott" (click)="agregarMedioPagoOrdenPago('OTRO', '')"></button>
+    <button pButton type="button" label="AGREGAR CHEQUE BNA" class="p-button-success bott"
+        (click)="agregarMedioPagoOrdenPago('CHEQUE', 'BANCO NACION - Nro: ')"></button>
+    <button pButton type="button" label="AGREGAR CHEQUE NBCH" class="p-button-success bott"
+        (click)="agregarMedioPagoOrdenPago('CHEQUE', 'NUEVO BANCO DEL CHACO - Nro: ')"></button>
+    <button pButton type="button" label="AGREGAR E-CHEQ" class="p-button-success bott"
+        (click)="agregarMedioPagoOrdenPago('ECHEQ', 'ECHEQ - Nro: ')"></button>
+    <button pButton type="button" label="AGREGAR EFECTIVO" class="p-button-success bott"
+        (click)="agregarMedioPagoOrdenPago('EFECTIVO', 'CAJA 1')"></button>
+    <button pButton type="button" label="AGREGAR OTRO" class="p-button-success bott"
+        (click)="agregarMedioPagoOrdenPago('OTRO', '')"></button>
 
     <div class="formgrid row">
         <table>
@@ -551,14 +594,18 @@
             <tbody>
                 <tr *ngFor="let dato of ordenDePago_mediosPago">
                     <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.tipo"></td>
-                    <td><input type="text" class="input-text-codigo" style="width: 600px;" [(ngModel)]="dato.descripcion"></td>
-                    <td><input type="date" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.fecha"></td>
-                    <td><input type="number" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.valor" (ngModelChange)="calcularSaldoFinalPagando()"></td>
+                    <td><input type="text" class="input-text-codigo" style="width: 600px;"
+                            [(ngModel)]="dato.descripcion"></td>
+                    <td><input type="date" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.fecha">
+                    </td>
+                    <td><input type="number" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.valor"
+                            (ngModelChange)="calcularSaldoFinalPagando()"></td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="3">Total (el total a pagar es: {{transformarDatoMostrarTabla(ordenDePago_saldoFinalAfectar, 'moneda')}} )</th>
+                    <th colspan="3">Total (el total a pagar es:
+                        {{transformarDatoMostrarTabla(ordenDePago_saldoFinalAfectar, 'moneda')}} )</th>
                     <td><strong>{{transformarDatoMostrarTabla(ordenDePago_saldoFinalPagando, 'moneda')}}</strong></td>
                 </tr>
             </tfoot>
@@ -569,32 +616,38 @@
     <div class="formgrid row">
         <div class="col-4">
             <label>Razon Social</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_razon">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.beneficiario_razon">
         </div>
         <div class="col-2">
             <label>CUIT</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_cuit">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.beneficiario_cuit">
         </div>
         <div class="col-5">
             <label>DOMICILIO</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_domicilio">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.beneficiario_domicilio">
         </div>
         <div class="col-1">
             <label>CODIGO</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.beneficiario_codigo">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.beneficiario_codigo">
         </div>
     </div>
     <br>
     <div class="formgrid row">
         <div class="col">
             <label>Observaciones</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.observacion">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.observacion">
         </div>
     </div>
     <div class="formgrid row">
         <div class="col">
             <label>Numero en letras</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.total_letras">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.total_letras">
         </div>
     </div>
     <br>
@@ -614,8 +667,10 @@
 
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott" (click)="guardarOrdenPago()"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayOrdenPago=false"></button>
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+            (click)="guardarOrdenPago()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayOrdenPago=false"></button>
     </ng-template>
 </p-dialog>
 
@@ -669,9 +724,12 @@
             <tbody>
                 <tr *ngFor="let dato of ordenDePago_mediosPago">
                     <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.tipo"></td>
-                    <td><input type="text" class="input-text-codigo" style="width: 600px;" [(ngModel)]="dato.descripcion"></td>
-                    <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.fecha"></td>
-                    <td><input type="number" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.valor" (ngModelChange)="calcularSaldoFinalPagando()"></td>
+                    <td><input type="text" class="input-text-codigo" style="width: 600px;"
+                            [(ngModel)]="dato.descripcion"></td>
+                    <td><input type="text" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.fecha">
+                    </td>
+                    <td><input type="number" class="input-text-codigo" style="width: 160px;" [(ngModel)]="dato.valor"
+                            (ngModelChange)="calcularSaldoFinalPagando()"></td>
                 </tr>
             </tbody>
         </table>
@@ -681,23 +739,28 @@
     <div class="formgrid row">
         <div class="col">
             <label>Observaciones</label><br>
-            <input type="text" class="input-text-codigo" style="width: 100%;" [(ngModel)]="ordenDePago_datos.observacion">
+            <input type="text" class="input-text-codigo" style="width: 100%;"
+                [(ngModel)]="ordenDePago_datos.observacion">
         </div>
     </div>
     <br>
     <hr>
     <br>
-    
+
     <div class="formgrid row">
         <div class="col">
-            <p-button label="VER" icon="pi pi-eye" styleClass="p-button-lg" style="margin: 10px;" (click)="mostrarOrdenPago('ver')"></p-button>
-            <p-button label="DESCARGAR" icon="pi pi-download" styleClass="p-button-lg" style="margin: 10px;" (click)="mostrarOrdenPago('descargar')"></p-button>
+            <p-button label="VER" icon="pi pi-eye" styleClass="p-button-lg" style="margin: 10px;"
+                (click)="mostrarOrdenPago('ver')"></p-button>
+            <p-button label="DESCARGAR" icon="pi pi-download" styleClass="p-button-lg" style="margin: 10px;"
+                (click)="mostrarOrdenPago('descargar')"></p-button>
         </div>
     </div>
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="BORRAR" class="p-button-danger bott" (click)="borrarOrdenPago()"></button>
-        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott" (click)="displayVerOrdenPago=false"></button>
+        <button pButton pRipple type="button" label="BORRAR" class="p-button-danger bott"
+            (click)="borrarOrdenPago()"></button>
+        <button pButton pRipple type="button" label="SALIR" class="p-button-danger bott"
+            (click)="displayVerOrdenPago=false"></button>
     </ng-template>
 </p-dialog>
 
@@ -735,7 +798,8 @@
 
                 <div class="formgrid row">
                     <div *ngFor="let archivo of datoVerCPE.archivos">
-                        <div class="tarjetaCPE" style="padding: 3px; margin: 0px 0px 5px 0px;" class="{{datoVerCPE.sistema ? 'cpeSistema' : ''}}">
+                        <div class="tarjetaCPE" style="padding: 3px; margin: 0px 0px 5px 0px;"
+                            class="{{datoVerCPE.sistema ? 'cpeSistema' : ''}}">
                             <table style="width: 100%;">
                                 <tr>
                                     <td>{{archivo}}</td>
