@@ -413,8 +413,6 @@ export class CuentasCorrientesComponent {
                 kg_descarga = 0
                 monto_final = 0
 
-                this.transportista
-
                 if(constDatosCPE[0].data){
                     if(JSON.parse(constDatosCPE[0].data)){
                         if(JSON.parse(constDatosCPE[0].data).kg_descarga){
@@ -425,6 +423,19 @@ export class CuentasCorrientesComponent {
                             monto_final = ((kg_descarga * parseFloat(tarifa)) * (iva==1 ? 1.21 : 1) / 1000).toFixed(2)
                         }
                     }
+                }
+            } else {
+                const constDatosCPEConf = constDatosCPE.find((cpp:any) => { return cpp.data ? (JSON.parse(cpp.data) ? (JSON.parse(cpp.data).estado == 'CN') : false) : false})
+                if(constDatosCPEConf){
+                    ctg = constDatosCPEConf.nro_ctg
+                    cpe = constDatosCPEConf.nro_cpe
+                    tarifa = constDatosCPEConf.tarifa
+    
+                    kg_descarga = parseFloat(JSON.parse(constDatosCPEConf.data).kg_descarga)
+    
+                    const iva = this.db_condicion_iva.find((f:any) => { return f.id == this.transportista.condicion_iva }).iva
+    
+                    monto_final = ((kg_descarga * parseFloat(tarifa)) * (iva==1 ? 1.21 : 1) / 1000).toFixed(2)
                 }
             }
 
