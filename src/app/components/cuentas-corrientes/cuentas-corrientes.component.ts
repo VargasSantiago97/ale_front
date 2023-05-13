@@ -878,7 +878,6 @@ export class CuentasCorrientesComponent {
         this.ordenDePago_saldoFinalPagando = 0
 
         const transp = this.db_transportistas.find((e:any) => { return e.id == this.transportista.id})
-        const numero = this.generateNumeroOrdenDePago()
         
         var fechaHora = new Date();
         const fecha = fechaHora.toISOString().slice(0, 19).replace('T', ' ');
@@ -899,14 +898,15 @@ export class CuentasCorrientesComponent {
             beneficiario_codigo: transp.codigo,
 
             punto: PUNTO_ORDEN_PAGO,
-            numero: numero,
+            numero: 0,
 
             total: 0,
             total_letras: '',
 
-            descripcion: "ORDEN DE PAGO - N° " + PUNTO_ORDEN_PAGO.toString().padStart(2, '0') + "-" + numero.toString().padStart(5, '0'),
+            descripcion: "",
             observacion: "",
         }
+        this.generateNumeroOrdenDePago()
 
         //filtramos por SOCIO y TRANSPORTISTA
         var asientos_filtrados:any = this.db_asientos.filter((e: any) => {
@@ -1223,15 +1223,23 @@ export class CuentasCorrientesComponent {
         )
     }
 
-    generateNumeroOrdenDePago() {
-        var ordenesPago:any = this.db_ordenes_pago.filter((e:any) => { return parseInt(e.punto) == parseInt(PUNTO_ORDEN_PAGO) })
+    generateNumeroOrdenDePago(){
+        this.comunicacionService.getDB('orden_pago').subscribe(
+            (res: any) => {
+                var ordenesPago:any = res.filter((e:any) => { return parseInt(e.punto) == parseInt(PUNTO_ORDEN_PAGO) })
 
-        var numeroMasGrande:any = ordenesPago.reduce((acumulado:any, objetoActual:any) => {
-            const valor = parseInt(objetoActual.numero)
-            return Math.max(acumulado, valor);
-        }, 0);
+                var numeroMasGrande:any = ordenesPago.reduce((acumulado:any, objetoActual:any) => {
+                    const valor = parseInt(objetoActual.numero)
+                    return Math.max(acumulado, valor);
+                }, 0);
 
-        return numeroMasGrande + 1;
+                this.ordenDePago_datos.numero = parseInt(numeroMasGrande) + 1
+                this.ordenDePago_datos.descripcion = "ORDEN DE PAGO - N° " + PUNTO_ORDEN_PAGO.toString().padStart(2, '0') + "-" + (parseInt(numeroMasGrande) + 1).toString().padStart(5, '0')
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
     }
 
     mostrarOrdenPago(ver: any) {
