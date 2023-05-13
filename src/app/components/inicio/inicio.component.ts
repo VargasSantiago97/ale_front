@@ -138,6 +138,8 @@ export class InicioComponent {
         acopios: []
     };
 
+    selectedTablaInicio:any
+
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,

@@ -414,7 +414,6 @@ export class CamposComponent {
         });
         return uuid;
     }
-
     transformarDatoMostrarTabla(dato: any, tipo: any) {
         if (tipo == 'moneda') {
             const number = parseFloat(dato);

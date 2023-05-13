@@ -15,8 +15,11 @@ export class SqliteService {
         lotes: ["id", "id_establecimiento", "alias", "has", "activo", "estado"],
         silos: ["id", "id_establecimiento", "alias", "kilos", "activo", "estado"],
         produccion: ["id", "id_establecimiento", "id_socio", "porcentaje"],
+        movimientos: ["id", "id_movimiento", "id_socio", "id_establecimiento", "kg_campo", "kg_balanza", "kg_regulacion", "kg_salida", "kg_acondicionadora_entrada", "kg_acondicionadora_diferencia", "kg_acondicionadora_salida", "kg_descarga", "kg_mermas", "kg_final", "observaciones_origen", "observaciones_balanza", "observaciones_acondicionadora", "observaciones_descarga", "observaciones_contratos"],
+        movimiento_origen: ["id", "id_movimiento", "id_establecimiento", "id_origen", "tipo_origen", "kilos"]
     }
- 
+
+
     constructor(
         private http: HttpClient,
     ){}
@@ -32,10 +35,9 @@ export class SqliteService {
         sent += ') VALUES ("'
 
         this.formatoColumnas[tabla].forEach((e:any) => {
-            if(data[e]){
-                sent += data[e].toString()
-                sent += '", "'
-            }
+            const sumar = data[e] ? (data[e].toString() ? data[e].toString() : '') : ''
+            sent += sumar
+            sent += '", "'
         });
 
         sent = sent.slice(0, -3) + ')'

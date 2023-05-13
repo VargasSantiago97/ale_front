@@ -4,6 +4,7 @@ import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
 import { LoginService } from 'src/app/services/login.service';
 import * as XLSX from 'xlsx';
+import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 
 declare var vars: any;
 
@@ -34,6 +35,7 @@ export class CamionesComponent {
 
     displayFiltros: Boolean = false;
     displayDatos: Boolean = false;
+    displayOrigen: Boolean = false;
 
     datosParaMostrarRegistro: any = {}
 
@@ -128,10 +130,25 @@ export class CamionesComponent {
     };
     ordenarPor: any = "fecha"
 
+
+    //DATOS LOCALES
+    existeMovimientoLocal:any = false
+
+    db_locales: any = {}
+
+    movimientoLocal:any = {}
+
+    origenesMovimiento:any = []
+    origen_movimiento_total:any = 0
+    movimientoOrigen: any = {}
+
+    codigosMovientoOrigen: any = []
+
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
-        private loginService: LoginService
+        private loginService: LoginService,
+        private sqlite: SqliteService
     ) { }
 
     ngOnInit() {
@@ -211,6 +228,12 @@ export class CamionesComponent {
         this.obtenerCartasPorte()
         this.obtenerAsientos()
         this.obtenerOrdenesPago()
+
+        this.getDB('lotes')
+        this.getDB('silos')
+        this.getDB('establecimientos')
+        this.getDB('movimientos')
+        this.getDB('movimiento_origen')
     }
 
     obtenerCamiones() {
@@ -492,6 +515,8 @@ export class CamionesComponent {
             });
 
             this.displayFiltros = !mantenerFiltro
+
+            this.dataParaMostrarTablaTotales.cultivo = this.dataParaMostrarTabla.length
         }
 
     }
@@ -545,7 +570,6 @@ export class CamionesComponent {
             creado_el: mov.creado_el ? mov.creado_el : '',
             modificado: this.transformDatoTabla(mov.editado_por, "user"),
             modificado_el: mov.editado_el ? mov.editado_el : '',
-
         }
 
 
@@ -647,7 +671,6 @@ export class CamionesComponent {
         const kg_mermas = dato.kg_mermas ? (parseInt(dato.kg_mermas) ? parseInt(dato.kg_mermas) : 0) : 0
         const kg_final = dato.kg_final ? (parseInt(dato.kg_final) ? parseInt(dato.kg_final) : 0) : 0
 
-        this.dataParaMostrarTablaTotales.cultivo ++
         this.dataParaMostrarTablaTotales.kg_tara += kg_tara
         this.dataParaMostrarTablaTotales.kg_bruto += kg_bruto
         this.dataParaMostrarTablaTotales.kg_neto += kg_neto
@@ -741,14 +764,37 @@ export class CamionesComponent {
         return registro.id
     }
 
-
     verDatosRegistro(mov_id:any){
         let movimiento = this.db_movimientos.find((e:any) => { return e.id == mov_id})
         this.displayDatos = true
 
-        console.log(this.movimientoToMostrarTabla(movimiento))
-
         this.datosParaMostrarRegistro = this.movimientoToMostrarTabla(movimiento)
+
+        //datos locales
+        this.existeMovimientoLocal = this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == mov_id })
+        if(this.existeMovimientoLocal){
+            this.movimientoLocal = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == mov_id })
+        }
+
+        //BUSCAR ORIGENES Y CONTRATOS
+        this.origenesMovimiento = []
+        const orgMovs = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == mov_id })
+
+        this.origen_movimiento_total = 0
+
+        orgMovs.forEach((e:any) => {
+            this.origenesMovimiento.push({
+                id: e.id,
+                id_movimiento: e.id_movimiento,
+                kilos: e.kilos,
+                tipo_origen: e.tipo_origen.toUpperCase(),
+
+                id_establecimiento: this.transformarDatoMostrar(e.id_establecimiento, 'datoLocalEstablecimiento'),
+                id_origen: this.transformarDatoMostrar(e.id_origen, e.tipo_origen)
+            })
+
+            this.origen_movimiento_total += parseInt(e.kilos)
+        })
     }
 
 
@@ -831,6 +877,16 @@ export class CamionesComponent {
 
         if (tipo == 'provinciaCPE') {
             return CPE_PROVINCIAS.some((e: any) => { return e.codigo == dato }) ? CPE_PROVINCIAS.find((e: any) => { return e.codigo == dato }).descripcion : dato
+        }
+        
+        if (tipo == 'datoLocalEstablecimiento') {
+            return this.db_locales['establecimientos'].some((e:any) => { return e.id == dato }) ? this.db_locales['establecimientos'].find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if (tipo == 'lote') {
+            return this.db_locales['lotes'].some((e:any) => { return e.id == dato }) ? this.db_locales['lotes'].find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if (tipo == 'silo') {
+            return this.db_locales['silos'].some((e:any) => { return e.id == dato }) ? this.db_locales['silos'].find((e:any) => { return e.id == dato }).alias : dato
         }
 
         return dato
@@ -927,7 +983,6 @@ export class CamionesComponent {
     }
 
 
-
     objUtf8ToBase64(ent: any) {
         let str = JSON.stringify(ent)
         let bytes = new TextEncoder().encode(str);
@@ -940,7 +995,6 @@ export class CamionesComponent {
         let obj = JSON.parse(utf8String)
         return obj;
     }
-
     CPE_guardarDB() {
         this.datosCPE.activo = 1
         this.datosCPE.estado = 1
@@ -997,7 +1051,6 @@ export class CamionesComponent {
         )
 
     }
-
     exportToExcel() {
         /* Crear un libro de trabajo */
         const workbook = XLSX.utils.book_new();
@@ -1010,5 +1063,226 @@ export class CamionesComponent {
       
         /* Descargar el archivo */
         XLSX.writeFile(workbook, 'datos.xlsx');
-      }
+    }
+
+
+    //###################################################
+    //###################################################
+    //###################################################
+    //###################################################
+    //               MOVIMIENTOS LOCALES
+    //###################################################
+    //###################################################
+    //###################################################
+    //###################################################
+
+    crearMovimientoLocal(){
+        let movimiento = this.db_movimientos.find((e:any) => { return e.id == this.datosParaMostrarRegistro.id })
+        
+        const idd = this.generarID('movimientos')
+
+        this.movimientoLocal = {
+            id: idd,
+            id_movimiento: movimiento.id,
+            id_socio: movimiento.id_socio,
+            id_establecimiento: movimiento.id_origen,
+            kg_campo: movimiento.kg_campo,
+            kg_balanza: movimiento.kg_neto,
+            kg_regulacion: movimiento.kg_regulacion,
+            kg_salida: movimiento.kg_neto_final,
+            kg_acondicionadora_entrada: '',
+            kg_acondicionadora_diferencia: '',
+            kg_acondicionadora_salida: '',
+            kg_descarga: this.datosParaMostrarRegistro.kg_neto_descarga,
+            kg_mermas: this.datosParaMostrarRegistro.kg_mermas,
+            kg_final: this.datosParaMostrarRegistro.kg_final,
+            observaciones_origen: '',
+            observaciones_balanza: movimiento.observaciones,
+            observaciones_acondicionadora: '',
+            observaciones_descarga: '',
+            observaciones_contratos: ''
+        }
+
+        this.crearDatoDB('movimientos', this.movimientoLocal, () => { 
+            this.existeMovimientoLocal = true
+            this.getDB('movimientos', () => {
+                this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+            })
+        })
+    }
+    guardarCambiosMovimientoLocal(){
+        if(confirm('Desea editar?')){
+            this.editarDB('movimientos', this.movimientoLocal)
+        }
+    }
+    borrarMovimientoLocal(){
+        if(confirm('Desea eliminar el registro local?')){
+            this.borrarDB('movimientos', this.movimientoLocal.id, () => {
+                //this.getDB('movimientos') mvimiento_origen / movimiento_contratos
+                this.getDB('movimientos', () => {
+                    this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+                })
+            })
+        }
+    }
+
+
+    nuevoOrigenMovimiento(){
+        const idd = this.generarID('movimiento_origen')
+
+        this.movimientoOrigen = {
+            id: idd,
+            id_movimiento: this.movimientoLocal.id_movimiento,
+            id_establecimiento: this.movimientoLocal.id_establecimiento,
+            id_origen: null,
+            tipo_origen: 'lote',
+            kilos: 0
+        }
+
+        if(this.datosParaMostrarRegistro.tipo_orig == 'Silo'){
+            this.movimientoOrigen.tipo_origen = 'silo'
+        }
+        if(this.datosParaMostrarRegistro.kg_campo){
+            this.movimientoOrigen.kilos = parseInt(this.datosParaMostrarRegistro.kg_campo) - parseInt(this.origen_movimiento_total)
+        }
+
+        this.setearOrigen()
+
+        this.displayOrigen = true
+    }
+    guardarOrigenMovimiento(){
+        this.crearDatoDB('movimiento_origen', this.movimientoOrigen, () => {
+            this.getDB('movimiento_origen', () => {
+                this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+            })
+        })
+    }
+    eliminarOrigenMovimiento(idd:any){
+        if(confirm('Desea eliminar?')){
+            this.borrarDB('movimiento_origen', idd, () => {
+                this.getDB('movimiento_origen', () => {
+                    this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+                })
+            })
+        }
+    }
+    setearOrigen(){
+        this.codigosMovientoOrigen = this.db_locales[this.movimientoOrigen.tipo_origen + 's'].filter((e:any) => { return (e.id_establecimiento == this.movimientoOrigen.id_establecimiento) && (e.estado == 1) && (e.activo == 1) })
+        if(this.codigosMovientoOrigen){
+            if(this.codigosMovientoOrigen.length > 0){
+                this.movimientoOrigen.id_origen = this.codigosMovientoOrigen[0].id
+            }
+        }
+    }
+
+    getDB(tabla:any, func:any = false){
+        this.sqlite.getDB(tabla).subscribe(
+            (res:any) => {
+                if(res){
+                    this.db_locales[tabla] = res
+
+                    if(func){
+                        func()
+                    }
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta' })
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND' })
+            }
+        )
+    }
+    crearDatoDB(tabla:any, data:any, func:any = false){
+        this.sqlite.createDB(tabla,data).subscribe(
+            (res:any) => {
+                if(res){
+                    if(res.mensaje){
+                        this.messageService.add({ severity: 'success', summary: 'CORRECTO', detail: 'Creado con exito' })
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error en backend' })
+                    }
+                    if(func){
+                        func()
+                    }
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta' })
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND' })
+            }
+        )
+    }
+    editarDB(tabla:any, data:any, func:any = false) {
+        this.sqlite.updateDB(tabla, data).subscribe(
+            (res:any) => {
+                if(res){
+                    if(res.mensaje){
+                        this.messageService.add({ severity: 'success', summary: 'CORRECTO', detail: 'Modificado con exito' })
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error en backend' })
+                    }
+                    if(func){
+                        func()
+                    }
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta' })
+                }            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
+    }
+    borrarDB(tabla:any, idd:any, func:any = false) {
+        this.sqlite.deleteDB(tabla,idd).subscribe(
+            (res:any) => {
+                if(res){
+                    if(res.mensaje){
+                        this.messageService.add({ severity: 'success', summary: 'CORRECTO', detail: 'Borrado con exito' })
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error en backend' })
+                    }
+
+                    if(func){
+                        func()
+                    }
+
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta' })
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND' })
+            }
+        )
+    }
+    generarID(tabla:any){
+        var idd:any = this.generateUUID()
+        if(!this.db_locales[tabla].some((e:any) => { return e.id == idd})){
+            return idd
+        }
+        idd = this.generateUUID()
+        if(!this.db_locales[tabla].some((e:any) => { return e.id == idd})){
+            return idd
+        }
+        idd = this.generateUUID()
+        if(!this.db_locales[tabla].some((e:any) => { return e.id == idd})){
+            return idd
+        }
+        idd = this.generateUUID()
+        return idd
+    }
+    generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    }
 }

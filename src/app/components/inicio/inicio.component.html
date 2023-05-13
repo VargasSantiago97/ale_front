@@ -21,9 +21,9 @@
 
 <br><br>
 
-<p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="single"
+<p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="multiple" [metaKeySelection]="true"
     [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-    [paginator]="true" [rows]="25" [showCurrentPageReport]="true"
+    [paginator]="true" [rows]="25" [showCurrentPageReport]="true" [(selection)]="selectedTablaInicio" dataKey="ctg"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
     <ng-template pTemplate="caption">
@@ -38,9 +38,9 @@
             </th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-registro let-columns="columns">
-        <tr (dblclick)="mostrarMovimiento(registro.id)">
-            <td *ngFor="let col of columns" [style]="{padding: '0px', height: '50px'}">
+    <ng-template pTemplate="body" let-registro let-columns="columns" let-rowIndex="rowIndex">
+        <tr (dblclick)="mostrarMovimiento(registro.id)" [pSelectableRow]="registro" [pSelectableRowIndex]="rowIndex">
+            <td *ngFor="let col of columns" [style]="{padding: '0px', height: '50px'}" title="{{col.header}}">
 
                 <div *ngIf="(col.field != 'orden') && (col.field != 'ctg') && (col.field != 'observaciones')">
                     {{registro[col.field]}}

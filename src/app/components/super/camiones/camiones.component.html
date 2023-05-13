@@ -6,12 +6,9 @@
 <div #BOTONES>
     <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
         (click)="displayFiltros=true"></button>
-    <button pButton pRipple type="button" label="XLSX" class="p-button-success bott"
-        (click)="exportToExcel()"></button>
+    <button pButton pRipple type="button" label="XLSX" class="p-button-success bott" (click)="exportToExcel()"></button>
     <br><br>
 </div>
-
-
 
 <div #TABLA style="width: 100%; overflow-x: auto;">
     <style>
@@ -49,7 +46,7 @@
         <tbody>
             <tr *ngFor="let registro of dataParaMostrarTabla">
                 <td style="position: sticky; left: 0; padding: 0px;">
-                    <button style="margin: 0px; border: none; outline: none; width: 40px;"
+                    <button style="margin: 0px; border: none; outline: none; width: 40px;" class="{{registro.movimientoLocal}}"
                         (click)="verDatosRegistro(registro.id)">VER</button>
                 </td>
                 <td *ngFor="let col of cols" style="padding: 1px;">
@@ -74,141 +71,6 @@
     </table>
 </div>
 <br><br>
-
-<div #TOTALES class="tarjeta" style="margin: 10px;">
-    <div class="formgrid row">
-        <div class="field col">
-            <div class="field">
-                <p-card header="Rindes" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p></p>
-                </p-card>
-            </div>
-        </div>
-        <div class="field col">
-            <div class="field">
-                <p-card header="Producción" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <table>
-                        <thead>
-                            <tr style="padding: 0px;">
-                                <th style="padding: 0px; text-align: center;">
-                                    Socio
-                                </th>
-                                <th style="padding: 0px; text-align: center;">
-                                    Porcentaje
-                                </th>
-                                <th style="padding: 0px; text-align: center;">
-                                    Kgs
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let registro of [1, 2, 3, 4, 5]">
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot style="background-color: #dfdfdf;">
-                            <tr>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </p-card>
-            </div>
-        </div>
-        <div class="field col">
-            <div class="field">
-                <p-card header="Retiros Socios" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <table>
-                        <thead>
-                            <tr style="padding: 0px;">
-                                <th style="padding: 0px; text-align: center;">
-                                    Socio
-                                </th>
-                                <th style="padding: 0px; text-align: center;">
-                                    Corresp.
-                                </th>
-                                <th style="padding: 0px; text-align: center;">
-                                    Retiro (kg)
-                                </th>
-                                <th style="padding: 0px; text-align: center;">
-                                    <i class="pi pi-truck"></i>
-                                </th>
-                                <th style="padding: 0px; text-align: center;">
-                                    Dif (kg)
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let registro of [1, 2, 3, 4, 5]">
-                                <td style="padding: 1px;">
-                                    <p>Norte</p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p>100.000</p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p>100.000</p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p>10</p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p>100.000</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot style="background-color: #dfdfdf;">
-                            <tr>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                                <td style="padding: 1px;">
-                                    <p></p>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </p-card>
-            </div>
-        </div>
-        <div class="field col">
-            <div class="field">
-                <p-card header="Destinos" [style]="{'width': '100%', 'margin-bottom': '2em'}">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
-                        repudiandae numquam deserunt
-                        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
-                        cupiditate neque quas!</p>
-                </p-card>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '98vw', height: '900px'}"
     [draggable]="true" [resizable]="false">
@@ -365,6 +227,7 @@
             </div>
             <div class="field col">
                 <div class="field">
+                    <p>KG CAMPO: <strong>{{datosParaMostrarRegistro.kg_campo}}</strong></p>
                     <p>KG Bruto: {{datosParaMostrarRegistro.kg_bruto}}</p>
                     <p>KG Tara: {{datosParaMostrarRegistro.kg_tara}}</p>
                     <p>KG Neto: <strong>{{datosParaMostrarRegistro.kg_neto}}</strong></p>
@@ -375,27 +238,230 @@
         </div>
     </div>
     <br>
-    <h6>Datos CPE: {{datosParaMostrarRegistro.fecha}}</h6>
-    <div class="tarjeta">
-        <div class="formgrid row">
-            <div class="field col">
-                <div class="field">
-                    <p>Origen: <strong>{{datosParaMostrarRegistro.campo}}
-                        </strong>({{datosParaMostrarRegistro.tipo_orig}})</p>
-                    <p>Cultivo: <strong>{{datosParaMostrarRegistro.cultivo}}</strong></p>
-                    <p>Orden: <strong>{{datosParaMostrarRegistro.orden}}</strong></p>
-                    <p>Benef Orden: {{datosParaMostrarRegistro.benef_orden}}</p>
-                    <p>Obs: <strong>{{datosParaMostrarRegistro.observaciones}}</strong></p>
+    <hr>
+    <br>
+    <h4 style="text-align: center;">Datos Locales:</h4>
+    <div class="formgrid row" *ngIf="existeMovimientoLocal">
+        <div #ORIGEN class="field col">
+            <div class="field tarjeta" style="height: 400px;">
+                <h5 style="text-align: center;"><strong>ORIGEN</strong></h5>
+                <hr>
+                <h6>Origen planilla: <strong>{{movimientoLocal.kg_campo}}</strong>kgs</h6>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">L/S</th>
+                            <th style="text-align: center;">Establecimiento</th>
+                            <th style="text-align: center;">Lote/Silo</th>
+                            <th style="text-align: center;">Kilos</th>
+                            <th style="text-align: center;">#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let origen_movimiento of origenesMovimiento">
+                            <td>{{origen_movimiento.tipo_origen}}</td>
+                            <td>{{origen_movimiento.id_establecimiento}}</td>
+                            <td>{{origen_movimiento.id_origen}}</td>
+                            <td>{{origen_movimiento.kilos}}</td>
+                            <td>
+                                <button (click)="eliminarOrigenMovimiento(origen_movimiento.id)" style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i class="pi pi-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>TOTAL</strong></td>
+                            <td><strong>{{origen_movimiento_total}}</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br>
+                <button (click)="nuevoOrigenMovimiento()">Nuevo</button>
+                <div class="formgrid row">
+                    <textarea rows="3" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_origen"></textarea>
+                </div>
+            </div>
+        </div>
+        <div #BALANZA class="field col">
+            <div class="field tarjeta" style="height: 400px;">
+                <h5 style="text-align: center;"><strong>BALANZA</strong></h5>
+                <hr>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>ENTRADA</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_balanza" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>REGULACION</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_regulacion" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>SALIDA</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_salida" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <br><br>
+                <div class="formgrid row">
+                    <textarea rows="6" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_balanza"></textarea>
+                </div>
+            </div>
+        </div>
+        <div #ACONDICIONADO class="field col">
+            <div class="field tarjeta" style="height: 400px;">
+                <h5 style="text-align: center;"><strong>ACONDICIONADO</strong></h5>
+                <hr>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>ENTRADA</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_entrada" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>SALIDA</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_salida" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>DIFERENCIA</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_diferencia" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <br><br>
+                <div class="formgrid row">
+                    <textarea rows="6" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_acondicionadora"></textarea>
+                </div>
+            </div>
+        </div>
+        <div #DESTINO class="field col">
+            <div class="field tarjeta" style="height: 400px;">
+                <h5 style="text-align: center;"><strong>DESTINO</strong></h5>
+                <hr>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>ENTRADA</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_descarga" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>MERMAS</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_mermas" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: right; margin: 4px 0px 0px 0px;">
+                        <strong>FINAL</strong>
+                    </div>
+                    <div class="field col">
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_final" class="input-text-codigo">Kgs
+                    </div>
+                </div>
+                <br><br>
+                <div class="formgrid row">
+                    <textarea rows="6" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_descarga"></textarea>
+                </div>
+            </div>
+        </div>
+        <div #CONTRATOS class="field col">
+            <div class="field tarjeta" style="height: 400px;">
+                <h5 style="text-align: center;"><strong>CONTRATOS</strong></h5>
+                <hr>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CONTRATO</th>
+                            <th>KILOS</th>
+                            <th>#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SILO</td>
+                            <td>LA PROVIDENCIA</td>
+                            <td>
+                                <button style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i class="pi pi-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>TOTAL</strong></td>
+                            <td><strong>35200</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br><br>
+                <div class="formgrid row">
+                    <textarea rows="3" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_contratos"></textarea>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="formgrid row" *ngIf="!existeMovimientoLocal">
+        <button (click)="crearMovimientoLocal()">CREAR MOVIMIENTO LOCAL</button>
+    </div>
     <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott"
-            (click)="datosParaTabla(true)"></button>
+        <button pButton pRipple type="button" label="BORRAR LOCAL" class="p-button-danger bott"
+            (click)="borrarMovimientoLocal()"></button>
+        <button pButton pRipple type="button" label="GUARDAR CAMBIOS" class="p-button-success bott"
+            (click)="guardarCambiosMovimientoLocal()"></button>
     </ng-template>
 </p-dialog>
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<p-dialog header="ORIGEN" [(visible)]="displayOrigen" [modal]="true" [style]="{width: '50vw', height: '20vw'}"
+    [draggable]="true" [resizable]="false">
+    <h6>ORIGEN:</h6>
+    <div class="tarjeta">
+        <div class="formgrid row">
+            <div class="field col">
+                <select class="input-text-codigo" style="width: 130px;" [(ngModel)]="movimientoOrigen.tipo_origen" (ngModelChange)="setearOrigen()">
+                    <option value="lote">LOTE</option>
+                    <option value="silo">SILO</option>
+                </select>
+            </div>
+            <div class="field col">
+                <select class="input-text-codigo" style="width: 300px;" [(ngModel)]="movimientoOrigen.id_establecimiento" (ngModelChange)="setearOrigen()">
+                    <option *ngFor="let est of db_locales.establecimientos" value="{{est.id}}">{{est.alias}}</option>
+                </select>
+            </div>
+            <div class="field col">
+                <select class="input-text-codigo" style="width: 300px;" [(ngModel)]="movimientoOrigen.id_origen">
+                    <option *ngFor="let cod of codigosMovientoOrigen" value="{{cod.id}}">{{cod.alias}}</option>
+                </select>
+            </div>
+            <div class="field col">
+                <input class="input-text-codigo" style="width: 100px;" type="number" [(ngModel)]="movimientoOrigen.kilos">
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
+            (click)="guardarOrigenMovimiento()"></button>
+    </ng-template>
+</p-dialog>
