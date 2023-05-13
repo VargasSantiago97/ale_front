@@ -15,41 +15,43 @@ import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resu
 import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
 import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actualizar-cpe.component';
 import { CamposComponent } from './components/super/campos/campos.component';
+import { ContratosComponent } from './components/super/contratos/contratos.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/inicio', pathMatch: 'full'},
-  { path: 'inicio', component: InicioComponent },
-  { path: 'transportistas', component: TransportistasComponent },
+    { path: '', redirectTo: '/inicio', pathMatch: 'full' },
+    { path: 'inicio', component: InicioComponent },
+    { path: 'transportistas', component: TransportistasComponent },
 
 
-  { path: 'unlogin', component: UnloginComponent },
-  { path: 'login', component: LoginComponent },
+    { path: 'unlogin', component: UnloginComponent },
+    { path: 'login', component: LoginComponent },
 
-  { path: 'crearOrdenTrabajo', component: CrearOrdenTrabajoComponent },
+    { path: 'crearOrdenTrabajo', component: CrearOrdenTrabajoComponent },
 
-  { path: 'tablas', component: TablasComponent },
-  { path: 'intervinientes', component: IntervinientesComponent },
-  { path: 'ctasctes', component: CuentasCorrientesComponent },
+    { path: 'tablas', component: TablasComponent },
+    { path: 'intervinientes', component: IntervinientesComponent },
+    { path: 'ctasctes', component: CuentasCorrientesComponent },
 
 
 
-  //superUser
-  { path: 'camiones', component: CamionesComponent },
-  { path: 'pagosEmitidos', component: PagosEmitidosComponent },
-  { path: 'resumenCuentas', component: ResumenCuentasComponent },
+    //superUser
+    { path: 'camiones', component: CamionesComponent },
+    { path: 'pagosEmitidos', component: PagosEmitidosComponent },
+    { path: 'resumenCuentas', component: ResumenCuentasComponent },
 
-  { path: 'prepararPagos', component: PrepararPagosComponent},
-  { path: 'actualizarCPE', component: ActualizarCPEComponent},
-  
-  { path: 'campos', component: CamposComponent},
+    { path: 'prepararPagos', component: PrepararPagosComponent },
+    { path: 'actualizarCPE', component: ActualizarCPEComponent },
+
+    { path: 'campos', component: CamposComponent },
+    { path: 'contratos', component: ContratosComponent },
 
 ];
 
 
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
 export class AppRoutingModule { }

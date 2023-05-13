@@ -570,6 +570,10 @@ export class CamionesComponent {
             creado_el: mov.creado_el ? mov.creado_el : '',
             modificado: this.transformDatoTabla(mov.editado_por, "user"),
             modificado_el: mov.editado_el ? mov.editado_el : '',
+            tarifa: '',
+            planta_destino: '',
+            km_recorrer: '',
+            cod_localidad: ''
         }
 
 
@@ -614,12 +618,17 @@ export class CamionesComponent {
                     const localEstado = e.data ? (JSON.parse(e.data) ? (JSON.parse(e.data).estado + ' ') : '') : '' 
                     estado += localEstado
 
-                    if(localEstado != 'AN '){
+                    if(localEstado != 'AN ' && localEstado != 'RE '){
                         dato.rteComVta = e.cuit_remitente_comercial_venta_primaria ? this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria, "intervinientesCuit") : ''
                         dato.corredor_pri = e.cuit_corredor_venta_primaria ? this.transformDatoTabla(e.cuit_corredor_venta_primaria, "intervinientesCuit") : ''
                         dato.corredor_sec = e.cuit_corredor_venta_secundaria ? this.transformDatoTabla(e.cuit_corredor_venta_secundaria, "intervinientesCuit") : ''
                         dato.destino = e.cuit_destino ? this.transformDatoTabla(e.cuit_destino, "intervinientesCuit") : ''
                         dato.destinatario = e.cuit_destinatario ? this.transformDatoTabla(e.cuit_destinatario, "intervinientesCuit") : ''
+
+                        dato.tarifa = e.tarifa ? e.tarifa : ''
+                        dato.planta_destino = e.planta_destino ? e.planta_destino : ''
+                        dato.km_recorrer = e.km_recorrer ? e.km_recorrer : ''
+                        dato.cod_localidad = e.cod_localidad ? e.cod_localidad : ''
                     }
                 });
                 dato.estado = estado
@@ -1100,7 +1109,12 @@ export class CamionesComponent {
             observaciones_balanza: movimiento.observaciones,
             observaciones_acondicionadora: '',
             observaciones_descarga: '',
-            observaciones_contratos: ''
+            observaciones_contratos: '',
+            ok_origen: 1,
+	        ok_balanza: 1,
+	        ok_acondicionadora: 1,
+	        ok_descarga: 1,
+	        ok_contratos: 1,
         }
 
         this.crearDatoDB('movimientos', this.movimientoLocal, () => { 
@@ -1154,6 +1168,7 @@ export class CamionesComponent {
         this.crearDatoDB('movimiento_origen', this.movimientoOrigen, () => {
             this.getDB('movimiento_origen', () => {
                 this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+                this.displayOrigen = false
             })
         })
     }

@@ -80,6 +80,7 @@ import { ResumenCuentasComponent } from './components/super/resumen-cuentas/resu
 import { PrepararPagosComponent } from './components/super/preparar-pagos/preparar-pagos.component';
 import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actualizar-cpe.component';
 import { CamposComponent } from './components/super/campos/campos.component';
+import { ContratosComponent } from './components/super/contratos/contratos.component';
 
 
 @NgModule({
@@ -107,7 +108,8 @@ import { CamposComponent } from './components/super/campos/campos.component';
     ResumenCuentasComponent,
     PrepararPagosComponent,
     ActualizarCPEComponent,
-    CamposComponent
+    CamposComponent,
+    ContratosComponent
   ],
   imports: [
     BrowserModule,

@@ -46,8 +46,8 @@
         <tbody>
             <tr *ngFor="let registro of dataParaMostrarTabla">
                 <td style="position: sticky; left: 0; padding: 0px;">
-                    <button style="margin: 0px; border: none; outline: none; width: 40px;" class="{{registro.movimientoLocal}}"
-                        (click)="verDatosRegistro(registro.id)">VER</button>
+                    <button style="margin: 0px; border: none; outline: none; width: 40px;"
+                        class="{{registro.movimientoLocal}}" (click)="verDatosRegistro(registro.id)">VER</button>
                 </td>
                 <td *ngFor="let col of cols" style="padding: 1px;">
                     <input type="text" [(ngModel)]="registro[col.field]"
@@ -264,7 +264,9 @@
                             <td>{{origen_movimiento.id_origen}}</td>
                             <td>{{origen_movimiento.kilos}}</td>
                             <td>
-                                <button (click)="eliminarOrigenMovimiento(origen_movimiento.id)" style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i class="pi pi-trash"></i></button>
+                                <button (click)="eliminarOrigenMovimiento(origen_movimiento.id)"
+                                    style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i
+                                        class="pi pi-trash"></i></button>
                             </td>
                         </tr>
                     </tbody>
@@ -326,7 +328,8 @@
                         <strong>ENTRADA</strong>
                     </div>
                     <div class="field col">
-                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_entrada" class="input-text-codigo">Kgs
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_entrada"
+                            class="input-text-codigo">Kgs
                     </div>
                 </div>
                 <div class="formgrid row">
@@ -334,7 +337,8 @@
                         <strong>SALIDA</strong>
                     </div>
                     <div class="field col">
-                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_salida" class="input-text-codigo">Kgs
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_salida"
+                            class="input-text-codigo">Kgs
                     </div>
                 </div>
                 <div class="formgrid row">
@@ -342,12 +346,14 @@
                         <strong>DIFERENCIA</strong>
                     </div>
                     <div class="field col">
-                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_diferencia" class="input-text-codigo">Kgs
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_acondicionadora_diferencia"
+                            class="input-text-codigo">Kgs
                     </div>
                 </div>
                 <br><br>
                 <div class="formgrid row">
-                    <textarea rows="6" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_acondicionadora"></textarea>
+                    <textarea rows="6" pInputTextarea
+                        [(ngModel)]="movimientoLocal.observaciones_acondicionadora"></textarea>
                 </div>
             </div>
         </div>
@@ -402,7 +408,9 @@
                             <td>SILO</td>
                             <td>LA PROVIDENCIA</td>
                             <td>
-                                <button style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i class="pi pi-trash"></i></button>
+                                <button
+                                    style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i
+                                        class="pi pi-trash"></i></button>
                             </td>
                         </tr>
                     </tbody>
@@ -421,6 +429,69 @@
             </div>
         </div>
     </div>
+    <br>
+    <div class="formgrid row">
+        <div class="field col">
+            <select [(ngModel)]="movimientoLocal.ok_origen" class="input-text-codigo"
+                style="width: 250px; height: 30px;">
+                <option value=1>CORRECTO</option>
+                <option value=2>INCOMPLETO</option>
+                <option value=3>FALTAN DATOS</option>
+                <option value=4>VERIFICAR</option>
+            </select>
+            <button
+                style="width: 100px; height: 50px; margin: 0px 0px 0px 30px; border-radius: 5px; background-color: rgba(18, 219, 0, 0.24);"
+                (click)="movimientoLocal.ok_origen = 1">OK</button>
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="movimientoLocal.ok_balanza" class="input-text-codigo"
+                style="width: 250px; height: 30px;">
+                <option value=1>CORRECTO</option>
+                <option value=2>INCOMPLETO</option>
+                <option value=3>FALTAN DATOS</option>
+                <option value=4>VERIFICAR</option>
+            </select>
+            <button
+                style="width: 100px; height: 50px; margin: 0px 0px 0px 30px; border-radius: 5px; background-color: rgba(18, 219, 0, 0.24);"
+                (click)="movimientoLocal.ok_balanza = 1">OK</button>
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="movimientoLocal.ok_acondicionadora" class="input-text-codigo"
+                style="width: 250px; height: 30px;">
+                <option value=1>CORRECTO</option>
+                <option value=2>INCOMPLETO</option>
+                <option value=3>FALTAN DATOS</option>
+                <option value=4>VERIFICAR</option>
+            </select>
+            <button
+                style="width: 100px; height: 50px; margin: 0px 0px 0px 30px; border-radius: 5px; background-color: rgba(18, 219, 0, 0.24);"
+                (click)="movimientoLocal.ok_acondicionadora = 1">OK</button>
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="movimientoLocal.ok_descarga" class="input-text-codigo"
+                style="width: 250px; height: 30px;">
+                <option value=1>CORRECTO</option>
+                <option value=2>INCOMPLETO</option>
+                <option value=3>FALTAN DATOS</option>
+                <option value=4>VERIFICAR</option>
+            </select>
+            <button
+                style="width: 100px; height: 50px; margin: 0px 0px 0px 30px; border-radius: 5px; background-color: rgba(18, 219, 0, 0.24);"
+                (click)="movimientoLocal.ok_descarga = 1">OK</button>
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="movimientoLocal.ok_contratos" class="input-text-codigo"
+                style="width: 250px; height: 30px;">
+                <option value=1>CORRECTO</option>
+                <option value=2>INCOMPLETO</option>
+                <option value=3>FALTAN DATOS</option>
+                <option value=4>VERIFICAR</option>
+            </select>
+            <button
+                style="width: 100px; height: 50px; margin: 0px 0px 0px 30px; border-radius: 5px; background-color: rgba(18, 219, 0, 0.24);"
+                (click)="movimientoLocal.ok_contratos = 1">OK</button>
+        </div>
+    </div>
 
     <div class="formgrid row" *ngIf="!existeMovimientoLocal">
         <button (click)="crearMovimientoLocal()">CREAR MOVIMIENTO LOCAL</button>
@@ -428,6 +499,8 @@
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="BORRAR LOCAL" class="p-button-danger bott"
             (click)="borrarMovimientoLocal()"></button>
+        <button pButton pRipple type="button" label="TODO OK" class="p-button-success bott"
+            (click)="(movimientoLocal.ok_origen = 1) && (movimientoLocal.ok_balanza = 1) && (movimientoLocal.ok_acondicionadora = 1) && (movimientoLocal.ok_descarga = 1) && (movimientoLocal.ok_contratos = 1)"></button>
         <button pButton pRipple type="button" label="GUARDAR CAMBIOS" class="p-button-success bott"
             (click)="guardarCambiosMovimientoLocal()"></button>
     </ng-template>
@@ -440,13 +513,15 @@
     <div class="tarjeta">
         <div class="formgrid row">
             <div class="field col">
-                <select class="input-text-codigo" style="width: 130px;" [(ngModel)]="movimientoOrigen.tipo_origen" (ngModelChange)="setearOrigen()">
+                <select class="input-text-codigo" style="width: 130px;" [(ngModel)]="movimientoOrigen.tipo_origen"
+                    (ngModelChange)="setearOrigen()">
                     <option value="lote">LOTE</option>
                     <option value="silo">SILO</option>
                 </select>
             </div>
             <div class="field col">
-                <select class="input-text-codigo" style="width: 300px;" [(ngModel)]="movimientoOrigen.id_establecimiento" (ngModelChange)="setearOrigen()">
+                <select class="input-text-codigo" style="width: 300px;"
+                    [(ngModel)]="movimientoOrigen.id_establecimiento" (ngModelChange)="setearOrigen()">
                     <option *ngFor="let est of db_locales.establecimientos" value="{{est.id}}">{{est.alias}}</option>
                 </select>
             </div>
@@ -456,7 +531,8 @@
                 </select>
             </div>
             <div class="field col">
-                <input class="input-text-codigo" style="width: 100px;" type="number" [(ngModel)]="movimientoOrigen.kilos">
+                <input class="input-text-codigo" style="width: 100px;" type="number"
+                    [(ngModel)]="movimientoOrigen.kilos">
             </div>
         </div>
     </div>

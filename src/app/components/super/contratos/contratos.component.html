@@ -1,0 +1,108 @@
+<div style="text-align: center;"
+    *ngIf="spinnerSocios || spinnerContratos || spinnerGranos || spinnerIntervinientes">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+<div #TABLA style="width: 100%; overflow-x: auto;" style="padding: 50px;">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0 auto;
+            font-size: 14px;
+            color: #333;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+    </style>
+    <table>
+        <thead>
+            <tr style="padding: 0px;">
+                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;">
+                    {{col.header}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let registro of dataParaMostrarTabla" (dblclick)="mostrarContrato(registro.id)">
+                <td *ngFor="let col of cols" style="padding: 1px;">
+                    {{registro[col.field]}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <button (click)="mostrarContrato()">NUEVO</button>
+</div>
+
+<p-dialog header="CONTRATO" [(visible)]="displayContrato" [style]="{width: '90vw', height: '90vw'}">
+
+    <div class="formgrid row">
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px;">FECHA CONTRATO</label>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_contrato" dateFormat="dd/mm/yy" inputId="dateformat"></p-calendar>
+        </div>
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px;">FECHA DESDE</label>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_desde" dateFormat="dd/mm/yy" inputId="dateformat"></p-calendar>
+        </div>
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px;">FECHA HASTA</label>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_hasta" dateFormat="dd/mm/yy" inputId="dateformat"></p-calendar>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <br>
+
+
+    <div class="formgrid row">
+        <div class="field col tarjeta">
+            <div class="formgrid row">
+                <div class="field col" style="text-align: right;">
+                    HAS
+                </div>
+                <div class="field col">
+                    <input type="number" step="10" class="input-text-codigo" style="width: 300px;" [(ngModel)]="contratoMostrar.has">
+                </div>
+            </div>
+        </div>
+        <div class="field col tarjeta">
+            <div class="formgrid row">
+                <div class="field col" style="text-align: right;">
+                    HAS
+                </div>
+                <div class="field col">
+                    <input type="number" step="10" class="input-text-codigo" style="width: 300px;" [(ngModel)]="contratoMostrar.has">
+                </div>
+            </div>
+        </div>
+        <div class="field col tarjeta">
+            <div class="formgrid row">
+                <div class="field col" style="text-align: right;">
+                    HAS
+                </div>
+                <div class="field col">
+                    <input type="number" step="10" class="input-text-codigo" style="width: 300px;" [(ngModel)]="contratoMostrar.has">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="borrarContrato()" label="Borrar" styleClass="p-button-danger"></p-button>
+        <p-button icon="pi pi-check" (click)="guardarEditarContrato()" label="Guardar" styleClass="p-button-success"></p-button>
+    </ng-template>
+</p-dialog>
