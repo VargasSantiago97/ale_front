@@ -38,7 +38,8 @@ export class ContratosComponent {
         {field:'pesos', header:'ARS'},
         {field:'dolares', header:'U$D'}
     ]
-    tipo_contrato:any = [
+    tipos_contrato:any = [
+        {field:'0', header:'NO DEFINIDO'},
         {field:'futuro', header:'A FUTURO'},
         {field:'venta', header:'A VENTA'},
         {field:'cerrado', header:'PRECIO CERRADO'},
@@ -147,17 +148,17 @@ export class ContratosComponent {
                 id: idd,
                 id_socio: 1,
                 id_grano: 0,
-                alias: 0,
+                alias: '',
                 cuit_corredor: 0,
                 cuit_comprador: 0,
-                destino: 0,
+                destino: '',
                 tipo_contrato: 0,
                 fecha_contrato: new Date(),
                 fecha_desde: new Date(),
                 fecha_hasta: new Date(),
                 kilos: 0,
                 precio: 0,
-                moneda: 0,
+                moneda: 'dolares',
                 activo: 0,
             }
         }
