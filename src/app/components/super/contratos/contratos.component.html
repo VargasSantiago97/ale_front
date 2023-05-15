@@ -30,7 +30,7 @@
     <table>
         <thead>
             <tr style="padding: 0px;">
-                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;">
+                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;" (click)="ordenarTabla(col.field)">
                     {{col.header}}
                 </th>
             </tr>
@@ -44,7 +44,8 @@
         </tbody>
     </table>
     <br><br>
-    <button (click)="mostrarContrato()">NUEVO</button>
+    <button pButton type="button" label="NUEVO" style="margin: 5px;" (click)="mostrarContrato()"></button>
+    <button pButton type="button" label="EXPORTAR XLSX" style="margin: 5px;" (click)="exportToExcel()"></button>
 </div>
 
 <p-dialog header="CONTRATO" [(visible)]="displayContrato" [style]="{width: '70vw', height: '70vw'}">
@@ -56,7 +57,7 @@
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">FECHA DESDE</label>
-            <p-calendar [(ngModel)]="contratoMostrar.fecha_desde" dateFormat="dd/mm/yy" inputId="dateformat"></p-calendar>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_desde" dateFormat="dd/mm/yy" inputId="dateformat" (ngModelChange)="setearFechaHasta()"></p-calendar>
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">FECHA HASTA</label>
@@ -97,7 +98,7 @@
                     KILOS PACTADOS
                 </div>
                 <div class="field col">
-                    <input type="number" step="10" class="input-text-codigo" style="width: 200px;" [(ngModel)]="contratoMostrar.kilos"> kgs
+                    <input type="number" step="10" class="input-text-codigo" style="width: 140px;" [(ngModel)]="contratoMostrar.kilos"> kgs
                 </div>
             </div>
         </div>
@@ -170,7 +171,7 @@
     </div>
 
     <ng-template pTemplate="footer">
-        <p-button icon="pi pi-check" (click)="borrarContrato()" label="Borrar" styleClass="p-button-danger"></p-button>
-        <p-button icon="pi pi-check" (click)="guardarEditarContrato()" label="Guardar" styleClass="p-button-success"></p-button>
+        <p-button icon="pi pi-check" (click)="borrarContrato(contratoMostrar.id)" label="Borrar" styleClass="p-button-danger"></p-button>
+        <p-button icon="pi pi-check" (click)="guardarEditarContrato(contratoMostrar)" label="Guardar" styleClass="p-button-success"></p-button>
     </ng-template>
 </p-dialog>

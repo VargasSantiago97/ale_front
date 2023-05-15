@@ -3,8 +3,8 @@ import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
 import { LoginService } from 'src/app/services/login.service';
-import * as XLSX from 'xlsx';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
+import * as XLSX from 'xlsx';
 
 declare var vars: any;
 
@@ -33,9 +33,10 @@ export class CamionesComponent {
     dataParaMostrarTabla: any = []
     dataParaMostrarTablaTotales: any = {}
 
-    displayFiltros: Boolean = false;
+    displayFiltros: Boolean = true;
     displayDatos: Boolean = false;
     displayOrigen: Boolean = false;
+    displayContrato: Boolean = false;
 
     datosParaMostrarRegistro: any = {}
 
@@ -144,6 +145,12 @@ export class CamionesComponent {
 
     codigosMovientoOrigen: any = []
 
+    contratosMovimiento:any = []
+    contratos_movimiento_total: any = 0
+    movimientoContrato:any = {}
+
+    listadoContratosSeleccionar:any = []
+
     constructor(
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
@@ -241,7 +248,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_camiones = res;
                 this.load_camiones = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -253,7 +259,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_choferes = res;
                 this.load_choferes = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -265,7 +270,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_condicion_iva = res;
                 this.load_condicion_iva = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -282,7 +286,6 @@ export class CamionesComponent {
                     this.datosFiltro.socios.push(e.id)
                 })
 
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -299,7 +302,6 @@ export class CamionesComponent {
                     this.datosFiltro.transportistas.push(e.id)
                 })
 
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -311,7 +313,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_campanas = res;
                 this.load_campanas = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -323,7 +324,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_depositos = res;
                 this.load_depositos = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -336,11 +336,12 @@ export class CamionesComponent {
                 this.db_establecimientos = res;
                 this.load_establecimientos = false;
 
+                /*                 
                 res.forEach((e: any) => {
                     this.datosFiltro.establecimientos.push(e.id)
-                })
+                }) 
+                */
 
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -352,7 +353,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_gastos = res;
                 this.load_gastos = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -368,7 +368,6 @@ export class CamionesComponent {
                 res.forEach((e: any) => {
                     this.datosFiltro.granos.push(e.id)
                 })
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -380,7 +379,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_banderas = res;
                 this.load_banderas = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -392,7 +390,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_ordenes_carga = res;
                 this.load_ordenes_carga = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -414,7 +411,6 @@ export class CamionesComponent {
                 })
 
                 this.load_intervinientes = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -426,7 +422,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_movimientos = res;
                 this.load_movimientos = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -438,7 +433,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_carta_porte = res;
                 this.load_carta_porte = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -450,7 +444,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_asientos = res;
                 this.load_asientos = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -462,7 +455,6 @@ export class CamionesComponent {
             (res: any) => {
                 this.db_ordenes_pago = res;
                 this.load_ordenes_pago = false;
-                this.datosParaTabla()
             },
             (err: any) => {
                 console.log(err)
@@ -624,6 +616,11 @@ export class CamionesComponent {
                         dato.corredor_sec = e.cuit_corredor_venta_secundaria ? this.transformDatoTabla(e.cuit_corredor_venta_secundaria, "intervinientesCuit") : ''
                         dato.destino = e.cuit_destino ? this.transformDatoTabla(e.cuit_destino, "intervinientesCuit") : ''
                         dato.destinatario = e.cuit_destinatario ? this.transformDatoTabla(e.cuit_destinatario, "intervinientesCuit") : ''
+
+                        dato.corredor_pri_cuit = e.cuit_corredor_venta_primaria ? e.cuit_corredor_venta_primaria : ''
+                        dato.destinatario_cuit = e.cuit_destinatario ? e.cuit_destinatario : ''
+                        dato.cuit_solicitante = e.cuit_solicitante ? e.cuit_solicitante : ''
+
 
                         dato.tarifa = e.tarifa ? e.tarifa : ''
                         dato.planta_destino = e.planta_destino ? e.planta_destino : ''
@@ -803,6 +800,31 @@ export class CamionesComponent {
             })
 
             this.origen_movimiento_total += parseInt(e.kilos)
+        })
+
+        this.contratosMovimiento = []
+        this.contratos_movimiento_total = 0
+
+        //buscamos contratos: 
+        this.getDB('contratos', () => {
+            this.getDB('movimiento_contrato', () => {
+                const ctosMovs = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == mov_id })
+
+                ctosMovs.forEach((e:any) => {
+                    const cto = this.db_locales['contratos'].find((f:any) => { return f.id == e.id_contrato})
+
+                    this.contratosMovimiento.push({
+                        id: e.id,
+                        kilos: e.kilos,
+
+                        alias: cto.alias,
+                        corredor: this.transformDatoTabla(cto.cuit_corredor, 'intervinientesCuit'),
+                        comprador: this.transformDatoTabla(cto.cuit_comprador, 'intervinientesCuit'),
+                    })
+        
+                    this.contratos_movimiento_total += parseInt(e.kilos)
+                })
+            })
         })
     }
 
@@ -1189,6 +1211,61 @@ export class CamionesComponent {
             }
         }
     }
+
+    nuevoContratoMovimiento(){
+        const idd = this.generarID('movimiento_contrato')
+
+        this.movimientoContrato = {
+            id: idd,
+            id_movimiento: this.movimientoLocal.id_movimiento,
+            id_contrato: null,
+            kilos: 0
+        }
+
+        if(this.datosParaMostrarRegistro.kg_final){
+            this.movimientoContrato.kilos = parseInt(this.datosParaMostrarRegistro.kg_final) - parseInt(this.contratos_movimiento_total)
+        }
+
+        this.listadoContratosSeleccionarSetear(false)
+
+        this.displayContrato = true
+    }
+    guardarContratoMovimiento(idContrato:any){
+        this.movimientoContrato.id_contrato = idContrato
+
+        this.crearDatoDB('movimiento_contrato', this.movimientoContrato, () => {
+            this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+            this.displayContrato = false
+        })
+    }
+    eliminarContratoMovimiento(idd:any){
+        if(confirm('Desea eliminar?')){
+            this.borrarDB('movimiento_contrato', idd, () => {
+                this.verDatosRegistro(this.movimientoLocal.id_movimiento)
+            })
+        }
+    }
+    listadoContratosSeleccionarSetear(opc:any = true){
+        if(opc){
+            //todos
+            this.listadoContratosSeleccionar = this.db_locales['contratos']
+        } else {
+            this.listadoContratosSeleccionar = this.db_locales['contratos'].filter((e:any) => {
+                const ok_corredor = (e.cuit_corredor == this.datosParaMostrarRegistro.corredor_pri_cuit)
+                const ok_comprador = (e.cuit_comprador == this.datosParaMostrarRegistro.destinatario_cuit)
+
+                const id_socio = this.db_socios.find((socio:any) => { return socio.cuit == this.datosParaMostrarRegistro.cuit_solicitante }).id
+
+                const ok_vendedor = (e.id_socio == id_socio)
+                const ok_activo = (e.activo == 1)
+
+
+                return (ok_corredor && ok_comprador && ok_activo && ok_vendedor)
+            })
+        }
+    }
+
+
 
     getDB(tabla:any, func:any = false){
         this.sqlite.getDB(tabla).subscribe(

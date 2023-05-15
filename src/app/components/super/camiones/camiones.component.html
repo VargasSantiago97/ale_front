@@ -399,16 +399,20 @@
                     <thead>
                         <tr>
                             <th>CONTRATO</th>
+                            <th>CORREDOR</th>
+                            <th>COMPRADOR</th>
                             <th>KILOS</th>
                             <th>#</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>SILO</td>
-                            <td>LA PROVIDENCIA</td>
+                        <tr *ngFor="let ctoMov of contratosMovimiento">
+                            <td>{{ctoMov.alias}}</td>
+                            <td>{{ctoMov.corredor}}</td>
+                            <td>{{ctoMov.comprador}}</td>
+                            <td>{{ctoMov.kilos}}</td>
                             <td>
-                                <button
+                                <button (click)="eliminarContratoMovimiento(ctoMov.id)"
                                     style="margin: 0px; padding: 1px; background-color: rgba(236, 23, 23, 0.37); border-radius: 30%;"><i
                                         class="pi pi-trash"></i></button>
                             </td>
@@ -416,12 +420,14 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td><strong>TOTAL</strong></td>
-                            <td><strong>35200</strong></td>
+                            <td colspan="3"><strong>TOTAL</strong></td>
+                            <td><strong>{{contratos_movimiento_total}}</strong></td>
                             <td></td>
                         </tr>
                     </tfoot>
                 </table>
+                <br>
+                <button (click)="nuevoContratoMovimiento()">Nuevo</button>
                 <br><br>
                 <div class="formgrid row">
                     <textarea rows="3" pInputTextarea [(ngModel)]="movimientoLocal.observaciones_contratos"></textarea>
@@ -540,4 +546,52 @@
         <button pButton pRipple type="button" label="GUARDAR" class="p-button-success bott"
             (click)="guardarOrigenMovimiento()"></button>
     </ng-template>
+</p-dialog>
+
+<p-dialog header="CONTRATO" [(visible)]="displayContrato" [modal]="true" [style]="{width: '70vw', height: '30vw'}"
+    [draggable]="true" [resizable]="false">
+    <h6>Seleccionar contrato:</h6>
+    <button (click)="listadoContratosSeleccionarSetear()" style="margin-bottom: 10px;">Ver todos</button>
+    <div class="tarjeta">
+        <div class="formgrid row">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Contrado</th>
+                        <th>Corredor</th>
+                        <th>Comprador</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Kilos</th>
+                        <th>Selec</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cto of listadoContratosSeleccionar">
+                        <td>
+                            {{cto.alias}}
+                        </td>
+                        <td>
+                            {{transformDatoTabla(cto.cuit_corredor, 'intervinientesCuit')}}
+                        </td>
+                        <td>
+                            {{transformDatoTabla(cto.cuit_comprador, 'intervinientesCuit')}}
+                        </td>
+                        <td>
+                            {{transformDatoTabla(cto.fecha_desde, 'fecha')}}
+                        </td>
+                        <td>
+                            {{transformDatoTabla(cto.fecha_hasta, 'fecha')}}
+                        </td>
+                        <td>
+                            <input type="number" class="input-text-codigo" [(ngModel)]="movimientoContrato.kilos">
+                        </td>
+                        <td>
+                            <button (click)="guardarContratoMovimiento(cto.id)">Selec</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </p-dialog>

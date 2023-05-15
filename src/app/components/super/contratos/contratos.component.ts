@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
+import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'app-contratos',
@@ -30,7 +31,8 @@ export class ContratosComponent {
 
     dataParaMostrarTabla: any = []
 
-    ordenarPor:any = 'socio'
+    ordenarPorAnterior:any = 'socio'
+    ordenarMayorMenor:Boolean = true
 
 
 
@@ -122,18 +124,120 @@ export class ContratosComponent {
     crearDatosTabla(){
         if(!this.spinnerSocios && !this.spinnerContratos && !this.spinnerGranos && !this.spinnerIntervinientes){
 
-            this.dataParaMostrarTabla.push({
-                socio: 'asd',
-                alias: 'dsa'
+            this.dataParaMostrarTabla = []
+
+            //foreach
+            this.db_locales['contratos'].forEach((e:any) => {
+                const fecha_contrato = new Date(e.fecha_contrato);
+                const fecha_desde = new Date(e.fecha_desde);
+                const fecha_hasta = new Date(e.fecha_hasta);
+
+                const anioCto = fecha_contrato.getFullYear();
+                const mesCto = (fecha_contrato.getMonth() + 1).toString().padStart(2, '0');
+                const diaCto = (fecha_contrato.getDate()).toString().padStart(2, '0');
+
+                const anioDesde = fecha_desde.getFullYear();
+                const mesDesde = (fecha_desde.getMonth() + 1).toString().padStart(2, '0');
+                const diaDesde = (fecha_desde.getDate()).toString().padStart(2, '0');
+
+                const anioHasta = fecha_hasta.getFullYear();
+                const mesHasta = (fecha_hasta.getMonth() + 1).toString().padStart(2, '0');
+                const diaHasta = (fecha_hasta.getDate()).toString().padStart(2, '0');
+
+                var fecha_contratoFormat = `${anioCto}-${mesCto}-${diaCto}`
+                var fecha_desdeFormat = `${anioDesde}-${mesDesde}-${diaDesde}`
+                var fecha_hastaFormat = `${anioHasta}-${mesHasta}-${diaHasta}`
+                
+                if(!e.fecha_contrato || (e.fecha_contrato == 'null')){
+                    fecha_contratoFormat = ''
+                }
+                if(!e.fecha_desde || (e.fecha_desde == 'null')){
+                    fecha_desdeFormat = ''
+                }
+                if(!e.fecha_hasta || (e.fecha_hasta == 'null')){
+                    fecha_hastaFormat = ''
+                }
+
+
+
+                this.dataParaMostrarTabla.push({
+                    id: e.id,
+                    alias: e.alias,
+                    socio: this.transformarDatoMostrarTabla(e.id_socio, 'socio'),
+                    corredor: this.transformarDatoMostrarTabla(e.cuit_corredor, 'interviniente'),
+                    comprador: this.transformarDatoMostrarTabla(e.cuit_comprador, 'interviniente'),
+                    destino: e.destino,
+                    tipo_contrato: this.transformarDatoMostrarTabla(e.tipo_contrato, 'tipo_contrato'),
+                    fecha_contrato: fecha_contratoFormat,
+                    fecha_desde: fecha_desdeFormat,
+                    fecha_hasta: fecha_hastaFormat,
+                    grano: this.transformarDatoMostrarTabla(e.id_grano, 'grano'),
+                    kilos: this.transformarDatoMostrarTabla(e.kilos, 'numero'),
+                    precio: this.transformarDatoMostrarTabla(e.precio, 'moneda'),
+                    moneda: this.transformarDatoMostrarTabla(e.moneda, 'monedaTipo'),
+                    activo: e.activo,
+                })
             })
-
-            this.dataParaMostrarTabla.sort((a:any, b:any) => {
-                if (a[this.ordenarPor] < b[this.ordenarPor]) return -1;
-                if (a[this.ordenarPor] > b[this.ordenarPor]) return 1;
-                return 0;
-            });
-
         }
+    }
+    ordenarTabla(ordenarPor:any){
+
+        if(ordenarPor == this.ordenarPorAnterior){
+            this.ordenarMayorMenor = !this.ordenarMayorMenor
+        }
+    
+        this.ordenarPorAnterior = ordenarPor
+
+        this.dataParaMostrarTabla.sort((a:any, b:any) => {
+            if(this.ordenarMayorMenor){
+                if (a[ordenarPor] < b[ordenarPor]) return -1;
+                if (a[ordenarPor] > b[ordenarPor]) return 1;
+            } else {
+                if (a[ordenarPor] < b[ordenarPor]) return 1;
+                if (a[ordenarPor] > b[ordenarPor]) return -1;
+            }
+
+            return 0;
+        });
+
+    }
+    transformarDatoMostrarTabla(dato: any, tipo: any) {
+        if (tipo == 'moneda') {
+            const number = parseFloat(dato);
+            if (number == 0) {
+                return '$ 0'
+            }
+            if (number == null || !number) {
+                return ''
+            }
+            const options = {
+                style: 'currency',
+                currency: 'ARS',
+                useGrouping: true,
+                maximumFractionDigits: 2
+            };
+            return number.toLocaleString('es-AR', options);
+        }
+        if (tipo=='numero'){
+            return parseFloat(dato) ? parseFloat(dato).toLocaleString('es-AR', { useGrouping: true }) : dato;
+        }
+        if(tipo=='socio'){
+            return this.db_socios.some((e:any) => { return e.id == dato }) ? this.db_socios.find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if(tipo=='grano'){
+            return this.db_granos.some((e:any) => { return e.id == dato }) ? this.db_granos.find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if(tipo=='interviniente'){
+            return this.db_intervinientes.some((e:any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e:any) => { return e.cuit == dato }).alias : dato
+        }
+        if(tipo=='tipo_contrato'){
+            return this.tipos_contrato.some((e:any) => { return e.field == dato }) ? this.tipos_contrato.find((e:any) => { return e.field == dato }).header : dato
+        }
+        if(tipo=='monedaTipo'){
+            return this.monedas.some((e:any) => { return e.field == dato }) ? this.monedas.find((e:any) => { return e.field == dato }).header : dato
+        }
+
+        return dato
     }
 
 
@@ -141,13 +245,15 @@ export class ContratosComponent {
         if(idd){
             this.contratoMostrar = this.db_locales['contratos'].find((e:any) => { return e.id == idd })
 
-        } else {
-            idd = this.generarID('contratos')
+            this.contratoMostrar.fecha_contrato = this.contratoMostrar.fecha_contrato ? new Date(this.contratoMostrar.fecha_contrato) : null
+            this.contratoMostrar.fecha_desde = this.contratoMostrar.fecha_desde ? new Date(this.contratoMostrar.fecha_desde) : null
+            this.contratoMostrar.fecha_hasta = this.contratoMostrar.fecha_hasta ? new Date(this.contratoMostrar.fecha_hasta) : null
 
+        } else {
             this.contratoMostrar = {
-                id: idd,
-                id_socio: 1,
-                id_grano: 0,
+                id: false,
+                id_socio: null,
+                id_grano: null,
                 alias: '',
                 cuit_corredor: 0,
                 cuit_comprador: 0,
@@ -156,19 +262,57 @@ export class ContratosComponent {
                 fecha_contrato: new Date(),
                 fecha_desde: new Date(),
                 fecha_hasta: new Date(),
-                kilos: 0,
-                precio: 0,
+                kilos: null,
+                precio: null,
                 moneda: 'dolares',
-                activo: 0,
+                activo: 1,
             }
         }
 
         this.displayContrato = true
     }
-    borrarContrato(){
-    }
-    guardarEditarContrato(){
+    borrarContrato(idd:any){
+        if(confirm('Eliminar?')){
+            this.borrarDB('contratos', idd, ()=>{
+                this.displayContrato = false
 
+                this.getDB('contratos', () => {
+                    this.crearDatosTabla()
+                })
+            })
+        }
+    }
+    guardarEditarContrato(contrato:any){
+        console.log(contrato)
+        if(contrato.id){
+            //edit
+            this.editarDB('contratos', contrato, ()=>{
+                this.displayContrato = false
+
+                this.getDB('contratos', () => {
+                    this.crearDatosTabla()
+                })
+            })
+        } else {
+            //crear
+            const idd = this.generarID('contratos')
+
+            contrato.id = idd
+            this.crearDatoDB('contratos', contrato, ()=>{
+                this.displayContrato = false
+
+                this.getDB('contratos', () => {
+                    this.crearDatosTabla()
+                })
+            })
+        }
+    }
+
+    setearFechaHasta(){
+        var fecha = new Date(this.contratoMostrar.fecha_desde)
+        fecha.setDate(fecha.getDate() + 30)
+
+        this.contratoMostrar.fecha_hasta = fecha
     }
 
 
@@ -283,31 +427,18 @@ export class ContratosComponent {
         });
         return uuid;
     }
-    transformarDatoMostrarTabla(dato: any, tipo: any) {
-        if (tipo == 'moneda') {
-            const number = parseFloat(dato);
-            if (number == 0) {
-                return '$ 0'
-            }
-            if (number == null || !number) {
-                return ''
-            }
-            const options = {
-                style: 'currency',
-                currency: 'ARS',
-                useGrouping: true,
-                maximumFractionDigits: 2
-            };
-            return number.toLocaleString('es-AR', options);
-        }
-        if (tipo == 'numero') {
-            return dato.toLocaleString('es-AR');
-        }
-        if (tipo == 'socio') {
-            return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).alias : dato
-        }
 
-
-        return dato
+    exportToExcel() {
+        /* Crear un libro de trabajo */
+        const workbook = XLSX.utils.book_new();
+      
+        /* Crear una hoja de cálculo */
+        const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
+      
+        /* Agregar la hoja de cálculo al libro de trabajo */
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Contratos');
+      
+        /* Descargar el archivo */
+        XLSX.writeFile(workbook, 'contratos.xlsx');
     }
 }
