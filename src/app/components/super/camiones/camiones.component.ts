@@ -82,6 +82,7 @@ export class CamionesComponent {
     load_carta_porte: any = true
     load_asientos: any = true
     load_ordenes_pago: any = true
+    load_movimientosLocales: any = true
 
 
 
@@ -208,14 +209,11 @@ export class CamionesComponent {
 
             { field: "observaciones", header: "Obser" },
 
-            { field: "kg_s", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
-            { field: "observacioness", header: "Obsers" },
+            { field: "ok_origen", header: "ok_orig" },
+            { field: "ok_balanza", header: "ok_bal" },
+            { field: "ok_acondicionadora", header: "ok_acond" },
+            { field: "ok_descarga", header: "ok_desc" },
+            { field: "ok_contratos", header: "ok_cont" },
         ];
 
         this.obtenerCamiones()
@@ -239,7 +237,7 @@ export class CamionesComponent {
         this.getDB('lotes')
         this.getDB('silos')
         this.getDB('establecimientos')
-        this.getDB('movimientos')
+        this.getDB('movimientos', () => { this.load_movimientosLocales = false })
         this.getDB('movimiento_origen')
     }
 
@@ -464,7 +462,7 @@ export class CamionesComponent {
 
 
     datosParaTabla(mantenerFiltro: any = false) {
-        if (!(this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
+        if (!(this.load_movimientosLocales || this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
             this.dataParaMostrarTablaTotales = {
                 cultivo: 0,
@@ -545,7 +543,7 @@ export class CamionesComponent {
 
             kg_neto_descarga: '',
             kg_mermas: '',
-            kg_final: 0,
+            kg_final: '',
 
             observaciones: mov.observaciones ? mov.observaciones : "-",
 
@@ -565,9 +563,15 @@ export class CamionesComponent {
             tarifa: '',
             planta_destino: '',
             km_recorrer: '',
-            cod_localidad: ''
-        }
+            cod_localidad: '',
+            cod_provincia: '',
 
+            ok_origen: '',
+            ok_balanza: '',
+            ok_acondicionadora: '',
+            ok_descarga: '',
+            ok_contratos: '',
+        }
 
         //DATOS CPE
         if (this.db_carta_porte.some((e: any) => { return e.id_movimiento == mov.id })) {
@@ -626,6 +630,7 @@ export class CamionesComponent {
                         dato.planta_destino = e.planta_destino ? e.planta_destino : ''
                         dato.km_recorrer = e.km_recorrer ? e.km_recorrer : ''
                         dato.cod_localidad = e.cod_localidad ? e.cod_localidad : ''
+                        dato.cod_provincia = e.cod_provincia ? this.transformDatoTabla(e.cod_provincia, "provincia") : ''
                     }
                 });
                 dato.estado = estado
@@ -634,6 +639,24 @@ export class CamionesComponent {
         if((dato.kg_neto_descarga != '') && dato.kg_neto_final){
             dato.dif_destino_balanza = parseInt(dato.kg_neto_descarga) - parseInt(dato.kg_neto_final)
             dato.dif_destino_balanza_pintar = Math.abs(dato.dif_destino_balanza) > TOLERANCIA_DESTINO_BALANZA
+
+        
+            if(this.db_locales['movimientos'].some((m:any) => { return m.id_movimiento == mov.id })){
+                const movLocal = this.db_locales['movimientos'].find((m:any) => { return m.id_movimiento == mov.id })
+    
+                if(movLocal.ok_descarga == 1){
+                    dato.kg_mermas = movLocal.kg_mermas ? parseInt(movLocal.kg_mermas) : 0
+    
+                    dato.kg_final = parseInt(dato.kg_neto_descarga) - dato.kg_mermas
+    
+                }
+
+                dato.ok_origen = movLocal.ok_origen == 1 ? 'SI' : movLocal.ok_origen
+                dato.ok_balanza = movLocal.ok_balanza == 1 ? 'SI' : movLocal.ok_balanza
+                dato.ok_acondicionadora = movLocal.ok_acondicionadora == 1 ? 'SI' : movLocal.ok_acondicionadora
+                dato.ok_descarga = movLocal.ok_descarga == 1 ? 'SI' : movLocal.ok_descarga
+                dato.ok_contratos = movLocal.ok_contratos == 1 ? 'SI' : movLocal.ok_contratos
+            }
         }
 
 
@@ -701,9 +724,17 @@ export class CamionesComponent {
             return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).alias : '-'
         }
         if (tipo == 'fecha') {
-            var fecha = new Date(dato)
-            const datePipe = new DatePipe('en-US');
-            return datePipe.transform(fecha, 'yyyy-MM-dd');
+            if(dato){
+                var fecha = new Date(dato)
+                if(fecha){
+                    const datePipe = new DatePipe('en-US');
+                    return datePipe.transform(fecha, 'yyyy-MM-dd');
+                } else {
+                    return dato
+                }
+            } else {
+                return dato
+            }
         }
         if (tipo == 'campo') {
             return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).alias : '-'
@@ -737,6 +768,9 @@ export class CamionesComponent {
         }
         if (tipo == 'socioCuit') {
             return this.db_socios.some((e: any) => { return e.cuit.toString() == dato.toString() }) ? this.db_socios.find((e: any) => { return e.cuit.toString() == dato.toString() }).alias : '-'
+        }
+        if (tipo == 'provincia') {
+            return CPE_PROVINCIAS.some((e: any) => { return e.codigo.toString() == dato.toString() }) ? CPE_PROVINCIAS.find((e: any) => { return e.codigo.toString() == dato.toString() }).descripcion : dato
         }
         if (tipo == 'ordenNumero') {
             if (this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == dato })) {
@@ -1223,7 +1257,7 @@ export class CamionesComponent {
         }
 
         if(this.datosParaMostrarRegistro.kg_final){
-            this.movimientoContrato.kilos = parseInt(this.datosParaMostrarRegistro.kg_final) - parseInt(this.contratos_movimiento_total)
+            this.movimientoContrato.kilos = parseInt(this.movimientoLocal.kg_final) - parseInt(this.contratos_movimiento_total)
         }
 
         this.listadoContratosSeleccionarSetear(false)
@@ -1264,6 +1298,14 @@ export class CamionesComponent {
             })
         }
     }
+    calcularKilos(opc:any){
+        if(opc == "final"){
+            this.movimientoLocal.kg_final = parseInt(this.movimientoLocal.kg_descarga) - parseInt(this.movimientoLocal.kg_mermas)
+        } else if (opc == "mermas"){
+            this.movimientoLocal.kg_mermas = parseInt(this.movimientoLocal.kg_descarga) - parseInt(this.movimientoLocal.kg_final)
+        }
+    }
+
 
 
 

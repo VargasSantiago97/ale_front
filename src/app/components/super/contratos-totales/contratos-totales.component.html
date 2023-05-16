@@ -1,0 +1,49 @@
+<div style="text-align: center;"
+    *ngIf="spinnerSocios || spinnerContratos || spinnerGranos || spinnerIntervinientes || spinnerContratosMovCto">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+<div #TABLA style="width: 100%; overflow-x: auto;" style="padding: 50px;">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0 auto;
+            font-size: 14px;
+            color: #333;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+    </style>
+    <table>
+        <thead>
+            <tr style="padding: 0px;">
+                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;" (click)="ordenarTabla(col.field)">
+                    {{col.header}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let registro of dataParaMostrarTabla" (dblclick)="mostrarContrato(registro.id)">
+                <td *ngFor="let col of cols" style="padding: 1px;">
+                    {{registro[col.field]}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <button pButton type="button" label="NUEVO" style="margin: 5px;" (click)="mostrarContrato()"></button>
+    <button pButton type="button" label="EXPORTAR XLSX" style="margin: 5px;" (click)="exportToExcel()"></button>
+</div>

@@ -16,6 +16,9 @@ import { PrepararPagosComponent } from './components/super/preparar-pagos/prepar
 import { ActualizarCPEComponent } from './components/super/actualizar-cpe/actualizar-cpe.component';
 import { CamposComponent } from './components/super/campos/campos.component';
 import { ContratosComponent } from './components/super/contratos/contratos.component';
+import { ContratosTotalesComponent } from './components/super/contratos-totales/contratos-totales.component';
+import { ContratosCtgComponent } from './components/super/contratos-ctg/contratos-ctg.component';
+import { ProduccionComponent } from './components/super/produccion/produccion.component';
 
 
 const routes: Routes = [
@@ -45,6 +48,10 @@ const routes: Routes = [
 
     { path: 'campos', component: CamposComponent },
     { path: 'contratos', component: ContratosComponent },
+    { path: 'contratosTotales', component: ContratosTotalesComponent },
+    { path: 'contratosCtg', component: ContratosCtgComponent },
+    { path: 'produccion', component: ProduccionComponent },
+
 
 ];
 

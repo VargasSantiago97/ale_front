@@ -137,13 +137,32 @@ export class CamposComponent {
 
         this.getDB('silos', ()=>{
             this.silos = this.db_locales['silos'].filter((e:any) => { return (e.id_establecimiento == this.campo_select.id) && (e.estado == 1)})
-            this.silos.forEach((e:any) => {
-                if(e.activo == 'falso' || e.activo == 'false' || e.activo == '0' || e.activo == null ){
-                    e.activo = false
-                }
-                this.totalKilosSilos += parseInt(e.kilos)
+
+            this.getDB("lote_a_silo", () => {
+
+                this.silos.forEach((e:any) => {
+                    if(e.activo == 'falso' || e.activo == 'false' || e.activo == '0' || e.activo == null ){
+                        e.activo = false
+                    }
+                    
+                    var kilos:any = 0
+
+                    const lote_a_silo = this.db_locales['lote_a_silo'].filter((lotSil:any) => { return lotSil.id_silo == e.id })
+
+                    e.lote_a_silo = lote_a_silo
+
+                    lote_a_silo.forEach((element:any) => {
+                        kilos += parseInt(element.kilos)
+                    })
+
+                    e.kilos = parseInt(kilos)
+
+                    this.totalKilosSilos += parseInt(e.kilos)
+                })
             })
         })
+
+        console.log(this.silos)
     }
     actualizarDatosProduccion(){
         this.produccion = []
@@ -221,9 +240,31 @@ export class CamposComponent {
                 alias: '',
                 kilos: 0,
                 activo: 1,
-                estado: 1
+                estado: 1,
+                lote_a_silo : []
             }
         }
+
+        this.getDB("lote_a_silo", () => {
+
+            this.totalKilosSilos = 0
+            const totales = this.db_locales['lote_a_silo'].filter((lotSil:any) => { return lotSil.id_establecimiento == this.campo_select.id })
+            totales.forEach((e:any) => { this.totalKilosSilos += parseInt(e.kilos) })
+
+            var kilos:any = 0
+
+            const lote_a_silo = this.db_locales['lote_a_silo'].filter((lotSil:any) => { return lotSil.id_silo == this.silo.id })
+
+            this.silo.lote_a_silo = lote_a_silo
+
+            lote_a_silo.forEach((element:any) => {
+                kilos += parseInt(element.kilos)
+            })
+
+            this.silo.kilos = parseInt(kilos)
+
+        })
+
 
         this.displaySilo = true
     }
@@ -301,6 +342,31 @@ export class CamposComponent {
                 this.actualizarDatosProduccion()
             })
         }
+    }
+
+    agregarLoteSilo(){
+        this.silo.lote_a_silo.push({
+            id: false,
+            id_lote: null,
+            id_silo: this.silo.id,
+            id_establecimiento: this.campo_select.id,
+            kilos: null
+        })
+    }
+    borrarLoteSilo(idd:any){
+        if(confirm('Desea eliminar?')){
+            this.borrarDB('lote_a_silo', idd, ()=>{
+                this.abrirModalSilo(this.silo)
+            })
+        }
+    }
+    guardarLoteSilo(loteSilo:any){
+        var idd = this.generarID('lote_a_silo')
+        loteSilo.id = idd
+        this.crearDatoDB('lote_a_silo', loteSilo, ()=>{
+            this.abrirModalSilo(this.silo)
+        })
+
     }
 
 

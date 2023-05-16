@@ -18,7 +18,9 @@ export class SqliteService {
         movimientos: ["id", "id_movimiento", "id_socio", "id_establecimiento", "kg_campo", "kg_balanza", "kg_regulacion", "kg_salida", "kg_acondicionadora_entrada", "kg_acondicionadora_diferencia", "kg_acondicionadora_salida", "kg_descarga", "kg_mermas", "kg_final", "observaciones_origen", "observaciones_balanza", "observaciones_acondicionadora", "observaciones_descarga", "observaciones_contratos", "ok_origen", "ok_balanza", "ok_acondicionadora", "ok_descarga", "ok_contratos"],
         movimiento_origen: ["id", "id_movimiento", "id_establecimiento", "id_origen", "tipo_origen", "kilos"],
         contratos: ["id", "id_socio", "id_grano", "alias", "cuit_corredor", "cuit_comprador", "destino", "tipo_contrato", "fecha_contrato", "fecha_desde", "fecha_hasta", "kilos", "precio", "moneda", "activo"],
-        movimiento_contrato : ["id", "id_movimiento", "id_contrato", "kilos"]
+        movimiento_contrato: ["id", "id_movimiento", "id_contrato", "kilos"],
+        lote_a_silo: ["id", "id_lote", "id_silo", "id_establecimiento", "kilos"]
+
     }
     constructor(
         private http: HttpClient,

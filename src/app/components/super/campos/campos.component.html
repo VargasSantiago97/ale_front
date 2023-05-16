@@ -239,7 +239,7 @@
         <p-button icon="pi pi-check" (click)="guardarEditarLote(lote)" label="Ok" styleClass="p-button-success"></p-button>
     </ng-template>
 </p-dialog>
-<p-dialog header="SILO" [(visible)]="displaySilo" [style]="{width: '500px'}">
+<p-dialog header="SILO" [(visible)]="displaySilo" [style]="{width: '1000px'}">
 
     <div class="formgrid row">
         <div class="field col-3" style="text-align: right;">
@@ -256,7 +256,7 @@
             KILOS CARGADOS
         </div>
         <div class="field col">
-            <input type="number" step="100" class="input-text-codigo" style="width: 300px;" [(ngModel)]="silo.kilos">
+            <input type="number" step="100" class="input-text-codigo" style="width: 300px;" [(ngModel)]="silo.kilos" readonly>
         </div>
     </div>
     <br>
@@ -268,6 +268,43 @@
         <div class="field col">
             <input type="checkbox" [(ngModel)]="silo.activo">
         </div>
+    </div>
+    <br>
+    <div #TABLA_ORIGENES class="formgrid row">
+        <table>
+            <thead>
+                <tr>
+                    <th style="padding: 3px;">
+                        LOTE
+                    </th>
+                    <th style="padding: 3px;">
+                        KILOS
+                    </th>
+                    <th style="padding: 3px;">
+                        #
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let lote_a_silo of silo.lote_a_silo">
+                    <td style="padding: 2px;">
+                        <select [(ngModel)]="lote_a_silo.id_lote">
+                            <option *ngFor="let lot of lotes" value="{{lot.id}}">{{lot.alias}}</option>
+                        </select>
+                    </td>
+                    <td style="padding: 2px;">
+                        <label *ngIf="lote_a_silo.id">{{lote_a_silo.kilos}}</label>
+                        <input  *ngIf="!lote_a_silo.id" type="number" [(ngModel)]="lote_a_silo.kilos">
+                    </td>
+                    <td style="padding: 2px;">
+                        <button *ngIf="lote_a_silo.id" (click)="borrarLoteSilo(lote_a_silo.id)">Borrar</button>
+                        <button *ngIf="!lote_a_silo.id" (click)="guardarLoteSilo(lote_a_silo)">Guardar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <button style="width: 200px;" (click)="agregarLoteSilo()">Agregar</button>
     </div>
 
     <ng-template pTemplate="footer">

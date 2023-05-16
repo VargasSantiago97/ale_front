@@ -1319,19 +1319,27 @@ export class InicioComponent {
         return uuid;
     }
     generateNumeroOrdenDeCarga() {
-        var ordenes_carga:any = this.db_ordenes_carga.filter((e:any) => { 
-            const num = parseInt(e.numero.split("-")[0]) ? parseInt(e.numero.split("-")[0]) : 0
-            return num == parseInt(PUNTO_ORDEN_CARGA)
-        })
-
-        const numeroMasGrande = ordenes_carga.reduce((acumulado:any, objetoActual:any) => {
-            const valor = parseInt(objetoActual.numero.split("-")[1])
-            return Math.max(acumulado, valor);
-        }, 0);
-
-        const punto = PUNTO_ORDEN_CARGA.toString().padStart(2, '0');
-        const numero = (numeroMasGrande+1).toString().padStart(5, '0');
-        return punto + "-" + numero;
+        this.comunicacionService.getDB('orden_carga').subscribe(
+            (res: any) => {
+                var ordenes_carga:any = res.filter((e:any) => { 
+                    const num = parseInt(e.numero.split("-")[0]) ? parseInt(e.numero.split("-")[0]) : 0
+                    return num == parseInt(PUNTO_ORDEN_CARGA)
+                })
+        
+                const numeroMasGrande = ordenes_carga.reduce((acumulado:any, objetoActual:any) => {
+                    const valor = parseInt(objetoActual.numero.split("-")[1])
+                    return Math.max(acumulado, valor);
+                }, 0);
+        
+                const punto = PUNTO_ORDEN_CARGA.toString().padStart(2, '0');
+                const numero = (numeroMasGrande+1).toString().padStart(5, '0');
+                return punto + "-" + numero;
+            },
+            (err: any) => {
+                console.log(err)
+                return 'Error'
+            }
+        )
     }
 
     transformarDatoMostrar(dato: any, tipo: any) {

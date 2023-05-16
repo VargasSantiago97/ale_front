@@ -1,5 +1,5 @@
 <div style="text-align: center;"
-    *ngIf="load_ordenes_pago || load_asientos || load_carta_porte || load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_ordenes_carga || load_intervinientes || load_movimientos">
+    *ngIf="load_movimientosLocales || load_ordenes_pago || load_asientos || load_carta_porte || load_camiones || load_choferes || load_condicion_iva || load_socios || load_transportistas || load_campanas || load_depositos || load_establecimientos || load_gastos || load_granos || load_banderas || load_ordenes_carga || load_intervinientes || load_movimientos">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -374,7 +374,7 @@
                         <strong>MERMAS</strong>
                     </div>
                     <div class="field col">
-                        <input type="number" [(ngModel)]="movimientoLocal.kg_mermas" class="input-text-codigo">Kgs
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_mermas" (ngModelChange)="calcularKilos('final')" class="input-text-codigo">Kgs
                     </div>
                 </div>
                 <div class="formgrid row">
@@ -382,7 +382,7 @@
                         <strong>FINAL</strong>
                     </div>
                     <div class="field col">
-                        <input type="number" [(ngModel)]="movimientoLocal.kg_final" class="input-text-codigo">Kgs
+                        <input type="number" [(ngModel)]="movimientoLocal.kg_final" (ngModelChange)="calcularKilos('mermas')" class="input-text-codigo">Kgs
                     </div>
                 </div>
                 <br><br>

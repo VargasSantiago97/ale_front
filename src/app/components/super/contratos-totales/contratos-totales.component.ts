@@ -5,22 +5,23 @@ import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 import * as XLSX from 'xlsx';
 
 @Component({
-    selector: 'app-contratos',
-    templateUrl: './contratos.component.html',
-    styleUrls: ['./contratos.component.css']
+    selector: 'app-contratos-totales',
+    templateUrl: './contratos-totales.component.html',
+    styleUrls: ['./contratos-totales.component.css']
 })
-export class ContratosComponent {
+export class ContratosTotalesComponent {
 
-    spinnerSocios:any = true
-    spinnerContratos:any = true
-    spinnerGranos:any = true
-    spinnerIntervinientes:any = true
+    spinnerSocios: any = true
+    spinnerContratos: any = true
+    spinnerGranos: any = true
+    spinnerIntervinientes: any = true
+    spinnerContratosMovCto: any = true
 
     displayContrato: Boolean = false
 
     db_socios: any = []
-    db_granos:any = []
-    db_intervinientes:any = []
+    db_granos: any = []
+    db_intervinientes: any = []
 
     db_locales: any = {}
 
@@ -31,16 +32,16 @@ export class ContratosComponent {
 
     dataParaMostrarTabla: any = []
 
-    ordenarPorAnterior:any = 'socio'
-    ordenarMayorMenor:Boolean = true
+    ordenarPorAnterior: any = 'socio'
+    ordenarMayorMenor: Boolean = true
 
 
 
-    monedas:any = [
-        {field:'pesos', header:'ARS'},
-        {field:'dolares', header:'U$D'}
+    monedas: any = [
+        { field: 'pesos', header: 'ARS' },
+        { field: 'dolares', header: 'U$D' }
     ]
-    tipos_contrato:any = [
+    tipos_contrato: any = [
         { field: '0', header: 'NO DEFINIDO' },
         { field: 'futuro', header: 'A FUTURO' },
         { field: 'venta', header: 'A VENTA' },
@@ -63,20 +64,22 @@ export class ContratosComponent {
 
     ngOnInit() {
         this.cols = [
-            {field:'alias', header:'Contrato'},
-            {field:'socio', header:'Socio'},
-            {field:'corredor', header:'Corredor'},
-            {field:'comprador', header:'Comprador'},
-            {field:'destino', header:'Destino'},
-            {field:'tipo_contrato', header:'Tipo Contrato'},
-            {field:'fecha_contrato', header:'Fecha'},
-            {field:'fecha_desde', header:'Fecha Inicio'},
-            {field:'fecha_hasta', header:'Fecha Hasta'},
-            {field:'grano', header:'Grano'},
-            {field:'kilos', header:'Kilos'},
-            {field:'precio', header:'Precio'},
-            {field:'moneda', header:'Moneda'},
-            {field:'activo', header:'Activo'},
+            { field: 'alias', header: 'Contrato' },
+            { field: 'socio', header: 'Socio' },
+            { field: 'corredor', header: 'Corredor' },
+            { field: 'comprador', header: 'Comprador' },
+            { field: 'destino', header: 'Destino' },
+            { field: 'tipo_contrato', header: 'Tipo Contrato' },
+            { field: 'fecha_contrato', header: 'Fecha' },
+            { field: 'fecha_desde', header: 'Fecha Inicio' },
+            { field: 'fecha_hasta', header: 'Fecha Hasta' },
+            { field: 'grano', header: 'Grano' },
+            { field: 'kilos_pactados', header: 'Kilos Pactados' },
+            { field: 'kilos_entregados', header: 'Kilos Entregados' },
+            { field: 'kilos_pendientes', header: 'Kilos Pendientes' },
+            { field: 'precio', header: 'Precio' },
+            { field: 'moneda', header: 'Moneda' },
+            { field: 'activo', header: 'Activo' },
         ]
 
         this.obtenerSociosDB()
@@ -84,6 +87,10 @@ export class ContratosComponent {
         this.obtenerIntervinientesDB()
         this.getDB('contratos', () => {
             this.spinnerContratos = false
+            this.crearDatosTabla()
+        })
+        this.getDB('movimiento_contrato', () => {
+            this.spinnerContratosMovCto = false
             this.crearDatosTabla()
         })
     }
@@ -125,13 +132,13 @@ export class ContratosComponent {
         )
     }
 
-    crearDatosTabla(){
-        if(!this.spinnerSocios && !this.spinnerContratos && !this.spinnerGranos && !this.spinnerIntervinientes){
+    crearDatosTabla() {
+        if (!this.spinnerSocios && !this.spinnerContratos && !this.spinnerGranos && !this.spinnerIntervinientes && !this.spinnerContratosMovCto) {
 
             this.dataParaMostrarTabla = []
 
             //foreach
-            this.db_locales['contratos'].forEach((e:any) => {
+            this.db_locales['contratos'].forEach((e: any) => {
                 const fecha_contrato = new Date(e.fecha_contrato);
                 const fecha_desde = new Date(e.fecha_desde);
                 const fecha_hasta = new Date(e.fecha_hasta);
@@ -151,49 +158,65 @@ export class ContratosComponent {
                 var fecha_contratoFormat = `${anioCto}-${mesCto}-${diaCto}`
                 var fecha_desdeFormat = `${anioDesde}-${mesDesde}-${diaDesde}`
                 var fecha_hastaFormat = `${anioHasta}-${mesHasta}-${diaHasta}`
-                
-                if(!e.fecha_contrato || (e.fecha_contrato == 'null')){
+
+                if (!e.fecha_contrato || (e.fecha_contrato == 'null')) {
                     fecha_contratoFormat = ''
                 }
-                if(!e.fecha_desde || (e.fecha_desde == 'null')){
+                if (!e.fecha_desde || (e.fecha_desde == 'null')) {
                     fecha_desdeFormat = ''
                 }
-                if(!e.fecha_hasta || (e.fecha_hasta == 'null')){
+                if (!e.fecha_hasta || (e.fecha_hasta == 'null')) {
                     fecha_hastaFormat = ''
                 }
 
 
 
-                this.dataParaMostrarTabla.push({
-                    id: e.id,
-                    alias: e.alias,
-                    socio: this.transformarDatoMostrarTabla(e.id_socio, 'socio'),
-                    corredor: this.transformarDatoMostrarTabla(e.cuit_corredor, 'interviniente'),
-                    comprador: this.transformarDatoMostrarTabla(e.cuit_comprador, 'interviniente'),
-                    destino: e.destino,
-                    tipo_contrato: this.transformarDatoMostrarTabla(e.tipo_contrato, 'tipo_contrato'),
-                    fecha_contrato: fecha_contratoFormat,
-                    fecha_desde: fecha_desdeFormat,
-                    fecha_hasta: fecha_hastaFormat,
-                    grano: this.transformarDatoMostrarTabla(e.id_grano, 'grano'),
-                    kilos: this.transformarDatoMostrarTabla(e.kilos, 'numero'),
-                    precio: this.transformarDatoMostrarTabla(e.precio, 'moneda'),
-                    moneda: this.transformarDatoMostrarTabla(e.moneda, 'monedaTipo'),
-                    activo: e.activo,
+
+                var kilosEntregados = 0
+
+                this.db_locales['movimiento_contrato'].forEach((cto:any) => {
+                    if(cto.id_contrato == e.id){
+                        kilosEntregados += (cto.kilos ? parseInt(cto.kilos) : 0)
+                    }
                 })
+
+                var kilosPendientes = parseInt(e.kilos) - kilosEntregados
+
+
+                if(kilosEntregados != 0){
+                    this.dataParaMostrarTabla.push({
+                        id: e.id,
+                        alias: e.alias,
+                        socio: this.transformarDatoMostrarTabla(e.id_socio, 'socio'),
+                        corredor: this.transformarDatoMostrarTabla(e.cuit_corredor, 'interviniente'),
+                        comprador: this.transformarDatoMostrarTabla(e.cuit_comprador, 'interviniente'),
+                        destino: e.destino,
+                        tipo_contrato: this.transformarDatoMostrarTabla(e.tipo_contrato, 'tipo_contrato'),
+                        fecha_contrato: fecha_contratoFormat,
+                        fecha_desde: fecha_desdeFormat,
+                        fecha_hasta: fecha_hastaFormat,
+                        grano: this.transformarDatoMostrarTabla(e.id_grano, 'grano'),
+                        kilos_pactados: this.transformarDatoMostrarTabla(e.kilos, 'numero'),
+                        kilos_entregados: this.transformarDatoMostrarTabla(kilosEntregados, 'numero'),
+                        kilos_pendientes: this.transformarDatoMostrarTabla(kilosPendientes, 'numero'),
+                        precio: this.transformarDatoMostrarTabla(e.precio, 'moneda'),
+                        moneda: this.transformarDatoMostrarTabla(e.moneda, 'monedaTipo'),
+                        activo: e.activo,
+                    })
+                }
             })
         }
     }
-    ordenarTabla(ordenarPor:any){
+    ordenarTabla(ordenarPor: any) {
 
-        if(ordenarPor == this.ordenarPorAnterior){
+        if (ordenarPor == this.ordenarPorAnterior) {
             this.ordenarMayorMenor = !this.ordenarMayorMenor
         }
-    
+
         this.ordenarPorAnterior = ordenarPor
 
-        this.dataParaMostrarTabla.sort((a:any, b:any) => {
-            if(this.ordenarMayorMenor){
+        this.dataParaMostrarTabla.sort((a: any, b: any) => {
+            if (this.ordenarMayorMenor) {
                 if (a[ordenarPor] < b[ordenarPor]) return -1;
                 if (a[ordenarPor] > b[ordenarPor]) return 1;
             } else {
@@ -222,32 +245,32 @@ export class ContratosComponent {
             };
             return number.toLocaleString('es-AR', options);
         }
-        if (tipo=='numero'){
+        if (tipo == 'numero') {
             return parseFloat(dato) ? parseFloat(dato).toLocaleString('es-AR', { useGrouping: true }) : dato;
         }
-        if(tipo=='socio'){
-            return this.db_socios.some((e:any) => { return e.id == dato }) ? this.db_socios.find((e:any) => { return e.id == dato }).alias : dato
+        if (tipo == 'socio') {
+            return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).alias : dato
         }
-        if(tipo=='grano'){
-            return this.db_granos.some((e:any) => { return e.id == dato }) ? this.db_granos.find((e:any) => { return e.id == dato }).alias : dato
+        if (tipo == 'grano') {
+            return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).alias : dato
         }
-        if(tipo=='interviniente'){
-            return this.db_intervinientes.some((e:any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e:any) => { return e.cuit == dato }).alias : dato
+        if (tipo == 'interviniente') {
+            return this.db_intervinientes.some((e: any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e: any) => { return e.cuit == dato }).alias : dato
         }
-        if(tipo=='tipo_contrato'){
-            return this.tipos_contrato.some((e:any) => { return e.field == dato }) ? this.tipos_contrato.find((e:any) => { return e.field == dato }).header : dato
+        if (tipo == 'tipo_contrato') {
+            return this.tipos_contrato.some((e: any) => { return e.field == dato }) ? this.tipos_contrato.find((e: any) => { return e.field == dato }).header : dato
         }
-        if(tipo=='monedaTipo'){
-            return this.monedas.some((e:any) => { return e.field == dato }) ? this.monedas.find((e:any) => { return e.field == dato }).header : dato
+        if (tipo == 'monedaTipo') {
+            return this.monedas.some((e: any) => { return e.field == dato }) ? this.monedas.find((e: any) => { return e.field == dato }).header : dato
         }
 
         return dato
     }
 
 
-    mostrarContrato(idd:any = false){
-        if(idd){
-            this.contratoMostrar = this.db_locales['contratos'].find((e:any) => { return e.id == idd })
+    mostrarContrato(idd: any = false) {
+        if (idd) {
+            this.contratoMostrar = this.db_locales['contratos'].find((e: any) => { return e.id == idd })
 
             this.contratoMostrar.fecha_contrato = this.contratoMostrar.fecha_contrato ? new Date(this.contratoMostrar.fecha_contrato) : null
             this.contratoMostrar.fecha_desde = this.contratoMostrar.fecha_desde ? new Date(this.contratoMostrar.fecha_desde) : null
@@ -275,9 +298,9 @@ export class ContratosComponent {
 
         this.displayContrato = true
     }
-    borrarContrato(idd:any){
-        if(confirm('Eliminar?')){
-            this.borrarDB('contratos', idd, ()=>{
+    borrarContrato(idd: any) {
+        if (confirm('Eliminar?')) {
+            this.borrarDB('contratos', idd, () => {
                 this.displayContrato = false
 
                 this.getDB('contratos', () => {
@@ -286,11 +309,11 @@ export class ContratosComponent {
             })
         }
     }
-    guardarEditarContrato(contrato:any){
+    guardarEditarContrato(contrato: any) {
         console.log(contrato)
-        if(contrato.id){
+        if (contrato.id) {
             //edit
-            this.editarDB('contratos', contrato, ()=>{
+            this.editarDB('contratos', contrato, () => {
                 this.displayContrato = false
 
                 this.getDB('contratos', () => {
@@ -302,7 +325,7 @@ export class ContratosComponent {
             const idd = this.generarID('contratos')
 
             contrato.id = idd
-            this.crearDatoDB('contratos', contrato, ()=>{
+            this.crearDatoDB('contratos', contrato, () => {
                 this.displayContrato = false
 
                 this.getDB('contratos', () => {
@@ -312,7 +335,7 @@ export class ContratosComponent {
         }
     }
 
-    setearFechaHasta(){
+    setearFechaHasta() {
         var fecha = new Date(this.contratoMostrar.fecha_desde)
         fecha.setDate(fecha.getDate() + 30)
 
@@ -435,13 +458,13 @@ export class ContratosComponent {
     exportToExcel() {
         /* Crear un libro de trabajo */
         const workbook = XLSX.utils.book_new();
-      
+
         /* Crear una hoja de cálculo */
         const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
-      
+
         /* Agregar la hoja de cálculo al libro de trabajo */
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Contratos');
-      
+
         /* Descargar el archivo */
         XLSX.writeFile(workbook, 'contratos.xlsx');
     }
