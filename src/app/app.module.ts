@@ -84,6 +84,7 @@ import { ContratosComponent } from './components/super/contratos/contratos.compo
 import { ContratosTotalesComponent } from './components/super/contratos-totales/contratos-totales.component';
 import { ContratosCtgComponent } from './components/super/contratos-ctg/contratos-ctg.component';
 import { ProduccionComponent } from './components/super/produccion/produccion.component';
+import { ProduccionLotesComponent } from './components/super/produccion-lotes/produccion-lotes.component';
 
 
 @NgModule({
@@ -115,7 +116,8 @@ import { ProduccionComponent } from './components/super/produccion/produccion.co
     ContratosComponent,
     ContratosTotalesComponent,
     ContratosCtgComponent,
-    ProduccionComponent
+    ProduccionComponent,
+    ProduccionLotesComponent
   ],
   imports: [
     BrowserModule,

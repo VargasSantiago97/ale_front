@@ -1,0 +1,80 @@
+<br>
+
+<div style="margin: 20px 200px 20px 200px;" *ngFor="let dato of datosGenerales">
+    <div class="tarjeta">
+        <div class="formgrid row">
+            <div #CAMPOS class="field col">
+                <div style="margin: 0px 0px 10px 0px; padding: 30px;">
+                    <h3 style="text-align: center;"><strong>{{dato.establecimiento}}</strong></h3>
+                    <br>
+                    <style>
+                        table {
+                            border-collapse: collapse;
+                            width: 100%;
+                        }
+
+                        th,
+                        td {
+                            text-align: left;
+                            padding: 8px;
+                            border-bottom: 1px solid #ddd;
+                        }
+
+                        th {
+                            background-color: #f2f2f2;
+                        }
+
+                        tr:hover {
+                            background-color: #f5f5f5;
+                        }
+                    </style>
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 3px;" *ngFor="let col of cols">
+                                    {{col.header}}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let lote of dato.lotes">
+                                <td style="padding: 2px;" *ngFor="let col of cols"
+                                    class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                    <label>{{lote[col.field]}}</label>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td style="padding: 2px; background-color: rgba(187, 187, 187, 0.212); font-weight: bold;"
+                                    *ngFor="let col of cols" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                    <label>{{dato.totales[col.field]}}</label>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="formgrid row">
+            <div #GRAFICO class="field col">
+            </div>
+            <div #GRAFICO class="field col">
+                <div style="width: 300px; text-align: center;">
+                    <h4>KGS por LOTE</h4>
+                    <p-chart type="doughnut" [data]="dato.graficoKilos"></p-chart>
+                </div>
+            </div>
+            <div #GRAFICO class="field col">
+                <div style="width: 300px; text-align: center;">
+                    <h4>RINDES por LOTE</h4>
+                    <p-chart type="doughnut" [data]="dato.graficoRindes"></p-chart>
+                </div>
+            </div>
+            <div #GRAFICO class="field col">
+            </div>
+        </div>
+    </div>
+    <br><br><br><br>
+</div>

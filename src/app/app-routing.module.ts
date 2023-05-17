@@ -19,6 +19,7 @@ import { ContratosComponent } from './components/super/contratos/contratos.compo
 import { ContratosTotalesComponent } from './components/super/contratos-totales/contratos-totales.component';
 import { ContratosCtgComponent } from './components/super/contratos-ctg/contratos-ctg.component';
 import { ProduccionComponent } from './components/super/produccion/produccion.component';
+import { ProduccionLotesComponent } from './components/super/produccion-lotes/produccion-lotes.component';
 
 
 const routes: Routes = [
@@ -51,6 +52,7 @@ const routes: Routes = [
     { path: 'contratosTotales', component: ContratosTotalesComponent },
     { path: 'contratosCtg', component: ContratosCtgComponent },
     { path: 'produccion', component: ProduccionComponent },
+    { path: 'produccionLotes', component: ProduccionLotesComponent },
 
 
 ];
