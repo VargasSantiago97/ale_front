@@ -1333,7 +1333,8 @@ export class InicioComponent {
         
                 const punto = PUNTO_ORDEN_CARGA.toString().padStart(2, '0');
                 const numero = (numeroMasGrande+1).toString().padStart(5, '0');
-                return punto + "-" + numero;
+
+                this.datosOrdenCarga.numero = punto + "-" + numero;
             },
             (err: any) => {
                 console.log(err)
