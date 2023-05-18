@@ -171,4 +171,44 @@
         </div>
         <br><br><br><br>
     </div>
+    
+    <div #CAMIONES_SILO>
+        <div class="tarjeta">
+            <div class="formgrid row">
+                <div class="field col">
+                    <div style="margin: 0px 0px 10px 0px; padding: 30px;">
+                        <h5>CAMIONES DESDE SILOS:</h5>
+                        <br>
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 3px;" *ngFor="let col of colsCamiones">
+                                        {{col.header}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let camion of dataCamionesSilos">
+                                    <td style="padding: 2px;" *ngFor="let col of colsCamiones"
+                                        class="{{ col.field == 'kg_pendiente' ? 'negrita' : ''}}">
+                                        <label>{{camion[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="padding: 2px; background-color: rgba(187, 187, 187, 0.212); font-weight: bold;"
+                                        *ngFor="let col of colsCamiones" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                        <label>{{dataCamionesSilosTotales[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <br><br><br><br>
+    </div>
 </div>

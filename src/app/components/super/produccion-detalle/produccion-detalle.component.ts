@@ -24,6 +24,8 @@ export class ProduccionDetalleComponent {
     db_movimientos: any = []
     db_ordenCarga: any = []
     db_cartaPorte: any = []
+    db_camiones: any = []
+    db_intervinientes: any = []
 
     load_est: any = true;
     load_soc: any = true;
@@ -33,8 +35,12 @@ export class ProduccionDetalleComponent {
     load_movimientos: any = true;
     load_mov_orig: any = true;
     load_lote_silo: any = true;
+    load_movimiento_contrato:any = true;
     load_ordenCarga: any = true;
     load_cartaPorte: any = true;
+    load_camiones: any = true;
+    load_contratos: any = true;
+    load_intervinientes: any = true;
     loadPage: any = false;
 
 
@@ -67,6 +73,8 @@ export class ProduccionDetalleComponent {
 
     dataCamionesTrilla: any = []
     dataCamionesTrillaTotales: any = {}
+    dataCamionesSilos: any = []
+    dataCamionesSilosTotales: any = {}
 
     constructor(
         private sqlite: SqliteService,
@@ -124,6 +132,8 @@ export class ProduccionDetalleComponent {
                 this.obtenerMovimientosDB()
                 this.obtenerOrdenCargaDB()
                 this.obtenerCartaPorteDB()
+                this.obtenerCamionesDB()
+                this.obtenerIntervinientesDB()
     
                 this.getDB('lotes', () => {
                     this.load_lote = false
@@ -143,6 +153,14 @@ export class ProduccionDetalleComponent {
                 })
                 this.getDB('lote_a_silo', () => {
                     this.load_lote_silo = false
+                    this.generarDatosTabla()
+                })
+                this.getDB('movimiento_contrato', () => {
+                    this.load_movimiento_contrato = false
+                    this.generarDatosTabla()
+                })
+                this.getDB('contratos', () => {
+                    this.load_contratos = false
                     this.generarDatosTabla()
                 })
             }
@@ -197,10 +215,35 @@ export class ProduccionDetalleComponent {
             }
         )
     }
+    obtenerCamionesDB() {
+        this.comunicacionService.getDB('camiones').subscribe(
+            (res: any) => {
+                this.db_camiones = res
+                this.load_camiones = false
+                this.generarDatosTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerIntervinientesDB() {
+        this.comunicacionService.getDB('intervinientes').subscribe(
+            (res: any) => {
+                this.db_intervinientes = res
+                this.load_intervinientes = false
+                this.generarDatosTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+
 
 
     generarDatosTabla() {
-        if (!(this.load_cartaPorte || this.load_ordenCarga || this.load_est || this.load_soc || this.load_lote || this.load_mov || this.load_mov_orig || this.load_lote_silo || this.load_silo || this.load_movimientos)) {
+        if (!(this.load_contratos || this.load_movimiento_contrato || this.load_intervinientes || this.load_camiones || this.load_cartaPorte || this.load_ordenCarga || this.load_est || this.load_soc || this.load_lote || this.load_mov || this.load_mov_orig || this.load_lote_silo || this.load_silo || this.load_movimientos)) {
 
             this.datosGenerales = []
             const establecimiento = this.db_locales.establecimientos.find((e:any) => { return e.id == this.idEstablecimiento })
@@ -324,8 +367,11 @@ export class ProduccionDetalleComponent {
 
             this.dataSilos = []
 
+            var DIC_SILOS:any = {}
+
             var silos = this.db_locales.silos.filter((f: any) => { return f.id_establecimiento == establecimiento.id })
             silos.forEach((silo: any) => {
+                DIC_SILOS[silo.id] = silo.alias
 
                 var kg_cargaSilo = 0
                 var kg_descargaSilo = 0
@@ -382,7 +428,7 @@ export class ProduccionDetalleComponent {
 
             movimientos_origenes.forEach((movimiento_origen : any) => {
                 //tener en cuenta que por "CONTRATO" puede beneficiar a varios socios.
-                console.log(movimiento_origen)
+                //console.log(movimiento_origen)
 
                 //porcentaje / proporcion
                 var sumaKilosMovimientoOrigen = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.id_movimiento == movimiento_origen.id_movimiento) }).reduce((a:any, b:any) => {
@@ -394,6 +440,12 @@ export class ProduccionDetalleComponent {
 
                 const movimiento = this.db_movimientos.find((mov:any) => { return mov.id == movimiento_origen.id_movimiento })
                 const movimientoLocal = this.db_locales['movimientos'].find((mov:any) => { return mov.id_movimiento == movimiento_origen.id_movimiento})
+
+                const ok_origen = movimientoLocal.ok_origen == '1'
+                const ok_balanza = movimientoLocal.ok_balanza == '1'
+                const ok_acondicionadora = movimientoLocal.ok_acondicionadora == '1'
+                const ok_descarga = movimientoLocal.ok_descarga == '1'
+                const ok_contratos = movimientoLocal.ok_contratos == '1'
 
                 var fechaMov = '-'
                 if(movimiento.fecha){
@@ -426,6 +478,79 @@ export class ProduccionDetalleComponent {
                     nro_ctg += (cartaPorte.nro_ctg + ' ')
                 })
 
+                var patentes = ''
+                if(movimiento.id_camion){
+                    if(this.db_camiones.some((cam:any) => { return cam.id == movimiento.id_camion})){
+                        const camion = this.db_camiones.find((cam:any) => { return cam.id == movimiento.id_camion})
+                        const pat1 = camion.patente_chasis ? camion.patente_chasis : '' 
+                        const pat2 = camion.patente_acoplado ? ' - ' + camion.patente_acoplado : ''
+                        patentes = pat1 + pat2
+                    }
+                }
+
+                var beneficiario = ''
+                var corredor = ''
+                var destino = ''
+                //DE CONTRATO. -> SINO DE CPE NO AN -> SINO CPE -> sino MOV
+                beneficiario = movimiento.id_socio ? this.transformarDatoMostrarTabla(movimiento.id_socio, 'socio') : '-'
+                corredor = movimiento.id_corredor ? this.transformarDatoMostrarTabla(movimiento.id_corredor, 'intervinientes') : '-'
+                destino = movimiento.id_acopio ? this.transformarDatoMostrarTabla(movimiento.id_acopio, 'intervinientes') : '-'
+
+                cartasPorte.forEach((cartaPorte:any) => {
+                    if(cartaPorte.data){
+                        if(JSON.parse(cartaPorte.data)){
+                            if(JSON.parse(cartaPorte.data).estado != 'AN' && JSON.parse(cartaPorte.data).estado != 'RE'){
+                                beneficiario = cartaPorte.cuit_solicitante ? this.transformarDatoMostrarTabla(cartaPorte.cuit_solicitante, 'socioCuit') : ''
+                                corredor = cartaPorte.cuit_corredor_venta_primaria ? this.transformarDatoMostrarTabla(cartaPorte.cuit_corredor_venta_primaria, 'intervinientesCuit') : ''
+                                destino = cartaPorte.cuit_destino ? this.transformarDatoMostrarTabla(cartaPorte.cuit_destino, 'intervinientesCuit') : ''
+                            }
+                        }
+                    }
+                })
+
+                if(ok_contratos){
+                    const mov_ctos = this.db_locales['movimiento_contrato'].filter((mov_cto:any) => { return mov_cto.id_movimiento == movimiento.id })
+
+                    var beneficiarioAnt:any = ''
+                    var corredorAnt:any = ''
+                    var destinoAnt:any = ''
+
+                    for (let i = 0; i < mov_ctos.length; i++) {
+
+                        const mov_cto = mov_ctos[i];
+                        const cto = this.db_locales['contratos'].find((e:any) => { return e.id == mov_cto.id_contrato })
+
+                        if(i==0){
+                            beneficiario = cto.id_socio ? this.transformarDatoMostrarTabla(cto.id_socio, 'socio') : '-'
+                            corredor = cto.cuit_corredor ? this.transformarDatoMostrarTabla(cto.cuit_corredor, 'intervinientesCuit') : '-'
+                            destino = cto.cuit_comprador ? this.transformarDatoMostrarTabla(cto.cuit_comprador, 'intervinientesCuit') : '-'
+
+                            beneficiarioAnt = cto.id_socio
+                            corredorAnt = cto.cuit_corredor
+                            destinoAnt = cto.cuit_comprador
+                        } else {
+
+                            if (beneficiarioAnt != cto.id_socio) {
+                                beneficiario += '/' + (cto.id_socio ? this.transformarDatoMostrarTabla(cto.id_socio, 'socio') : '-')
+                            }
+                            if (corredorAnt != cto.cuit_corredor) {
+                                corredor += '/' + (cto.cuit_corredor ? this.transformarDatoMostrarTabla(cto.cuit_corredor, 'intervinientesCuit') : '-')
+                            }
+                            if (destinoAnt != cto.cuit_comprador) {
+                                console.log(destinoAnt)
+                                console.log(cto.cuit_comprador)
+                                destino += '/' + (cto.cuit_comprador ? this.transformarDatoMostrarTabla(cto.cuit_comprador, 'intervinientesCuit') : '-')
+                            }
+
+                            beneficiarioAnt = cto.id_socio
+                            corredorAnt = cto.cuit_corredor
+                            destinoAnt = cto.cuit_comprador
+
+                        }
+                    }
+                }
+
+
                 const kg_balanzaPropor = (movimientoLocal.kg_balanza ? (parseInt(movimientoLocal.kg_balanza) * porcentaje) : 0)
                 const kg_regulacionPropor = (movimientoLocal.kg_regulacion ? (parseInt(movimientoLocal.kg_regulacion) * porcentaje) : 0)
                 const kg_salidaPropor = (movimientoLocal.kg_salida ? (parseInt(movimientoLocal.kg_salida) * porcentaje) : 0)
@@ -439,16 +564,16 @@ export class ProduccionDetalleComponent {
                     orden_carga: nroOrdenCarga,
                     nro_cpe: nro_cpe,
                     nro_ctg: nro_ctg,
-                    patentes: '',
-                    beneficiario: '',
-                    corredor: '',
-                    destino: '',
-                    kg_campo: this.transformarDatoMostrarTabla(movimiento_origen.kilos, 'numero'),
-                    kg_balanza: this.transformarDatoMostrarTabla(kg_balanzaPropor, 'numero'),
-                    kg_regulacion: this.transformarDatoMostrarTabla(kg_regulacionPropor, 'numero'),
-                    kg_neto: this.transformarDatoMostrarTabla(kg_salidaPropor, 'numero'),
-                    kg_destino: this.transformarDatoMostrarTabla(kg_descargaPropor, 'numero'),
-                    kg_final: this.transformarDatoMostrarTabla(kg_finalPropor, 'numero'),
+                    patentes: patentes,
+                    beneficiario: beneficiario,
+                    corredor: corredor,
+                    destino: destino,
+                    kg_campo: ok_origen ? this.transformarDatoMostrarTabla(movimiento_origen.kilos, 'numero') : '-',
+                    kg_balanza: ok_balanza ? this.transformarDatoMostrarTabla(kg_balanzaPropor, 'numero') : '-',
+                    kg_regulacion: ok_balanza ? this.transformarDatoMostrarTabla(kg_regulacionPropor, 'numero') : '-',
+                    kg_neto: ok_balanza ? this.transformarDatoMostrarTabla(kg_salidaPropor, 'numero') : '-',
+                    kg_destino: ok_descarga ? this.transformarDatoMostrarTabla(kg_descargaPropor, 'numero') : '-',
+                    kg_final: ok_contratos ? this.transformarDatoMostrarTabla(kg_finalPropor, 'numero') : '-',
                 })
 
                 //calculamos total
@@ -478,6 +603,243 @@ export class ProduccionDetalleComponent {
                 kg_destino: this.transformarDatoMostrarTabla(kg_destinoTotales, 'numero'),
                 kg_final: this.transformarDatoMostrarTabla(kg_finalTotales, 'numero'),
             }
+
+            //ordenamos ORDEN
+            this.dataCamionesTrilla.sort((a:any, b:any) => {
+                if (a['orden_carga'] < b['orden_carga']) return -1;
+                if (a['orden_carga'] > b['orden_carga']) return 1;
+                return 0;
+            });
+            //ordenamos FECHA
+            this.dataCamionesTrilla.sort((a:any, b:any) => {
+                if (a['fecha'] < b['fecha']) return -1;
+                if (a['fecha'] > b['fecha']) return 1;
+                return 0;
+            });
+            //ordenamos SOCIO
+            this.dataCamionesTrilla.sort((a:any, b:any) => {
+                if (a['beneficiario'] < b['beneficiario']) return -1;
+                if (a['beneficiario'] > b['beneficiario']) return 1;
+                return 0;
+            });
+
+
+
+
+            // ##########################################
+            //            CAMIONES DESDE SILOS
+            // ##########################################
+
+            this.dataCamionesSilos = []
+
+            kg_campoTotales = 0
+            kg_balanzaTotales = 0
+            kg_regulacionTotales = 0
+            kg_netoTotales = 0
+            kg_destinoTotales = 0
+            kg_finalTotales = 0
+
+            var movimientos_origenes = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.tipo_origen == 'silo') && (mov_orig.id_establecimiento == establecimiento.id) })
+
+            movimientos_origenes.forEach((movimiento_origen : any) => {
+                //tener en cuenta que por "CONTRATO" puede beneficiar a varios socios.
+                //console.log(movimiento_origen)
+
+                //porcentaje / proporcion
+                var sumaKilosMovimientoOrigen = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.id_movimiento == movimiento_origen.id_movimiento) }).reduce((a:any, b:any) => {
+                    const kkgg = b.kilos ? (parseInt(b.kilos) ? parseInt(b.kilos) : 0) : 0
+                    return a + kkgg
+                }, 0)
+                const porcentaje = parseInt(movimiento_origen.kilos) / sumaKilosMovimientoOrigen
+
+
+                const movimiento = this.db_movimientos.find((mov:any) => { return mov.id == movimiento_origen.id_movimiento })
+                const movimientoLocal = this.db_locales['movimientos'].find((mov:any) => { return mov.id_movimiento == movimiento_origen.id_movimiento})
+
+                const ok_origen = movimientoLocal.ok_origen == '1'
+                const ok_balanza = movimientoLocal.ok_balanza == '1'
+                const ok_acondicionadora = movimientoLocal.ok_acondicionadora == '1'
+                const ok_descarga = movimientoLocal.ok_descarga == '1'
+                const ok_contratos = movimientoLocal.ok_contratos == '1'
+
+                var fechaMov = '-'
+                if(movimiento.fecha){
+                    var fecha = new Date(movimiento.fecha);
+
+                    if(fecha){
+                        var anio = fecha.getFullYear(); // Año de 4 dígitos
+                        var mes:any = fecha.getMonth() + 1; // Mes (0-11), por lo que se suma 1
+                        var dia:any = fecha.getDate(); // Día del mes
+                        
+                        mes = mes.toString().padStart(2, '0')
+                        dia = dia.toString().padStart(2, '0')
+                        
+                        // Construye la cadena en el formato deseado
+                        fechaMov = dia + '/' + mes + '/' + anio
+                    }
+                }
+
+                var nroOrdenCarga = '-'
+                var ordenCarga = this.db_ordenCarga.find((e:any) => { return e.id_movimiento == movimiento_origen.id_movimiento })
+                if(ordenCarga){
+                    nroOrdenCarga = ordenCarga.numero ? ordenCarga.numero : '-'
+                }
+
+                var nro_cpe:any = ''
+                var nro_ctg:any = ''
+                var cartasPorte = this.db_cartaPorte.filter((e:any) => { return e.id_movimiento == movimiento_origen.id_movimiento})
+                cartasPorte.forEach((cartaPorte:any) => {
+                    nro_cpe += (cartaPorte.sucursal && cartaPorte.nro_cpe) ? (cartaPorte.sucursal.toString().padStart(2, '0') + '-' + cartaPorte.nro_cpe.toString().padStart(5, '0') + ' ') : ''
+                    nro_ctg += (cartaPorte.nro_ctg + ' ')
+                })
+
+                var patentes = ''
+                if(movimiento.id_camion){
+                    if(this.db_camiones.some((cam:any) => { return cam.id == movimiento.id_camion})){
+                        const camion = this.db_camiones.find((cam:any) => { return cam.id == movimiento.id_camion})
+                        const pat1 = camion.patente_chasis ? camion.patente_chasis : '' 
+                        const pat2 = camion.patente_acoplado ? ' - ' + camion.patente_acoplado : ''
+                        patentes = pat1 + pat2
+                    }
+                }
+
+                var beneficiario = ''
+                var corredor = ''
+                var destino = ''
+                //DE CONTRATO. -> SINO DE CPE NO AN -> SINO CPE -> sino MOV
+                beneficiario = movimiento.id_socio ? this.transformarDatoMostrarTabla(movimiento.id_socio, 'socio') : '-'
+                corredor = movimiento.id_corredor ? this.transformarDatoMostrarTabla(movimiento.id_corredor, 'intervinientes') : '-'
+                destino = movimiento.id_acopio ? this.transformarDatoMostrarTabla(movimiento.id_acopio, 'intervinientes') : '-'
+
+                cartasPorte.forEach((cartaPorte:any) => {
+                    if(cartaPorte.data){
+                        if(JSON.parse(cartaPorte.data)){
+                            if(JSON.parse(cartaPorte.data).estado != 'AN' && JSON.parse(cartaPorte.data).estado != 'RE'){
+                                beneficiario = cartaPorte.cuit_solicitante ? this.transformarDatoMostrarTabla(cartaPorte.cuit_solicitante, 'socioCuit') : ''
+                                corredor = cartaPorte.cuit_corredor_venta_primaria ? this.transformarDatoMostrarTabla(cartaPorte.cuit_corredor_venta_primaria, 'intervinientesCuit') : ''
+                                destino = cartaPorte.cuit_destino ? this.transformarDatoMostrarTabla(cartaPorte.cuit_destino, 'intervinientesCuit') : ''
+                            }
+                        }
+                    }
+                })
+
+                if(ok_contratos){
+                    const mov_ctos = this.db_locales['movimiento_contrato'].filter((mov_cto:any) => { return mov_cto.id_movimiento == movimiento.id })
+
+                    var beneficiarioAnt:any = ''
+                    var corredorAnt:any = ''
+                    var destinoAnt:any = ''
+
+                    for (let i = 0; i < mov_ctos.length; i++) {
+
+                        const mov_cto = mov_ctos[i];
+                        const cto = this.db_locales['contratos'].find((e:any) => { return e.id == mov_cto.id_contrato })
+
+                        if(i==0){
+                            beneficiario = cto.id_socio ? this.transformarDatoMostrarTabla(cto.id_socio, 'socio') : '-'
+                            corredor = cto.cuit_corredor ? this.transformarDatoMostrarTabla(cto.cuit_corredor, 'intervinientesCuit') : '-'
+                            destino = cto.cuit_comprador ? this.transformarDatoMostrarTabla(cto.cuit_comprador, 'intervinientesCuit') : '-'
+
+                            beneficiarioAnt = cto.id_socio
+                            corredorAnt = cto.cuit_corredor
+                            destinoAnt = cto.cuit_comprador
+                        } else {
+
+                            if (beneficiarioAnt != cto.id_socio) {
+                                beneficiario += '/' + (cto.id_socio ? this.transformarDatoMostrarTabla(cto.id_socio, 'socio') : '-')
+                            }
+                            if (corredorAnt != cto.cuit_corredor) {
+                                corredor += '/' + (cto.cuit_corredor ? this.transformarDatoMostrarTabla(cto.cuit_corredor, 'intervinientesCuit') : '-')
+                            }
+                            if (destinoAnt != cto.cuit_comprador) {
+                                console.log(destinoAnt)
+                                console.log(cto.cuit_comprador)
+                                destino += '/' + (cto.cuit_comprador ? this.transformarDatoMostrarTabla(cto.cuit_comprador, 'intervinientesCuit') : '-')
+                            }
+
+                            beneficiarioAnt = cto.id_socio
+                            corredorAnt = cto.cuit_corredor
+                            destinoAnt = cto.cuit_comprador
+
+                        }
+                    }
+                }
+
+
+                const kg_balanzaPropor = (movimientoLocal.kg_balanza ? (parseInt(movimientoLocal.kg_balanza) * porcentaje) : 0)
+                const kg_regulacionPropor = (movimientoLocal.kg_regulacion ? (parseInt(movimientoLocal.kg_regulacion) * porcentaje) : 0)
+                const kg_salidaPropor = (movimientoLocal.kg_salida ? (parseInt(movimientoLocal.kg_salida) * porcentaje) : 0)
+                const kg_descargaPropor = (movimientoLocal.kg_descarga ? (parseInt(movimientoLocal.kg_descarga) * porcentaje) : 0)
+                const kg_finalPropor = (movimientoLocal.kg_final ? (parseInt(movimientoLocal.kg_final) * porcentaje) : 0)
+
+                this.dataCamionesSilos.push({
+                    porcentaje: porcentaje.toFixed(3),
+                    fecha: fechaMov,
+                    origen: DIC_SILOS[movimiento_origen.id_origen],
+                    orden_carga: nroOrdenCarga,
+                    nro_cpe: nro_cpe,
+                    nro_ctg: nro_ctg,
+                    patentes: patentes,
+                    beneficiario: beneficiario,
+                    corredor: corredor,
+                    destino: destino,
+                    kg_campo: ok_origen ? this.transformarDatoMostrarTabla(movimiento_origen.kilos, 'numero') : '-',
+                    kg_balanza: ok_balanza ? this.transformarDatoMostrarTabla(kg_balanzaPropor, 'numero') : '-',
+                    kg_regulacion: ok_balanza ? this.transformarDatoMostrarTabla(kg_regulacionPropor, 'numero') : '-',
+                    kg_neto: ok_balanza ? this.transformarDatoMostrarTabla(kg_salidaPropor, 'numero') : '-',
+                    kg_destino: ok_descarga ? this.transformarDatoMostrarTabla(kg_descargaPropor, 'numero') : '-',
+                    kg_final: ok_contratos ? this.transformarDatoMostrarTabla(kg_finalPropor, 'numero') : '-',
+                })
+
+                //calculamos total
+                kg_campoTotales += parseInt(movimiento_origen.kilos) ? parseInt(movimiento_origen.kilos) : 0
+                kg_balanzaTotales += kg_balanzaPropor ? kg_balanzaPropor : 0
+                kg_regulacionTotales += kg_regulacionPropor ? kg_regulacionPropor : 0
+                kg_netoTotales += kg_salidaPropor ? kg_salidaPropor : 0
+                kg_destinoTotales += kg_descargaPropor ? kg_descargaPropor : 0
+                kg_finalTotales += kg_finalPropor ? kg_finalPropor : 0
+            })
+
+            this.dataCamionesSilosTotales = {
+                porcentaje: '',
+                fecha: '',
+                origen: '',
+                orden_carga: '',
+                nro_cpe: '',
+                nro_ctg: '',
+                patentes: '',
+                beneficiario: '',
+                corredor: '',
+                destino: '',
+                kg_campo: this.transformarDatoMostrarTabla(kg_campoTotales, 'numero'),
+                kg_balanza: this.transformarDatoMostrarTabla(kg_balanzaTotales, 'numero'),
+                kg_regulacion: this.transformarDatoMostrarTabla(kg_regulacionTotales, 'numero'),
+                kg_neto: this.transformarDatoMostrarTabla(kg_netoTotales, 'numero'),
+                kg_destino: this.transformarDatoMostrarTabla(kg_destinoTotales, 'numero'),
+                kg_final: this.transformarDatoMostrarTabla(kg_finalTotales, 'numero'),
+            }
+
+            //ordenamos ORDEN
+            this.dataCamionesSilos.sort((a:any, b:any) => {
+                if (a['orden_carga'] < b['orden_carga']) return -1;
+                if (a['orden_carga'] > b['orden_carga']) return 1;
+                return 0;
+            });
+            //ordenamos FECHA
+            this.dataCamionesSilos.sort((a:any, b:any) => {
+                if (a['fecha'] < b['fecha']) return -1;
+                if (a['fecha'] > b['fecha']) return 1;
+                return 0;
+            });
+            //ordenamos SOCIO
+            this.dataCamionesSilos.sort((a:any, b:any) => {
+                if (a['beneficiario'] < b['beneficiario']) return -1;
+                if (a['beneficiario'] > b['beneficiario']) return 1;
+                return 0;
+            });
+
+
+
 
             setTimeout(() => { this.loadPage = false }, 1000)
 
@@ -677,10 +1039,18 @@ export class ProduccionDetalleComponent {
         if (tipo == 'socio') {
             return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).alias : dato
         }
-
+        if (tipo == 'socioCuit') {
+            return this.db_socios.some((e: any) => { return e.cuit == dato }) ? this.db_socios.find((e: any) => { return e.cuit == dato }).alias : dato
+        }
         if (tipo == 'has') {
             const has = parseFloat(this.totalHasLotes) * parseFloat(dato) / 100
             return has.toLocaleString('es-AR');
+        }
+        if (tipo == 'intervinientes') {
+            return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'intervinientesCuit') {
+            return this.db_intervinientes.some((e: any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e: any) => { return e.cuit == dato }).alias : '-'
         }
 
 

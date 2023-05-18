@@ -1908,6 +1908,7 @@ export class InicioComponent {
 
             this.comunicacionService.getDir(e.nro_ctg).subscribe(
                 (res: any) => {
+                    console.log(res)
                     if (res.mensaje) {
                         e.archivos = res.ruta
                     }
