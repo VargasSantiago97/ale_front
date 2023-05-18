@@ -639,24 +639,22 @@ export class CamionesComponent {
         if((dato.kg_neto_descarga != '') && dato.kg_neto_final){
             dato.dif_destino_balanza = parseInt(dato.kg_neto_descarga) - parseInt(dato.kg_neto_final)
             dato.dif_destino_balanza_pintar = Math.abs(dato.dif_destino_balanza) > TOLERANCIA_DESTINO_BALANZA
+        }
 
-        
-            if(this.db_locales['movimientos'].some((m:any) => { return m.id_movimiento == mov.id })){
-                const movLocal = this.db_locales['movimientos'].find((m:any) => { return m.id_movimiento == mov.id })
-    
-                if(movLocal.ok_descarga == 1){
-                    dato.kg_mermas = movLocal.kg_mermas ? parseInt(movLocal.kg_mermas) : 0
-    
-                    dato.kg_final = parseInt(dato.kg_neto_descarga) - dato.kg_mermas
-    
-                }
+        //DATOS LOCALES
+        if(this.db_locales['movimientos'].some((m:any) => { return m.id_movimiento == mov.id })){
+            const movLocal = this.db_locales['movimientos'].find((m:any) => { return m.id_movimiento == mov.id })
 
-                dato.ok_origen = movLocal.ok_origen == 1 ? 'SI' : movLocal.ok_origen
-                dato.ok_balanza = movLocal.ok_balanza == 1 ? 'SI' : movLocal.ok_balanza
-                dato.ok_acondicionadora = movLocal.ok_acondicionadora == 1 ? 'SI' : movLocal.ok_acondicionadora
-                dato.ok_descarga = movLocal.ok_descarga == 1 ? 'SI' : movLocal.ok_descarga
-                dato.ok_contratos = movLocal.ok_contratos == 1 ? 'SI' : movLocal.ok_contratos
+            if(movLocal.ok_descarga == 1){
+                dato.kg_mermas = movLocal.kg_mermas ? parseInt(movLocal.kg_mermas) : 0
+                dato.kg_final = parseInt(movLocal.kg_descarga) - movLocal.kg_mermas
             }
+
+            dato.ok_origen = movLocal.ok_origen == 1 ? 'SI' : movLocal.ok_origen
+            dato.ok_balanza = movLocal.ok_balanza == 1 ? 'SI' : movLocal.ok_balanza
+            dato.ok_acondicionadora = movLocal.ok_acondicionadora == 1 ? 'SI' : movLocal.ok_acondicionadora
+            dato.ok_descarga = movLocal.ok_descarga == 1 ? 'SI' : movLocal.ok_descarga
+            dato.ok_contratos = movLocal.ok_contratos == 1 ? 'SI' : movLocal.ok_contratos
         }
 
 
@@ -725,13 +723,29 @@ export class CamionesComponent {
         }
         if (tipo == 'fecha') {
             if(dato){
-                var fecha = new Date(dato)
-                if(fecha){
-                    const datePipe = new DatePipe('en-US');
-                    return datePipe.transform(fecha, 'yyyy-MM-dd');
+
+                var fechaActual = new Date(dato);
+
+                if(fechaActual){
+                    var anio = fechaActual.getFullYear(); // Año de 4 dígitos
+                    var mes:any = fechaActual.getMonth() + 1; // Mes (0-11), por lo que se suma 1
+                    var dia:any = fechaActual.getDate(); // Día del mes             
+    
+                    // Asegúrate de que el mes y el día tengan 2 dígitos
+                    if (mes < 10) {
+                      mes = '0' + mes;
+                    }               
+    
+                    if (dia < 10) {
+                      dia = '0' + dia;
+                    }               
+    
+                    // Construye la cadena en el formato deseado
+                    return anio + '-' + mes + '-' + dia;
                 } else {
                     return dato
                 }
+
             } else {
                 return dato
             }
@@ -861,14 +875,6 @@ export class CamionesComponent {
             })
         })
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -1288,7 +1294,8 @@ export class CamionesComponent {
                 const ok_corredor = (e.cuit_corredor == this.datosParaMostrarRegistro.corredor_pri_cuit)
                 const ok_comprador = (e.cuit_comprador == this.datosParaMostrarRegistro.destinatario_cuit)
 
-                const id_socio = this.db_socios.find((socio:any) => { return socio.cuit == this.datosParaMostrarRegistro.cuit_solicitante }).id
+                const socio = this.db_socios.find((socio:any) => { return socio.cuit == this.datosParaMostrarRegistro.cuit_solicitante })
+                const id_socio = socio ? socio.id : null
 
                 const ok_vendedor = (e.id_socio == id_socio)
                 const ok_activo = (e.activo == 1)

@@ -85,6 +85,8 @@ import { ContratosTotalesComponent } from './components/super/contratos-totales/
 import { ContratosCtgComponent } from './components/super/contratos-ctg/contratos-ctg.component';
 import { ProduccionComponent } from './components/super/produccion/produccion.component';
 import { ProduccionLotesComponent } from './components/super/produccion-lotes/produccion-lotes.component';
+import { ProduccionSilosComponent } from './components/super/produccion-silos/produccion-silos.component';
+import { ProduccionDetalleComponent } from './components/super/produccion-detalle/produccion-detalle.component';
 
 
 @NgModule({
@@ -117,7 +119,9 @@ import { ProduccionLotesComponent } from './components/super/produccion-lotes/pr
     ContratosTotalesComponent,
     ContratosCtgComponent,
     ProduccionComponent,
-    ProduccionLotesComponent
+    ProduccionLotesComponent,
+    ProduccionSilosComponent,
+    ProduccionDetalleComponent
   ],
   imports: [
     BrowserModule,

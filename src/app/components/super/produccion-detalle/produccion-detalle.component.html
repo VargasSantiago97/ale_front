@@ -1,0 +1,174 @@
+
+<select [(ngModel)]="idEstablecimiento" (ngModelChange)="navegarConParametro()">
+    <option *ngFor="let dato of db_locales.establecimientos" value="{{dato.id}}">{{dato.alias}}</option>
+</select>
+
+<div style="text-align: center;" *ngIf="loadPage">
+    <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
+</div>
+
+<div #PAGINACARGA *ngIf="!loadPage">
+    <div #RINDES_GRAFICOS *ngFor="let dato of datosGenerales">
+        <div class="tarjeta">
+            <div class="formgrid row">
+                <div class="field col">
+                    <div style="margin: 0px 0px 10px 0px; padding: 30px;">
+                        <h1 style="text-align: center;" id="{{dato.establecimiento_id}}"><strong>{{dato.establecimiento}}</strong></h1>
+                        <br><br>
+                        <h3>SUPERFICIE TOTAL: <strong>{{dato.totales.has}}</strong> has. - RINDE: <strong>{{dato.totales.rinde}}</strong> kg/ha</h3>
+                        <br><br>
+                        <h5>RENDIMIENTO POR LOTE:</h5>
+                        <br>
+                        <style>
+                            table {
+                                border-collapse: collapse;
+                                width: 100%;
+                            }   
+
+                            th,
+                            td {
+                                text-align: left;
+                                padding: 8px;
+                                border-bottom: 1px solid #ddd;
+                            }   
+
+                            th {
+                                background-color: #f2f2f2;
+                            }   
+
+                            tr:hover {
+                                background-color: #f5f5f5;
+                            }
+                        </style>
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 3px;" *ngFor="let col of cols">
+                                        {{col.header}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let lote of dato.lotes">
+                                    <td style="padding: 2px;" *ngFor="let col of cols"
+                                        class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                        <label>{{lote[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="padding: 2px; background-color: rgba(187, 187, 187, 0.212); font-weight: bold;"
+                                        *ngFor="let col of cols" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                        <label>{{dato.totales[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="formgrid row">
+                <div #GRAFICO class="field col">
+                </div>
+                <div #GRAFICO class="field col">
+                    <div style="width: 300px; text-align: center;">
+                        <h4>KGS por LOTE</h4>
+                        <p-chart type="doughnut" [data]="dato.graficoKilos"></p-chart>
+                    </div>
+                </div>
+                <div #GRAFICO class="field col">
+                    <div style="width: 300px; text-align: center;">
+                        <h4>RINDES por LOTE</h4>
+                        <p-chart type="doughnut" [data]="dato.graficoRindes"></p-chart>
+                    </div>
+                </div>
+                <div #GRAFICO class="field col">
+                </div>
+            </div>
+            <br><br>
+        </div>
+        <br><br><br><br>
+    </div>
+
+    <div #KILOS_EN_BOLSONES>
+        <div class="tarjeta">
+            <div class="formgrid row">
+                <div class="field col">
+                    <div style="margin: 0px 0px 10px 0px; padding: 30px;">
+                        <h5>KILOS EN BOLSONES:</h5>
+                        <br>
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 3px;" *ngFor="let col of colsSilos">
+                                        {{col.header}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let silo of dataSilos">
+                                    <td style="padding: 2px;" *ngFor="let col of colsSilos"
+                                        class="{{ col.field == 'kg_pendiente' ? 'negrita' : ''}}">
+                                        <label>{{silo[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="padding: 2px; background-color: rgba(187, 187, 187, 0.212); font-weight: bold;"
+                                        *ngFor="let col of colsSilos" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                        <label>{{dataSilosTotales[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <br><br><br><br>
+    </div>
+
+    <div #CAMIONES_TRILLA>
+        <div class="tarjeta">
+            <div class="formgrid row">
+                <div class="field col">
+                    <div style="margin: 0px 0px 10px 0px; padding: 30px;">
+                        <h5>CAMIONES DESDE TRILLA:</h5>
+                        <br>
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 3px;" *ngFor="let col of colsCamiones">
+                                        {{col.header}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let camion of dataCamionesTrilla">
+                                    <td style="padding: 2px;" *ngFor="let col of colsCamiones"
+                                        class="{{ col.field == 'kg_pendiente' ? 'negrita' : ''}}">
+                                        <label>{{camion[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="padding: 2px; background-color: rgba(187, 187, 187, 0.212); font-weight: bold;"
+                                        *ngFor="let col of colsCamiones" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                        <label>{{dataCamionesTrillaTotales[col.field]}}</label>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <br><br><br><br>
+    </div>
+</div>

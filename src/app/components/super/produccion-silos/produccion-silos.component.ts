@@ -4,11 +4,11 @@ import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 
 @Component({
-    selector: 'app-produccion-lotes',
-    templateUrl: './produccion-lotes.component.html',
-    styleUrls: ['./produccion-lotes.component.css']
+    selector: 'app-produccion-silos',
+    templateUrl: './produccion-silos.component.html',
+    styleUrls: ['./produccion-silos.component.css']
 })
-export class ProduccionLotesComponent {
+export class ProduccionSilosComponent {
 
     db_socios: any = []
 
@@ -20,11 +20,10 @@ export class ProduccionLotesComponent {
 
     load_est: any = true;
     load_soc: any = true;
-    load_lote: any = true;
+    load_silo: any = true;
     load_mov: any = true;
     load_mov_orig: any = true;
     load_lote_silo: any = true;
-
 
 
     datosTabla: any = []
@@ -46,6 +45,10 @@ export class ProduccionLotesComponent {
     totalPorcentaje: any = []
 
     cols: any = []
+    colsCampos: any = []
+
+    datosEstablecimiento: any = []
+    datosTotales:any = {}
 
     constructor(
         private sqlite: SqliteService,
@@ -55,18 +58,22 @@ export class ProduccionLotesComponent {
 
     ngOnInit() {
         this.cols = [
-            { field: 'lote', header: 'Lote' },
-            { field: 'has', header: 'Has' },
-            { field: 'kg_trilla', header: 'Kgs Trilla' },
-            { field: 'kg_silo', header: 'Kgs a Silo' },
-            { field: 'kg_total', header: 'TOTALES' },
-            { field: 'rinde', header: 'Rinde' },
+            { field: 'silo', header: 'Silo' },
+            { field: 'kg_carga', header: 'Kgs ENTRADA' },
+            { field: 'kg_descarga', header: 'Kgs SALIDA' },
+            { field: 'kg_pendiente', header: 'Kgs EN SILO' },
+        ]
+        this.colsCampos = [
+            { field: 'establecimiento', header: 'Establecimiento' },
+            { field: 'kg_carga', header: 'Kgs ENTRADA' },
+            { field: 'kg_descarga', header: 'Kgs SALIDA' },
+            { field: 'kg_pendiente', header: 'Kgs EN SILO' },
         ]
 
         this.obtenerSociosDB()
 
-        this.getDB('lotes', () => {
-            this.load_lote = false
+        this.getDB('silos', () => {
+            this.load_silo = false
             this.generarDatosTabla()
         })
         this.getDB('establecimientos', () => {
@@ -102,116 +109,75 @@ export class ProduccionLotesComponent {
 
 
     generarDatosTabla() {
-        if (!(this.load_est || this.load_soc || this.load_lote || this.load_mov || this.load_mov_orig || this.load_lote_silo)) {
+        if (!(this.load_est || this.load_soc || this.load_silo || this.load_mov || this.load_mov_orig || this.load_lote_silo)) {
 
             this.datosGenerales = []
+            this.datosEstablecimiento = []
 
             this.db_locales.establecimientos.forEach((establecimiento: any) => {
 
                 var dataAgregando: any = {
                     establecimiento: establecimiento.alias,
                     establecimiento_id: establecimiento.id,
-                    lotes: [],
+                    silos: [],
                     totales: {},
-
-                    graficoKilos: {
-                        labels: [],
-                        datasets: [
-                            {
-                                data: [],
-                                label: 'Kilos',
-                            }
-                        ]
-                    },
-                    graficoRindes: {
-                        labels: [],
-                        datasets: [
-                            {
-                                data: [],
-                                label: 'Rinde [kg/has]',
-                            }
-                        ]
-                    }
                 }
 
+                //totales
+                var kg_carga = 0
+                var kg_descarga = 0
+                var kg_pendiente = 0
 
-                var has = 0
-                var rinde = 0
-                var kg_trilla = 0
-                var kg_silo = 0
-                var kg_total = 0
+                var silos = this.db_locales.silos.filter((f: any) => { return f.id_establecimiento == establecimiento.id })
+                silos.forEach((silo: any) => {
+
+                    var kg_cargaSilo = 0
+                    var kg_descargaSilo = 0
+                    
+                    //SILOS CARGA
+                    var lote_a_silo = this.db_locales.lote_a_silo.filter((f: any) => { return f.id_silo == silo.id })
+                    lote_a_silo.forEach((f: any) => {
+                        const kilos = f.kilos ? parseInt(f.kilos) : 0
+                        kg_cargaSilo += kilos
+                    })
+
+                    //SILOS DESCARGA
+                    var mov_desde_silo = this.db_locales.movimiento_origen.filter((f: any) => { return f.id_origen == silo.id })
+                    mov_desde_silo.forEach((f: any) => {
+                        const kilos = f.kilos ? parseInt(f.kilos) : 0
+                        kg_descargaSilo += kilos
+                    })
 
 
-                var lotes = this.db_locales.lotes.filter((f: any) => { return f.id_establecimiento == establecimiento.id })
-                lotes.forEach((lote: any) => {
-                    if (lote.activo == '1') {
+                    var kg_pendienteSilo = kg_cargaSilo - kg_descargaSilo
 
-                        //HAS
-                        const hasLote = lote.has ? parseInt(lote.has) : 0
+                    dataAgregando.silos.push({
+                        silo: silo.alias,
+                        kg_carga: this.transformarDatoMostrarTabla(kg_cargaSilo, 'numero'),
+                        kg_descarga: this.transformarDatoMostrarTabla(kg_descargaSilo, 'numero'),
+                        kg_pendiente: this.transformarDatoMostrarTabla(kg_pendienteSilo, 'numero'),
+                    })
 
-
-                        //TRILLA
-                        var totalKilosTrilla: any = 0
-                        var movimiento_origen = this.db_locales.movimiento_origen.filter((movOrig: any) => { return movOrig.id_origen == lote.id })
-                        movimiento_origen.forEach((f: any) => {
-                            const kgMov = f.kilos ? parseInt(f.kilos) : 0
-                            totalKilosTrilla += kgMov
-                        })
-
-
-                        //SILOS
-                        var totalKilosSilo: any = 0
-                        var lote_a_silo = this.db_locales.lote_a_silo.filter((f: any) => { return f.id_lote == lote.id })
-                        lote_a_silo.forEach((f: any) => {
-                            const kilos = f.kilos ? parseInt(f.kilos) : 0
-                            totalKilosSilo += kilos
-                        })
-
-                        var rindeLote = 0
-                        if (hasLote) {
-                            rindeLote = (totalKilosTrilla + totalKilosSilo) / hasLote
-                        }
-
-                        dataAgregando.lotes.push({
-                            lote: lote.alias,
-                            has: this.transformarDatoMostrarTabla(hasLote, 'numero'),
-                            kg_trilla: this.transformarDatoMostrarTabla(totalKilosTrilla, 'numero'),
-                            kg_silo: this.transformarDatoMostrarTabla(totalKilosSilo, 'numero'),
-                            kg_total: this.transformarDatoMostrarTabla(totalKilosSilo + totalKilosTrilla, 'numero'),
-                            rinde: this.transformarDatoMostrarTabla(rindeLote, 'numero'),
-
-                            cantCamiones: 1
-                        })
-
-                        dataAgregando.graficoKilos.labels.push(lote.alias)
-                        dataAgregando.graficoKilos.datasets[0].data.push(totalKilosSilo + totalKilosTrilla)
-
-                        dataAgregando.graficoRindes.labels.push(lote.alias)
-                        dataAgregando.graficoRindes.datasets[0].data.push(rindeLote)
-
-                        has += hasLote
-                        kg_trilla += totalKilosTrilla
-                        kg_silo += totalKilosSilo
-                    }
+                    kg_carga += kg_cargaSilo
+                    kg_descarga += kg_descargaSilo
+                    kg_pendiente += kg_pendienteSilo
+                    
                 })
 
-                kg_total = kg_trilla + kg_silo
-                if (has) {
-                    rinde = kg_total / has
-                }
-
                 dataAgregando.totales = {
-                    lote: 'TOTALES',
-                    has: this.transformarDatoMostrarTabla(has, 'numero'),
-                    kg_trilla: this.transformarDatoMostrarTabla(kg_trilla, 'numero'),
-                    kg_silo: this.transformarDatoMostrarTabla(kg_silo, 'numero'),
-                    kg_total: this.transformarDatoMostrarTabla(kg_total, 'numero'),
-                    rinde: this.transformarDatoMostrarTabla(rinde, 'numero')
+                    silo: 'TOTALES',
+                    kg_carga: this.transformarDatoMostrarTabla(kg_carga, 'numero'),
+                    kg_descarga: this.transformarDatoMostrarTabla(kg_descarga, 'numero'),
+                    kg_pendiente: this.transformarDatoMostrarTabla(kg_pendiente, 'numero'),
                 }
-
-
 
                 this.datosGenerales.push(dataAgregando)
+                this.datosEstablecimiento.push({
+                    establecimiento: establecimiento.alias,
+                    kg_carga: this.transformarDatoMostrarTabla(kg_carga, 'numero'),
+                    kg_descarga: this.transformarDatoMostrarTabla(kg_descarga, 'numero'),
+                    kg_pendiente: this.transformarDatoMostrarTabla(kg_pendiente, 'numero')
+                })
             })
         }
     }

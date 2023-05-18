@@ -47,6 +47,8 @@ export class ProduccionComponent {
 
 
     cols: any = []
+    graficoKilos: any = []
+    graficoRinde: any = []
 
     constructor(
         private sqlite: SqliteService,
@@ -63,6 +65,27 @@ export class ProduccionComponent {
             { field: 'kg_total', header: 'TOTALES'},
             { field: 'rinde', header: 'Rinde'},
         ]
+
+        this.graficoKilos = {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Kgs campo',
+                    backgroundColor: '#42A5F5',
+                    data: []
+                }
+            ]
+        };
+        this.graficoRinde = {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Rinde',
+                    backgroundColor: '#42A5F5',
+                    data: []
+                }
+            ]
+        };
 
         this.obtenerSociosDB()
 
@@ -151,6 +174,12 @@ export class ProduccionComponent {
                     kg_silo: this.transformarDatoMostrarTabla(kg_silo, "numero"),
                     kg_total: this.transformarDatoMostrarTabla(kg_total, "numero"),
                 })
+
+                this.graficoKilos.labels.push(e.alias)
+                this.graficoKilos.datasets[0].data.push(kg_total)
+                this.graficoRinde.labels.push(e.alias)
+                this.graficoRinde.datasets[0].data.push(rinde)
+
             })
         }
     }

@@ -1,6 +1,6 @@
 <br>
 
-<div style="margin: 20px;">
+<div style="margin: 100px;">
     <div class="formgrid row">
         <div #CAMPOS class="field col">
             <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
@@ -42,6 +42,23 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div class="formgrid row">
+        <div #GRAFICO_KILOS class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>KGS CAMPO</strong></h5>
+                <p-chart type="bar" [data]="graficoKilos"></p-chart>
+            </div>
+        </div>
+    </div>
+    <div class="formgrid row">
+        <div #GRAFICO_RINDE class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>RINDE Kgs/has</strong></h5>
+                <p-chart type="bar" [data]="graficoRinde"></p-chart>
             </div>
         </div>
     </div>

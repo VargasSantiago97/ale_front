@@ -246,7 +246,7 @@
             <div class="field tarjeta" style="height: 400px;">
                 <h5 style="text-align: center;"><strong>ORIGEN</strong></h5>
                 <hr>
-                <h6>Origen planilla: <strong>{{movimientoLocal.kg_campo}}</strong>kgs</h6>
+                <h6>Origen planilla: <input type="number" [(ngModel)]="movimientoLocal.kg_campo" class="input-text-codigo" style="width: 100px;">Kgs</h6>
                 <table>
                     <thead>
                         <tr>
@@ -558,6 +558,7 @@
                 <thead>
                     <tr>
                         <th>Contrado</th>
+                        <th>Socio</th>
                         <th>Corredor</th>
                         <th>Comprador</th>
                         <th>Desde</th>
@@ -570,6 +571,9 @@
                     <tr *ngFor="let cto of listadoContratosSeleccionar">
                         <td>
                             {{cto.alias}}
+                        </td>
+                        <td>
+                            {{transformDatoTabla(cto.id_socio, 'socio')}}
                         </td>
                         <td>
                             {{transformDatoTabla(cto.cuit_corredor, 'intervinientesCuit')}}
