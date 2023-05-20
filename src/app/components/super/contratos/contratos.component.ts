@@ -34,6 +34,17 @@ export class ContratosComponent {
     ordenarPorAnterior:any = 'socio'
     ordenarMayorMenor:Boolean = true
 
+    //FILTROS
+    socios_seleccionados: any = ['vacios']
+    corredores_seleccionados: any = ['vacios']
+    compradores_seleccionados: any = ['vacios']
+    granos_seleccionados: any = ['vacios']
+
+    opt_socios: any = []
+    opt_corredores: any = []
+    opt_compradores: any = []
+    opt_granos: any = []
+
 
 
     monedas:any = [
@@ -92,6 +103,11 @@ export class ContratosComponent {
         this.comunicacionService.getDB('socios').subscribe(
             (res: any) => {
                 this.db_socios = res
+                this.db_socios.forEach((e:any) => {
+                    this.socios_seleccionados.push(e.id)
+                    this.opt_socios.push(e)
+                })
+                this.opt_socios.push({alias:'vacios', id:'vacios'})
                 this.spinnerSocios = false
                 this.crearDatosTabla()
             },
@@ -100,10 +116,16 @@ export class ContratosComponent {
             }
         )
     }
+
     obtenerGranosDB() {
         this.comunicacionService.getDB('granos').subscribe(
             (res: any) => {
                 this.db_granos = res
+                this.db_granos.forEach((e:any) => {
+                    this.granos_seleccionados.push(e.id)
+                    this.opt_granos.push(e)
+                })
+                this.opt_granos.push({alias:'vacios', id:'vacios'})
                 this.spinnerGranos = false
                 this.crearDatosTabla()
             },
@@ -116,6 +138,15 @@ export class ContratosComponent {
         this.comunicacionService.getDB('intervinientes').subscribe(
             (res: any) => {
                 this.db_intervinientes = res
+                this.db_intervinientes.forEach((e:any) => {
+                    this.opt_corredores.push(e)
+                    this.opt_compradores.push(e)
+
+                    this.corredores_seleccionados.push(e.cuit)
+                    this.compradores_seleccionados.push(e.cuit)
+                })
+                this.opt_corredores.push({alias:'vacios', cuit:'vacios'})
+                this.opt_compradores.push({alias:'vacios', cuit:'vacios'})
                 this.spinnerIntervinientes = false
                 this.crearDatosTabla()
             },
@@ -162,25 +193,35 @@ export class ContratosComponent {
                     fecha_hastaFormat = ''
                 }
 
+                const vacios_socio = this.socios_seleccionados.includes('vacios')
+                const vacios_corredor = this.corredores_seleccionados.includes('vacios')
+                const vacios_comprador = this.compradores_seleccionados.includes('vacios')
+                const vacios_grano = this.granos_seleccionados.includes('vacios')
 
+                const ok_socio = e.id_socio ? this.socios_seleccionados.includes(e.id_socio) : vacios_socio
+                const ok_corredor = e.cuit_corredor ? this.corredores_seleccionados.includes(e.cuit_corredor) : vacios_corredor
+                const ok_comprador = e.cuit_comprador ? this.compradores_seleccionados.includes(e.cuit_comprador) : vacios_comprador
+                const ok_grano = e.id_grano ? this.granos_seleccionados.includes(e.id_grano) : vacios_grano
 
-                this.dataParaMostrarTabla.push({
-                    id: e.id,
-                    alias: e.alias,
-                    socio: this.transformarDatoMostrarTabla(e.id_socio, 'socio'),
-                    corredor: this.transformarDatoMostrarTabla(e.cuit_corredor, 'interviniente'),
-                    comprador: this.transformarDatoMostrarTabla(e.cuit_comprador, 'interviniente'),
-                    destino: e.destino,
-                    tipo_contrato: this.transformarDatoMostrarTabla(e.tipo_contrato, 'tipo_contrato'),
-                    fecha_contrato: fecha_contratoFormat,
-                    fecha_desde: fecha_desdeFormat,
-                    fecha_hasta: fecha_hastaFormat,
-                    grano: this.transformarDatoMostrarTabla(e.id_grano, 'grano'),
-                    kilos: this.transformarDatoMostrarTabla(e.kilos, 'numero'),
-                    precio: this.transformarDatoMostrarTabla(e.precio, 'moneda'),
-                    moneda: this.transformarDatoMostrarTabla(e.moneda, 'monedaTipo'),
-                    activo: e.activo,
-                })
+                if(ok_socio && ok_corredor && ok_comprador && ok_grano){
+                    this.dataParaMostrarTabla.push({
+                        id: e.id,
+                        alias: e.alias,
+                        socio: this.transformarDatoMostrarTabla(e.id_socio, 'socio'),
+                        corredor: this.transformarDatoMostrarTabla(e.cuit_corredor, 'interviniente'),
+                        comprador: this.transformarDatoMostrarTabla(e.cuit_comprador, 'interviniente'),
+                        destino: e.destino,
+                        tipo_contrato: this.transformarDatoMostrarTabla(e.tipo_contrato, 'tipo_contrato'),
+                        fecha_contrato: fecha_contratoFormat,
+                        fecha_desde: fecha_desdeFormat,
+                        fecha_hasta: fecha_hastaFormat,
+                        grano: this.transformarDatoMostrarTabla(e.id_grano, 'grano'),
+                        kilos: this.transformarDatoMostrarTabla(e.kilos, 'numero'),
+                        precio: this.transformarDatoMostrarTabla(e.precio, 'moneda'),
+                        moneda: this.transformarDatoMostrarTabla(e.moneda, 'monedaTipo'),
+                        activo: e.activo,
+                    })
+                }
             })
         }
     }

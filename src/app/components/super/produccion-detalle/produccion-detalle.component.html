@@ -1,11 +1,19 @@
 
-<select [(ngModel)]="idEstablecimiento" (ngModelChange)="navegarConParametro()">
-    <option *ngFor="let dato of db_locales.establecimientos" value="{{dato.id}}">{{dato.alias}}</option>
-</select>
+<div class="ocultarImpresion formgrid row">
+    <div class="field col">
+        <select [(ngModel)]="idEstablecimiento" (ngModelChange)="navegarConParametro()">
+            <option *ngFor="let dato of db_locales.establecimientos" value="{{dato.id}}">{{dato.alias}}</option>
+        </select>
+        <button (click)="display_imprimir = true" style="margin-left: 50px;">IMPRIMIR</button>
+    </div>
+</div>
+
+
 
 <div style="text-align: center;" *ngIf="loadPage">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
+
 
 <div #PAGINACARGA *ngIf="!loadPage">
     <div #RINDES_GRAFICOS *ngFor="let dato of datosGenerales">
@@ -14,9 +22,14 @@
                 <div class="field col">
                     <div style="margin: 0px 0px 10px 0px; padding: 30px;">
                         <h1 style="text-align: center;" id="{{dato.establecimiento_id}}"><strong>{{dato.establecimiento}}</strong></h1>
-                        <br><br>
+                        <br>
                         <h3>SUPERFICIE TOTAL: <strong>{{dato.totales.has}}</strong> has. - RINDE: <strong>{{dato.totales.rinde}}</strong> kg/ha</h3>
-                        <br><br>
+                    </div>
+                </div>
+            </div>
+            <div class="formgrid row {{mostrar_imprimir.rinde_lote ? 'mostrarImpresion' : 'ocultarImpresion' }}">
+                <div class="field col">
+                    <div style="margin: 0px 0px 10px 0px; padding: 30px;">
                         <h5>RENDIMIENTO POR LOTE:</h5>
                         <br>
                         <style>
@@ -68,8 +81,7 @@
                     </div>
                 </div>
             </div>
-            <br>
-            <div class="formgrid row">
+            <div class="formgrid row {{mostrar_imprimir.rinde_lote_grafico ? 'mostrarImpresion' : 'ocultarImpresion' }}">
                 <div #GRAFICO class="field col">
                 </div>
                 <div #GRAFICO class="field col">
@@ -89,10 +101,10 @@
             </div>
             <br><br>
         </div>
-        <br><br><br><br>
+        <br><br><br>
     </div>
 
-    <div #KILOS_EN_BOLSONES>
+    <div #KILOS_EN_BOLSONES class="{{mostrar_imprimir.kilos_bolsones ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div class="tarjeta">
             <div class="formgrid row">
                 <div class="field col">
@@ -129,10 +141,10 @@
             </div>
             <br>
         </div>
-        <br><br><br><br>
+        <br><br>
     </div>
 
-    <div #CAMIONES_TRILLA>
+    <div #CAMIONES_TRILLA class="{{mostrar_imprimir.salidas_trilla ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div class="tarjeta">
             <div class="formgrid row">
                 <div class="field col">
@@ -169,10 +181,10 @@
             </div>
             <br>
         </div>
-        <br><br><br><br>
+        <br><br>
     </div>
     
-    <div #CAMIONES_SILO>
+    <div #CAMIONES_SILO class="{{mostrar_imprimir.salidas_bolsones ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div class="tarjeta">
             <div class="formgrid row">
                 <div class="field col">
@@ -209,6 +221,41 @@
             </div>
             <br>
         </div>
-        <br><br><br><br>
+        <br><br>
     </div>
-</div>
+
+
+
+<p-dialog class="ocultarImpresion" header="IMPRIMIR" [(visible)]="display_imprimir" [style]="{width: '500px', height: '500px'}">
+
+    <div class="formgrid row">
+        <div class="field col">
+            <ul>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.rinde_lote">
+                    <label for="item1">RINDE LOTE</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.rinde_lote_grafico">
+                    <label for="item2">RINDE LOTE (Graficos)</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.kilos_bolsones">
+                    <label for="item3">KILOS EN BOLSONES</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.salidas_trilla">
+                    <label for="item3">SALIDAS DESDE TRILLA</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.salidas_bolsones">
+                    <label for="item3">SALIDAS DESDE BOLSONES</label>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="imprimir()" label="IMPRIMIR" styleClass="p-button-success"></p-button>
+    </ng-template>
+</p-dialog>

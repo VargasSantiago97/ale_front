@@ -3,6 +3,27 @@
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
+<div style="margin: 30px;">
+    <div class="formgrid row">
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px; margin-left: 30px;">SOCIO</label>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_socios" [(ngModel)]="socios_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+        </div>
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px;">CORREDOR</label>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_corredores" [(ngModel)]="corredores_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="cuit" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+        </div>
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px;">COMPRADOR</label>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_compradores" [(ngModel)]="compradores_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="cuit" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+        </div>
+        <div class="field col">
+            <label for="dateformat" style="margin-right: 30px;">GRANOS</label>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_granos" [(ngModel)]="granos_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+        </div>
+    </div>
+</div>
+
 <div #TABLA style="width: 100%; overflow-x: auto;" style="padding: 50px;">
     <style>
         table {

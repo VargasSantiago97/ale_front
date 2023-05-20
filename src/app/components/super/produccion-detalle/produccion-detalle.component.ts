@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
@@ -76,12 +76,23 @@ export class ProduccionDetalleComponent {
     dataCamionesSilos: any = []
     dataCamionesSilosTotales: any = {}
 
+    mostrar_imprimir: any = {
+        rinde_lote: true,
+        rinde_lote_grafico: true,
+        kilos_bolsones: true,
+        salidas_trilla: true,
+        salidas_bolsones: true,
+    }
+
+    display_imprimir: any = false
+
     constructor(
         private sqlite: SqliteService,
         private comunicacionService: ComunicacionService,
         private messageService: MessageService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private renderer: Renderer2
     ) { }
 
     ngOnInit() {
@@ -1060,6 +1071,12 @@ export class ProduccionDetalleComponent {
     navegarConParametro() {
         const idd = this.idEstablecimiento
         this.router.navigate(['/produccionDetalle'], { queryParams: { idd } });
+    }
+
+    imprimir(){
+        this.display_imprimir = false
+        this.renderer.setStyle(document.body, 'webkitPrintColorAdjust', 'exact');
+        window.print()
     }
 
 

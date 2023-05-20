@@ -56,6 +56,17 @@ export class ContratosTotalesComponent {
         { field: 'opcion', header: 'OPCION' },
     ]
 
+    //FILTROS
+    socios_seleccionados: any = ['vacios']
+    corredores_seleccionados: any = ['vacios']
+    compradores_seleccionados: any = ['vacios']
+    granos_seleccionados: any = ['vacios']
+
+    opt_socios: any = []
+    opt_corredores: any = []
+    opt_compradores: any = []
+    opt_granos: any = []
+
     constructor(
         private sqlite: SqliteService,
         private comunicacionService: ComunicacionService,
@@ -99,6 +110,11 @@ export class ContratosTotalesComponent {
         this.comunicacionService.getDB('socios').subscribe(
             (res: any) => {
                 this.db_socios = res
+                this.db_socios.forEach((e:any) => {
+                    this.socios_seleccionados.push(e.id)
+                    this.opt_socios.push(e)
+                })
+                this.opt_socios.push({alias:'vacios', id:'vacios'})
                 this.spinnerSocios = false
                 this.crearDatosTabla()
             },
@@ -111,6 +127,11 @@ export class ContratosTotalesComponent {
         this.comunicacionService.getDB('granos').subscribe(
             (res: any) => {
                 this.db_granos = res
+                this.db_granos.forEach((e:any) => {
+                    this.granos_seleccionados.push(e.id)
+                    this.opt_granos.push(e)
+                })
+                this.opt_granos.push({alias:'vacios', id:'vacios'})
                 this.spinnerGranos = false
                 this.crearDatosTabla()
             },
@@ -123,6 +144,15 @@ export class ContratosTotalesComponent {
         this.comunicacionService.getDB('intervinientes').subscribe(
             (res: any) => {
                 this.db_intervinientes = res
+                this.db_intervinientes.forEach((e:any) => {
+                    this.opt_corredores.push(e)
+                    this.opt_compradores.push(e)
+
+                    this.corredores_seleccionados.push(e.cuit)
+                    this.compradores_seleccionados.push(e.cuit)
+                })
+                this.opt_corredores.push({alias:'vacios', cuit:'vacios'})
+                this.opt_compradores.push({alias:'vacios', cuit:'vacios'})
                 this.spinnerIntervinientes = false
                 this.crearDatosTabla()
             },
@@ -182,8 +212,17 @@ export class ContratosTotalesComponent {
 
                 var kilosPendientes = parseInt(e.kilos) - kilosEntregados
 
+                const vacios_socio = this.socios_seleccionados.includes('vacios')
+                const vacios_corredor = this.corredores_seleccionados.includes('vacios')
+                const vacios_comprador = this.compradores_seleccionados.includes('vacios')
+                const vacios_grano = this.granos_seleccionados.includes('vacios')
 
-                if(kilosEntregados != 0){
+                const ok_socio = e.id_socio ? this.socios_seleccionados.includes(e.id_socio) : vacios_socio
+                const ok_corredor = e.cuit_corredor ? this.corredores_seleccionados.includes(e.cuit_corredor) : vacios_corredor
+                const ok_comprador = e.cuit_comprador ? this.compradores_seleccionados.includes(e.cuit_comprador) : vacios_comprador
+                const ok_grano = e.id_grano ? this.granos_seleccionados.includes(e.id_grano) : vacios_grano
+
+                if((kilosEntregados != 0) && ok_socio && ok_corredor && ok_comprador && ok_grano){
                     this.dataParaMostrarTabla.push({
                         id: e.id,
                         alias: e.alias,
