@@ -1078,14 +1078,18 @@ export class InicioComponent {
         }
         if (this.datosMovimiento.id_chofer) {
             this.chofer = this.db_choferes.find((e: any) => { return e.id == this.datosMovimiento.id_chofer })
-            this.cod_chofer = this.chofer.codigo
+            if(this.chofer){
+                this.cod_chofer = this.chofer.codigo
+            }
         } else {
             this.chofer = {}
             this.cod_chofer = ''
         }
         if (this.datosMovimiento.id_camion) {
             this.camion = this.db_camiones.find((e: any) => { return e.id == this.datosMovimiento.id_camion })
-            this.cod_camion = this.camion.codigo
+            if(this.camion){
+                this.cod_camion = this.camion.codigo
+            }
         } else {
             this.camion = {}
             this.cod_camion = ''

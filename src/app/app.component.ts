@@ -18,6 +18,8 @@ export class AppComponent {
 
     itemsBotonSuperUser: any = [];
 
+    rutaSeleccionada: any  = ''
+
     constructor(
         private login: LoginService,
         private sync: SyncService,
@@ -46,6 +48,7 @@ export class AppComponent {
     }
 
     routerLinkIr(ruta:any){
+        setTimeout(()=>{this.rutaSeleccionada = '1'}, 10)
         this.router.navigate([ruta])
     }
 

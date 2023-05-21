@@ -15,7 +15,7 @@
         icon="pi {{fechaHoraActualizacion.actualizado ? 'pi-check' : 'pi-replay'}}" iconPos="right"></button>
     <button pButton pRipple type="button" label="CERRAR SESION" class="p-button-danger bott" routerLink="unlogin"
         icon="pi pi-sign-out" iconPos="right"></button>
-    <select *ngIf="this.esSuperUsuario" id="boton-desplegable" (ngModelChange)="routerLinkIr($event)" [ngModel]="1">
+    <select *ngIf="this.esSuperUsuario" id="boton-desplegable" (ngModelChange)="routerLinkIr($event)" [(ngModel)]="rutaSeleccionada">
         <option value="1" disabled>Ir a</option>
 
         <optgroup label="CUENTAS">
