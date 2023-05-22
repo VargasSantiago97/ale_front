@@ -1292,7 +1292,6 @@ export class CamionesComponent {
         } else {
             this.listadoContratosSeleccionar = this.db_locales['contratos'].filter((e:any) => {
                 const ok_corredor = (e.cuit_corredor == this.datosParaMostrarRegistro.corredor_pri_cuit)
-                const ok_comprador = (e.cuit_comprador == this.datosParaMostrarRegistro.destinatario_cuit)
 
                 const socio = this.db_socios.find((socio:any) => { return socio.cuit == this.datosParaMostrarRegistro.cuit_solicitante })
                 const id_socio = socio ? socio.id : null
@@ -1301,7 +1300,7 @@ export class CamionesComponent {
                 const ok_activo = (e.activo == 1)
 
 
-                return (ok_corredor && ok_comprador && ok_activo && ok_vendedor)
+                return (ok_corredor && ok_activo && ok_vendedor)
             })
         }
     }
