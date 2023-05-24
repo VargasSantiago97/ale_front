@@ -44,7 +44,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let registro of dataParaMostrarTabla">
+            <tr *ngFor="let registro of dataParaMostrarTabla; let i = index">
                 <td style="position: sticky; left: 0; padding: 0px;">
                     <button style="margin: 0px; border: none; outline: none; width: 40px;"
                         class="{{registro.movimientoLocal}}" (click)="verDatosRegistro(registro.id)">VER</button>
@@ -52,7 +52,7 @@
                 <td *ngFor="let col of cols" style="padding: 1px;">
                     <input type="text" [(ngModel)]="registro[col.field]"
                         style="width: 100%; margin: 0px; border: none; outline: none; min-width: 100px;"
-                        class="{{registro[col.field] == 'SI' ? 'colorSI' : ((registro[col.field] == 'NO' || (col.field=='dif_balanza_tolva' && registro.dif_balanza_tolva_pintar) || (col.field=='dif_destino_balanza' && registro.dif_destino_balanza_pintar)) ? 'colorNO' : '') }}">
+                        class="{{registro[col.field] == 'SI' ? 'colorSI' : ((registro[col.field] == 'NO' || (col.field=='dif_balanza_tolva' && registro.dif_balanza_tolva_pintar) || (col.field=='dif_destino_balanza' && registro.dif_destino_balanza_pintar)) ? 'colorNO' : (i % 2 == 0 ? 'even-row': 'odd-row') ) }}">
                 </td>
             </tr>
         </tbody>

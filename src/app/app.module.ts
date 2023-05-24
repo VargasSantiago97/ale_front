@@ -87,6 +87,7 @@ import { ProduccionComponent } from './components/super/produccion/produccion.co
 import { ProduccionLotesComponent } from './components/super/produccion-lotes/produccion-lotes.component';
 import { ProduccionSilosComponent } from './components/super/produccion-silos/produccion-silos.component';
 import { ProduccionDetalleComponent } from './components/super/produccion-detalle/produccion-detalle.component';
+import { RetirosComponent } from './components/super/retiros/retiros.component';
 
 
 @NgModule({
@@ -121,7 +122,8 @@ import { ProduccionDetalleComponent } from './components/super/produccion-detall
     ProduccionComponent,
     ProduccionLotesComponent,
     ProduccionSilosComponent,
-    ProduccionDetalleComponent
+    ProduccionDetalleComponent,
+    RetirosComponent
   ],
   imports: [
     BrowserModule,

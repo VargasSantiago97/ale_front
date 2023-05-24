@@ -22,6 +22,7 @@ import { ProduccionComponent } from './components/super/produccion/produccion.co
 import { ProduccionLotesComponent } from './components/super/produccion-lotes/produccion-lotes.component';
 import { ProduccionSilosComponent } from './components/super/produccion-silos/produccion-silos.component';
 import { ProduccionDetalleComponent } from './components/super/produccion-detalle/produccion-detalle.component';
+import { RetirosComponent } from './components/super/retiros/retiros.component';
 
 
 const routes: Routes = [
@@ -57,6 +58,8 @@ const routes: Routes = [
     { path: 'produccionLotes', component: ProduccionLotesComponent },
     { path: 'produccionSilos', component: ProduccionSilosComponent },
     { path: 'produccionDetalle', component: ProduccionDetalleComponent },
+
+    { path: 'retiros', component: RetirosComponent },
 
 
 ];

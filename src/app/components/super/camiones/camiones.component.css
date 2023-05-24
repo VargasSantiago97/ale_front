@@ -16,9 +16,9 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-  
+
 .select-class option {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 .input-text-codigo {
@@ -28,7 +28,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-  
+
 
 .select-button-active {
     width: 60px;
@@ -37,6 +37,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
 }
+
 .select-button-disabled {
     width: 60px;
     height: 35px;
@@ -45,6 +46,7 @@
     border-radius: 8px;
     color: aliceblue;
 }
+
 .button-tabla {
     width: 27px;
     height: 27px;
@@ -55,6 +57,7 @@
     padding: 0px;
     text-align: center;
 }
+
 .button-ver-todo {
     width: 80px;
     height: 27px;
@@ -76,12 +79,15 @@
 input[type="checkbox"]:checked {
     background-color: #007bff;
 }
+
 input[type="checkbox"]:checked {
     border-color: #007bff;
 }
+
 input[type="checkbox"]:hover {
     cursor: pointer;
 }
+
 input[type="checkbox"] {
     transform: scale(1.5);
 }
@@ -89,6 +95,17 @@ input[type="checkbox"] {
 .colorSI {
     background-color: rgba(96, 245, 116, 0.199);
 }
+
 .colorNO {
     background-color: rgba(245, 96, 96, 0.199);
+}
+
+.even-row {
+    background-color: #e6e6e6;
+    /* Estilo para filas pares */
+}
+
+.odd-row {
+    background-color: #ffffff;
+    /* Estilo para filas impares */
 }
