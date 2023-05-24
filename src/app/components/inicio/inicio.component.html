@@ -111,7 +111,7 @@
         <div class="field col">
             <div class="field">
                 <label>CULTIVO</label><br>
-                <p-listbox [options]="db_granos" [(ngModel)]="datosFiltro.granos" [metaKeySelection]="false"
+                <p-listbox [options]="datos_filtrar_granos" [(ngModel)]="datosFiltro.granos" [metaKeySelection]="false"
                     [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
                     [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-grano pTemplate="item">
@@ -125,7 +125,7 @@
         <div class="field col">
             <div class="field">
                 <label>SOCIO</label><br>
-                <p-listbox [options]="db_socios" [(ngModel)]="datosFiltro.socios" [metaKeySelection]="false"
+                <p-listbox [options]="datos_filtrar_socios" [(ngModel)]="datosFiltro.socios" [metaKeySelection]="false"
                     [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
                     [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-socio pTemplate="item">
@@ -139,7 +139,7 @@
         <div class="field col">
             <div class="field">
                 <label>ESTABLECIMIENTO</label><br>
-                <p-listbox [options]="db_establecimientos" [(ngModel)]="datosFiltro.establecimientos"
+                <p-listbox [options]="datos_filtrar_establecimientos" [(ngModel)]="datosFiltro.establecimientos"
                     [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
                     optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-establecimiento pTemplate="item">
@@ -153,7 +153,7 @@
         <div class="field col">
             <div class="field">
                 <label>TRANSPORTE</label><br>
-                <p-listbox [options]="db_transportistas" [(ngModel)]="datosFiltro.transportistas"
+                <p-listbox [options]="datos_filtrar_transportistas" [(ngModel)]="datosFiltro.transportistas"
                     [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
                     optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-transportista pTemplate="item">
@@ -167,7 +167,7 @@
         <div class="field col">
             <div class="field">
                 <label>CORREDOR</label><br>
-                <p-listbox [options]="db_corredores" [(ngModel)]="datosFiltro.corredores" [metaKeySelection]="false"
+                <p-listbox [options]="datos_filtrar_corredores" [(ngModel)]="datosFiltro.corredores" [metaKeySelection]="false"
                     [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
                     [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-corredor pTemplate="item">
@@ -181,7 +181,7 @@
         <div class="field col">
             <div class="field">
                 <label>DESTINO</label><br>
-                <p-listbox [options]="db_acopios" [(ngModel)]="datosFiltro.acopios" [metaKeySelection]="false"
+                <p-listbox [options]="datos_filtrar_acopios" [(ngModel)]="datosFiltro.acopios" [metaKeySelection]="false"
                     [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
                     [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-acopio pTemplate="item">
@@ -405,13 +405,13 @@
             <label>CORREDOR: <strong>{{datosMovimiento.id_corredor ?
                     transformDatoTabla(datosMovimiento.id_corredor,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias"
-                optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }" [metaKeySelection]="false"></p-listbox>
         </div>
         <div class="col">
             <label>ACOPIO: <strong>{{datosMovimiento.id_acopio ?
                     transformDatoTabla(datosMovimiento.id_acopio,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias"
-                optionValue="id" [filter]="true" [style]="{ width: '90%' }"></p-listbox>
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }"  [metaKeySelection]="false"></p-listbox>
         </div>
         <div class="col">
             <span class="p-float-label">

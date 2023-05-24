@@ -15,7 +15,7 @@ var vars = {
     API_CPE: 'http://localhost/cpe',
 
     ORDEN_CARGA: 'http://localhost/api/pdf',
-  
+
     PDF_CPE_URI: 'http://localhost/cpe/pdf_cpe',
 
     SUCURSAL: 2,
@@ -31,100 +31,103 @@ var vars = {
     //TABLAS GENERALES CPE - AFIP
     CPE_PROVINCIAS: [
         {
-          descripcion: "BUENOS AIRES",
-          codigo: 1
+            descripcion: "BUENOS AIRES",
+            codigo: 1
         },
         {
-          descripcion: "CAP.FEDERAL",
-          codigo: 0
+            descripcion: "CAP.FEDERAL",
+            codigo: 0
         },
         {
-          descripcion: "CATAMARCA",
-          codigo: 2
+            descripcion: "CATAMARCA",
+            codigo: 2
         },
         {
-          descripcion: "CHACO",
-          codigo: 16
+            descripcion: "CHACO",
+            codigo: 16
         },
         {
-          descripcion: "CHUBUT",
-          codigo: 17
+            descripcion: "CHUBUT",
+            codigo: 17
         },
         {
-          descripcion: "CORDOBA",
-          codigo: 3
+            descripcion: "CORDOBA",
+            codigo: 3
         },
         {
-          descripcion: "CORRIENTES",
-          codigo: 4
+            descripcion: "CORRIENTES",
+            codigo: 4
         },
         {
-          descripcion: "ENTRE RIOS",
-          codigo: 5
+            descripcion: "ENTRE RIOS",
+            codigo: 5
         },
         {
-          descripcion: "FORMOSA",
-          codigo: 18
+            descripcion: "FORMOSA",
+            codigo: 18
         },
         {
-          descripcion: "JUJUY",
-          codigo: 6
+            descripcion: "JUJUY",
+            codigo: 6
         },
         {
-          descripcion: "LA PAMPA",
-          codigo: 21
+            descripcion: "LA PAMPA",
+            codigo: 21
         },
         {
-          descripcion: "LA RIOJA",
-          codigo: 8
+            descripcion: "LA RIOJA",
+            codigo: 8
         },
         {
-          descripcion: "MENDOZA",
-          codigo: 7
+            descripcion: "MENDOZA",
+            codigo: 7
         },
         {
-          descripcion: "MISIONES",
-          codigo: 19
+            descripcion: "MISIONES",
+            codigo: 19
         },
         {
-          descripcion: "NEUQUEN",
-          codigo: 20
+            descripcion: "NEUQUEN",
+            codigo: 20
         },
         {
-          descripcion: "RIO NEGRO",
-          codigo: 22
+            descripcion: "RIO NEGRO",
+            codigo: 22
         },
         {
-          descripcion: "SALTA",
-          codigo: 9
+            descripcion: "SALTA",
+            codigo: 9
         },
         {
-          descripcion: "SAN JUAN",
-          codigo: 10
+            descripcion: "SAN JUAN",
+            codigo: 10
         },
         {
-          descripcion: "SAN LUIS",
-          codigo: 11
+            descripcion: "SAN LUIS",
+            codigo: 11
         },
         {
-          descripcion: "SANTA CRUZ",
-          codigo: 23
+            descripcion: "SANTA CRUZ",
+            codigo: 23
         },
         {
-          descripcion: "SANTA FE",
-          codigo: 12
+            descripcion: "SANTA FE",
+            codigo: 12
         },
         {
-          descripcion: "SGO.DEL ESTERO",
-          codigo: 13
+            descripcion: "SGO.DEL ESTERO",
+            codigo: 13
         },
         {
-          descripcion: "TIER.DEL FUEGO",
-          codigo: 24
+            descripcion: "TIER.DEL FUEGO",
+            codigo: 24
         },
         {
-          descripcion: "TUCUMAN",
-          codigo: 14
+            descripcion: "TUCUMAN",
+            codigo: 14
         }
-      ],
+    ],
+
+    BLOQUEAR_EDICION: false,
+    BLOQUEAR_EDICION_CPE: false
 }

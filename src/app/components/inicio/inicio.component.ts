@@ -55,6 +55,7 @@ export class InicioComponent {
     db_condicion_iva: any = []
     db_socios: any = []
     db_transportistas: any = []
+    db_transportistas_all: any = []
     db_campanas: any = []
     db_depositos: any = []
     db_establecimientos: any = []
@@ -88,6 +89,7 @@ export class InicioComponent {
     load_carta_porte: any = true
     load_asientos: any = true
     load_ordenes_pago: any = true
+    load_transportistas_all: any = true
 
 
     datosRegistro: any;
@@ -130,13 +132,19 @@ export class InicioComponent {
     datosFiltro:any = {
         fechaDesde: new Date('01/01/2023'),
         fechaHasta: new Date('12/31/2023'),
-        granos: [],
-        socios: [],
-        establecimientos: [],
-        transportistas: [],
-        corredores: [],
-        acopios: []
+        granos: ['vacios', 'todos'],
+        socios: ['vacios', 'todos'],
+        establecimientos: ['vacios', 'todos'],
+        transportistas: ['vacios', 'todos'],
+        corredores: ['vacios', 'todos'],
+        acopios: ['vacios', 'todos']
     };
+    datos_filtrar_granos : any = []
+    datos_filtrar_socios : any = []
+    datos_filtrar_establecimientos : any = []
+    datos_filtrar_transportistas : any = []
+    datos_filtrar_corredores : any = []
+    datos_filtrar_acopios : any = []
 
     selectedTablaInicio:any
 
@@ -254,6 +262,7 @@ export class InicioComponent {
         this.obtenerCartasPorte()
         this.obtenerAsientos()
         this.obtenerOrdenesPago()
+        this.obtenerTransportistasAll()
 
         this.datosMovimiento = {
             id: null,
@@ -346,6 +355,8 @@ export class InicioComponent {
                 this.db_socios = res;
                 this.load_socios = false;
 
+                this.datos_filtrar_socios = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_socios ]
+
                 res.forEach((e:any) => {
                     this.datosFiltro.socios.push(e.id)
                 })
@@ -362,6 +373,21 @@ export class InicioComponent {
             (res: any) => {
                 this.db_transportistas = res;
                 this.load_transportistas = false;
+
+                this.datosParaTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerTransportistasAll() {
+        this.comunicacionService.getDBAll('transportistas').subscribe(
+            (res: any) => {
+                this.db_transportistas_all = res;
+                this.load_transportistas_all = false;
+
+                this.datos_filtrar_transportistas  = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_transportistas_all ]
 
                 res.forEach((e:any) => {
                     this.datosFiltro.transportistas.push(e.id)
@@ -404,6 +430,8 @@ export class InicioComponent {
                 this.db_establecimientos = res;
                 this.load_establecimientos = false;
 
+                this.datos_filtrar_establecimientos  = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_establecimientos ]
+
                 res.forEach((e:any) => {
                     this.datosFiltro.establecimientos.push(e.id)
                 })
@@ -432,6 +460,7 @@ export class InicioComponent {
             (res: any) => {
                 this.db_granos = res;
                 this.load_granos = false;
+                this.datos_filtrar_granos = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_granos ]
 
                 res.forEach((e:any) => {
                     this.datosFiltro.granos.push(e.id)
@@ -474,12 +503,13 @@ export class InicioComponent {
                 this.db_acopios = [... res.filter((e:any) => { return e.dstno == 1})]
                 this.db_corredores = [... res.filter((e:any) => { return e.corvtapri == 1})]
 
-                this.db_corredores.forEach((e:any) => {
+                this.db_intervinientes.forEach((e:any) => {
+                    this.datosFiltro.acopios.push(e.id)
                     this.datosFiltro.corredores.push(e.id)
                 })
-                this.db_acopios.forEach((e:any) => {
-                    this.datosFiltro.acopios.push(e.id)
-                })
+
+                this.datos_filtrar_corredores = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_intervinientes ]
+                this.datos_filtrar_acopios = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_intervinientes ]
 
                 this.intervinientesCPE = {
                     destinatario: [... res.filter((e:any) => { return e.dstro == 1})],
@@ -512,6 +542,8 @@ export class InicioComponent {
             (res: any) => {
                 this.db_movimientos = res;
                 this.load_movimientos = false;
+                const ctg_co = this.db_movimientos.find((e:any) => { return e.id == '3c3fd86428e1' })
+                console.log(ctg_co)
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -593,7 +625,7 @@ export class InicioComponent {
     }
 
     datosParaTabla(mantenerFiltro:any = false) {
-        if (!(this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
+        if (!(this.load_transportistas_all || this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
             var kg_tara = 0.0;
@@ -605,14 +637,28 @@ export class InicioComponent {
 
             this.db_movimientos.forEach((e: any) => {
 
-                const ok_grano = e.id_grano ? this.datosFiltro.granos.includes(e.id_grano) : true
-                const ok_socio = e.id_socio ? this.datosFiltro.socios.includes(e.id_socio) : true
-                const ok_establecimiento = e.id_origen ? this.datosFiltro.establecimientos.includes(e.id_origen) : true
-                const ok_transportista = e.id_transporte ? this.datosFiltro.transportistas.includes(e.id_transporte) : true
+                const vacio_grano = this.datosFiltro.granos.includes('vacios')
+                const vacio_socio = this.datosFiltro.socios.includes('vacios')
+                const vacio_establecimiento = this.datosFiltro.establecimientos.includes('vacios')
+                const vacio_transportista = this.datosFiltro.transportistas.includes('vacios')
+                const vacio_corredor = this.datosFiltro.corredores.includes('vacios')
+                const vacio_acopio = this.datosFiltro.acopios.includes('vacios')
+
+                const todos_grano = this.datosFiltro.granos.includes('todos')
+                const todos_socio = this.datosFiltro.socios.includes('todos')
+                const todos_establecimiento = this.datosFiltro.establecimientos.includes('todos')
+                const todos_transportista = this.datosFiltro.transportistas.includes('todos')
+                const todos_corredor = this.datosFiltro.corredores.includes('todos')
+                const todos_acopio = this.datosFiltro.acopios.includes('todos')
+
+                const ok_grano = todos_grano ? true : (e.id_grano ? this.datosFiltro.granos.includes(e.id_grano) : vacio_grano)
+                const ok_socio = todos_socio ? true : (e.id_socio ? this.datosFiltro.socios.includes(e.id_socio) : vacio_socio)
+                const ok_establecimiento = todos_establecimiento ? true : (e.id_origen ? this.datosFiltro.establecimientos.includes(e.id_origen) : vacio_establecimiento)
+                const ok_transportista = todos_transportista ? true : (e.id_transporte ? this.datosFiltro.transportistas.includes(e.id_transporte) : vacio_transportista)
                 const ok_fechaDesde = e.fecha ? (new Date(e.fecha) >= new Date(this.datosFiltro.fechaDesde)) : true
                 const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
-                const ok_corredor = e.id_corredor ? this.datosFiltro.corredores.includes(e.id_corredor) : true
-                const ok_acopio = e.id_acopio ? this.datosFiltro.acopios.includes(e.id_acopio) : true
+                const ok_corredor = todos_corredor ? true : (e.id_corredor ? this.datosFiltro.corredores.includes(e.id_corredor) : vacio_corredor)
+                const ok_acopio = todos_acopio ? true : (e.id_acopio ? this.datosFiltro.acopios.includes(e.id_acopio) : vacio_acopio)
 
 
                 if(ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){

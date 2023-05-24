@@ -10,12 +10,17 @@ export class ComunicacionService {
 
     API_URI = vars.API_URI;
     USER_ID: any = 0;
+    BLOQUEAR_EDICION: any = vars.BLOQUEAR_EDICION
 
     constructor(
         private http: HttpClient,
         private messageService: MessageService
     ) {
         this.USER_ID = localStorage.getItem('user')
+
+        if(!this.BLOQUEAR_EDICION){
+            this.BLOQUEAR_EDICION = false
+        }
     }
 
     
@@ -23,11 +28,24 @@ export class ComunicacionService {
     getDB(tabla: any) {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=${tabla}`);
     }
+    getDBAll(tabla: any) {
+        return this.http.get(`${this.API_URI}/index.php?op=getAllAll&tabla=${tabla}`);
+    }
     createDB(tabla: any, data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=create&tabla=${tabla}`, this.trans(tabla, data));
+        if(!this.BLOQUEAR_EDICION){
+            return this.http.post(`${this.API_URI}/index.php?op=create&tabla=${tabla}`, this.trans(tabla, data));
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'No esta autorizado para crear nuevos registros. Consulte al administrador' })
+            return this.http.post(`${this.API_URI}/index.php?op=getAll&tabla=null`, this.trans(tabla, data));
+        }
     }
     updateDB(tabla: any, data: any) {
-        return this.http.post(`${this.API_URI}/index.php?op=update&tabla=${tabla}`, this.transEdit(tabla, data));
+        if(!this.BLOQUEAR_EDICION){
+            return this.http.post(`${this.API_URI}/index.php?op=update&tabla=${tabla}`, this.transEdit(tabla, data));
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'No esta autorizado para editar registros. Consulte al administrador' })
+            return this.http.post(`${this.API_URI}/index.php?op=getAll&tabla=null`, this.trans(tabla, data));
+        }
     }
 
     //Consultas a DB

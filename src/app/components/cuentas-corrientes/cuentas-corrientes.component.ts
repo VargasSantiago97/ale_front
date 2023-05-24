@@ -738,6 +738,8 @@ export class CuentasCorrientesComponent {
             this.ordenDePago_datos = this.db_ordenes_pago.find((e:any) => { return e.id_asiento == asiento.id_asiento })
             this.ordenDePago_mediosPago = this.db_medios_pago.filter((e:any) => { return e.id_orden == this.ordenDePago_datos.id })
 
+
+
             var concepts = []
             if (this.ordenDePago_datos.afecta != null) {
                 if (JSON.parse(this.ordenDePago_datos.afecta).length > 0) {
@@ -749,9 +751,12 @@ export class CuentasCorrientesComponent {
             var saldo = 0
 
             concepts.forEach((id_asiento:any) => {
+                console.log(id_asiento)
 
+                
                 const asiento = this.db_asientos.find((e: any) => { return e.id == id_asiento })
-
+                console.log(asiento)
+                
                 const dateObj = new Date(asiento.fecha);
                 const year = dateObj.getFullYear();
                 const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');

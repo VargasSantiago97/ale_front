@@ -109,7 +109,7 @@ export class ProduccionDetalleComponent {
                 this.cols = [
                     { field: 'lote', header: 'Lote' },
                     { field: 'has', header: 'Has' },
-                    { field: 'kg_trilla', header: 'Kgs Trilla' },
+                    { field: 'kg_trilla', header: 'Kgs desde Trilla' },
                     { field: 'kg_silo', header: 'Kgs a Silo' },
                     { field: 'kg_total', header: 'TOTALES' },
                     { field: 'rinde', header: 'Rinde' },
