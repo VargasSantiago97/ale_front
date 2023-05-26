@@ -1127,7 +1127,7 @@ export class InicioComponent {
                     this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
                 }
             }
-            
+
             this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
                 (res: any) => {
                     res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
