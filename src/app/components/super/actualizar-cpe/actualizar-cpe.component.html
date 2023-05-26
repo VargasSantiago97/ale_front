@@ -5,7 +5,7 @@
 
 <div class="formgrid row">
     <div class="field col-6">
-        <div #TABLA class="container" style="overflow: auto; height: 900px;">
+        <div #TABLA class="container" style="overflow: auto; height: 1100px;">
 
             <style>
                 table {
@@ -104,6 +104,8 @@
                     <br>
                     <button pButton pRipple type="button" label="GUARDAR CAMBIOS" class="p-button-success"
                     (click)="actualizarCPE()"></button>
+                    <button pButton pRipple type="button" label="GUARDAR Y SEGUIR ACTUALIZANDO" class="p-button-success"
+                    (click)="actualizarCPE(true)"></button>
                 </div>
             </div>
         </div>

@@ -137,7 +137,8 @@ export class InicioComponent {
         establecimientos: ['vacios', 'todos'],
         transportistas: ['vacios', 'todos'],
         corredores: ['vacios', 'todos'],
-        acopios: ['vacios', 'todos']
+        acopios: ['vacios', 'todos'],
+        id_bandera: []
     };
     datos_filtrar_granos : any = []
     datos_filtrar_socios : any = []
@@ -185,6 +186,8 @@ export class InicioComponent {
             { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
+            
+            { field: "banderas", header: "" },
         ];
         this.selectedColumns = [
             { field: "cultivo", header: "Cultivo" },
@@ -215,6 +218,8 @@ export class InicioComponent {
             { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
+
+            { field: "banderas", header: "" },
         ];
         this.tamanoCols = {
             cultivo: '50px',
@@ -242,7 +247,8 @@ export class InicioComponent {
             factura: '100px',
             gastos: '100px',
             pagado: '100px',
-            observaciones: '200px'
+            observaciones: '200px',
+            banderas: '80px'
         }
 
         this.obtenerCamiones()
@@ -476,6 +482,11 @@ export class InicioComponent {
         this.comunicacionService.getDB('banderas').subscribe(
             (res: any) => {
                 this.db_banderas = res;
+
+                this.db_banderas.forEach((band:any) => {
+                    this.datosFiltro.id_bandera.push(band.id)                    
+                });
+
                 this.load_banderas = false;
                 this.datosParaTabla()
             },
@@ -542,8 +553,6 @@ export class InicioComponent {
             (res: any) => {
                 this.db_movimientos = res;
                 this.load_movimientos = false;
-                const ctg_co = this.db_movimientos.find((e:any) => { return e.id == '3c3fd86428e1' })
-                console.log(ctg_co)
                 this.datosParaTabla()
             },
             (err: any) => {
@@ -659,9 +668,17 @@ export class InicioComponent {
                 const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
                 const ok_corredor = todos_corredor ? true : (e.id_corredor ? this.datosFiltro.corredores.includes(e.id_corredor) : vacio_corredor)
                 const ok_acopio = todos_acopio ? true : (e.id_acopio ? this.datosFiltro.acopios.includes(e.id_acopio) : vacio_acopio)
+                
+                var ok_bandera = this.datosFiltro.id_bandera.length == this.db_banderas.length
+                if(e.id_bandera){
+                    var banderas = typeof e.id_bandera == 'string' ? JSON.parse(e.id_bandera) : e.id_bandera
+                    if(banderas.length){
+                        ok_bandera = banderas.some((bandera:any) => this.datosFiltro.id_bandera.includes(bandera))
+                    }
+                }
 
 
-                if(ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta){
+                if(ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta && ok_bandera){
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
 
                     //totales
@@ -727,6 +744,8 @@ export class InicioComponent {
             benef: '',
             ctg: '',
 
+            banderas: []
+
         }
 
         var haber = 0.0
@@ -781,6 +800,12 @@ export class InicioComponent {
                 dato.pagado = "SI"
             }
         }
+
+
+        var banderas = mov.id_bandera ? (typeof mov.id_bandera == 'string' ? JSON.parse(mov.id_bandera) : mov.id_bandera) : []
+        banderas.forEach((e:any) => {
+            dato.banderas.push(this.db_banderas.find((f:any) => { return f.id == e }))
+        })
 
         return dato
     }
@@ -1004,7 +1029,7 @@ export class InicioComponent {
             id_corredor: null,
             id_acopio: null,
             id_deposito: null,
-            id_bandera: null,
+            id_bandera: [],
             kg_bruto: null,
             kg_tara: null,
             kg_neto: null,
@@ -1029,6 +1054,10 @@ export class InicioComponent {
 
         this.datosMovimiento.fecha = fechaHoy
 
+        if (typeof this.datosMovimiento.id_bandera == 'string'){
+            this.datosMovimiento.id_bandera = JSON.parse(this.datosMovimiento.id_bandera)
+        }
+
         this.setearTransporteChoferCamion()
 
         this.displayNuevoMovimiento = true
@@ -1047,6 +1076,11 @@ export class InicioComponent {
 
         this.datosMovimiento.activo = 1
 
+        if(this.datosMovimiento.id_bandera){
+            if(typeof this.datosMovimiento.id_bandera != 'string'){
+                this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
+            }
+        }
 
         this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
@@ -1066,6 +1100,12 @@ export class InicioComponent {
         var fecha = new Date(this.datosMovimiento.fecha);
         this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
 
+        if(this.datosMovimiento.id_bandera){
+            if(typeof this.datosMovimiento.id_bandera != 'string'){
+                this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
+            }
+        }
+
         this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -1081,6 +1121,13 @@ export class InicioComponent {
     borrarMovimiento() {
         if (confirm('Desea eliminar Movimiento?')) {
             this.datosMovimiento.estado = 0
+
+            if(this.datosMovimiento.id_bandera){
+                if(typeof this.datosMovimiento.id_bandera != 'string'){
+                    this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
+                }
+            }
+            
             this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
                 (res: any) => {
                     res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -1106,6 +1153,15 @@ export class InicioComponent {
         const fechaMov = `${yyyy}-${MM}-${dd}`;
 
         this.datosMovimiento.fecha = fechaMov;
+
+        if(this.datosMovimiento.id_bandera){
+            if (typeof this.datosMovimiento.id_bandera == 'string'){
+                this.datosMovimiento.id_bandera = JSON.parse(this.datosMovimiento.id_bandera)
+            }
+        } else {
+            this.datosMovimiento.id_bandera = []
+        }
+
 
         this.setearTransporteChoferCamion()
 

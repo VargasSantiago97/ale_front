@@ -549,7 +549,7 @@ export class ActualizarCPEComponent {
         }
     }
 
-    actualizarCPE(){
+    actualizarCPE(seguirActualizando:any = false){
         this.actualizarRecursivamente = false
 
         this.cambiosDetectadosCPE.forEach((e:any) => {
@@ -568,8 +568,14 @@ export class ActualizarCPEComponent {
 
         this.comunicacionService.updateDB("carta_porte", this.datosParaActualizarCPE).subscribe(
             (res: any) => {
-                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Modificado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
-                this.cambiosDetectadosCPE = []
+                if(res.mensaje){
+                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Modificado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                    this.cambiosDetectadosCPE = []
+                    if(seguirActualizando){
+                        this.actualizarTodos()
+                    }
+                }
+
             },
             (err: any) => {
                 console.log(err)

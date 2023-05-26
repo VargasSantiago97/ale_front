@@ -1,1 +1,23 @@
 <p>retiros works!</p>
+
+<div class="imagenes">
+    <div class="container">
+        <img *ngFor="let image of images; let i = index" [src]="image" class="image" [style.zIndex]="images.length - i">
+    </div>
+    <div class="container">
+        <img src="./assets/prueba/0.png" class="image">
+    </div>
+</div>
+
+<div class="field">
+    <label>LOTES</label><br>
+    <p-listbox [options]="datos_filtrar_granos" [(ngModel)]="images" [metaKeySelection]="false" [checkbox]="true"
+        [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id" [listStyle]="{'max-height':'600px'}"
+        [style]="{'width':'15rem'}">
+        <ng-template let-grano pTemplate="item">
+            <div class="grano-item">
+                <div>{{grano.alias}}</div>
+            </div>
+        </ng-template>
+    </p-listbox>
+</div>

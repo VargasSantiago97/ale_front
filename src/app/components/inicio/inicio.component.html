@@ -21,9 +21,10 @@
 
 <br><br>
 
-<p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="multiple" [metaKeySelection]="true"
-    [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-    [paginator]="true" [rows]="25" [showCurrentPageReport]="true" [(selection)]="selectedTablaInicio" dataKey="ctg"
+<p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="multiple"
+    [metaKeySelection]="true" [tableStyle]="{'min-width': '50rem'}"
+    styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm" [paginator]="true" [rows]="25"
+    [showCurrentPageReport]="true" [(selection)]="selectedTablaInicio" dataKey="ctg"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
     <ng-template pTemplate="caption">
@@ -33,7 +34,8 @@
     </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
-            <th [style]="{padding: '2px', minWidth: tamanoCols[col.field]}" *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+            <th [style]="{padding: '2px', minWidth: tamanoCols[col.field]}" *ngFor="let col of columns"
+                pSortableColumn="{{col.field}}">
                 {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
             </th>
         </tr>
@@ -42,23 +44,29 @@
         <tr (dblclick)="mostrarMovimiento(registro.id)" [pSelectableRow]="registro" [pSelectableRowIndex]="rowIndex">
             <td *ngFor="let col of columns" [style]="{padding: '0px', height: '50px'}" title="{{col.header}}">
 
-                <div *ngIf="(col.field != 'orden') && (col.field != 'ctg') && (col.field != 'observaciones')">
+                <div
+                    *ngIf="(col.field != 'orden') && (col.field != 'ctg') && (col.field != 'observaciones') && (col.field != 'banderas')">
                     {{registro[col.field]}}
                 </div>
 
                 <div *ngIf="col.field == 'orden'">
-                    <a *ngIf="registro.existeOrdenDeCarga" (click)="mostrarModalOrdenCarga(registro.id, $event)" href="#">{{registro[col.field]}}</a>
+                    <a *ngIf="registro.existeOrdenDeCarga" (click)="mostrarModalOrdenCarga(registro.id, $event)"
+                        href="#">{{registro[col.field]}}</a>
 
-                    <button *ngIf="!registro.existeOrdenDeCarga" class="button-tabla" (click)="agregarOrdenCargaRegistro(registro.id)">
+                    <button *ngIf="!registro.existeOrdenDeCarga" class="button-tabla"
+                        (click)="agregarOrdenCargaRegistro(registro.id)">
                         <i class="pi pi-plus-circle"></i>
                     </button>
                 </div>
 
                 <div *ngIf="col.field == 'ctg'">
-                    <a *ngIf="(!registro.permiteCrearCTG) && registro[col.field]" (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">{{registro[col.field]}}</a>
-                    <a *ngIf="(!registro.permiteCrearCTG) && !(registro[col.field])" (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">SIN CTG</a>
+                    <a *ngIf="(!registro.permiteCrearCTG) && registro[col.field]"
+                        (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">{{registro[col.field]}}</a>
+                    <a *ngIf="(!registro.permiteCrearCTG) && !(registro[col.field])"
+                        (click)="abrirModalVerCPE(registro.id, true, $event)" href="#">SIN CTG</a>
 
-                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla" (click)="abrirModalCrearCPE(registro.id)">
+                    <button *ngIf="registro.permiteCrearCTG" class="button-tabla"
+                        (click)="abrirModalCrearCPE(registro.id)">
                         <i class="pi pi-plus-circle"></i>
                     </button>
                 </div>
@@ -66,9 +74,15 @@
                 <div *ngIf="col.field == 'observaciones' && registro.observaciones">
                     {{registro.observaciones}}
 
-                    <button class="button-tabla" (click)="displayObservacion = true && datosObservacion = registro.observacionesCompleta">
+                    <button class="button-tabla"
+                        (click)="displayObservacion = true && datosObservacion = registro.observacionesCompleta">
                         <i class="pi pi-comment"></i>
                     </button>
+                </div>
+
+                <div *ngIf="col.field == 'banderas'">
+                    <p-tag *ngFor="let bandera of registro.banderas" severity="{{bandera.fondo}}"><i
+                            class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag>
                 </div>
             </td>
         </tr>
@@ -86,7 +100,8 @@
 <p-dialog header="Observaciones:" [(visible)]="displayObservacion" [style]="{width: '50vw'}">
     <p>{{datosObservacion}}</p>
     <ng-template pTemplate="footer">
-        <p-button icon="pi pi-check" (click)="displayObservacion=false" label="Ok" styleClass="p-button-text"></p-button>
+        <p-button icon="pi pi-check" (click)="displayObservacion=false" label="Ok"
+            styleClass="p-button-text"></p-button>
     </ng-template>
 </p-dialog>
 
@@ -104,6 +119,22 @@
             <div class="field">
                 <label>FECHA HASTA</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaHasta" dateFormat="dd/mm/yy"></p-calendar>
+            </div>
+        </div>
+        <br>
+        <div class="field col">
+            <div class="field">
+                <label>BANDERA</label><br>
+
+                <p-multiSelect [options]="db_banderas" [(ngModel)]="datosFiltro.id_bandera"
+                    defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" class="multiselect-custom">
+                    <ng-template let-bandera pTemplate="item">
+                        <div class="bandera-item">
+                            <p-tag severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}"
+                                    [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
             </div>
         </div>
     </div>
@@ -167,9 +198,9 @@
         <div class="field col">
             <div class="field">
                 <label>CORREDOR</label><br>
-                <p-listbox [options]="datos_filtrar_corredores" [(ngModel)]="datosFiltro.corredores" [metaKeySelection]="false"
-                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <p-listbox [options]="datos_filtrar_corredores" [(ngModel)]="datosFiltro.corredores"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                    optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-corredor pTemplate="item">
                         <div class="corredor-item">
                             <div>{{corredor.alias}}</div>
@@ -181,9 +212,9 @@
         <div class="field col">
             <div class="field">
                 <label>DESTINO</label><br>
-                <p-listbox [options]="datos_filtrar_acopios" [(ngModel)]="datosFiltro.acopios" [metaKeySelection]="false"
-                    [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                    [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <p-listbox [options]="datos_filtrar_acopios" [(ngModel)]="datosFiltro.acopios"
+                    [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                    optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
                     <ng-template let-acopio pTemplate="item">
                         <div class="acopio-item">
                             <div>{{acopio.alias}}</div>
@@ -193,8 +224,6 @@
             </div>
         </div>
     </div>
-
-
 
     <ng-template pTemplate="footer">
         <button pButton pRipple type="button" label="FILTRAR" class="p-button-success bott"
@@ -222,11 +251,16 @@
         <div class="field col">
             <div class="field">
                 <label>Bandera</label><br>
-                <select [(ngModel)]="datosMovimiento.id_bandera" class="select-class">
-                    <option *ngFor="let bandera of db_banderas" value="{{bandera.id}}">
-                        <i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i> {{bandera.alias}}
-                    </option>
-                </select>
+
+                <p-multiSelect [options]="db_banderas" [(ngModel)]="datosMovimiento.id_bandera"
+                    defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" class="multiselect-custom">
+                    <ng-template let-bandera pTemplate="item">
+                        <div class="bandera-item">
+                            <p-tag severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}"
+                                    [style]="{color: bandera.color}"></i></p-tag> {{bandera.alias}}
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
             </div>
         </div>
         <div class="field col">
@@ -411,14 +445,19 @@
             <label>ACOPIO: <strong>{{datosMovimiento.id_acopio ?
                     transformDatoTabla(datosMovimiento.id_acopio,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias"
-                optionValue="id" [filter]="true" [style]="{ width: '90%' }"  [metaKeySelection]="false"></p-listbox>
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }" [metaKeySelection]="false"></p-listbox>
         </div>
         <div class="col">
-            <span class="p-float-label">
-                <textarea id="float-input" rows="5" cols="70" pInputTextarea
-                    [(ngModel)]="datosMovimiento.observaciones"></textarea>
-                <label for="float-input">Observaciones</label>
-            </span>
+            <div class="formgrid row">
+                <span class="p-float-label">
+                    <textarea id="float-input" rows="5" cols="70" pInputTextarea
+                        [(ngModel)]="datosMovimiento.observaciones"></textarea>
+                    <label for="float-input">Observaciones</label>
+                </span>
+            </div>
+            <div class="formgrid row">
+
+            </div>
         </div>
     </div>
     <ng-template pTemplate="footer">
@@ -704,7 +743,8 @@
                     (ngModelChange)="onSelectSolicitante()">
                     <option *ngFor="let socio of db_socios" value="{{socio.cuit}}">{{socio.razon_social}}</option>
                 </select>
-                <button (click)="dummy(datosCPE.cuit_solicitante)" class="button-tabla"><i class="pi pi-cog"></i></button>
+                <button (click)="dummy(datosCPE.cuit_solicitante)" class="button-tabla"><i
+                        class="pi pi-cog"></i></button>
             </div>
         </div>
         <div class="field col">
@@ -1215,7 +1255,8 @@
                 <select [(ngModel)]="datosCPE.cod_destino" class="select-class" style="width: 600px;">
                     <option value=""></option>
                     <option *ngFor="let planta of cpePlantasDestino" value="{{planta.nroPlanta}}">Planta N°
-                        {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}} ({{planta.codProvincia}}) -
+                        {{planta.nroPlanta}}. Prov.: {{transformarDatoMostrar(planta.codProvincia, 'provinciaCPE')}}
+                        ({{planta.codProvincia}}) -
                         Loc.: {{planta.codLocalidad}}</option>
                 </select>
             </div>
@@ -1370,7 +1411,8 @@
 
                 <div class="formgrid row">
                     <div *ngFor="let archivo of datoVerCPE.archivos">
-                        <div class="tarjeta" style="padding: 3px; margin: 0px 0px 5px 0px;" class="{{datoVerCPE.sistema ? 'cpeSistema' : ''}}">
+                        <div class="tarjeta" style="padding: 3px; margin: 0px 0px 5px 0px;"
+                            class="{{datoVerCPE.sistema ? 'cpeSistema' : ''}}">
                             <table style="width: 100%;">
                                 <tr>
                                     <td>{{archivo}}</td>
@@ -1389,9 +1431,17 @@
                 </div>
                 <div class="formgrid row">
                     <div class="field col" style="text-align: right;">
-                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'AN') : false" pButton pRipple type="button" icon="pi pi-pencil" label="EDITAR" class="p-button-info" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="editarCPE(datoVerCPE)"></button>
-                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'AN') : false" pButton pRipple type="button" icon="pi pi-exclamation-circle" label="ANULAR" class="p-button-danger" style="padding: 0px 15px; margin: 0px 6px 0px 0px;" (click)="anularCPE(datoVerCPE)"></button>
-                        <button pButton pRipple type="button" label="ELIMINAR" class="p-button-danger" style="padding: 0px 7px; margin: 10px 0px 0px 0px;" (click)="eliminarCPE(datoVerCPE)"></button>
+                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'AN') : false" pButton pRipple
+                            type="button" icon="pi pi-pencil" label="EDITAR" class="p-button-info"
+                            style="padding: 0px 15px; margin: 0px 6px 0px 0px;"
+                            (click)="editarCPE(datoVerCPE)"></button>
+                        <button *ngIf="datoVerCPE.data ? (datoVerCPE.data.estado != 'AN') : false" pButton pRipple
+                            type="button" icon="pi pi-exclamation-circle" label="ANULAR" class="p-button-danger"
+                            style="padding: 0px 15px; margin: 0px 6px 0px 0px;"
+                            (click)="anularCPE(datoVerCPE)"></button>
+                        <button pButton pRipple type="button" label="ELIMINAR" class="p-button-danger"
+                            style="padding: 0px 7px; margin: 10px 0px 0px 0px;"
+                            (click)="eliminarCPE(datoVerCPE)"></button>
                     </div>
                 </div>
             </div>
@@ -1428,13 +1478,15 @@
                                         <label>{{cambio.tipoDato}}</label>
                                     </td>
                                     <td>
-                                        <input type="text" class="input-text-codigo" style="width: auto;" [(ngModel)]="cambio.valorAnt" readonly>
+                                        <input type="text" class="input-text-codigo" style="width: auto;"
+                                            [(ngModel)]="cambio.valorAnt" readonly>
                                     </td>
                                     <td style="width: 20px;">
                                         <i class="pi pi-arrow-right" style="font-size: 12px;"></i>
                                     </td>
                                     <td>
-                                        <input type="text" class="input-text-codigo" style="width: auto;" [(ngModel)]="cambio.valor">
+                                        <input type="text" class="input-text-codigo" style="width: auto;"
+                                            [(ngModel)]="cambio.valor">
                                     </td>
                                     <td>
                                         <input type="checkbox" [(ngModel)]="cambio.modificar">
@@ -1444,7 +1496,7 @@
                         </table>
                         <br>
                         <button pButton pRipple type="button" label="GUARDAR CAMBIOS" class="p-button-success"
-                        (click)="actualizarCPE()"></button>
+                            (click)="actualizarCPE()"></button>
                     </div>
                 </div>
             </div>
@@ -1467,8 +1519,8 @@
 </p-dialog>
 
 
-<p-dialog header="EDITAR CPE" [(visible)]="displayEditarCPE" [modal]="true" [style]="{width: '700px'}" [draggable]="true"
-    [resizable]="true" [maximizable]="true">
+<p-dialog header="EDITAR CPE" [(visible)]="displayEditarCPE" [modal]="true" [style]="{width: '700px'}"
+    [draggable]="true" [resizable]="true" [maximizable]="true">
 
     <table style="width: 100%;">
         <tr>
@@ -1476,7 +1528,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Nro CTG</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.nro_ctg" readonly>
+                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.nro_ctg"
+                    readonly>
             </td>
         </tr>
         <tr>
@@ -1519,7 +1572,8 @@
             <td style="text-align: right; padding: 0px 20px 0px 0px;">Rte. Comercial Venta Secundaria 2:</td>
             <td>
                 <div class="field">
-                    <select [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria2" class="select-class">
+                    <select [(ngModel)]="datosEditarCPE.cuit_remitente_comercial_venta_secundaria2"
+                        class="select-class">
                         <option value=""></option>
                         <option
                             *ngFor="let remitente_comercial_venta_secundaria2 of intervinientesCPE.remitente_comercial_venta_secundaria2"
@@ -1555,8 +1609,7 @@
                 <div class="field">
                     <select [(ngModel)]="datosEditarCPE.cuit_corredor_venta_secundaria" class="select-class">
                         <option value=""></option>
-                        <option
-                            *ngFor="let corredor_venta_secundaria of intervinientesCPE.corredor_venta_secundaria"
+                        <option *ngFor="let corredor_venta_secundaria of intervinientesCPE.corredor_venta_secundaria"
                             value="{{corredor_venta_secundaria.cuit}}">{{corredor_venta_secundaria.alias}}
                         </option>
                     </select>
@@ -1603,7 +1656,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Planta Destino</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.planta_destino">
+                <input type="text" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.planta_destino">
             </td>
         </tr>
         <tr>
@@ -1611,7 +1665,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Provincia</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.cod_provincia">
+                <input type="text" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cod_provincia">
             </td>
         </tr>
         <tr>
@@ -1619,7 +1674,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Localidad</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.cod_localidad">
+                <input type="text" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cod_localidad">
             </td>
         </tr>
         <tr>
@@ -1627,7 +1683,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Es destino campo?</h6>
             </td>
             <td>
-                <input type="checkbox" style="margin: 2px 5px;" [(ngModel)]="datosEditarCPE.es_destino_campo"> {{datosEditarCPE.es_destino_campo ? 'SI' : 'NO'}}
+                <input type="checkbox" style="margin: 2px 5px;" [(ngModel)]="datosEditarCPE.es_destino_campo">
+                {{datosEditarCPE.es_destino_campo ? 'SI' : 'NO'}}
             </td>
         </tr>
         <tr>
@@ -1668,7 +1725,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Cod. Grano</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.cod_grano">
+                <input type="text" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.cod_grano">
             </td>
         </tr>
         <tr>
@@ -1676,7 +1734,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Peso Bruto</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.peso_bruto">
+                <input type="text" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.peso_bruto">
             </td>
         </tr>
         <tr>
@@ -1684,7 +1743,8 @@
                 <h6 style="text-align: right; margin: 2px 20px;">Peso Tara</h6>
             </td>
             <td>
-                <input type="text" class="input-text-codigo" style="width: 130px;" [(ngModel)]="datosEditarCPE.peso_tara" readonly>
+                <input type="text" class="input-text-codigo" style="width: 130px;"
+                    [(ngModel)]="datosEditarCPE.peso_tara" readonly>
             </td>
         </tr>
         <tr>

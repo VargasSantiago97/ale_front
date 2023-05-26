@@ -1,0 +1,14 @@
+.container {
+    position: relative;
+}
+
+.image {
+    position: absolute;
+    top: 400px;
+    left: 0;
+    width: 100%;
+}
+
+.imagenes {
+    width: 500px;
+}
