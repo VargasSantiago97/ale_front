@@ -119,6 +119,7 @@ export class ProduccionDetalleComponent {
                     { field: 'kg_carga', header: 'Kgs ENTRADA' },
                     { field: 'kg_descarga', header: 'Kgs SALIDA' },
                     { field: 'kg_pendiente', header: 'Kgs EN SILO' },
+                    { field: 'porcentaje', header: '% Pendiente' },
                 ]
                 this.colsCamiones = [
                     { field: 'fecha', header: 'Fecha' },
@@ -403,11 +404,20 @@ export class ProduccionDetalleComponent {
 
                 var kg_pendienteSilo = kg_cargaSilo - kg_descargaSilo
 
+                var porcentajeSilo = '100 %'
+                if(kg_descargaSilo){
+                    if(kg_cargaSilo){
+                        porcentajeSilo = (100 - (kg_descargaSilo / kg_cargaSilo * 100)).toFixed(2) + ' %'
+                    }
+                }
+
+
                 this.dataSilos.push({
                     silo: silo.alias,
                     kg_carga: this.transformarDatoMostrarTabla(kg_cargaSilo, 'numero'),
                     kg_descarga: this.transformarDatoMostrarTabla(kg_descargaSilo, 'numero'),
                     kg_pendiente: this.transformarDatoMostrarTabla(kg_pendienteSilo, 'numero'),
+                    porcentaje: porcentajeSilo,
                 })
 
                 kg_carga += kg_cargaSilo
@@ -415,11 +425,19 @@ export class ProduccionDetalleComponent {
                 kg_pendiente += kg_pendienteSilo
             })
 
+            var porcentajeSiloTotales = '100 %'
+            if(kg_descarga){
+                if(kg_carga){
+                    porcentajeSiloTotales = (100 - (kg_descarga / kg_carga * 100)).toFixed(2) + ' %'
+                }
+            }
+
             this.dataSilosTotales = {
                 silo: 'TOTALES',
                 kg_carga: this.transformarDatoMostrarTabla(kg_carga, 'numero'),
                 kg_descarga: this.transformarDatoMostrarTabla(kg_descarga, 'numero'),
                 kg_pendiente: this.transformarDatoMostrarTabla(kg_pendiente, 'numero'),
+                porcentaje: porcentajeSiloTotales,
             }
 
             // ##########################################

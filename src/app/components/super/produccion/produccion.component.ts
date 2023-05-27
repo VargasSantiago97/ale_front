@@ -167,6 +167,7 @@ export class ProduccionComponent {
                 }
 
                 this.datosTabla.push({
+                    id: e.id,
                     campo: e.alias,
                     has: this.transformarDatoMostrarTabla(has, "numero"),
                     rinde: this.transformarDatoMostrarTabla(rinde, "numero"),

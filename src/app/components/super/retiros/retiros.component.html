@@ -1,5 +1,87 @@
-<p>retiros works!</p>
+<br>
+<div class="formgrid row">
+    <div class="field col">
+        <div class="field tarjeta">
+            <h4 style="text-align: center;">CULTIVO</h4><br>
+            <p-knob [ngModel]="100" [readonly]="true" [size]="200"></p-knob>
+        </div>
+    </div>
+    <div class="field col">
+        <div class="field tarjeta">
+            <h4 style="text-align: center;">SOCIO</h4><br>
+            <p-listbox [metaKeySelection]="false"
+                [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
+                [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <ng-template let-socio pTemplate="item">
+                    <div class="socio-item">
+                        <div>{{socio.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </div>
+    </div>
+    <div class="field col">
+        <div class="field tarjeta">
+            <h4 style="text-align: center;">ESTABLECIMIENTO</h4><br>
+            <p-listbox
+                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <ng-template let-establecimiento pTemplate="item">
+                    <div class="establecimiento-item">
+                        <div>{{establecimiento.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </div>
+    </div>
+    <div class="field col">
+        <div class="field tarjeta">
+            <h4 style="text-align: center;">TRANSPORTE</h4><br>
+            <p-listbox
+                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <ng-template let-transportista pTemplate="item">
+                    <div class="transportista-item">
+                        <div>{{transportista.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </div>
+    </div>
+    <div class="field col">
+        <div class="field tarjeta">
+            <h4 style="text-align: center;">CORREDOR</h4><br>
+            <p-listbox
+                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <ng-template let-corredor pTemplate="item">
+                    <div class="corredor-item">
+                        <div>{{corredor.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </div>
+    </div>
+    <div class="field col">
+        <div class="field tarjeta">
+            <h4 style="text-align: center;">DESTINO</h4><br>
+            <p-listbox
+                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
+                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
+                <ng-template let-acopio pTemplate="item">
+                    <div class="acopio-item">
+                        <div>{{acopio.alias}}</div>
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </div>
+    </div>
+</div>
 
+
+
+
+<br><br><br><br>
 <div class="imagenes">
     <div class="container">
         <img *ngFor="let image of images; let i = index" [src]="image" class="image" [style.zIndex]="images.length - i">

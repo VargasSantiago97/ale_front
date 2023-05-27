@@ -37,7 +37,8 @@
                     <tbody>
                         <tr *ngFor="let dato of datosTabla">
                             <td style="padding: 2px;" *ngFor="let col of cols" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
-                                <label>{{dato[col.field]}}</label>
+                                <a *ngIf="col.field == 'campo'" href="/produccionDetalle?idd={{dato['id']}}"><label>{{dato['campo']}}</label></a>
+                                <label *ngIf="col.field != 'campo'">{{dato[col.field]}}</label>
                             </td>
                         </tr>
                     </tbody>
