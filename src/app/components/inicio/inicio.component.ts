@@ -4,6 +4,7 @@ import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { DatePipe } from '@angular/common';
 import { PadronService } from 'src/app/services/padron.service';
 import { CpeService } from 'src/app/services/cpe/cpe.service';
+import * as XLSX from 'xlsx';
 
 declare var vars: any;
 
@@ -2997,6 +2998,20 @@ export class InicioComponent {
     }
     setearUrl(dato:any, archivo:any){
         this.iframeVisor.nativeElement.src = this.API_URI_UPLOAD + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo + '#zoom=125'
+    }
+
+    exportToExcel() {
+        /* Crear un libro de trabajo */
+        const workbook = XLSX.utils.book_new();
+      
+        /* Crear una hoja de cálculo */
+        const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
+      
+        /* Agregar la hoja de cálculo al libro de trabajo */
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+      
+        /* Descargar el archivo */
+        XLSX.writeFile(workbook, 'movimientos.xlsx');
     }
 }
 

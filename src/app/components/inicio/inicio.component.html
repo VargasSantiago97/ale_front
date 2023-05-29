@@ -31,6 +31,8 @@
         <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
             selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
             placeholder="Seleccionar columnas"></p-multiSelect>
+        <button pButton pRipple type="button" label="XLSX" class="p-button-success bott" style="margin: 6px;"
+            (click)="exportToExcel()"></button>
     </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
@@ -126,8 +128,8 @@
             <div class="field">
                 <label>BANDERA</label><br>
 
-                <p-multiSelect [options]="db_banderas" [(ngModel)]="datosFiltro.id_bandera"
-                    defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" class="multiselect-custom">
+                <p-multiSelect [options]="db_banderas" [(ngModel)]="datosFiltro.id_bandera" defaultLabel="Seleccionar"
+                    optionLabel="alias" optionValue="id" class="multiselect-custom">
                     <ng-template let-bandera pTemplate="item">
                         <div class="bandera-item">
                             <p-tag severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}"

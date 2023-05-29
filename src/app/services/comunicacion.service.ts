@@ -47,6 +47,14 @@ export class ComunicacionService {
             return this.http.post(`${this.API_URI}/index.php?op=getAll&tabla=null`, this.trans(tabla, data));
         }
     }
+    updateDirectoDB(tabla: any, data: any) {
+        if(!this.BLOQUEAR_EDICION){
+            return this.http.post(`${this.API_URI}/index.php?op=update&tabla=${tabla}`, data);
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'No esta autorizado para editar registros. Consulte al administrador' })
+            return this.http.post(`${this.API_URI}/index.php?op=getAll&tabla=null`, this.trans(tabla, data));
+        }
+    }
 
     //Consultas a DB
     getDir(dir: any) {

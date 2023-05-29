@@ -703,6 +703,20 @@ export class CuentasCorrientesComponent {
                         }
 
                         const cpes = [ ... this.db_carta_porte.filter((e:any) => { return e.id_movimiento == movimiento.id})]
+
+                        var multiplicadorIVA = 1.21
+                        const transp = this.db_transportistas.find((t:any) => { return t.id == this.datosAsientoMostrar.id_transportista })
+                        const cond_iva = this.db_condicion_iva.find((c:any) => { return c.id == transp.condicion_iva })
+                        if(cond_iva){
+                            if(cond_iva.iva){
+                                if(cond_iva.iva == 1){
+                                    multiplicadorIVA = 1.21
+                                } else {
+                                    multiplicadorIVA = 1
+                                }
+                            }
+                        }
+
                         cpes.forEach((cpe:any) => {
                             if(cpe.data){
                                 if(JSON.parse(cpe.data)){
@@ -712,12 +726,12 @@ export class CuentasCorrientesComponent {
                                         data.ctg = cpe.nro_ctg
                                         data.destino = parseInt(datosCPE.kg_descarga)
                                         data.diferencia = parseInt(datosCPE.kg_descarga) - parseInt(data.balanza)
-                                        data.monto = (parseInt(datosCPE.kg_descarga) * parseFloat(cpe.tarifa) / 1000) * 1.21
+                                        data.monto = (parseInt(datosCPE.kg_descarga) * parseFloat(cpe.tarifa) / 1000) * multiplicadorIVA
 
                                         balanzaTotal += parseInt(data.balanza)
                                         destinoTotal += parseInt(datosCPE.kg_descarga)
                                         diferenciaTotal += (parseInt(datosCPE.kg_descarga) - parseInt(data.balanza))
-                                        montoTotal += ((parseInt(datosCPE.kg_descarga) * parseFloat(cpe.tarifa) / 1000) * 1.21)
+                                        montoTotal += ((parseInt(datosCPE.kg_descarga) * parseFloat(cpe.tarifa) / 1000) * multiplicadorIVA)
                                     }
                                 }
                             }

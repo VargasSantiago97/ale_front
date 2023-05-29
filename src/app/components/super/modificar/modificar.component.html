@@ -1,1 +1,3 @@
-<button (dblclick)="permitirModificar = true" (click)="modificar()" class="{{permitirModificar ? 'verde' : ''}}">MODIFICAR</button>
+<button (dblclick)="permitirModificar = true" (click)="modificar()" class="{{permitirModificar ? 'verde' : ''}}">OBTENER-ANALIZAR</button>
+
+<button *ngIf="permiteComenzar" (click)="comenzarModificacion()" class="{{permitirModificar ? 'verde' : ''}}">MODIFICAR</button>
