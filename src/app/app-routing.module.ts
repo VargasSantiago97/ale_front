@@ -25,6 +25,7 @@ import { ProduccionDetalleComponent } from './components/super/produccion-detall
 import { RetirosComponent } from './components/super/retiros/retiros.component';
 import { ModificarComponent } from './components/super/modificar/modificar.component';
 import { SistemaComponent } from './components/super/sistema/sistema.component';
+import { CpeComponent } from './components/cpe/cpe.component';
 
 
 const routes: Routes = [
@@ -42,6 +43,7 @@ const routes: Routes = [
     { path: 'intervinientes', component: IntervinientesComponent },
     { path: 'ctasctes', component: CuentasCorrientesComponent },
 
+    { path: 'cpe', component: CpeComponent },
 
 
     //superUser

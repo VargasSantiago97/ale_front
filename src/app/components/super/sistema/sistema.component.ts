@@ -162,6 +162,9 @@ export class SistemaComponent {
         this.ok_descarga = 0
         this.ok_contratos = 0
 
+        var uno:any = 0
+        var otro:any = 0
+
         this.db_locales['movimientos'].forEach((mov:any) => {
             if(mov.ok_origen == 1){
                 this.ok_origen ++;
@@ -177,8 +180,10 @@ export class SistemaComponent {
             }
             if(mov.ok_contratos == 1){
                 this.ok_contratos ++;
+                mov.id_socio == "141ea05753ff" ? uno++ : otro++
             }
         });
+        console.log(uno, otro)
     }
     analizarCPE(){
         this.cpeTotales = this.db['carta_porte'].length

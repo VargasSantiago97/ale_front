@@ -750,6 +750,12 @@ export class CuentasCorrientesComponent {
 
         } else {
             this.ordenDePago_datos = this.db_ordenes_pago.find((e:any) => { return e.id_asiento == asiento.id_asiento })
+
+            console.log(this.ordenDePago_datos)
+            if(!this.ordenDePago_datos){
+                console.log('El asiento no tiene Orden de Pago asociada. Eliminar Asiento ID: ' + asiento.id_asiento)
+            }
+            
             this.ordenDePago_mediosPago = this.db_medios_pago.filter((e:any) => { return e.id_orden == this.ordenDePago_datos.id })
 
 

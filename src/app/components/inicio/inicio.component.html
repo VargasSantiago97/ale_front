@@ -3,24 +3,6 @@
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
-<div #BOTONES>
-    <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
-        (click)="displayFiltros=true"></button>
-
-    <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott"
-        (click)="nuevoMovimiento()"></button>
-
-    <button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott"
-        (click)="displayBanderas=true"></button>
-
-    <button pButton pRipple type="button" label="COLUMNAS" class="p-button-success bott"
-        (click)="displayVistas=true"></button>
-
-</div>
-
-
-<br><br>
-
 <p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="multiple"
     [metaKeySelection]="true" [tableStyle]="{'min-width': '50rem'}"
     styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm" [paginator]="true" [rows]="25"
@@ -31,6 +13,19 @@
         <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
             selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
             placeholder="Seleccionar columnas"></p-multiSelect>
+
+        <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott" style="margin: 6px; margin-left: 20px;"
+            (click)="displayFiltros=true"></button>
+
+        <button pButton pRipple type="button" label="NUEVO VIAJE" class="p-button-success bott" style="margin: 6px;"
+            (click)="nuevoMovimiento()"></button>
+
+        <button pButton pRipple type="button" label="BANDERAS" class="p-button-success bott" style="margin: 6px;"
+            (click)="displayBanderas=true"></button>
+
+        <button pButton pRipple type="button" label="COLUMNAS" class="p-button-success bott" style="margin: 6px;"
+            (click)="displayVistas=true"></button>
+
         <button pButton pRipple type="button" label="XLSX" class="p-button-success bott" style="margin: 6px;"
             (click)="exportToExcel()"></button>
     </ng-template>

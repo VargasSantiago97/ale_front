@@ -90,6 +90,7 @@ import { ProduccionDetalleComponent } from './components/super/produccion-detall
 import { RetirosComponent } from './components/super/retiros/retiros.component';
 import { ModificarComponent } from './components/super/modificar/modificar.component';
 import { SistemaComponent } from './components/super/sistema/sistema.component';
+import { CpeComponent } from './components/cpe/cpe.component';
 
 
 @NgModule({
@@ -127,7 +128,8 @@ import { SistemaComponent } from './components/super/sistema/sistema.component';
     ProduccionDetalleComponent,
     RetirosComponent,
     ModificarComponent,
-    SistemaComponent
+    SistemaComponent,
+    CpeComponent
   ],
   imports: [
     BrowserModule,

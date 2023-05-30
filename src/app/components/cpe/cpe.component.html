@@ -1,0 +1,40 @@
+<p-table #th [columns]="selectedColumns" [value]="datosTabla" selectionMode="multiple" [metaKeySelection]="true"
+    [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+    [paginator]="true" [rows]="25" [showCurrentPageReport]="true" [(selection)]="selectedTablaCPE" dataKey="nro_ctg"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    [rowsPerPageOptions]="[10,25,50,100,1000,3000, 5000]">
+    <ng-template pTemplate="caption">
+        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+            selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
+            placeholder="Seleccionar columnas"></p-multiSelect>
+
+        <button pButton pRipple type="button" label="FILTROS" class="p-button-success bott"
+            style="margin: 6px; margin-left: 20px;" (click)="null"></button>
+
+        <button pButton pRipple type="button" label="NUEVA CPE" class="p-button-success bott" style="margin: 6px;"
+            (click)="null"></button>
+
+        <button pButton pRipple type="button" label="XLSX" class="p-button-success bott" style="margin: 6px;"
+            (click)="exportToExcel()"></button>
+
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" [style]="{padding: '2px', minWidth: col.min}"
+                pSortableColumn="{{col.field}}">
+                {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-registro let-columns="columns" let-rowIndex="rowIndex">
+        <tr (dblclick)="null" [pSelectableRow]="registro" [pSelectableRowIndex]="rowIndex">
+            <td *ngFor="let col of columns" [style]="{padding: '0px', height: '20px'}" title="{{col.header}}">
+
+                <div>
+                    {{registro[col.field]}}
+                </div>
+
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
