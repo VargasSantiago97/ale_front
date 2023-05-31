@@ -1,6 +1,6 @@
 <p-table #th [columns]="selectedColumns" [value]="datosTabla" selectionMode="multiple" [metaKeySelection]="true"
     [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-    [paginator]="true" [rows]="25" [showCurrentPageReport]="true" [(selection)]="selectedTablaCPE" dataKey="nro_ctg"
+    [paginator]="true" [rows]="50" [showCurrentPageReport]="true" [(selection)]="selectedTablaCPE" dataKey="nro_ctg"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [rowsPerPageOptions]="[10,25,50,100,1000,3000, 5000]">
     <ng-template pTemplate="caption">

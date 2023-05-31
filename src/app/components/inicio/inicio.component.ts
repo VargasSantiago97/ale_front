@@ -148,6 +148,8 @@ export class InicioComponent {
     datos_filtrar_corredores : any = []
     datos_filtrar_acopios : any = []
 
+    filtroRapido: any = {}
+
     selectedTablaInicio:any
 
     constructor(
@@ -634,7 +636,7 @@ export class InicioComponent {
         )
     }
 
-    datosParaTabla(mantenerFiltro:any = false) {
+    datosParaTabla(mantenerFiltro:any = false, permiteFiltrosRapidos:any = null) {
         if (!(this.load_transportistas_all || this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
@@ -678,8 +680,27 @@ export class InicioComponent {
                     }
                 }
 
+                //FILTROS RAPIDOS
+                var ok_filtrosRapidos = true
+                if(permiteFiltrosRapidos){
+                    if(this.filtroRapido.orden){
+                        const ordenesPermitidas = this.db_ordenes_carga.filter((odc:any) => { return odc.numero.includes(this.filtroRapido.orden) })
+                        ok_filtrosRapidos = ordenesPermitidas.some((odc:any) => { return odc.id_movimiento == e.id })
+                    }
+                    if(this.filtroRapido.cpe && ok_filtrosRapidos){
+                        const cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_cpe.includes(this.filtroRapido.cpe) })
+                        ok_filtrosRapidos = cartaPortePermitidas.some((cdp:any) => { return cdp.id_movimiento == e.id })
+                    }
+                    if(this.filtroRapido.ctg && ok_filtrosRapidos){
+                        const cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_ctg.includes(this.filtroRapido.ctg) })
+                        ok_filtrosRapidos = cartaPortePermitidas.some((cdp:any) => { return cdp.id_movimiento == e.id })
+                    }
+                } else {
+                    this.filtroRapido = {}
+                }
 
-                if(ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta && ok_bandera){
+
+                if(ok_filtrosRapidos && ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta && ok_bandera){
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
 
                     //totales

@@ -157,6 +157,10 @@ export class IntervinientesComponent {
                 this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un interviniente con este codigo'})
                 errores++;
             }
+            if(!errores && this.db_intervinientes.some((e:any) => {return e.cuit == this.datosInterviniente.cuit })){
+                this.messageService.add({severity:'error', summary:'Error!', detail:'Ya existe un interviniente con este CUIT'})
+                errores++;
+            }
 
             if(!errores){
                 if(confirm('Desea guardar?')){

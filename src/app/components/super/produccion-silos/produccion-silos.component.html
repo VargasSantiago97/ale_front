@@ -62,8 +62,8 @@
 </div>
 
 <br>
-<div style="margin: 20px 200px 20px 200px;" *ngFor="let dato of datosGenerales">
-    <div class="tarjeta">
+<div *ngFor="let dato of datosGenerales">
+    <div *ngIf="dato.silos.length" class="tarjeta" style="margin: 20px 200px 20px 200px;">
         <div class="formgrid row">
             <div #CAMPOS class="field col">
                 <div style="margin: 0px 0px 10px 0px; padding: 30px;">
