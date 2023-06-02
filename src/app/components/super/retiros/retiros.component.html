@@ -1,105 +1,198 @@
-<br>
-<div class="formgrid row">
-    <div class="field col">
-        <div class="field tarjeta">
-            <h4 style="text-align: center;">CULTIVO</h4><br>
-            <p-knob [ngModel]="100" [readonly]="true" [size]="200"></p-knob>
-        </div>
-    </div>
-    <div class="field col">
-        <div class="field tarjeta">
-            <h4 style="text-align: center;">SOCIO</h4><br>
-            <p-listbox [metaKeySelection]="false"
-                [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id"
-                [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                <ng-template let-socio pTemplate="item">
-                    <div class="socio-item">
-                        <div>{{socio.alias}}</div>
-                    </div>
-                </ng-template>
-            </p-listbox>
-        </div>
-    </div>
-    <div class="field col">
-        <div class="field tarjeta">
-            <h4 style="text-align: center;">ESTABLECIMIENTO</h4><br>
-            <p-listbox
-                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
-                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                <ng-template let-establecimiento pTemplate="item">
-                    <div class="establecimiento-item">
-                        <div>{{establecimiento.alias}}</div>
-                    </div>
-                </ng-template>
-            </p-listbox>
-        </div>
-    </div>
-    <div class="field col">
-        <div class="field tarjeta">
-            <h4 style="text-align: center;">TRANSPORTE</h4><br>
-            <p-listbox
-                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
-                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                <ng-template let-transportista pTemplate="item">
-                    <div class="transportista-item">
-                        <div>{{transportista.alias}}</div>
-                    </div>
-                </ng-template>
-            </p-listbox>
-        </div>
-    </div>
-    <div class="field col">
-        <div class="field tarjeta">
-            <h4 style="text-align: center;">CORREDOR</h4><br>
-            <p-listbox
-                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
-                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                <ng-template let-corredor pTemplate="item">
-                    <div class="corredor-item">
-                        <div>{{corredor.alias}}</div>
-                    </div>
-                </ng-template>
-            </p-listbox>
-        </div>
-    </div>
-    <div class="field col">
-        <div class="field tarjeta">
-            <h4 style="text-align: center;">DESTINO</h4><br>
-            <p-listbox
-                [metaKeySelection]="false" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="alias"
-                optionValue="id" [listStyle]="{'max-height':'600px'}" [style]="{'width':'15rem'}">
-                <ng-template let-acopio pTemplate="item">
-                    <div class="acopio-item">
-                        <div>{{acopio.alias}}</div>
-                    </div>
-                </ng-template>
-            </p-listbox>
-        </div>
-    </div>
-</div>
-
-
-
-
-<br><br><br><br>
-<div class="imagenes">
-    <div class="container">
-        <img *ngFor="let image of images; let i = index" [src]="image" class="image" [style.zIndex]="images.length - i">
-    </div>
-    <div class="container">
-        <img src="./assets/prueba/0.png" class="image">
-    </div>
-</div>
-
-<div class="field">
-    <label>LOTES</label><br>
-    <p-listbox [options]="datos_filtrar_granos" [(ngModel)]="images" [metaKeySelection]="false" [checkbox]="true"
-        [filter]="true" [multiple]="true" optionLabel="alias" optionValue="id" [listStyle]="{'max-height':'600px'}"
-        [style]="{'width':'15rem'}">
-        <ng-template let-grano pTemplate="item">
-            <div class="grano-item">
-                <div>{{grano.alias}}</div>
+<div style="margin: 20px 50px;">
+    <div class="formgrid row">
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>MOVIMIENTOS TOTALES</h5><br>
+                <h2 style="text-align: center;"><strong>{{movimientosTotales}}</strong></h2>
             </div>
-        </ng-template>
-    </p-listbox>
+        </div>
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>CON KILOS BALANZA</h5><br>
+                <h2 style="text-align: center;"><strong>{{movimientosKilosBalanza}}</strong></h2>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>CON KILOS CAMPO</h5><br>
+                <h2 style="text-align: center;"><strong>{{movimientosKilosCampo}}</strong></h2>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>MOVIMIENTOS LOCALES</h5><br>
+                <h2 style="text-align: center;"><strong>{{movimientosTotalesLocales}}</strong></h2>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>DATOS LOCALES</h5><br>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: center;">
+                        <p>Orig</p>
+                        {{ok_origen}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>Bal</p>
+                        {{ok_balanza}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>Acond</p>
+                        {{ok_acondicionadora}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>Desc</p>
+                        {{ok_descarga}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>Cont</p>
+                        {{ok_contratos}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>CARTAS DE PORTE</h5><br>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: center;">
+                        <p>Total</p>
+                        {{cpeTotales}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>CN</p>
+                        {{cpeConfirmadas}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>AN</p>
+                        {{cpeAnuladas}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>AC</p>
+                        {{cpeActivas}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>RE</p>
+                        {{cpeRechhazadas}}
+                    </div>
+                </div>            
+            </div>
+        </div>
+        <div class="field col">
+            <div class="card tarjeta">
+                <h5>EST.</h5><br>
+                <div class="formgrid row">
+                    <div class="field col" style="text-align: center;">
+                        <p>Total</p>
+                        {{establecimientos}}
+                    </div>
+                    <div class="field col" style="text-align: center;">
+                        <p>Con Socios</p>
+                        {{establecimientosSocio}}
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </div>
+
+    <br><br><br>
+
+    <div class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>PRODUCCION CAMPOS/SOCIOS - CON KILOS DE BALANZA</strong></h5>
+                <style>
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+            
+                    th,
+                    td {
+                        text-align: left;
+                        padding: 8px;
+                        border-bottom: 1px solid #ddd;
+                    }
+            
+                    th {
+                        background-color: #f2f2f2;
+                    }
+            
+                    tr:hover {
+                        background-color: #f5f5f5;
+                    }
+                </style>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of colsProd">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaProduccion">
+                            <td style="padding: 2px;" *ngFor="let col of colsProd">
+                                <label>{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px;" *ngFor="let col of colsProd">
+                                <label><strong>{{datosTablaProduccionTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <br><br><br>
+
+    <div class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>TOTALES KILOS</strong></h5>
+                <style>
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+            
+                    th,
+                    td {
+                        text-align: left;
+                        padding: 8px;
+                        border-bottom: 1px solid #ddd;
+                    }
+            
+                    th {
+                        background-color: #f2f2f2;
+                    }
+            
+                    tr:hover {
+                        background-color: #f5f5f5;
+                    }
+                </style>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of cols">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTabla">
+                            <td style="padding: 2px;" *ngFor="let col of cols">
+                                <label><strong>{{dato[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

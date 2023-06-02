@@ -647,6 +647,29 @@ export class InicioComponent {
             var kg_neto_final = 0.0;
             var kg_campo = 0.0;
 
+            //FILTROS RAPIDOS (DATOS PARA FILTRAR)
+            var ordenesPermitidas:any = []
+            var cartaPortePermitidas:any = []
+            var cartaPortePermitidas:any = []
+            var camionesPermitidos:any = []
+
+            if(permiteFiltrosRapidos){
+                if(this.filtroRapido.orden){
+                    ordenesPermitidas = this.db_ordenes_carga.filter((odc:any) => { return odc.numero.includes(this.filtroRapido.orden) })
+                }
+                if(this.filtroRapido.cpe){
+                    cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_cpe.includes(this.filtroRapido.cpe) })
+                }
+                if(this.filtroRapido.ctg){
+                    cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_ctg.includes(this.filtroRapido.ctg) })
+                }
+                if(this.filtroRapido.patente){
+                    camionesPermitidos = this.db_camiones.filter((camion:any) => { return camion.patente_chasis.includes(this.filtroRapido.patente.toUpperCase()) || camion.patente_acoplado.includes(this.filtroRapido.patente.toUpperCase()) })
+                }
+            } else {
+                this.filtroRapido = {}
+            }
+
             this.db_movimientos.forEach((e: any) => {
 
                 const vacio_grano = this.datosFiltro.granos.includes('vacios')
@@ -684,19 +707,17 @@ export class InicioComponent {
                 var ok_filtrosRapidos = true
                 if(permiteFiltrosRapidos){
                     if(this.filtroRapido.orden){
-                        const ordenesPermitidas = this.db_ordenes_carga.filter((odc:any) => { return odc.numero.includes(this.filtroRapido.orden) })
                         ok_filtrosRapidos = ordenesPermitidas.some((odc:any) => { return odc.id_movimiento == e.id })
                     }
                     if(this.filtroRapido.cpe && ok_filtrosRapidos){
-                        const cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_cpe.includes(this.filtroRapido.cpe) })
                         ok_filtrosRapidos = cartaPortePermitidas.some((cdp:any) => { return cdp.id_movimiento == e.id })
                     }
                     if(this.filtroRapido.ctg && ok_filtrosRapidos){
-                        const cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_ctg.includes(this.filtroRapido.ctg) })
                         ok_filtrosRapidos = cartaPortePermitidas.some((cdp:any) => { return cdp.id_movimiento == e.id })
                     }
-                } else {
-                    this.filtroRapido = {}
+                    if(this.filtroRapido.patente && ok_filtrosRapidos){
+                        ok_filtrosRapidos = camionesPermitidos.some((camion:any) => { return camion.id == e.id_camion })
+                    }
                 }
 
 

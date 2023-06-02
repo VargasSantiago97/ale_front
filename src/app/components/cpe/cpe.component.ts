@@ -300,7 +300,7 @@ export class CpeComponent {
                 cod_provincia: '',
                 cod_localidad_productor: '',
                 cod_provincia_productor: '',
-                codigo_turno: '',
+                codigo_turno: mov.codigo_turno,
                 cosecha: '',
                 chofer: '',
                 corredor_venta_primaria: this.transformarDatoMostrar(mov.cuit_corredor_venta_primaria, 'cuit', 'intervinientes', 'alias'),

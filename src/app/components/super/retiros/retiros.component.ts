@@ -1,27 +1,444 @@
 import { Component } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { ComunicacionService } from 'src/app/services/comunicacion.service';
+import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 
 @Component({
-  selector: 'app-retiros',
-  templateUrl: './retiros.component.html',
-  styleUrls: ['./retiros.component.css']
+    selector: 'app-retiros',
+    templateUrl: './retiros.component.html',
+    styleUrls: ['./retiros.component.css']
 })
 export class RetirosComponent {
 
-  images: string[] = [];
+    db: any = {}
+    db_locales: any = {}
 
-  datos_filtrar_granos:any = [
-    {
-      alias: "1",
-      id: "./assets/prueba/1.png"
-    },
-    {
-      alias: "2",
-      id: "./assets/prueba/2.png"
-    },
-    {
-      alias: "3",
-      id: "./assets/prueba/3.png"
-    },
-  ]
+    ///
+    movimientosTotales: any = null
+    movimientosKilosBalanza: any = 0
+    movimientosKilosCampo: any = 0
 
+    movimientosTotalesLocales: any = 0
+
+    ok_origen: any = 0
+    ok_balanza: any = 0
+    ok_acondicionadora: any = 0
+    ok_descarga: any = 0
+    ok_contratos: any = 0
+
+    cpeTotales: any = 0
+    cpeConfirmadas: any = 0
+    cpeAnuladas: any = 0
+    cpeActivas: any = 0
+    cpeRechhazadas: any = 0
+
+    establecimientos: any = 0
+    establecimientosSocio: any = 0
+
+    colsProd: any = []
+
+    cols: any = []
+    datosMovimientos: any = []
+
+
+    datosTabla: any = []
+    datosTablaTotales: any = []
+
+    datosProduccion: any = []
+    datosTablaProduccion: any = []
+    
+    datosTablaProduccionTotales: any = {}
+
+    ok_movimientos: any = false
+    ok_movimientos_local: any = false
+    ok_cpe: any = false
+    ok_socios: any = false
+    ok_establecimientos: any = false
+    ok_establecimientoProduccion: any = false
+    ok_silos: any = false
+    ok_loteASilos: any = false
+    ok_movimiento_origen: any = false
+    ok_lotes: any = false
+
+
+    constructor(
+        private comunicacionService: ComunicacionService,
+        private sqlite: SqliteService,
+        private messageService: MessageService
+    ) { }
+
+    ngOnInit() {
+        this.cols = [
+            { field: 'socio', header: 'SOCIO' },
+            { field: 'produccion', header: 'CORRESPONDE' },
+        ]
+
+        this.colsProd = [
+            { field: 'establecimiento', header: 'ESTABLECIMIENTO' },
+            { field: 'has', header: 'HAS' },
+            { field: 'cant_mov', header: 'CANT. MOVS' },
+            { field: 'cant_trilla', header: 'CANT. MOVS TRILLA' },
+            { field: 'kg_trilla', header: 'TOTAL KGS TRILLA' },
+            { field: 'kg_silo', header: 'TOTAL KGS A SILO' },
+            { field: 'cant_silo', header: 'CANT. SILOS' },
+            { field: 'kg', header: 'TOTAL KGS' },
+            { field: 'rinde', header: 'RINDE' },
+        ]
+
+        this.getAll('movimientos', () => {
+            this.ok_movimientos = true
+            this.analizarMovimientosTotales()
+            this.armarDatosMovimientos()
+        })
+        this.getAll('carta_porte', () => {
+            this.ok_cpe = true
+            this.analizarCPE()
+            this.armarDatosMovimientos()
+        })
+        this.getAll('socios', () => {
+            this.ok_socios = true
+            this.armarDatosMovimientos()
+        })
+        this.getAll('establecimientos', () => {
+            this.ok_establecimientos = true
+            this.analizarEstablecimientos()
+            this.armarDatosMovimientos()
+        })
+
+        this.getAllLocal('movimientos', () => {
+            this.ok_movimientos_local = true
+            this.analizarMovimientosTotalesLocales()
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('movimiento_origen', () => {
+            this.ok_movimiento_origen = true
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('produccion', () => {
+            this.ok_establecimientoProduccion = true
+            this.analizarEstablecimientos()
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('silos', () => {
+            this.ok_silos = true
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('lote_a_silo', () => {
+            this.ok_loteASilos = true
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('lotes', () => {
+            this.ok_lotes = true
+            this.armarDatosMovimientos()
+        })
+    }
+
+    getAll(tabla: any, func: any = null) {
+        this.comunicacionService.getDB(tabla).subscribe(
+            (res: any) => {
+                if (res) {
+                    this.db[tabla] = res
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta (Comunic)' })
+                }
+                if (func) {
+                    func()
+                }
+            },
+            (err: any) => {
+                console.error(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND (Comunic)' })
+            }
+        )
+    }
+    getAllLocal(tabla: any, func: any = false) {
+        this.sqlite.getDB(tabla).subscribe(
+            (res: any) => {
+                if (res) {
+                    this.db_locales[tabla] = res
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta (Local)' })
+                }
+                if (func) {
+                    func()
+                }
+            },
+            (err: any) => {
+                console.error(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND (Local)' })
+            }
+        )
+    }
+
+    //DATOS GENERALES
+    analizarMovimientosTotales() {
+        this.movimientosTotales = this.db['movimientos'].length
+
+        this.db['movimientos'].forEach((mov: any) => {
+            if (mov.kg_neto_final) {
+                this.movimientosKilosBalanza++;
+            }
+            if (mov.kg_campo) {
+                this.movimientosKilosCampo++;
+            }
+        });
+    }
+    analizarMovimientosTotalesLocales() {
+        this.movimientosTotalesLocales = this.db_locales['movimientos'].length
+
+        this.ok_origen = 0
+        this.ok_balanza = 0
+        this.ok_acondicionadora = 0
+        this.ok_descarga = 0
+        this.ok_contratos = 0
+
+        var uno: any = 0
+        var otro: any = 0
+
+        this.db_locales['movimientos'].forEach((mov: any) => {
+            if (mov.ok_origen == 1) {
+                this.ok_origen++;
+            }
+            if (mov.ok_balanza == 1) {
+                this.ok_balanza++;
+            }
+            if (mov.ok_acondicionadora == 1) {
+                this.ok_acondicionadora++;
+            }
+            if (mov.ok_descarga == 1) {
+                this.ok_descarga++;
+            }
+            if (mov.ok_contratos == 1) {
+                this.ok_contratos++;
+                mov.id_socio == "141ea05753ff" ? uno++ : otro++
+            }
+        });
+        console.log(uno, otro)
+    }
+    analizarCPE() {
+        this.cpeTotales = this.db['carta_porte'].length
+
+        this.cpeConfirmadas = 0
+        this.cpeAnuladas = 0
+        this.cpeActivas = 0
+        this.cpeRechhazadas = 0
+
+        this.db['carta_porte'].forEach((cpe: any) => {
+            if (cpe.data) {
+                if (JSON.parse(cpe.data)) {
+                    if (JSON.parse(cpe.data).estado) {
+                        const estado = JSON.parse(cpe.data).estado
+
+                        if (estado == 'CN') {
+                            this.cpeConfirmadas++;
+                        }
+                        if (estado == 'AN') {
+                            this.cpeAnuladas++;
+                        }
+                        if (estado == 'AC') {
+                            this.cpeActivas++;
+                        }
+                        if (estado == 'RE') {
+                            this.cpeRechhazadas++;
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+    analizarEstablecimientos() {
+        if (this.ok_establecimientoProduccion && this.ok_establecimientos) {
+            this.establecimientos = this.db['establecimientos'].length
+
+            this.establecimientosSocio = 0
+
+            this.db['establecimientos'].forEach((est: any) => {
+                if (this.db_locales['produccion'].some((e: any) => { return e.id_establecimiento == est.id })) {
+                    this.establecimientosSocio++
+                }
+            });
+        }
+    }
+
+    //DATOS MOVIMIENTOS
+    armarDatosMovimientos() {
+
+        if (this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes) {
+
+            this.datosProduccion = []
+
+            var totales_kg_trilla = 0
+            var totales_kg_silo = 0
+            var totales_kg = 0
+            var totales_cant_mov = 0
+            var totales_cant_trilla = 0
+            var totales_cant_silo = 0
+            var totales_has = 0
+
+            this.db['establecimientos'].forEach((est: any) => {
+
+                var dataPorEstablecimiento:any = {
+                    establecimiento: est.alias,
+                    kg_trilla : 0,
+                    kg_silo : 0,
+                    kg : 0,
+                    cantidad_silos: null,
+                    cantidad_movimientos: 0,
+                    cantidad_movimientos_con_kg: 0,
+                    has: 0,
+                    rinde: 0,
+                }
+
+                //SILOS
+                const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return silo.id_establecimiento == est.id })
+
+                if(silosDelLote.length){
+                    dataPorEstablecimiento.cantidad_silos = silosDelLote.length
+                    const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_establecimiento == est.id })
+                    var kgs_entrada = 0
+                    kilosASilo.forEach((kgs:any) => {
+                        kgs_entrada += parseInt(kgs.kilos)
+                    })
+                    dataPorEstablecimiento.kg_silo = kgs_entrada
+                }
+
+
+                //LOTES
+                const movs_origen = this.db_locales['movimiento_origen'].filter((e:any) => { return (e.id_establecimiento == est.id) && (e.tipo_origen == 'lote') })
+
+                var movimientosConOrigen:any = []
+                movs_origen.forEach((movOrig:any) => {
+                    if(!movimientosConOrigen.includes(movOrig.id_movimiento)){
+                        movimientosConOrigen.push(movOrig.id_movimiento)
+                    }
+                });
+
+                var cantidad_movimientos: any = 0
+                var cantidad_movimientos_con_kg: any = 0
+
+                this.db['movimientos'].forEach((movimiento:any) => {
+                    //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
+                    if(movimientosConOrigen.includes(movimiento.id)){
+                        const origenesAfectados = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                        const totalKilosMovimiento = origenesAfectados.reduce((acc:any, curr:any) => {
+                            return acc + parseInt(curr.kilos)
+                        }, 0)
+
+                        const totalKilosEst = origenesAfectados.reduce((acc:any, curr:any) => {
+                            var valor = 0
+                            if((curr.id_establecimiento == est.id) && (curr.tipo_origen == 'lote')){
+                                valor = parseInt(curr.kilos)
+                            }
+                            return acc + valor
+                        }, 0)
+
+
+                        const proporcion = totalKilosEst/totalKilosMovimiento
+
+                        if(movimiento.kg_neto){
+                            const corresponde = proporcion * movimiento.kg_neto
+
+                            dataPorEstablecimiento.kg_trilla += corresponde
+                        }
+                        cantidad_movimientos_con_kg ++
+                        cantidad_movimientos ++
+                    } else {
+                        if(movimiento.kg_neto){
+                            //console.log(parseFloat(movimiento.kg_neto))
+                            //dataPorEstablecimiento.kg_trilla += parseFloat(movimiento.kg_neto)
+                            cantidad_movimientos ++
+                        }
+                    }
+                    console.log(cantidad_movimientos)
+                    console.log(cantidad_movimientos_con_kg)
+                })
+
+                //HAS / RINDE
+                const totalKilos = parseInt(dataPorEstablecimiento.kg_silo) + parseInt(dataPorEstablecimiento.kg_trilla)
+                const has = this.db_locales['lotes'].filter((e:any) => { return e.id_establecimiento == est.id }).reduce((acc:any, cur:any) => { return acc + parseInt(cur.has) },0)
+                const rinde = totalKilos / has
+
+                dataPorEstablecimiento.kg = totalKilos
+                dataPorEstablecimiento.cantidad_movimientos = cantidad_movimientos
+                dataPorEstablecimiento.cantidad_movimientos_con_kg = cantidad_movimientos_con_kg
+                dataPorEstablecimiento.has = has
+                dataPorEstablecimiento.rinde = has ? rinde.toFixed(2) : ''
+
+                totales_kg_trilla += dataPorEstablecimiento.kg_trilla
+                totales_kg_silo += dataPorEstablecimiento.kg_silo
+                totales_kg += totalKilos
+                totales_cant_mov += cantidad_movimientos
+                totales_cant_trilla += cantidad_movimientos_con_kg
+                totales_cant_silo += dataPorEstablecimiento.cantidad_silos
+                totales_has += has
+
+                this.datosProduccion.push(dataPorEstablecimiento)
+            })
+
+
+            const totales_rinde = totales_has ? (totales_kg / totales_has).toFixed(2) : ''
+
+            this.datosTablaProduccionTotales = {
+                establecimiento: '',
+                kg_trilla: this.transformarDatoMostrarTabla(totales_kg_trilla, 'numero'),
+                kg_silo: this.transformarDatoMostrarTabla(totales_kg_silo, 'numero'),
+                kg: this.transformarDatoMostrarTabla(totales_kg, 'numero'),
+                cant_mov: this.transformarDatoMostrarTabla(totales_cant_mov, 'numero'),
+                cant_trilla: this.transformarDatoMostrarTabla(totales_cant_trilla, 'numero'),
+                cant_silo: this.transformarDatoMostrarTabla(totales_cant_silo, 'numero'),
+                has: this.transformarDatoMostrarTabla(totales_has, 'numero'),
+                rinde: this.transformarDatoMostrarTabla(totales_rinde, 'numero'),
+            }
+
+            this.armarDatosParaTabla()
+        }
+    }
+
+    armarDatosParaTabla() {
+        this.datosTablaProduccion = []
+
+        this.datosProduccion.forEach((mov:any) => {
+            this.datosTablaProduccion.push({
+                establecimiento : mov.establecimiento,
+                kg_trilla : this.transformarDatoMostrarTabla(mov.kg_trilla, 'numero'),
+                kg_silo : mov.cantidad_silos ? this.transformarDatoMostrarTabla(mov.kg_silo, 'numero') : '',
+                kg : this.transformarDatoMostrarTabla(mov.kg, 'numero'),
+                cant_mov: mov.cantidad_movimientos,
+                cant_trilla: mov.cantidad_movimientos ? mov.cantidad_movimientos_con_kg : '',
+                cant_silo: mov.cantidad_silos ? mov.cantidad_silos : '',
+
+                has: mov.has,
+                rinde: mov.rinde,
+            })
+        })
+    }
+
+
+    transformarDatoMostrarTabla(dato: any, tipo: any) {
+        if (tipo == 'moneda') {
+            const number = parseFloat(dato);
+            if (number == 0) {
+                return '$ 0'
+            }
+            if (number == null || !number) {
+                return ''
+            }
+            const options = {
+                style: 'currency',
+                currency: 'ARS',
+                useGrouping: true,
+                maximumFractionDigits: 2
+            };
+            return number.toLocaleString('es-AR', options);
+        }
+        if (tipo=='numero'){
+            let dev = dato
+            return dev.toLocaleString('es-AR');
+        }
+
+
+        return dato
+    }
 }
