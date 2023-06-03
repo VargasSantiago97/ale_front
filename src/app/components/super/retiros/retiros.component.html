@@ -101,27 +101,6 @@
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>PRODUCCION CAMPOS/SOCIOS - CON KILOS DE BALANZA</strong></h5>
-                <style>
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-                    }
-            
-                    th,
-                    td {
-                        text-align: left;
-                        padding: 8px;
-                        border-bottom: 1px solid #ddd;
-                    }
-            
-                    th {
-                        background-color: #f2f2f2;
-                    }
-            
-                    tr:hover {
-                        background-color: #f5f5f5;
-                    }
-                </style>
                 <table style="width: 100%;">
                     <thead>
                         <tr>
@@ -154,43 +133,98 @@
     <div class="formgrid row">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
-                <h5 style="text-align: center;"><strong>TOTALES KILOS</strong></h5>
-                <style>
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-                    }
-            
-                    th,
-                    td {
-                        text-align: left;
-                        padding: 8px;
-                        border-bottom: 1px solid #ddd;
-                    }
-            
-                    th {
-                        background-color: #f2f2f2;
-                    }
-            
-                    tr:hover {
-                        background-color: #f5f5f5;
-                    }
-                </style>
+                <h5 style="text-align: center;"><strong>TOTALES KILOS QUE CORRESPONDE POR SOCIO</strong></h5>
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th style="padding: 3px;" *ngFor="let col of cols">
+                            <th style="padding: 3px;" *ngFor="let col of colsRetirosPorSocio">
                                 {{col.header}}
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let dato of datosTabla">
-                            <td style="padding: 2px;" *ngFor="let col of cols">
-                                <label><strong>{{dato[col.field]}}</strong></label>
+                        <tr *ngFor="let dato of datosTablaCorresponde">
+                            <td style="padding: 2px;" *ngFor="let col of colsRetirosPorSocio">
+                                <label *ngIf="col.field == 'establecimiento' || col.field == 'kg'"><strong>{{dato[col.field]}}</strong></label>
+                                <label *ngIf="col.field != 'establecimiento' && col.field != 'kg'">{{dato[col.field]}}</label>
                             </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px;" *ngFor="let col of colsRetirosPorSocio">
+                                <label><strong>{{datosTablaCorrespondeTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <br><br><br>
+    
+    <div class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>TOTALES KILOS RETIRADOS</strong></h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of colsRetiros">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaRetiros">
+                            <td style="padding: 2px;" *ngFor="let col of colsRetiros">
+                                <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
+                                <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px;" *ngFor="let col of colsRetiros">
+                                <label><strong>{{datosTablaRetirosTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <br><br><br>
+    
+    <div class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>TOTALES KILOS SOCIEDAD</strong></h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of colsSociedad">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaSociedad">
+                            <td style="padding: 2px;" *ngFor="let col of colsSociedad">
+                                <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
+                                <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px;" *ngFor="let col of colsSociedad">
+                                <label><strong>{{datosTablaSociedadTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

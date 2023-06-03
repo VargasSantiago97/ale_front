@@ -51,6 +51,8 @@ export class SistemaComponent {
     ok_establecimientos: any = false
     ok_establecimientoProduccion: any = false
 
+    varr: any = 0
+
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -101,6 +103,8 @@ export class SistemaComponent {
             this.analizarEstablecimientos()
             this.armarDatosMovimientos()
         })
+
+        this.genNum()
     }
 
     getAll(tabla:any, func:any=null){
@@ -270,6 +274,15 @@ export class SistemaComponent {
         })
 
         console.log(this.db['establecimientos'])
+    }
+
+    genNum(){
+        setInterval(() => {
+            this.varr++
+            if(this.varr >= 100){
+                this.varr = 0
+            }
+        }, 1000);
     }
 
 }

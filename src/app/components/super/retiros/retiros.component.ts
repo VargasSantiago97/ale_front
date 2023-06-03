@@ -37,17 +37,30 @@ export class RetirosComponent {
 
     colsProd: any = []
 
-    cols: any = []
+    colsRetirosPorSocio: any = []
     datosMovimientos: any = []
 
 
     datosTabla: any = []
     datosTablaTotales: any = []
-
+    
     datosProduccion: any = []
     datosTablaProduccion: any = []
-    
     datosTablaProduccionTotales: any = {}
+    
+    datosCorresponde: any = []
+    datosTablaCorresponde: any = []
+    datosTablaCorrespondeTotales: any = {}
+    
+    colsRetiros: any = []
+    datosRetiros: any = []
+    datosTablaRetiros: any = []
+    datosTablaRetirosTotales: any = {}
+
+    colsSociedad: any = []
+    datosSociedad: any = []
+    datosTablaSociedad: any = []
+    datosTablaSociedadTotales: any = {}
 
     ok_movimientos: any = false
     ok_movimientos_local: any = false
@@ -59,6 +72,9 @@ export class RetirosComponent {
     ok_loteASilos: any = false
     ok_movimiento_origen: any = false
     ok_lotes: any = false
+    ok_produccion: any = false
+    ok_contratosDB: any = false
+    ok_movimiento_contrato: any = false
 
 
     constructor(
@@ -68,10 +84,6 @@ export class RetirosComponent {
     ) { }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'socio', header: 'SOCIO' },
-            { field: 'produccion', header: 'CORRESPONDE' },
-        ]
 
         this.colsProd = [
             { field: 'establecimiento', header: 'ESTABLECIMIENTO' },
@@ -84,6 +96,28 @@ export class RetirosComponent {
             { field: 'kg', header: 'TOTAL KGS' },
             { field: 'rinde', header: 'RINDE' },
         ]
+        
+        this.colsRetirosPorSocio = [
+            { field: 'establecimiento', header: 'ESTABLECIMIENTO' },
+            { field: 'kg', header: 'TOTAL KILOS' },
+        ]
+
+        this.colsRetiros = [
+            { field: 'socio', header: 'SOCIO' },
+            { field: 'corresponde', header: 'CORRESPONDE' },
+            { field: 'retiros', header: 'RETIROS (SILO Y TRILLA)' },
+            { field: 'saldo', header: 'SALDO' },
+        ]
+
+        this.colsSociedad = [
+            { field: 'socio', header: 'SOCIO' },
+            { field: 'corresponde', header: 'CORRESPONDE' },
+            { field: 'retiros', header: 'RETIROS TRILLA' },
+            { field: 'saldo', header: 'CAMARA' },
+            { field: 'retiros', header: 'RETIROS BOLSONES' },
+        ]
+
+
 
         this.getAll('movimientos', () => {
             this.ok_movimientos = true
@@ -96,6 +130,7 @@ export class RetirosComponent {
             this.armarDatosMovimientos()
         })
         this.getAll('socios', () => {
+            this.db['socios'].forEach((e:any) => { this.colsRetirosPorSocio.push({field: e.id, header: e.alias}) }) 
             this.ok_socios = true
             this.armarDatosMovimientos()
         })
@@ -114,6 +149,10 @@ export class RetirosComponent {
             this.ok_movimiento_origen = true
             this.armarDatosMovimientos()
         })
+        this.getAllLocal('movimiento_contrato', () => {
+            this.ok_movimiento_contrato = true
+            this.armarDatosMovimientos()
+        })
         this.getAllLocal('produccion', () => {
             this.ok_establecimientoProduccion = true
             this.analizarEstablecimientos()
@@ -129,6 +168,14 @@ export class RetirosComponent {
         })
         this.getAllLocal('lotes', () => {
             this.ok_lotes = true
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('produccion', () => {
+            this.ok_produccion = true
+            this.armarDatosMovimientos()
+        })
+        this.getAllLocal('contratos', () => {
+            this.ok_contratosDB = true
             this.armarDatosMovimientos()
         })
     }
@@ -192,9 +239,6 @@ export class RetirosComponent {
         this.ok_descarga = 0
         this.ok_contratos = 0
 
-        var uno: any = 0
-        var otro: any = 0
-
         this.db_locales['movimientos'].forEach((mov: any) => {
             if (mov.ok_origen == 1) {
                 this.ok_origen++;
@@ -210,10 +254,8 @@ export class RetirosComponent {
             }
             if (mov.ok_contratos == 1) {
                 this.ok_contratos++;
-                mov.id_socio == "141ea05753ff" ? uno++ : otro++
             }
         });
-        console.log(uno, otro)
     }
     analizarCPE() {
         this.cpeTotales = this.db['carta_porte'].length
@@ -264,7 +306,7 @@ export class RetirosComponent {
     //DATOS MOVIMIENTOS
     armarDatosMovimientos() {
 
-        if (this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes) {
+        if (this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes && this.ok_produccion && this.ok_contratosDB && this.ok_movimiento_contrato) {
 
             this.datosProduccion = []
 
@@ -277,8 +319,8 @@ export class RetirosComponent {
             var totales_has = 0
 
             this.db['establecimientos'].forEach((est: any) => {
-
                 var dataPorEstablecimiento:any = {
+                    id_establecimiento: est.id,
                     establecimiento: est.alias,
                     kg_trilla : 0,
                     kg_silo : 0,
@@ -292,7 +334,6 @@ export class RetirosComponent {
 
                 //SILOS
                 const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return silo.id_establecimiento == est.id })
-
                 if(silosDelLote.length){
                     dataPorEstablecimiento.cantidad_silos = silosDelLote.length
                     const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_establecimiento == est.id })
@@ -316,6 +357,7 @@ export class RetirosComponent {
 
                 var cantidad_movimientos: any = 0
                 var cantidad_movimientos_con_kg: any = 0
+                var kg_trilla: any = 0
 
                 this.db['movimientos'].forEach((movimiento:any) => {
                     //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
@@ -340,23 +382,21 @@ export class RetirosComponent {
                         if(movimiento.kg_neto){
                             const corresponde = proporcion * movimiento.kg_neto
 
-                            dataPorEstablecimiento.kg_trilla += corresponde
+                            kg_trilla += corresponde
                         }
                         cantidad_movimientos_con_kg ++
                         cantidad_movimientos ++
-                    } else {
+                    } else if(movimiento.id_origen == est.id && movimiento.tipo_origen == 'T') {
                         if(movimiento.kg_neto){
                             //console.log(parseFloat(movimiento.kg_neto))
-                            //dataPorEstablecimiento.kg_trilla += parseFloat(movimiento.kg_neto)
+                            kg_trilla += parseInt(movimiento.kg_neto)
                             cantidad_movimientos ++
                         }
                     }
-                    console.log(cantidad_movimientos)
-                    console.log(cantidad_movimientos_con_kg)
                 })
 
                 //HAS / RINDE
-                const totalKilos = parseInt(dataPorEstablecimiento.kg_silo) + parseInt(dataPorEstablecimiento.kg_trilla)
+                const totalKilos = parseInt(dataPorEstablecimiento.kg_silo) + parseInt(kg_trilla)
                 const has = this.db_locales['lotes'].filter((e:any) => { return e.id_establecimiento == est.id }).reduce((acc:any, cur:any) => { return acc + parseInt(cur.has) },0)
                 const rinde = totalKilos / has
 
@@ -365,8 +405,9 @@ export class RetirosComponent {
                 dataPorEstablecimiento.cantidad_movimientos_con_kg = cantidad_movimientos_con_kg
                 dataPorEstablecimiento.has = has
                 dataPorEstablecimiento.rinde = has ? rinde.toFixed(2) : ''
+                dataPorEstablecimiento.kg_trilla = kg_trilla ? this.transformarDatoMostrarTabla(kg_trilla, 'numero') : ''
 
-                totales_kg_trilla += dataPorEstablecimiento.kg_trilla
+                totales_kg_trilla += kg_trilla
                 totales_kg_silo += dataPorEstablecimiento.kg_silo
                 totales_kg += totalKilos
                 totales_cant_mov += cantidad_movimientos
@@ -392,12 +433,135 @@ export class RetirosComponent {
                 rinde: this.transformarDatoMostrarTabla(totales_rinde, 'numero'),
             }
 
+
+
+
+
+
+
+
+
+            //CORRESPONDE POR SOCIOS
+            var establecimientosSociedad: any = []
+
+            var kg_totales:any = {
+                kg: 0,
+            }
+            this.db['socios'].forEach((e:any) => { kg_totales[e.id] = 0 }) 
+
+            this.datosProduccion.forEach((est:any) => {
+                if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
+                    var dato:any = {
+                        establecimiento: est.establecimiento,
+                        kg: this.transformarDatoMostrarTabla(est.kg, 'numero')
+                    }
+
+                    const retiros:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
+
+                    retiros.forEach((ret:any) => {
+                        if(retiros.length > 1){
+                            establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
+                        }
+
+                        const corresponde = est.kg * parseFloat(ret.porcentaje) / 100
+                        dato[ret.id_socio] = this.transformarDatoMostrarTabla(corresponde, 'numero')
+
+                        kg_totales[ret.id_socio] += corresponde
+                    })
+
+                    kg_totales.kg += est.kg
+                    this.datosCorresponde.push(dato)
+                }
+
+                this.datosTablaCorrespondeTotales = {
+                    kg: this.transformarDatoMostrarTabla(kg_totales.kg, 'numero')
+                }
+                this.db['socios'].forEach((e:any) => { 
+                    this.datosTablaCorrespondeTotales[e.id] = this.transformarDatoMostrarTabla(kg_totales[e.id], 'numero') 
+                    this.datosTablaCorrespondeTotales['kilos_' + e.id] = kg_totales[e.id]
+                }) 
+            })
+
+
+
+
+
+
+            //TOTALES KILOS RETIRADOS - (Por SOCIO)
+            var totalesRetiros: any = 0
+            var totalesSaldos: any = 0
+
+            this.db['socios'].forEach((socio:any) => {
+
+                var movimientosConContrato:any = []
+                this.db_locales['movimiento_contrato'].forEach((e:any) => { movimientosConContrato.includes(e.id_movimiento) ? null : movimientosConContrato.push(e.id_movimiento) })
+
+                const contratos = this.db_locales['contratos'].filter((e:any) => { return e.id_socio == socio.id })
+
+
+                var kg_retirosSocio: any = 0
+
+                this.db['movimientos'].forEach((movimiento:any) => {
+                    //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
+                    if(movimientosConContrato.includes(movimiento.id)){
+
+                        const contratosAfectados = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                        const sumatoriaKilosContratos = contratosAfectados.reduce((acc:any, curr:any) => {
+                            return acc + parseInt(curr.kilos)
+                        }, 0)
+
+                        const totalKilosSocio = contratosAfectados.reduce((acc:any, curr:any) => {
+                            var valor = 0
+
+                            const socioContrato = this.db_locales['contratos'].find((e:any) => { return e.id == curr.id_contrato }).id_socio
+
+                            if(socioContrato == socio.id){
+                                valor = parseInt(curr.kilos)
+                            }
+                            return acc + valor
+                        }, 0)
+
+                        const proporcion = totalKilosSocio / sumatoriaKilosContratos
+
+                        if(movimiento.kg_neto){
+                            const corresponde = proporcion * movimiento.kg_neto
+                            kg_retirosSocio += corresponde
+                        }
+
+                    } else if(movimiento.id_socio == socio.id) {
+                        if(movimiento.kg_neto){
+                            kg_retirosSocio += parseInt(movimiento.kg_neto)
+                        }
+                    }
+                })
+
+                //kg_totales
+                var dato:any = {
+                    socio: socio.razon_social,
+                    corresponde: this.datosTablaCorrespondeTotales[socio.id],
+                    retiros: this.transformarDatoMostrarTabla(kg_retirosSocio, 'numero'),
+                    saldo: this.transformarDatoMostrarTabla(this.datosTablaCorrespondeTotales['kilos_' + socio.id] - kg_retirosSocio, 'numero'),
+                }
+                totalesRetiros += kg_retirosSocio
+                totalesSaldos += (this.datosTablaCorrespondeTotales['kilos_' + socio.id] - kg_retirosSocio)
+
+                this.datosRetiros.push(dato)
+            })
+
+            this.datosTablaRetirosTotales = {
+                corresponde: this.datosTablaCorrespondeTotales.kg,
+                retiros: this.transformarDatoMostrarTabla(totalesRetiros, 'numero'),
+                saldo: this.transformarDatoMostrarTabla(totalesSaldos, 'numero'),
+            }
             this.armarDatosParaTabla()
         }
     }
 
     armarDatosParaTabla() {
         this.datosTablaProduccion = []
+        this.datosTablaCorresponde = []
+        this.datosTablaRetiros = []
 
         this.datosProduccion.forEach((mov:any) => {
             this.datosTablaProduccion.push({
@@ -412,6 +576,14 @@ export class RetirosComponent {
                 has: mov.has,
                 rinde: mov.rinde,
             })
+        })
+
+        this.datosCorresponde.forEach((mov:any) => {
+            this.datosTablaCorresponde.push(mov)
+        })
+
+        this.datosRetiros.forEach((mov:any) => {
+            this.datosTablaRetiros.push(mov)
         })
     }
 

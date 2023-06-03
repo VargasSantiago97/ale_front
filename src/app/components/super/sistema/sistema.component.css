@@ -1,9 +1,9 @@
 .tarjeta {
     border: 1px solid rgba(0, 0, 0, 0.226);
-    border-radius: 8px;
+    border-radius: 2px;
     padding: 10px;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    height: 150px;
+    box-shadow: 5px 5px 10px #002a613a;
+    height: 300px;
 
     border-left: 10px solid #3b82f6;
 }
@@ -13,4 +13,7 @@
     border-radius: 8px;
     padding: 10px;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.asd {
+    border: 1px solid rgba(255, 0, 0, 0.658);
 }
