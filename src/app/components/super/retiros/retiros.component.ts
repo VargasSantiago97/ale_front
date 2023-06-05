@@ -115,8 +115,14 @@ export class RetirosComponent {
             { field: 'socio', header: 'SOCIO' },
             { field: 'corresponde', header: 'CORRESPONDE' },
             { field: 'retiros', header: 'RETIROS TRILLA' },
-            { field: 'saldo', header: 'CAMARA' },
-            { field: 'retiros', header: 'RETIROS BOLSONES' },
+            { field: 'camara', header: 'CAMARA' },
+            { field: 'clientes', header: 'CLIENTES' },
+            { field: 'saldo', header: 'SALDO PROD.' },
+            { field: 'lotes_yc', header: 'LOTES YC' },
+            { field: 'lotes_pl', header: 'LOTES PL' },
+            { field: 'bolsones', header: 'CORRESPONDE BOLSONES' },
+            { field: 'retiros_bolsones', header: 'RETIROS BOLSONES' },
+            { field: 'saldo_final', header: 'SALDO FINAL' },
         ]
 
 
@@ -438,7 +444,6 @@ export class RetirosComponent {
 
 
         //CORRESPONDE POR SOCIOS
-        var establecimientosSociedad: any = []
         this.datosCorresponde = []
 
         var kg_totales:any = {
@@ -454,10 +459,6 @@ export class RetirosComponent {
                 }
 
                 const producenSocios:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
-
-                if(producenSocios.length > 1){
-                    establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
-                }
 
                 producenSocios.forEach((prodSocio:any) => {
 
@@ -559,6 +560,7 @@ export class RetirosComponent {
             saldo: this.transformarDatoMostrarTabla(totalesSaldos, 'numero'),
         }
         this.armarDatosParaTabla()
+        this.armarDatosEspecialesSociedad()
 
     }
 
@@ -590,6 +592,62 @@ export class RetirosComponent {
             this.datosTablaRetiros.push(mov)
         })
     }
+
+    armarDatosEspecialesSociedad(){
+        this.datosTablaSociedad = []
+
+        var dataNP = {
+            socio: 'NORTE-PLANJAR',
+            corresponde: 0,
+            retiros: 0,
+            camara: 0,
+            clientes: 0,
+            saldo: 0,
+            lotes_yc: 0,
+            lotes_pl: 0,
+            bolsones: 0,
+            retiros_bolsones: 0,
+            saldo_final: 0,
+        }
+        
+        var dataY = {
+            socio: 'YAGUA',
+            corresponde: 0,
+            retiros: 0,
+            camara: 0,
+            clientes: 0,
+            saldo: 0,
+            lotes_yc: 0,
+            lotes_pl: 0,
+            bolsones: 0,
+            retiros_bolsones: 0,
+            saldo_final: 0,
+        }
+
+        const ID_NORTE = '141ea05753ff'
+        const ID_YAGUA = 'bcb3d28daa6b'
+        const ID_PLANJAR = '9c89bfa40ad1'
+
+        //Armamos establecimientos que estan en sociedad
+        var establecimientosSociedad: any = []
+        this.datosProduccion.forEach((est:any) => {
+            if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
+                const producenSocios:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
+                if(producenSocios.some((e:any) => { return e.id_socio == ID_NORTE }) && producenSocios.some((e:any) => { return e.id_socio == ID_YAGUA })){
+                    establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
+                }
+            }
+        })
+        establecimientosSociedad.forEach((est:any) => {
+            
+        })
+
+
+
+        this.datosTablaSociedad.push(dataNP)
+        this.datosTablaSociedad.push(dataY)
+    }
+
 
 
     transformarDatoMostrarTabla(dato: any, tipo: any) {
