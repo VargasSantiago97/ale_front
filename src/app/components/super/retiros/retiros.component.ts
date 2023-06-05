@@ -10,6 +10,8 @@ import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 })
 export class RetirosComponent {
 
+    idGranosSeleccionado: any = ''
+
     db: any = {}
     db_locales: any = {}
 
@@ -119,64 +121,52 @@ export class RetirosComponent {
 
 
 
+        this.getAll('granos')
         this.getAll('movimientos', () => {
             this.ok_movimientos = true
             this.analizarMovimientosTotales()
-            this.armarDatosMovimientos()
         })
         this.getAll('carta_porte', () => {
             this.ok_cpe = true
             this.analizarCPE()
-            this.armarDatosMovimientos()
         })
         this.getAll('socios', () => {
             this.db['socios'].forEach((e:any) => { this.colsRetirosPorSocio.push({field: e.id, header: e.alias}) }) 
             this.ok_socios = true
-            this.armarDatosMovimientos()
         })
         this.getAll('establecimientos', () => {
             this.ok_establecimientos = true
             this.analizarEstablecimientos()
-            this.armarDatosMovimientos()
         })
 
         this.getAllLocal('movimientos', () => {
             this.ok_movimientos_local = true
             this.analizarMovimientosTotalesLocales()
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('movimiento_origen', () => {
             this.ok_movimiento_origen = true
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('movimiento_contrato', () => {
             this.ok_movimiento_contrato = true
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('produccion', () => {
             this.ok_establecimientoProduccion = true
             this.analizarEstablecimientos()
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('silos', () => {
             this.ok_silos = true
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('lote_a_silo', () => {
             this.ok_loteASilos = true
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('lotes', () => {
             this.ok_lotes = true
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('produccion', () => {
             this.ok_produccion = true
-            this.armarDatosMovimientos()
         })
         this.getAllLocal('contratos', () => {
             this.ok_contratosDB = true
-            this.armarDatosMovimientos()
         })
     }
 
@@ -306,256 +296,270 @@ export class RetirosComponent {
     //DATOS MOVIMIENTOS
     armarDatosMovimientos() {
 
-        if (this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes && this.ok_produccion && this.ok_contratosDB && this.ok_movimiento_contrato) {
+        this.datosProduccion = []
 
-            this.datosProduccion = []
+        var totales_kg_trilla = 0
+        var totales_kg_silo = 0
+        var totales_kg = 0
+        var totales_cant_mov = 0
+        var totales_cant_trilla = 0
+        var totales_cant_silo = 0
+        var totales_has = 0
 
-            var totales_kg_trilla = 0
-            var totales_kg_silo = 0
-            var totales_kg = 0
-            var totales_cant_mov = 0
-            var totales_cant_trilla = 0
-            var totales_cant_silo = 0
-            var totales_has = 0
+        this.db['establecimientos'].forEach((est: any) => {
+            var dataPorEstablecimiento:any = {
+                id_establecimiento: est.id,
+                establecimiento: est.alias,
+                kg_trilla : 0,
+                kg_silo : 0,
+                kg : 0,
+                cantidad_silos: null,
+                cantidad_movimientos: 0,
+                cantidad_movimientos_con_kg: 0,
+                has: 0,
+                rinde: 0,
+            }
 
-            this.db['establecimientos'].forEach((est: any) => {
-                var dataPorEstablecimiento:any = {
-                    id_establecimiento: est.id,
-                    establecimiento: est.alias,
-                    kg_trilla : 0,
-                    kg_silo : 0,
-                    kg : 0,
-                    cantidad_silos: null,
-                    cantidad_movimientos: 0,
-                    cantidad_movimientos_con_kg: 0,
-                    has: 0,
-                    rinde: 0,
-                }
+            //SILOS
+            const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return (silo.id_establecimiento == est.id) && (silo.id_grano == this.idGranosSeleccionado) })
+            if(silosDelLote.length){
+                dataPorEstablecimiento.cantidad_silos = silosDelLote.length
 
-                //SILOS
-                const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return silo.id_establecimiento == est.id })
-                if(silosDelLote.length){
-                    dataPorEstablecimiento.cantidad_silos = silosDelLote.length
-                    const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_establecimiento == est.id })
-                    var kgs_entrada = 0
+                var kgs_entrada = 0
+                silosDelLote.forEach((silo:any) => {
+                    const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_silo == silo.id })
+
                     kilosASilo.forEach((kgs:any) => {
                         kgs_entrada += parseInt(kgs.kilos)
                     })
-                    dataPorEstablecimiento.kg_silo = kgs_entrada
+                })
+
+                dataPorEstablecimiento.kg_silo = kgs_entrada
+            }
+
+
+            //LOTES
+            const movs_origen = this.db_locales['movimiento_origen'].filter((e:any) => { return (e.id_establecimiento == est.id) && (e.tipo_origen == 'lote') })
+
+            var movimientosConOrigen:any = []
+            movs_origen.forEach((movOrig:any) => {
+                if(!movimientosConOrigen.includes(movOrig.id_movimiento)){
+                    movimientosConOrigen.push(movOrig.id_movimiento)
                 }
+            });
 
+            var cantidad_movimientos: any = 0
+            var cantidad_movimientos_con_kg: any = 0
+            var kg_trilla: any = 0
 
-                //LOTES
-                const movs_origen = this.db_locales['movimiento_origen'].filter((e:any) => { return (e.id_establecimiento == est.id) && (e.tipo_origen == 'lote') })
+            var movimientosFiltradosGranos = this.db['movimientos'].filter((e:any) => { return e.id_grano == this.idGranosSeleccionado })
 
-                var movimientosConOrigen:any = []
-                movs_origen.forEach((movOrig:any) => {
-                    if(!movimientosConOrigen.includes(movOrig.id_movimiento)){
-                        movimientosConOrigen.push(movOrig.id_movimiento)
-                    }
-                });
+            movimientosFiltradosGranos.forEach((movimiento:any) => {
+                //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
+                if(movimientosConOrigen.includes(movimiento.id)){
+                    const origenesAfectados = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
 
-                var cantidad_movimientos: any = 0
-                var cantidad_movimientos_con_kg: any = 0
-                var kg_trilla: any = 0
+                    const totalKilosMovimiento = origenesAfectados.reduce((acc:any, curr:any) => {
+                        return acc + parseInt(curr.kilos)
+                    }, 0)
 
-                this.db['movimientos'].forEach((movimiento:any) => {
-                    //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
-                    if(movimientosConOrigen.includes(movimiento.id)){
-                        const origenesAfectados = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
-
-                        const totalKilosMovimiento = origenesAfectados.reduce((acc:any, curr:any) => {
-                            return acc + parseInt(curr.kilos)
-                        }, 0)
-
-                        const totalKilosEst = origenesAfectados.reduce((acc:any, curr:any) => {
-                            var valor = 0
-                            if((curr.id_establecimiento == est.id) && (curr.tipo_origen == 'lote')){
-                                valor = parseInt(curr.kilos)
-                            }
-                            return acc + valor
-                        }, 0)
-
-
-                        const proporcion = totalKilosEst/totalKilosMovimiento
-
-                        if(movimiento.kg_neto){
-                            const corresponde = proporcion * movimiento.kg_neto
-
-                            kg_trilla += corresponde
+                    const totalKilosEst = origenesAfectados.reduce((acc:any, curr:any) => {
+                        var valor = 0
+                        if((curr.id_establecimiento == est.id) && (curr.tipo_origen == 'lote')){
+                            valor = parseInt(curr.kilos)
                         }
-                        cantidad_movimientos_con_kg ++
+                        return acc + valor
+                    }, 0)
+
+
+                    const proporcion = totalKilosEst/totalKilosMovimiento
+
+                    if(movimiento.kg_neto){
+                        const corresponde = proporcion * movimiento.kg_neto
+
+                        kg_trilla += corresponde
+                    }
+                    cantidad_movimientos_con_kg ++
+                    cantidad_movimientos ++
+                } else if(movimiento.id_origen == est.id && movimiento.tipo_origen == 'T') {
+                    if(movimiento.kg_neto){
+                        //console.log(parseFloat(movimiento.kg_neto))
+                        kg_trilla += parseInt(movimiento.kg_neto)
                         cantidad_movimientos ++
-                    } else if(movimiento.id_origen == est.id && movimiento.tipo_origen == 'T') {
-                        if(movimiento.kg_neto){
-                            //console.log(parseFloat(movimiento.kg_neto))
-                            kg_trilla += parseInt(movimiento.kg_neto)
-                            cantidad_movimientos ++
-                        }
                     }
-                })
-
-                //HAS / RINDE
-                const totalKilos = parseInt(dataPorEstablecimiento.kg_silo) + parseInt(kg_trilla)
-                const has = this.db_locales['lotes'].filter((e:any) => { return e.id_establecimiento == est.id }).reduce((acc:any, cur:any) => { return acc + parseInt(cur.has) },0)
-                const rinde = totalKilos / has
-
-                dataPorEstablecimiento.kg = totalKilos
-                dataPorEstablecimiento.cantidad_movimientos = cantidad_movimientos
-                dataPorEstablecimiento.cantidad_movimientos_con_kg = cantidad_movimientos_con_kg
-                dataPorEstablecimiento.has = has
-                dataPorEstablecimiento.rinde = has ? rinde.toFixed(2) : ''
-                dataPorEstablecimiento.kg_trilla = kg_trilla ? this.transformarDatoMostrarTabla(kg_trilla, 'numero') : ''
-
-                totales_kg_trilla += kg_trilla
-                totales_kg_silo += dataPorEstablecimiento.kg_silo
-                totales_kg += totalKilos
-                totales_cant_mov += cantidad_movimientos
-                totales_cant_trilla += cantidad_movimientos_con_kg
-                totales_cant_silo += dataPorEstablecimiento.cantidad_silos
-                totales_has += has
-
-                this.datosProduccion.push(dataPorEstablecimiento)
+                }
             })
 
 
-            const totales_rinde = totales_has ? (totales_kg / totales_has).toFixed(2) : ''
+            //HAS / RINDE
+            const totalKilos = parseInt(dataPorEstablecimiento.kg_silo) + parseInt(kg_trilla)
+            const has = this.db_locales['lotes'].filter((e:any) => { return (e.id_establecimiento == est.id) && (e.id_grano == this.idGranosSeleccionado) }).reduce((acc:any, cur:any) => { return acc + parseInt(cur.has) },0)
+            const rinde = totalKilos / has
 
-            this.datosTablaProduccionTotales = {
-                establecimiento: '',
-                kg_trilla: this.transformarDatoMostrarTabla(totales_kg_trilla, 'numero'),
-                kg_silo: this.transformarDatoMostrarTabla(totales_kg_silo, 'numero'),
-                kg: this.transformarDatoMostrarTabla(totales_kg, 'numero'),
-                cant_mov: this.transformarDatoMostrarTabla(totales_cant_mov, 'numero'),
-                cant_trilla: this.transformarDatoMostrarTabla(totales_cant_trilla, 'numero'),
-                cant_silo: this.transformarDatoMostrarTabla(totales_cant_silo, 'numero'),
-                has: this.transformarDatoMostrarTabla(totales_has, 'numero'),
-                rinde: this.transformarDatoMostrarTabla(totales_rinde, 'numero'),
-            }
+            dataPorEstablecimiento.kg = totalKilos
+            dataPorEstablecimiento.cantidad_movimientos = cantidad_movimientos
+            dataPorEstablecimiento.cantidad_movimientos_con_kg = cantidad_movimientos_con_kg
+            dataPorEstablecimiento.has = has
+            dataPorEstablecimiento.rinde = has ? rinde.toFixed(2) : ''
+            dataPorEstablecimiento.kg_trilla = kg_trilla ? this.transformarDatoMostrarTabla(kg_trilla, 'numero') : ''
 
+            totales_kg_trilla += kg_trilla
+            totales_kg_silo += dataPorEstablecimiento.kg_silo
+            totales_kg += totalKilos
+            totales_cant_mov += cantidad_movimientos
+            totales_cant_trilla += cantidad_movimientos_con_kg
+            totales_cant_silo += dataPorEstablecimiento.cantidad_silos
+            totales_has += has
 
-
-
-
-
-
-
-
-            //CORRESPONDE POR SOCIOS
-            var establecimientosSociedad: any = []
-
-            var kg_totales:any = {
-                kg: 0,
-            }
-            this.db['socios'].forEach((e:any) => { kg_totales[e.id] = 0 }) 
-
-            this.datosProduccion.forEach((est:any) => {
-                if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
-                    var dato:any = {
-                        establecimiento: est.establecimiento,
-                        kg: this.transformarDatoMostrarTabla(est.kg, 'numero')
-                    }
-
-                    const retiros:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
-
-                    retiros.forEach((ret:any) => {
-                        if(retiros.length > 1){
-                            establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
-                        }
-
-                        const corresponde = est.kg * parseFloat(ret.porcentaje) / 100
-                        dato[ret.id_socio] = this.transformarDatoMostrarTabla(corresponde, 'numero')
-
-                        kg_totales[ret.id_socio] += corresponde
-                    })
-
-                    kg_totales.kg += est.kg
-                    this.datosCorresponde.push(dato)
-                }
-
-                this.datosTablaCorrespondeTotales = {
-                    kg: this.transformarDatoMostrarTabla(kg_totales.kg, 'numero')
-                }
-                this.db['socios'].forEach((e:any) => { 
-                    this.datosTablaCorrespondeTotales[e.id] = this.transformarDatoMostrarTabla(kg_totales[e.id], 'numero') 
-                    this.datosTablaCorrespondeTotales['kilos_' + e.id] = kg_totales[e.id]
-                }) 
-            })
+            this.datosProduccion.push(dataPorEstablecimiento)
+        })
 
 
+        const totales_rinde = totales_has ? (totales_kg / totales_has).toFixed(2) : ''
 
-
-
-
-            //TOTALES KILOS RETIRADOS - (Por SOCIO)
-            var totalesRetiros: any = 0
-            var totalesSaldos: any = 0
-
-            this.db['socios'].forEach((socio:any) => {
-
-                var movimientosConContrato:any = []
-                this.db_locales['movimiento_contrato'].forEach((e:any) => { movimientosConContrato.includes(e.id_movimiento) ? null : movimientosConContrato.push(e.id_movimiento) })
-
-                const contratos = this.db_locales['contratos'].filter((e:any) => { return e.id_socio == socio.id })
-
-
-                var kg_retirosSocio: any = 0
-
-                this.db['movimientos'].forEach((movimiento:any) => {
-                    //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
-                    if(movimientosConContrato.includes(movimiento.id)){
-
-                        const contratosAfectados = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
-
-                        const sumatoriaKilosContratos = contratosAfectados.reduce((acc:any, curr:any) => {
-                            return acc + parseInt(curr.kilos)
-                        }, 0)
-
-                        const totalKilosSocio = contratosAfectados.reduce((acc:any, curr:any) => {
-                            var valor = 0
-
-                            const socioContrato = this.db_locales['contratos'].find((e:any) => { return e.id == curr.id_contrato }).id_socio
-
-                            if(socioContrato == socio.id){
-                                valor = parseInt(curr.kilos)
-                            }
-                            return acc + valor
-                        }, 0)
-
-                        const proporcion = totalKilosSocio / sumatoriaKilosContratos
-
-                        if(movimiento.kg_neto){
-                            const corresponde = proporcion * movimiento.kg_neto
-                            kg_retirosSocio += corresponde
-                        }
-
-                    } else if(movimiento.id_socio == socio.id) {
-                        if(movimiento.kg_neto){
-                            kg_retirosSocio += parseInt(movimiento.kg_neto)
-                        }
-                    }
-                })
-
-                //kg_totales
-                var dato:any = {
-                    socio: socio.razon_social,
-                    corresponde: this.datosTablaCorrespondeTotales[socio.id],
-                    retiros: this.transformarDatoMostrarTabla(kg_retirosSocio, 'numero'),
-                    saldo: this.transformarDatoMostrarTabla(this.datosTablaCorrespondeTotales['kilos_' + socio.id] - kg_retirosSocio, 'numero'),
-                }
-                totalesRetiros += kg_retirosSocio
-                totalesSaldos += (this.datosTablaCorrespondeTotales['kilos_' + socio.id] - kg_retirosSocio)
-
-                this.datosRetiros.push(dato)
-            })
-
-            this.datosTablaRetirosTotales = {
-                corresponde: this.datosTablaCorrespondeTotales.kg,
-                retiros: this.transformarDatoMostrarTabla(totalesRetiros, 'numero'),
-                saldo: this.transformarDatoMostrarTabla(totalesSaldos, 'numero'),
-            }
-            this.armarDatosParaTabla()
+        this.datosTablaProduccionTotales = {
+            establecimiento: '',
+            kg_trilla: this.transformarDatoMostrarTabla(totales_kg_trilla, 'numero'),
+            kg_silo: this.transformarDatoMostrarTabla(totales_kg_silo, 'numero'),
+            kg: this.transformarDatoMostrarTabla(totales_kg, 'numero'),
+            cant_mov: this.transformarDatoMostrarTabla(totales_cant_mov, 'numero'),
+            cant_trilla: this.transformarDatoMostrarTabla(totales_cant_trilla, 'numero'),
+            cant_silo: this.transformarDatoMostrarTabla(totales_cant_silo, 'numero'),
+            has: this.transformarDatoMostrarTabla(totales_has, 'numero'),
+            rinde: this.transformarDatoMostrarTabla(totales_rinde, 'numero'),
         }
+
+
+
+
+
+
+
+
+
+        //CORRESPONDE POR SOCIOS
+        var establecimientosSociedad: any = []
+        this.datosCorresponde = []
+
+        var kg_totales:any = {
+            kg: 0,
+        }
+        this.db['socios'].forEach((e:any) => { kg_totales[e.id] = 0 }) 
+
+        this.datosProduccion.forEach((est:any) => {
+            if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
+                var dato:any = {
+                    establecimiento: est.establecimiento,
+                    kg: this.transformarDatoMostrarTabla(est.kg, 'numero')
+                }
+
+                const producenSocios:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
+
+                if(producenSocios.length > 1){
+                    establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
+                }
+
+                producenSocios.forEach((prodSocio:any) => {
+
+                    const corresponde = est.kg * parseFloat(prodSocio.porcentaje) / 100
+                    dato[prodSocio.id_socio] = this.transformarDatoMostrarTabla(corresponde, 'numero')
+
+                    kg_totales[prodSocio.id_socio] += corresponde
+                })
+
+                kg_totales.kg += est.kg
+                this.datosCorresponde.push(dato)
+            }
+
+            this.datosTablaCorrespondeTotales = {
+                kg: this.transformarDatoMostrarTabla(kg_totales.kg, 'numero')
+            }
+            this.db['socios'].forEach((e:any) => { 
+                this.datosTablaCorrespondeTotales[e.id] = this.transformarDatoMostrarTabla(kg_totales[e.id], 'numero') 
+                this.datosTablaCorrespondeTotales['kilos_' + e.id] = kg_totales[e.id]
+            }) 
+        })
+
+
+
+
+
+
+        //TOTALES KILOS RETIRADOS - (Por SOCIO)
+        var totalesRetiros: any = 0
+        var totalesSaldos: any = 0
+        this.datosRetiros = []
+
+        this.db['socios'].forEach((socio:any) => {
+
+            var movimientosConContrato:any = []
+            this.db_locales['movimiento_contrato'].forEach((e:any) => { movimientosConContrato.includes(e.id_movimiento) ? null : movimientosConContrato.push(e.id_movimiento) })
+
+            var kg_retirosSocio: any = 0
+
+            var movimientosFiltradosGranos = this.db['movimientos'].filter((e:any) => { return e.id_grano == this.idGranosSeleccionado })
+
+            movimientosFiltradosGranos.forEach((movimiento:any) => {
+                //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
+                if(movimientosConContrato.includes(movimiento.id)){
+
+                    const contratosAfectados = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                    const sumatoriaKilosContratos = contratosAfectados.reduce((acc:any, curr:any) => {
+                        return acc + parseInt(curr.kilos)
+                    }, 0)
+
+                    const totalKilosSocio = contratosAfectados.reduce((acc:any, curr:any) => {
+                        var valor = 0
+
+                        const contratoAfectado = this.db_locales['contratos'].find((e:any) => { return e.id == curr.id_contrato })
+
+                        if(contratoAfectado){
+                            if(contratoAfectado.id_socio){
+                                if(contratoAfectado.id_socio == socio.id){
+                                    valor = parseInt(curr.kilos)
+                                }
+                            }
+                        }
+                        
+                        return acc + valor
+
+                    }, 0)
+
+                    const proporcion = totalKilosSocio / sumatoriaKilosContratos
+
+                    if(movimiento.kg_neto){
+                        const corresponde = proporcion * movimiento.kg_neto
+                        kg_retirosSocio += corresponde
+                    }
+
+                } else if(movimiento.id_socio == socio.id) {
+                    if(movimiento.kg_neto){
+                        kg_retirosSocio += parseInt(movimiento.kg_neto)
+                    }
+                }
+            })
+
+            //kg_totales
+            var dato:any = {
+                socio: socio.razon_social,
+                corresponde: this.datosTablaCorrespondeTotales[socio.id],
+                retiros: this.transformarDatoMostrarTabla(kg_retirosSocio, 'numero'),
+                saldo: this.transformarDatoMostrarTabla(this.datosTablaCorrespondeTotales['kilos_' + socio.id] - kg_retirosSocio, 'numero'),
+            }
+            totalesRetiros += kg_retirosSocio
+            totalesSaldos += (this.datosTablaCorrespondeTotales['kilos_' + socio.id] - kg_retirosSocio)
+
+            this.datosRetiros.push(dato)
+        })
+
+        this.datosTablaRetirosTotales = {
+            corresponde: this.datosTablaCorrespondeTotales.kg,
+            retiros: this.transformarDatoMostrarTabla(totalesRetiros, 'numero'),
+            saldo: this.transformarDatoMostrarTabla(totalesSaldos, 'numero'),
+        }
+        this.armarDatosParaTabla()
+
     }
 
     armarDatosParaTabla() {

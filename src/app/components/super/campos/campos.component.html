@@ -91,6 +91,9 @@
                         <tr *ngFor="let dataLote of lotes" (dblclick)="abrirModalLote(dataLote)">
                             <td>
                                 {{dataLote.alias}}
+                                <p-tag *ngIf="dataLote.grano == 'MAIZ'" severity="warning" value="MAIZ"></p-tag>
+                                <p-tag *ngIf="dataLote.grano == 'SOJA'" severity="success" value="SOJA"></p-tag>
+                                <p-tag *ngIf="dataLote.grano != 'MAIZ' && dataLote.grano != 'SOJA'" severity="danger" value="{{dataLote.grano}}"></p-tag>
                             </td>
                             <td>
                                 {{dataLote.has}}
@@ -137,7 +140,10 @@
                     <tbody>
                         <tr *ngFor="let silo of silos" (dblclick)="abrirModalSilo(silo)">
                             <td>
-                                {{silo.alias}}
+                                {{silo.alias}} 
+                                <p-tag *ngIf="silo.grano == 'MAIZ'" severity="warning" value="MAIZ"></p-tag>
+                                <p-tag *ngIf="silo.grano == 'SOJA'" severity="success" value="SOJA"></p-tag>
+                                <p-tag *ngIf="silo.grano != 'MAIZ' && silo.grano != 'SOJA'" severity="danger" value="{{silo.grano}}"></p-tag>
                             </td>
                             <td>
                                 {{silo.kilos}}
@@ -227,6 +233,18 @@
 
     <div class="formgrid row">
         <div class="field col-3" style="text-align: right;">
+            CULTIVO
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="lote.id_grano">
+                <option *ngFor="let grano of db_granos" value="{{grano.id}}">{{grano.alias}}</option>
+            </select>
+        </div>
+    </div>
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
             ACTIVA
         </div>
         <div class="field col">
@@ -270,6 +288,19 @@
         </div>
     </div>
     <br>
+
+    <div class="formgrid row">
+        <div class="field col-3" style="text-align: right;">
+            CULTIVO
+        </div>
+        <div class="field col">
+            <select [(ngModel)]="silo.id_grano">
+                <option *ngFor="let grano of db_granos" value="{{grano.id}}">{{grano.alias}}</option>
+            </select>
+        </div>
+    </div>
+    <br>
+
     <div #TABLA_ORIGENES class="formgrid row">
         <table>
             <thead>

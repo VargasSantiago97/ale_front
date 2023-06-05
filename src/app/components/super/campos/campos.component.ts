@@ -13,6 +13,7 @@ export class CamposComponent {
     db_campos_nube:any = []
     db_campos: any = []
     db_socios: any = []
+    db_granos: any = []
 
     db_locales:any = {
         lotes: [],
@@ -49,6 +50,7 @@ export class CamposComponent {
     ngOnInit() {
         this.obtenerCamposDB()
         this.obtenerSociosDB()
+        this.obtenerGranosDB()
 
         this.getDB('lotes')
     }
@@ -59,6 +61,16 @@ export class CamposComponent {
             (res:any) => {
                 this.db_campos_nube = res
                 this.obtenerEstablecimientosDB()
+            },
+            (err:any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerGranosDB(){
+        this.comunicacionService.getDB('granos').subscribe(
+            (res:any) => {
+                this.db_granos = res
             },
             (err:any) => {
                 console.log(err)
@@ -127,6 +139,10 @@ export class CamposComponent {
                 if(e.activo == 'falso' || e.activo == 'false' || e.activo == '0' || e.activo == null ){
                     e.activo = false
                 }
+                e.grano = ''
+                if(this.db_granos.some((grano:any) => { return grano.id == e.id_grano })){
+                    e.grano = this.db_granos.find((grano:any) => { return grano.id == e.id_grano }).alias
+                }
                 this.totalHasLotes += parseInt(e.has)
             })
         })
@@ -144,7 +160,7 @@ export class CamposComponent {
                     if(e.activo == 'falso' || e.activo == 'false' || e.activo == '0' || e.activo == null ){
                         e.activo = false
                     }
-                    
+
                     var kilos:any = 0
 
                     const lote_a_silo = this.db_locales['lote_a_silo'].filter((lotSil:any) => { return lotSil.id_silo == e.id })
@@ -158,6 +174,11 @@ export class CamposComponent {
                     e.kilos = parseInt(kilos)
 
                     this.totalKilosSilos += parseInt(e.kilos)
+
+                    e.grano = ''
+                    if(this.db_granos.some((grano:any) => { return grano.id == e.id_grano })){
+                        e.grano = this.db_granos.find((grano:any) => { return grano.id == e.id_grano }).alias
+                    }
                 })
             })
         })
@@ -187,6 +208,7 @@ export class CamposComponent {
             this.lote = {
                 id: false, 
                 id_establecimiento: this.campo_select.id,
+                id_grano: null,
                 alias: '',
                 has: 0,
                 activo: 1,
@@ -237,6 +259,7 @@ export class CamposComponent {
             this.silo = {
                 id: false, 
                 id_establecimiento: this.campo_select.id,
+                id_grano: null,
                 alias: '',
                 kilos: 0,
                 activo: 1,

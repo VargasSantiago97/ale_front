@@ -75,7 +75,7 @@
                         <p>RE</p>
                         {{cpeRechhazadas}}
                     </div>
-                </div>            
+                </div>
             </div>
         </div>
         <div class="field col">
@@ -90,12 +90,24 @@
                         <p>Con Socios</p>
                         {{establecimientosSocio}}
                     </div>
-                </div>            
+                </div>
             </div>
         </div>
     </div>
+    
+    <br>
+    
+    <div class="formgrid row">
+        <div class="field col">
+            <select
+                *ngIf="this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes && this.ok_produccion && this.ok_contratosDB && this.ok_movimiento_contrato"
+                [(ngModel)]="idGranosSeleccionado" (ngModelChange)="armarDatosMovimientos()">
+                <option *ngFor="let dato of db.granos" value="{{dato.id}}">{{dato.alias}}</option>
+            </select>
+        </div>
+    </div>
 
-    <br><br><br>
+    <br><br>
 
     <div class="formgrid row">
         <div #CAMPOS class="field col">
@@ -145,8 +157,10 @@
                     <tbody>
                         <tr *ngFor="let dato of datosTablaCorresponde">
                             <td style="padding: 2px;" *ngFor="let col of colsRetirosPorSocio">
-                                <label *ngIf="col.field == 'establecimiento' || col.field == 'kg'"><strong>{{dato[col.field]}}</strong></label>
-                                <label *ngIf="col.field != 'establecimiento' && col.field != 'kg'">{{dato[col.field]}}</label>
+                                <label
+                                    *ngIf="col.field == 'establecimiento' || col.field == 'kg'"><strong>{{dato[col.field]}}</strong></label>
+                                <label
+                                    *ngIf="col.field != 'establecimiento' && col.field != 'kg'">{{dato[col.field]}}</label>
                             </td>
                         </tr>
                     </tbody>
@@ -163,7 +177,7 @@
     </div>
 
     <br><br><br>
-    
+
     <div class="formgrid row">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
@@ -197,7 +211,7 @@
     </div>
 
     <br><br><br>
-    
+
     <div class="formgrid row">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
