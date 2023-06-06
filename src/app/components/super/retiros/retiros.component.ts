@@ -596,7 +596,7 @@ export class RetirosComponent {
     armarDatosEspecialesSociedad(){
         this.datosTablaSociedad = []
 
-        var dataNP = {
+        var dataNP: any = {
             socio: 'NORTE-PLANJAR',
             corresponde: 0,
             retiros: 0,
@@ -609,8 +609,8 @@ export class RetirosComponent {
             retiros_bolsones: 0,
             saldo_final: 0,
         }
-        
-        var dataY = {
+
+        var dataY: any = {
             socio: 'YAGUA',
             corresponde: 0,
             retiros: 0,
@@ -628,6 +628,9 @@ export class RetirosComponent {
         const ID_YAGUA = 'bcb3d28daa6b'
         const ID_PLANJAR = '9c89bfa40ad1'
 
+        const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
+        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb']
+
         //Armamos establecimientos que estan en sociedad
         var establecimientosSociedad: any = []
         this.datosProduccion.forEach((est:any) => {
@@ -638,14 +641,74 @@ export class RetirosComponent {
                 }
             }
         })
-        establecimientosSociedad.forEach((est:any) => {
-            
-        })
 
+        var kg_trilla: any = 0
+        establecimientosSociedad.forEach((est:any) => {
+            //LOTES
+            const movs_origen = this.db_locales['movimiento_origen'].filter((e:any) => { return (e.id_establecimiento == est) && (e.tipo_origen == 'lote') })
+
+            var movimientosConOrigen:any = []
+            movs_origen.forEach((movOrig:any) => {
+                if(!movimientosConOrigen.includes(movOrig.id_movimiento)){
+                    movimientosConOrigen.push(movOrig.id_movimiento)
+                }
+            });
+
+            var movimientosFiltradosGranos = this.db['movimientos'].filter((e:any) => { return e.id_grano == this.idGranosSeleccionado })
+
+            movimientosFiltradosGranos.forEach((movimiento:any) => {
+                //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
+                if(movimientosConOrigen.includes(movimiento.id)){
+                    const origenesAfectados = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                    const totalKilosMovimiento = origenesAfectados.reduce((acc:any, curr:any) => {
+                        return acc + parseInt(curr.kilos)
+                    }, 0)
+
+                    const totalKilosEst = origenesAfectados.reduce((acc:any, curr:any) => {
+                        var valor = 0
+                        if((curr.id_establecimiento == est) && (curr.tipo_origen == 'lote')){
+                            valor = parseInt(curr.kilos)
+                        }
+                        return acc + valor
+                    }, 0)
+
+
+                    const proporcion = totalKilosEst/totalKilosMovimiento
+
+                    if(movimiento.kg_neto){
+                        const corresponde = proporcion * movimiento.kg_neto
+
+                        kg_trilla += corresponde
+                    }
+                } else if(movimiento.id_origen == est && movimiento.tipo_origen == 'T') {
+                    if(movimiento.kg_neto){
+                        //console.log(parseFloat(movimiento.kg_neto))
+                        kg_trilla += parseInt(movimiento.kg_neto)
+                    }
+                }
+            })
+        })
+        dataNP.corresponde = this.transformarDatoMostrarTabla((kg_trilla/2).toFixed(), 'numeroEntero')
+        dataY.corresponde = this.transformarDatoMostrarTabla((kg_trilla/2).toFixed(), 'numeroEntero')
 
 
         this.datosTablaSociedad.push(dataNP)
         this.datosTablaSociedad.push(dataY)
+
+        this.datosTablaSociedadTotales = {
+            socio: 'TOTAL',
+            corresponde: this.transformarDatoMostrarTabla(kg_trilla.toFixed(0), 'numeroEntero'),
+            retiros: 0,
+            camara: 0,
+            clientes: 0,
+            saldo: 0,
+            lotes_yc: 0,
+            lotes_pl: 0,
+            bolsones: 0,
+            retiros_bolsones: 0,
+            saldo_final: 0, 
+        }
     }
 
 
@@ -671,6 +734,10 @@ export class RetirosComponent {
             let dev = dato
             return dev.toLocaleString('es-AR');
         }
+        if (tipo=='numeroEntero'){
+            return dato.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        }
+
 
 
         return dato
