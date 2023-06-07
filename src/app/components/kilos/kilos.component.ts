@@ -147,7 +147,7 @@ export class KilosComponent {
     faltan_kg_tara = true
     faltan_kg_neto = true
     faltan_kg_neto_final = true
-    faltan_kg_campo = true
+    faltan_kg_campo = false
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -278,11 +278,7 @@ export class KilosComponent {
             activo: 1,
             estado: 1
         }
-        if (localStorage.getItem('plantilla')) {
-            this.datosMovimiento = this.base64toObjUtf8(localStorage.getItem('plantilla'))
-            this.datosMovimiento.id = null
-            this.existePlantilla = true;
-        }
+
         this.datosMovimiento.fecha = fechaHoy
         if (typeof this.datosMovimiento.id_bandera == 'string'){
             this.datosMovimiento.id_bandera = JSON.parse(this.datosMovimiento.id_bandera)
@@ -576,12 +572,12 @@ export class KilosComponent {
             id_acopio: mov.id_acopio ? this.transformDatoTabla(mov.id_acopio, "intervinientes") : "-",
             id_deposito: mov.id_deposito ? mov.id_deposito : null,
 
-            kg_tara: mov.kg_tara ? mov.kg_tara : null,
-            kg_bruto: mov.kg_bruto ? mov.kg_bruto : null,
-            kg_neto: mov.kg_neto ? mov.kg_neto : null,
-            kg_regulacion: mov.kg_regulacion ? mov.kg_regulacion : null,
-            kg_neto_final: mov.kg_neto_final ? mov.kg_neto_final : null,
-            kg_campo: mov.kg_campo ? mov.kg_campo : null,
+            kg_tara: mov.kg_tara ? parseInt(mov.kg_tara) : null,
+            kg_bruto: mov.kg_bruto ? parseInt(mov.kg_bruto) : null,
+            kg_neto: mov.kg_neto ? parseInt(mov.kg_neto) : null,
+            kg_regulacion: mov.kg_regulacion ? parseInt(mov.kg_regulacion) : null,
+            kg_neto_final: mov.kg_neto_final ? parseInt(mov.kg_neto_final) : null,
+            kg_campo: mov.kg_campo ? parseInt(mov.kg_campo) : null,
 
             observaciones: mov.observaciones ? mov.observaciones : "",
 
@@ -693,25 +689,58 @@ export class KilosComponent {
 
     calcularKilos(field:any, idd:any){
         setTimeout(() => {
-
             var movimiento = this.dataParaMostrarTabla.find((e:any) => { return e.id == idd })
 
-            console.log(movimiento)
-            var kg_bruto = 0
-            var kg_tara = 0
-            var kg_neto = 0
-            var kg_neto_final = 0
-            var kg_campo = 0
-            var kg_regulacion = 0
+            var kg_bruto:any = movimiento.kg_bruto ? parseInt(movimiento.kg_bruto) : 0
+            var kg_tara:any = movimiento.kg_tara ? parseInt(movimiento.kg_tara) : 0
+            var kg_neto:any = movimiento.kg_neto ? parseInt(movimiento.kg_neto) : 0
+            var kg_regulacion:any = movimiento.kg_regulacion ? parseInt(movimiento.kg_regulacion) : 0
 
+            if(field=='kg_bruto'){
+                if(kg_tara){
+                    movimiento.kg_neto = kg_bruto - kg_tara
+                } else if (kg_neto) {
+                    movimiento.kg_tara = kg_bruto - kg_neto
+                }   
+            }
+            if(field=='kg_tara'){
+                if(kg_bruto){
+                    movimiento.kg_neto = kg_bruto - kg_tara
+                } else {
+                    movimiento.kg_neto = null
+                }
+            }
+            if(field=='kg_neto'){
+                if(kg_tara){
+                    movimiento.kg_bruto = kg_tara + kg_neto
+                }
+            }
+            
+            if(movimiento.kg_neto){
+                movimiento.kg_neto_final = movimiento.kg_neto + kg_regulacion
+            } else {
+                movimiento.kg_neto_final = null
+            }
 
-
-        }, 50)
+        }, 5)
     }
 
-    guardarMovimiento(registro:any){
+    guardarMovimiento(idd:any){
         if(confirm('Desea guardar cambios?')){
-            console.log(registro)
+            this.datosMovimiento = this.db_movimientos.find((e:any) => { return e.id == idd })
+            var movimiento = this.dataParaMostrarTabla.find((e:any) => { return e.id == idd })
+
+            this.datosMovimiento.kg_bruto = movimiento.kg_bruto
+            this.datosMovimiento.kg_tara = movimiento.kg_tara
+            this.datosMovimiento.kg_neto = movimiento.kg_neto
+            this.datosMovimiento.kg_neto_final = movimiento.kg_neto_final
+            this.datosMovimiento.kg_campo = movimiento.kg_campo
+            this.datosMovimiento.observaciones = movimiento.observaciones
+            this.datosMovimiento.kg_regulacion = movimiento.kg_regulacion
+            this.datosMovimiento.id_deposito = movimiento.id_deposito
+            this.datosMovimiento.id_origen = movimiento.id_origen
+
+            this.editarMovimiento()
         }
     }
 
@@ -720,20 +749,9 @@ export class KilosComponent {
 
 
     editarMovimiento() {
-
-        var fecha = new Date(this.datosMovimiento.fecha);
-        this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
-
-        if (this.datosMovimiento.id_bandera) {
-            if (typeof this.datosMovimiento.id_bandera != 'string') {
-                this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
-            }
-        }
-
         this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
-                this.displayNuevoMovimiento = false
                 this.obtenerMovimientos()
             },
             (err: any) => {
@@ -742,193 +760,5 @@ export class KilosComponent {
             }
         )
     }
-    borrarMovimiento() {
-        if (confirm('Desea eliminar Movimiento?')) {
-            this.datosMovimiento.estado = 0
-
-            if (this.datosMovimiento.id_bandera) {
-                if (typeof this.datosMovimiento.id_bandera != 'string') {
-                    this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
-                }
-            }
-
-            this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
-                (res: any) => {
-                    res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
-                    this.displayNuevoMovimiento = false
-                    this.obtenerMovimientos()
-                },
-                (err: any) => {
-                    console.log(err)
-                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
-                }
-            )
-        }
-    }
-
-    transformarDatoMostrar(dato: any, tipo: any) {
-        if (tipo == 'condicion_iva') {
-            return this.db_condicion_iva.some((e: any) => { return e.codigo == dato }) ? this.db_condicion_iva.find((e: any) => { return e.codigo == dato }).descripcion : '-'
-        }
-
-        if (tipo == 'id_origen') {
-            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
-        }
-
-        if (tipo == 'kilos') {
-            if (dato) {
-                var numero = parseInt(dato)
-                return numero.toLocaleString("es-ES") ? numero.toLocaleString("es-ES") : null;
-            }
-        }
-
-
-        if (tipo == 'socio') {
-            return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).razon_social : '-'
-        }
-
-        if (tipo == 'transporte') {
-            return this.db_transportistas.some((e: any) => { return e.id == dato }) ? this.db_transportistas.find((e: any) => { return e.id == dato }).razon_social : '-'
-        }
-
-        if (tipo == 'chofer') {
-            return this.db_choferes.some((e: any) => { return e.id == dato }) ? this.db_choferes.find((e: any) => { return e.id == dato }).razon_social : '-'
-        }
-
-        if (tipo == 'patentes') {
-            if (this.db_camiones.some((e: any) => { return e.id == dato })) {
-                var camion = this.db_camiones.find((e: any) => { return e.id == dato })
-                var patentes = ""
-                camion.patente_chasis ? patentes += camion.patente_chasis : null
-                camion.patente_acoplado ? patentes += " / " + camion.patente_acoplado : null
-                camion.patente_otro ? patentes += " / " + camion.patente_otro : null
-
-                return patentes
-            }
-        }
-
-        if (tipo == 'establecimiento') {
-            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).descripcion : '-'
-        }
-
-        if (tipo == 'grano') {
-            return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).descripcion : '-'
-        }
-
-        if (tipo == 'tipo_origen') {
-            return this.optionsDe.some((e: any) => { return e.id == dato }) ? this.optionsDe.find((e: any) => { return e.id == dato }).label : '-'
-        }
-
-        if (tipo == 'provinciaCPE') {
-            return CPE_PROVINCIAS.some((e: any) => { return e.codigo == dato }) ? CPE_PROVINCIAS.find((e: any) => { return e.codigo == dato }).descripcion : dato
-        }
-
-        return dato
-    }
-    transformarDatoMostrarTabla(registro: any, tipo: any) {
-        if (tipo == 'fecha') {
-            var fecha = new Date(registro.fecha)
-            const datePipe = new DatePipe('en-US');
-            return datePipe.transform(fecha, 'yyyy-MM-dd');
-        }
-        if (tipo == 'cultivo') {
-            return this.db_granos.some((e: any) => { return e.id == registro.id_grano }) ? this.db_granos.find((e: any) => { return e.id == registro.id_grano }).alias : '-'
-        }
-        if (tipo == 'benef_orden') {
-            return this.db_socios.some((e: any) => { return e.id == registro.id_socio }) ? this.db_socios.find((e: any) => { return e.id == registro.id_socio }).alias : '-'
-        }
-        if (tipo == 'orden') {
-            return ""
-        }
-        if (tipo == 'ordenNumero') {
-            if (this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == registro.id })) {
-                return this.db_ordenes_carga.find((e: any) => { return e.id_movimiento == registro.id }).numero
-            } else {
-                return ""
-            }
-        }
-        if (tipo == 'existeOrdenCarga') {
-            return this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == registro })
-        }
-        if (tipo == 'cpe') {
-            return '~cpe~'
-        }
-        if (tipo == 'benef') {
-            return '~benef~'
-        }
-        if (tipo == 'ctg') {
-            return '~ctg~'
-        }
-        if (tipo == 'campo') {
-            return this.db_establecimientos.some((e: any) => { return e.id == registro.id_origen }) ? this.db_establecimientos.find((e: any) => { return e.id == registro.id_origen }).alias : '-'
-        }
-        if (tipo == 'tipo_orig') {
-            return this.optionsDe.some((e: any) => { return e.id == registro.tipo_origen }) ? this.optionsDe.find((e: any) => { return e.id == registro.tipo_origen }).label : '-'
-        }
-        if (tipo == 'pat') {
-            return this.db_camiones.some((e: any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e: any) => { return e.id == registro.id_camion }).patente_chasis : '-'
-        }
-        if (tipo == 'patAc') {
-            return this.db_camiones.some((e: any) => { return e.id == registro.id_camion }) ? this.db_camiones.find((e: any) => { return e.id == registro.id_camion }).patente_acoplado : '-'
-        }
-        if (tipo == 'transporte') {
-            return this.db_transportistas.some((e: any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == registro.id_transporte }).alias : '-'
-        }
-        if (tipo == 'cuit_transp') {
-            return this.db_transportistas.some((e: any) => { return e.id == registro.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == registro.id_transporte }).cuit : '-'
-        }
-        if (tipo == 'gastos') {
-            return '~gastos~'
-        }
-        if (tipo == 'id_corredor') {
-            return this.db_corredores.some((e: any) => { return e.id == registro.id_corredor }) ? this.db_corredores.find((e: any) => { return e.id == registro.id_corredor }).alias : '-'
-        }
-        if (tipo == 'id_acopio') {
-            return this.db_acopios.some((e: any) => { return e.id == registro.id_acopio }) ? this.db_acopios.find((e: any) => { return e.id == registro.id_acopio }).alias : '-'
-        }
-        if (tipo == 'kg_tara') {
-            return registro.kg_tara ? registro.kg_tara.toLocaleString("es-AR") : '-'
-        }
-        if (tipo == 'kg_bruto') {
-            return registro.kg_bruto ? registro.kg_bruto.toLocaleString("es-AR") : '-'
-        }
-        if (tipo == 'kg_neto') {
-            return registro.kg_neto ? registro.kg_neto.toLocaleString("es-AR") : '-'
-        }
-        if (tipo == 'kg_regulacion') {
-            return registro.kg_regulacion ? registro.kg_regulacion.toLocaleString("es-AR") : '-'
-        }
-        if (tipo == 'kg_neto_final') {
-            return registro.kg_neto_final ? registro.kg_neto_final.toLocaleString("es-AR") : '-'
-        }
-        if (tipo == 'factura') {
-            return '~fac~'
-        }
-        if (tipo == 'pagado') {
-            return '~pag~'
-        }
-        if (tipo == 'observaciones') {
-            return registro.observaciones ? registro.observaciones : '-'
-        }
-
-
-
-        return registro.id
-    }
-
-
-    objUtf8ToBase64(ent: any) {
-        let str = JSON.stringify(ent)
-        let bytes = new TextEncoder().encode(str);
-        let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
-        return base64;
-    }
-    base64toObjUtf8(ent: any) {
-        let json = atob(ent);
-        let utf8String = decodeURIComponent(escape(json));
-        let obj = JSON.parse(utf8String)
-        return obj;
-    }
-
 
 }

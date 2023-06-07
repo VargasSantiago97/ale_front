@@ -52,16 +52,16 @@
                     {{registro[col.field]}}
                 </div>
                 <div *ngIf="(col.field == 'kg_bruto') || (col.field == 'kg_tara') || (col.field == 'kg_neto') || (col.field == 'kg_neto_final') || (col.field == 'kg_campo') || (col.field == 'kg_regulacion')">
-                    <input class="input-text-codigo" type="number" [(ngModel)]="registro[col.field]" (ngModelChange)="calcularKilos(col.field, registro.id)">
+                    <input class="input-text-codigo" type="number" step="10" [(ngModel)]="registro[col.field]" (ngModelChange)="calcularKilos(col.field, registro.id)">
                 </div>
 
                 <div *ngIf="(col.field == 'id_deposito')">
-                    <select class="input-text-codigo" [(ngModel)]="registro[col.field]">
+                    <select class="input-text-codigo" style="width: 110px;" [(ngModel)]="registro[col.field]">
                         <option *ngFor="let deposito of db_depositos" value="{{deposito.id}}">{{deposito.alias}}</option>
                     </select>
                 </div>
                 <div *ngIf="(col.field == 'id_origen')">
-                    <select class="input-text-codigo" [(ngModel)]="registro[col.field]">
+                    <select class="input-text-codigo" style="width: 160px;" [(ngModel)]="registro[col.field]">
                         <option *ngFor="let establecimiento of db_establecimientos" value="{{establecimiento.id}}">{{establecimiento.alias}}</option>
                     </select>
                 </div>
@@ -74,7 +74,7 @@
 
             </td>
             <td [style]="{padding: '0px', width: '65px'}">
-                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott" style="margin: 1px; padding: 0px; width: 30px;" (click)="guardarMovimiento(registro)"></button>
+                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott" style="margin: 1px; padding: 0px; width: 30px;" (click)="guardarMovimiento(registro.id)"></button>
             </td>
         </tr>
     </ng-template>
