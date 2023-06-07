@@ -91,6 +91,7 @@ import { RetirosComponent } from './components/super/retiros/retiros.component';
 import { ModificarComponent } from './components/super/modificar/modificar.component';
 import { SistemaComponent } from './components/super/sistema/sistema.component';
 import { CpeComponent } from './components/cpe/cpe.component';
+import { KilosComponent } from './components/kilos/kilos.component';
 
 
 @NgModule({
@@ -129,7 +130,8 @@ import { CpeComponent } from './components/cpe/cpe.component';
     RetirosComponent,
     ModificarComponent,
     SistemaComponent,
-    CpeComponent
+    CpeComponent,
+    KilosComponent
   ],
   imports: [
     BrowserModule,
