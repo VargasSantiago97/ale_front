@@ -1,0 +1,81 @@
+<p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="multiple"
+    [metaKeySelection]="true" [tableStyle]="{'min-width': '50rem'}"
+    styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm" [paginator]="true" [rows]="25"
+    [showCurrentPageReport]="true" [(selection)]="selectedTablaInicio" dataKey="ctg"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
+    <ng-template pTemplate="caption">
+        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+            selectedItemsLabel="{0} columnas seleccionadas" [style]="{'min-width': '300px'}"
+            placeholder="Seleccionar columnas"></p-multiSelect>
+
+        <label style="margin-left: 40px;">Buscar: </label>
+
+        <input type="text" class="input-text-codigo {{filtroRapido.orden ? 'fondoVerde' : ''}}"
+            style="width: 100px; margin-left: 10px;" placeholder="ORDEN" [(ngModel)]="filtroRapido.orden"
+            (ngModelChange)="datosParaTabla()">
+        <input type="text" class="input-text-codigo {{filtroRapido.cpe ? 'fondoVerde' : ''}}"
+            style="width: 100px; margin-left: 10px;" placeholder="CPE" [(ngModel)]="filtroRapido.cpe"
+            (ngModelChange)="datosParaTabla()">
+        <input type="text" class="input-text-codigo {{filtroRapido.ctg ? 'fondoVerde' : ''}}"
+            style="width: 150px; margin-left: 10px;" placeholder="CTG" [(ngModel)]="filtroRapido.ctg"
+            (ngModelChange)="datosParaTabla()">
+        <input type="text" class="input-text-codigo {{filtroRapido.patente ? 'fondoVerde' : ''}}"
+            style="width: 100px; margin-left: 10px;" placeholder="PAT" [(ngModel)]="filtroRapido.patente"
+            (ngModelChange)="datosParaTabla()">
+
+        <button pButton pRipple type="button" label="KG BRUTO" class="p-button-{{ faltan_kg_bruto ? 'success' : 'danger'}} bott" style="margin: 6px; margin-left: 40px;" (click)="faltan_kg_bruto = !faltan_kg_bruto"></button>
+        <button pButton pRipple type="button" label="KG TARA" class="p-button-{{ faltan_kg_tara ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_tara = !faltan_kg_tara"></button>
+        <button pButton pRipple type="button" label="KG NETO" class="p-button-{{ faltan_kg_neto ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_neto = !faltan_kg_neto"></button>
+        <button pButton pRipple type="button" label="KG NETO FINAL" class="p-button-{{ faltan_kg_neto_final ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_neto_final = !faltan_kg_neto_final"></button>
+        <button pButton pRipple type="button" label="KG CAMPO" class="p-button-{{ faltan_kg_campo ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_campo = !faltan_kg_campo"></button>
+
+        
+        <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott" style="margin: 6px; margin-left: 40px;" (click)="datosParaTabla()"></button>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th [style]="{padding: '2px', minWidth: tamanoCols[col.field]}" *ngFor="let col of columns"
+                pSortableColumn="{{col.field}}">
+                {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
+            </th>
+            <th>
+                
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-registro let-columns="columns" let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="registro" [pSelectableRowIndex]="rowIndex">
+            <td *ngFor="let col of columns" [style]="{padding: '0px', height: '50px'}" title="{{col.header}}">
+
+                <div *ngIf="(col.field != 'kg_bruto') && (col.field != 'kg_tara') && (col.field != 'kg_neto') && (col.field != 'kg_neto_final') && (col.field != 'kg_campo') && (col.field != 'observaciones') && (col.field != 'kg_regulacion') && (col.field != 'id_deposito') && (col.field != 'id_origen')">
+                    {{registro[col.field]}}
+                </div>
+                <div *ngIf="(col.field == 'kg_bruto') || (col.field == 'kg_tara') || (col.field == 'kg_neto') || (col.field == 'kg_neto_final') || (col.field == 'kg_campo') || (col.field == 'kg_regulacion')">
+                    <input class="input-text-codigo" type="number" step="10" [(ngModel)]="registro[col.field]" (ngModelChange)="calcularKilos(col.field, registro.id)">
+                </div>
+
+                <div *ngIf="(col.field == 'id_deposito')">
+                    <select class="input-text-codigo" style="width: 110px;" [(ngModel)]="registro[col.field]">
+                        <option *ngFor="let deposito of db_depositos" value="{{deposito.id}}">{{deposito.alias}}</option>
+                    </select>
+                </div>
+                <div *ngIf="(col.field == 'id_origen')">
+                    <select class="input-text-codigo" style="width: 160px;" [(ngModel)]="registro[col.field]">
+                        <option *ngFor="let establecimiento of db_establecimientos" value="{{establecimiento.id}}">{{establecimiento.alias}}</option>
+                    </select>
+                </div>
+
+
+
+                <div *ngIf="col.field == 'observaciones'">
+                    <input class="input-text-codigo" type="text" style="width: 300px;" [(ngModel)]="registro[col.field]">
+                </div>
+
+            </td>
+            <td [style]="{padding: '0px', width: '65px'}">
+                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott" style="margin: 1px; padding: 0px; width: 30px;" (click)="guardarMovimiento(registro.id)"></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

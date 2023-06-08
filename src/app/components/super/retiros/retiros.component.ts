@@ -693,6 +693,137 @@ export class RetirosComponent {
         dataY.corresponde = this.transformarDatoMostrarTabla((kg_trilla/2).toFixed(), 'numeroEntero')
 
 
+
+        ///  RETIROS DE TRILLA - CAMARA - CLIENTES ///
+        var movimientosConContrato:any = []
+        this.db_locales['movimiento_contrato'].forEach((e:any) => { movimientosConContrato.includes(e.id_movimiento) ? null : movimientosConContrato.push(e.id_movimiento) })
+
+        var kg_retirosNorte: any = 0
+        var kg_retirosNorteCamara: any = 0
+        var kg_retirosNorteClientes: any = 0
+
+        var kg_retirosYagua: any = 0
+        var kg_retirosYaguaCamara: any = 0
+        var kg_retirosYaguaClientes: any = 0
+
+        var movimientosFiltradosGranos = this.db['movimientos'].filter((e:any) => { return e.id_grano == this.idGranosSeleccionado })
+
+        movimientosFiltradosGranos.forEach((movimiento:any) => {
+            //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
+            if(movimientosConContrato.includes(movimiento.id)){
+
+                const contratosAfectados = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                const sumatoriaKilosContratos = contratosAfectados.reduce((acc:any, curr:any) => {
+                    return acc + parseInt(curr.kilos)
+                }, 0)
+
+                contratosAfectados.forEach((mov_cto:any) => {
+                    var valor = 0
+                    const contratoAfectado = this.db_locales['contratos'].find((cto:any) => { return cto.id == mov_cto.id_contrato })
+
+                    //si es CONTRATO a CAMARA
+                    if(ID_CONTRATO_CAMARA.includes(contratoAfectado.id)){
+                        if(contratoAfectado.id_socio){
+                            if(contratoAfectado.id_socio == ID_NORTE){
+                                valor = parseInt(mov_cto.kilos)
+                                const proporcion = valor / sumatoriaKilosContratos
+                                if(movimiento.kg_neto){
+                                    kg_retirosNorteCamara += proporcion * movimiento.kg_neto
+                                }
+                            }
+                            
+                            if(contratoAfectado.id_socio == ID_YAGUA){
+                                valor = parseInt(mov_cto.kilos)
+                                const proporcion = valor / sumatoriaKilosContratos
+                                if(movimiento.kg_neto){
+                                    kg_retirosYaguaCamara += proporcion * movimiento.kg_neto
+                                }
+                            }
+                        }
+                    }
+
+                    //si es CONTRATO a CLIENTES
+                    if(ID_CONTRATO_CLIENTES.includes(contratoAfectado.id)){
+                        if(contratoAfectado.id_socio){
+                            if(contratoAfectado.id_socio == ID_NORTE){
+                                valor = parseInt(mov_cto.kilos)
+                                const proporcion = valor / sumatoriaKilosContratos
+                                if(movimiento.kg_neto){
+                                    kg_retirosNorteClientes += proporcion * movimiento.kg_neto
+                                }
+                            }
+                            
+                            if(contratoAfectado.id_socio == ID_YAGUA){
+                                valor = parseInt(mov_cto.kilos)
+                                const proporcion = valor / sumatoriaKilosContratos
+                                if(movimiento.kg_neto){
+                                    kg_retirosYaguaClientes += proporcion * movimiento.kg_neto
+                                }
+                            }
+                        }
+                    }
+
+                    //si es otro destino de contrato
+                    if(!ID_CONTRATO_CAMARA.includes(contratoAfectado.id) && !ID_CONTRATO_CLIENTES.includes(contratoAfectado.id)){
+                        if(contratoAfectado.id_socio){
+                            if(contratoAfectado.id_socio == ID_NORTE || contratoAfectado.id_socio == ID_PLANJAR){
+                                valor = parseInt(mov_cto.kilos)
+                                const proporcion = valor / sumatoriaKilosContratos
+                                if(movimiento.kg_neto){
+                                    kg_retirosNorte += proporcion * movimiento.kg_neto
+                                }
+                            }
+                            
+                            if(contratoAfectado.id_socio == ID_YAGUA){
+                                valor = parseInt(mov_cto.kilos)
+                                const proporcion = valor / sumatoriaKilosContratos
+                                if(movimiento.kg_neto){
+                                    kg_retirosYagua += proporcion * movimiento.kg_neto
+                                }
+                            }
+                        }
+                    }
+
+
+
+                })
+
+
+            } else if(movimiento.id_socio == ID_NORTE) {
+                if(movimiento.kg_neto){
+                    //kg_retirosNorte += parseInt(movimiento.kg_neto)
+                }
+            }
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        dataNP.retiros = kg_retirosNorte
+        dataY.retiros = kg_retirosYagua
+
+        dataNP.camara = kg_retirosNorteCamara
+        dataY.camara = kg_retirosYaguaCamara
+
+        dataNP.clientes = kg_retirosNorteClientes
+        dataY.clientes = kg_retirosYaguaClientes
+
+
         this.datosTablaSociedad.push(dataNP)
         this.datosTablaSociedad.push(dataY)
 
@@ -700,8 +831,8 @@ export class RetirosComponent {
             socio: 'TOTAL',
             corresponde: this.transformarDatoMostrarTabla(kg_trilla.toFixed(0), 'numeroEntero'),
             retiros: 0,
-            camara: 0,
-            clientes: 0,
+            camara: kg_retirosNorteCamara + kg_retirosYaguaCamara,
+            clientes: kg_retirosNorteClientes + kg_retirosYaguaClientes,
             saldo: 0,
             lotes_yc: 0,
             lotes_pl: 0,

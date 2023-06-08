@@ -92,6 +92,7 @@ import { ModificarComponent } from './components/super/modificar/modificar.compo
 import { SistemaComponent } from './components/super/sistema/sistema.component';
 import { CpeComponent } from './components/cpe/cpe.component';
 import { KilosComponent } from './components/kilos/kilos.component';
+import { KilosCampoComponent } from './components/super/kilos-campo/kilos-campo.component';
 
 
 @NgModule({
@@ -131,7 +132,8 @@ import { KilosComponent } from './components/kilos/kilos.component';
     ModificarComponent,
     SistemaComponent,
     CpeComponent,
-    KilosComponent
+    KilosComponent,
+    KilosCampoComponent
   ],
   imports: [
     BrowserModule,
