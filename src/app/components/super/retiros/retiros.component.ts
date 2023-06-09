@@ -120,6 +120,7 @@ export class RetirosComponent {
             { field: 'saldo', header: 'SALDO PROD.' },
             { field: 'lotes_yc', header: 'LOTES YC' },
             { field: 'lotes_pl', header: 'LOTES PL' },
+            { field: 'saldo_lotes', header: 'SALDO' },
             { field: 'bolsones', header: 'CORRESPONDE BOLSONES' },
             { field: 'retiros_bolsones', header: 'RETIROS BOLSONES' },
             { field: 'saldo_final', header: 'SALDO FINAL' },
@@ -605,6 +606,7 @@ export class RetirosComponent {
             saldo: 0,
             lotes_yc: 0,
             lotes_pl: 0,
+            saldo_lotes: 0,
             bolsones: 0,
             retiros_bolsones: 0,
             saldo_final: 0,
@@ -619,6 +621,7 @@ export class RetirosComponent {
             saldo: 0,
             lotes_yc: 0,
             lotes_pl: 0,
+            saldo_lotes: 0,
             bolsones: 0,
             retiros_bolsones: 0,
             saldo_final: 0,
@@ -631,197 +634,285 @@ export class RetirosComponent {
         const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
         const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb']
 
-        //Armamos establecimientos que estan en sociedad
+        //Armamos establecimientos que estan en sociedad / Lotes PL / Lotes YC
         var establecimientosSociedad: any = []
+        var establecimientosPL: any = []
+        var establecimientosYC: any = []
+
         this.datosProduccion.forEach((est:any) => {
             if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
                 const producenSocios:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
+
                 if(producenSocios.some((e:any) => { return e.id_socio == ID_NORTE }) && producenSocios.some((e:any) => { return e.id_socio == ID_YAGUA })){
                     establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
                 }
+
+                if(producenSocios.length == 1){
+                    if(producenSocios[0]['id_socio'] == ID_PLANJAR){
+                        establecimientosPL.includes(est.id_establecimiento) ? null : establecimientosPL.push(est.id_establecimiento)
+                    }
+                    if(producenSocios[0]['id_socio'] == ID_YAGUA){
+                        establecimientosYC.includes(est.id_establecimiento) ? null : establecimientosYC.push(est.id_establecimiento)
+                    }
+                }
             }
         })
 
-        var kg_trilla: any = 0
-        establecimientosSociedad.forEach((est:any) => {
-            //LOTES
-            const movs_origen = this.db_locales['movimiento_origen'].filter((e:any) => { return (e.id_establecimiento == est) && (e.tipo_origen == 'lote') })
+        //MOVIMIENTOS POR DIVISIONES:
+        const kilosRef = 'kg_neto'
+        var paqueteMovimientos:any = []
 
-            var movimientosConOrigen:any = []
-            movs_origen.forEach((movOrig:any) => {
-                if(!movimientosConOrigen.includes(movOrig.id_movimiento)){
-                    movimientosConOrigen.push(movOrig.id_movimiento)
+        this.db['movimientos'].forEach((movimiento:any) => {
+            //si existe movimiento local
+            if(this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                //si existe origen local:
+                if(this.db_locales['movimiento_origen'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                    const movimientos_origenes = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                    const kilosTotOrig = movimientos_origenes.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                    movimientos_origenes.forEach((movOrig:any) => {
+
+                        const proporcionOrig = (movOrig.kilos / kilosTotOrig)
+
+                        //si existe destino local (contrato):
+                        if(this.db_locales['movimiento_contrato'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                            const movimientos_contratos = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+                            const kilosTotCtos = movimientos_contratos.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                            movimientos_contratos.forEach((movCto:any) => {
+                                const contrato = this.db_locales['contratos'].find((e:any) => { return e.id == movCto.id_contrato })
+
+                                const proporcionCtos = (movCto.kilos / kilosTotCtos)
+
+                                const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                                const kilosComputar = proporcionOrig * proporcionCtos * kilos
+
+                                paqueteMovimientos.push({
+                                    kilos: kilosComputar,
+                                    id_grano: movimiento.id_grano,
+                                    id_establecimiento: movOrig.id_establecimiento,
+                                    id_socio: contrato.id_socio,
+                                    tipo_origen: movOrig.tipo_origen,
+                                    id_destino: movimiento.id_destino,
+                                    contrato: contrato.id,
+                                })
+                            })
+
+                        } else {
+                            const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                            const kilosComputar = proporcionOrig * kilos
+                            paqueteMovimientos.push({
+                                kilos: kilosComputar,
+                                id_grano: movimiento.id_grano,
+                                id_establecimiento: movOrig.id_establecimiento,
+                                id_socio: movimiento.id_socio,
+                                tipo_origen: movOrig.tipo_origen,
+                                id_destino: movimiento.id_destino,
+                                contrato: 0
+                            })
+                        }
+                    })
+                } else {
+
+                    //si existe destino local (contrato):
+                    if(this.db_locales['movimiento_contrato'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                        const movimientos_contratos = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+                        const kilosTotCtos = movimientos_contratos.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                        movimientos_contratos.forEach((movCto:any) => {
+                            const contrato = this.db_locales['contratos'].find((e:any) => { return e.id == movCto.id_contrato })
+
+                            const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                            const kilosComputar = movCto.kilos/kilosTotCtos * kilos
+
+                            paqueteMovimientos.push({
+                                kilos: kilosComputar,
+                                id_grano: movimiento.id_grano,
+                                id_establecimiento: movimiento.id_origen,
+                                id_socio: contrato.id_socio,
+                                tipo_origen: movimiento.tipo_origen == 'T' ? 'lote' : 'silo',
+                                id_destino: movimiento.id_destino,
+                                contrato: contrato.id,
+                            })
+                        })
+
+                    } else {
+                        const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                        paqueteMovimientos.push({
+                            kilos: kilos,
+                            id_grano: movimiento.id_grano,
+                            id_establecimiento: movimiento.id_origen,
+                            id_socio: movimiento.id_socio,
+                            tipo_origen: movimiento.tipo_origen == 'T' ? 'lote' : 'silo',
+                            id_destino: movimiento.id_destino,
+                            contrato: 0
+                        })
+                    }
                 }
-            });
 
-            var movimientosFiltradosGranos = this.db['movimientos'].filter((e:any) => { return e.id_grano == this.idGranosSeleccionado })
-
-            movimientosFiltradosGranos.forEach((movimiento:any) => {
-                //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
-                if(movimientosConOrigen.includes(movimiento.id)){
-                    const origenesAfectados = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
-
-                    const totalKilosMovimiento = origenesAfectados.reduce((acc:any, curr:any) => {
-                        return acc + parseInt(curr.kilos)
-                    }, 0)
-
-                    const totalKilosEst = origenesAfectados.reduce((acc:any, curr:any) => {
-                        var valor = 0
-                        if((curr.id_establecimiento == est) && (curr.tipo_origen == 'lote')){
-                            valor = parseInt(curr.kilos)
-                        }
-                        return acc + valor
-                    }, 0)
-
-
-                    const proporcion = totalKilosEst/totalKilosMovimiento
-
-                    if(movimiento.kg_neto){
-                        const corresponde = proporcion * movimiento.kg_neto
-
-                        kg_trilla += corresponde
-                    }
-                } else if(movimiento.id_origen == est && movimiento.tipo_origen == 'T') {
-                    if(movimiento.kg_neto){
-                        //console.log(parseFloat(movimiento.kg_neto))
-                        kg_trilla += parseInt(movimiento.kg_neto)
-                    }
-                }
-            })
-        })
-        dataNP.corresponde = this.transformarDatoMostrarTabla((kg_trilla/2).toFixed(), 'numeroEntero')
-        dataY.corresponde = this.transformarDatoMostrarTabla((kg_trilla/2).toFixed(), 'numeroEntero')
-
-
-
-        ///  RETIROS DE TRILLA - CAMARA - CLIENTES ///
-        var movimientosConContrato:any = []
-        this.db_locales['movimiento_contrato'].forEach((e:any) => { movimientosConContrato.includes(e.id_movimiento) ? null : movimientosConContrato.push(e.id_movimiento) })
-
-        var kg_retirosNorte: any = 0
-        var kg_retirosNorteCamara: any = 0
-        var kg_retirosNorteClientes: any = 0
-
-        var kg_retirosYagua: any = 0
-        var kg_retirosYaguaCamara: any = 0
-        var kg_retirosYaguaClientes: any = 0
-
-        var movimientosFiltradosGranos = this.db['movimientos'].filter((e:any) => { return e.id_grano == this.idGranosSeleccionado })
-
-        movimientosFiltradosGranos.forEach((movimiento:any) => {
-            //SI TIENE MOVIMIENTO LOCAL CON ORIGEN
-            if(movimientosConContrato.includes(movimiento.id)){
-
-                const contratosAfectados = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
-
-                const sumatoriaKilosContratos = contratosAfectados.reduce((acc:any, curr:any) => {
-                    return acc + parseInt(curr.kilos)
-                }, 0)
-
-                contratosAfectados.forEach((mov_cto:any) => {
-                    var valor = 0
-                    const contratoAfectado = this.db_locales['contratos'].find((cto:any) => { return cto.id == mov_cto.id_contrato })
-
-                    //si es CONTRATO a CAMARA
-                    if(ID_CONTRATO_CAMARA.includes(contratoAfectado.id)){
-                        if(contratoAfectado.id_socio){
-                            if(contratoAfectado.id_socio == ID_NORTE){
-                                valor = parseInt(mov_cto.kilos)
-                                const proporcion = valor / sumatoriaKilosContratos
-                                if(movimiento.kg_neto){
-                                    kg_retirosNorteCamara += proporcion * movimiento.kg_neto
-                                }
-                            }
-                            
-                            if(contratoAfectado.id_socio == ID_YAGUA){
-                                valor = parseInt(mov_cto.kilos)
-                                const proporcion = valor / sumatoriaKilosContratos
-                                if(movimiento.kg_neto){
-                                    kg_retirosYaguaCamara += proporcion * movimiento.kg_neto
-                                }
-                            }
-                        }
-                    }
-
-                    //si es CONTRATO a CLIENTES
-                    if(ID_CONTRATO_CLIENTES.includes(contratoAfectado.id)){
-                        if(contratoAfectado.id_socio){
-                            if(contratoAfectado.id_socio == ID_NORTE){
-                                valor = parseInt(mov_cto.kilos)
-                                const proporcion = valor / sumatoriaKilosContratos
-                                if(movimiento.kg_neto){
-                                    kg_retirosNorteClientes += proporcion * movimiento.kg_neto
-                                }
-                            }
-                            
-                            if(contratoAfectado.id_socio == ID_YAGUA){
-                                valor = parseInt(mov_cto.kilos)
-                                const proporcion = valor / sumatoriaKilosContratos
-                                if(movimiento.kg_neto){
-                                    kg_retirosYaguaClientes += proporcion * movimiento.kg_neto
-                                }
-                            }
-                        }
-                    }
-
-                    //si es otro destino de contrato
-                    if(!ID_CONTRATO_CAMARA.includes(contratoAfectado.id) && !ID_CONTRATO_CLIENTES.includes(contratoAfectado.id)){
-                        if(contratoAfectado.id_socio){
-                            if(contratoAfectado.id_socio == ID_NORTE || contratoAfectado.id_socio == ID_PLANJAR){
-                                valor = parseInt(mov_cto.kilos)
-                                const proporcion = valor / sumatoriaKilosContratos
-                                if(movimiento.kg_neto){
-                                    kg_retirosNorte += proporcion * movimiento.kg_neto
-                                }
-                            }
-                            
-                            if(contratoAfectado.id_socio == ID_YAGUA){
-                                valor = parseInt(mov_cto.kilos)
-                                const proporcion = valor / sumatoriaKilosContratos
-                                if(movimiento.kg_neto){
-                                    kg_retirosYagua += proporcion * movimiento.kg_neto
-                                }
-                            }
-                        }
-                    }
-
-
-
+            } else {
+                const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                paqueteMovimientos.push({
+                    kilos: kilos,
+                    id_grano: movimiento.id_grano,
+                    id_establecimiento: movimiento.id_origen,
+                    id_socio: movimiento.id_socio,
+                    tipo_origen: movimiento.tipo_origen == 'T' ? 'lote' : 'silo',
+                    id_destino: movimiento.id_destino,
+                    contrato: 0,
                 })
+            }
+        })
 
+        /* 
+        kilos
+        id_grano
+        id_establecimiento
+        id_socio
+        tipo_origen
+        id_destino
+        contrato
+         */
 
-            } else if(movimiento.id_socio == ID_NORTE) {
-                if(movimiento.kg_neto){
-                    //kg_retirosNorte += parseInt(movimiento.kg_neto)
+        //CORRESPONDE
+        const produccionSociedad = paqueteMovimientos.reduce((acc:any, curr:any) => { 
+            var valor = 0
+            if(establecimientosSociedad.includes(curr.id_establecimiento) && curr.id_grano == this.idGranosSeleccionado && curr.tipo_origen=='lote'){
+                valor = curr.kilos 
+            }
+            return acc + valor
+        }, 0)
+
+        const correspondeNorte = produccionSociedad/2
+        const correspondeYagua = produccionSociedad/2
+
+        var norteRetiros = 0
+        var yaguaRetiros = 0
+
+        var norteCamara = 0
+        var yaguaCamara = 0
+
+        var norteClientes = 0
+        var yaguaClientes = 0
+
+        //SALIDAS A CAMARA - CLIENTES - RETIROS
+        paqueteMovimientos.filter((e:any) => { return establecimientosSociedad.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='lote') }).forEach((mov:any) => {
+            if(ID_CONTRATO_CAMARA.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norteCamara += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yaguaCamara += mov.kilos
+                }
+            }
+            if(ID_CONTRATO_CLIENTES.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norteClientes += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yaguaClientes += mov.kilos
+                }
+            }
+            if(!ID_CONTRATO_CAMARA.includes(mov.contrato) && !ID_CONTRATO_CLIENTES.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norteRetiros += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yaguaRetiros += mov.kilos
                 }
             }
         })
 
+        var nortelotes_yc = 0
+        var yagualotes_yc = 0
+        
+        var nortelotes_pl = 0
+        var yagualotes_pl = 0
+
+        //LOTES DE YAGUA Y PLANJAR
+        paqueteMovimientos.filter((e:any) => { return (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='lote') }).forEach((mov:any) => {
+            if(establecimientosPL.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_YAGUA){
+                    yagualotes_pl -= mov.kilos
+                    nortelotes_pl += mov.kilos
+                }
+            }
+            if(establecimientosYC.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    nortelotes_yc -= mov.kilos
+                    yagualotes_yc += mov.kilos
+                }
+            }
+        })
+
+        //SILOS
+        var kilosTotalesSilosSociedad:any = 0
+        establecimientosSociedad.forEach((est:any) => {
+            const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return (silo.id_establecimiento == est) && (silo.id_grano == this.idGranosSeleccionado) })
+            if(silosDelLote.length){
+                var kgs_entrada = 0
+                silosDelLote.forEach((silo:any) => {
+                    const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_silo == silo.id })
+                    kilosASilo.forEach((kgs:any) => {
+                        kgs_entrada += parseInt(kgs.kilos)
+                    })
+                })
+                kilosTotalesSilosSociedad += kgs_entrada
+            }
+        })
+
+        var norteRetiroBolsones = 0
+        var yaguaRetiroBolsones = 0
+
+        //SILOS RETIROS
+        paqueteMovimientos.filter((e:any) => { return establecimientosSociedad.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='silo') }).forEach((mov:any) => {
+            if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                norteRetiroBolsones += mov.kilos
+            }
+            if(mov.id_socio == ID_YAGUA){
+                yaguaRetiroBolsones += mov.kilos
+            }
+        })
 
 
+        var norteSaldo = correspondeNorte - norteRetiros - norteCamara - norteClientes
+        var yaguaSaldo = correspondeYagua - yaguaRetiros - yaguaCamara - yaguaClientes
+
+        var norteSaldoLotes = norteSaldo + nortelotes_pl + nortelotes_yc
+        var yaguaSaldoLotes = yaguaSaldo + yagualotes_pl + yagualotes_yc
+
+        var norteSaldoFinal = norteSaldoLotes + (kilosTotalesSilosSociedad/2) - norteRetiroBolsones
+        var yaguaSaldoFinal = yaguaSaldoLotes + (kilosTotalesSilosSociedad/2) - yaguaRetiroBolsones
 
 
+        dataNP.corresponde = this.transformarDatoMostrarTabla(correspondeNorte.toFixed(), "numeroEntero")
+        dataNP.retiros = this.transformarDatoMostrarTabla(norteRetiros.toFixed(), "numeroEntero")
+        dataNP.camara = this.transformarDatoMostrarTabla(norteCamara.toFixed(), "numeroEntero")
+        dataNP.clientes = this.transformarDatoMostrarTabla(norteClientes.toFixed(), "numeroEntero")
+        dataNP.saldo = this.transformarDatoMostrarTabla(norteSaldo.toFixed(), "numeroEntero")
+        dataNP.lotes_yc = this.transformarDatoMostrarTabla(nortelotes_yc.toFixed(), "numeroEntero")
+        dataNP.lotes_pl = this.transformarDatoMostrarTabla(nortelotes_pl.toFixed(), "numeroEntero")
+        dataNP.saldo_lotes = this.transformarDatoMostrarTabla(norteSaldoLotes.toFixed(), "numeroEntero")
+        dataNP.bolsones = this.transformarDatoMostrarTabla((kilosTotalesSilosSociedad/2).toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones = this.transformarDatoMostrarTabla(norteRetiroBolsones.toFixed(), "numeroEntero")
+        dataNP.saldo_final = this.transformarDatoMostrarTabla(norteSaldoFinal.toFixed(), "numeroEntero")
 
-
-
-
-
-
-
-
-
-
-
-
-
-        dataNP.retiros = kg_retirosNorte
-        dataY.retiros = kg_retirosYagua
-
-        dataNP.camara = kg_retirosNorteCamara
-        dataY.camara = kg_retirosYaguaCamara
-
-        dataNP.clientes = kg_retirosNorteClientes
-        dataY.clientes = kg_retirosYaguaClientes
+        dataY.corresponde = this.transformarDatoMostrarTabla(correspondeYagua.toFixed(), "numeroEntero")
+        dataY.retiros = this.transformarDatoMostrarTabla(yaguaRetiros.toFixed(), "numeroEntero")
+        dataY.camara = this.transformarDatoMostrarTabla(yaguaCamara.toFixed(), "numeroEntero")
+        dataY.clientes = this.transformarDatoMostrarTabla(yaguaClientes.toFixed(), "numeroEntero")
+        dataY.saldo = this.transformarDatoMostrarTabla(yaguaSaldo.toFixed(), "numeroEntero")
+        dataY.lotes_yc = this.transformarDatoMostrarTabla(yagualotes_yc.toFixed(), "numeroEntero")
+        dataY.lotes_pl = this.transformarDatoMostrarTabla(yagualotes_pl.toFixed(), "numeroEntero")
+        dataY.saldo_lotes = this.transformarDatoMostrarTabla(yaguaSaldoLotes.toFixed(), "numeroEntero")
+        dataY.bolsones = this.transformarDatoMostrarTabla((kilosTotalesSilosSociedad/2).toFixed(), "numeroEntero")
+        dataY.retiros_bolsones = this.transformarDatoMostrarTabla(yaguaRetiroBolsones.toFixed(), "numeroEntero")
+        dataY.saldo_final = this.transformarDatoMostrarTabla(yaguaSaldoFinal.toFixed(), "numeroEntero")
 
 
         this.datosTablaSociedad.push(dataNP)
@@ -829,16 +920,17 @@ export class RetirosComponent {
 
         this.datosTablaSociedadTotales = {
             socio: 'TOTAL',
-            corresponde: this.transformarDatoMostrarTabla(kg_trilla.toFixed(0), 'numeroEntero'),
-            retiros: 0,
-            camara: kg_retirosNorteCamara + kg_retirosYaguaCamara,
-            clientes: kg_retirosNorteClientes + kg_retirosYaguaClientes,
-            saldo: 0,
-            lotes_yc: 0,
-            lotes_pl: 0,
-            bolsones: 0,
-            retiros_bolsones: 0,
-            saldo_final: 0, 
+            corresponde: this.transformarDatoMostrarTabla(produccionSociedad.toFixed(), "numeroEntero"),
+            retiros: this.transformarDatoMostrarTabla((norteRetiros+yaguaRetiros).toFixed(), "numeroEntero"),
+            camara: this.transformarDatoMostrarTabla((norteCamara+yaguaCamara).toFixed(), "numeroEntero"),
+            clientes: this.transformarDatoMostrarTabla((norteClientes+yaguaClientes).toFixed(), "numeroEntero"),
+            saldo: this.transformarDatoMostrarTabla((norteSaldo+yaguaSaldo).toFixed(), "numeroEntero"),
+            lotes_yc: this.transformarDatoMostrarTabla((nortelotes_yc+yagualotes_yc).toFixed(), "numeroEntero"),
+            lotes_pl: this.transformarDatoMostrarTabla((nortelotes_pl+yagualotes_pl).toFixed(), "numeroEntero"),
+            saldo_lotes: this.transformarDatoMostrarTabla((norteSaldoLotes+yaguaSaldoLotes).toFixed(), "numeroEntero"),
+            bolsones: this.transformarDatoMostrarTabla(kilosTotalesSilosSociedad.toFixed(), "numeroEntero"),
+            retiros_bolsones: this.transformarDatoMostrarTabla((norteRetiroBolsones+yaguaRetiroBolsones).toFixed(), "numeroEntero"),
+            saldo_final: this.transformarDatoMostrarTabla((norteSaldoFinal+yaguaSaldoFinal).toFixed(), "numeroEntero"), 
         }
     }
 
@@ -868,8 +960,6 @@ export class RetirosComponent {
         if (tipo=='numeroEntero'){
             return dato.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
         }
-
-
 
         return dato
     }

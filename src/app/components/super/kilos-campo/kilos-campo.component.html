@@ -1,7 +1,7 @@
 <p-table #th [columns]="selectedColumns" [value]="dataParaMostrarTabla" selectionMode="multiple"
     [metaKeySelection]="true" [tableStyle]="{'min-width': '50rem'}"
-    styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm" [paginator]="true" [rows]="25"
-    [showCurrentPageReport]="true" [(selection)]="selectedTablaInicio" dataKey="ctg"
+    styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm" [paginator]="true" [rows]="100"
+    [showCurrentPageReport]="true" [(selection)]="selectedTablaInicio" dataKey="id"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [rowsPerPageOptions]="[10,25,50,100,1000,3000]">
     <ng-template pTemplate="caption">
@@ -24,14 +24,29 @@
             style="width: 100px; margin-left: 10px;" placeholder="PAT" [(ngModel)]="filtroRapido.patente"
             (ngModelChange)="datosParaTabla()">
 
-        <button pButton pRipple type="button" label="KG BRUTO" class="p-button-{{ faltan_kg_bruto ? 'success' : 'danger'}} bott" style="margin: 6px; margin-left: 40px;" (click)="faltan_kg_bruto = !faltan_kg_bruto"></button>
-        <button pButton pRipple type="button" label="KG TARA" class="p-button-{{ faltan_kg_tara ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_tara = !faltan_kg_tara"></button>
-        <button pButton pRipple type="button" label="KG NETO" class="p-button-{{ faltan_kg_neto ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_neto = !faltan_kg_neto"></button>
-        <button pButton pRipple type="button" label="KG NETO FINAL" class="p-button-{{ faltan_kg_neto_final ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_neto_final = !faltan_kg_neto_final"></button>
-        <button pButton pRipple type="button" label="KG CAMPO" class="p-button-{{ faltan_kg_campo ? 'success' : 'danger'}} bott" style="margin: 6px;" (click)="faltan_kg_campo = !faltan_kg_campo"></button>
+        <select class="input-text-codigo" style="margin-left: 40px;" [(ngModel)]="establecimiento_seleccionado">
+            <option *ngFor="let est of db_establecimientos" value="{{est.id}}">{{est.alias}}</option>
+        </select>
+        <select class="input-text-codigo" style="margin-left: 15px;" [(ngModel)]="grano_seleccionado">
+            <option *ngFor="let grano of db_granos" value="{{grano.id}}">{{grano.alias}}</option>
+        </select>
+        <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott"
+            style="margin: 6px; margin-left: 40px;" (click)="datosParaTablaBuscar()"></button>
 
-        
-        <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott" style="margin: 6px; margin-left: 40px;" (click)="datosParaTabla()"></button>
+
+
+        <select class="input-text-codigo" style="margin-left: 15px; width: 200px;" [(ngModel)]="loteSelecc">
+            <option *ngFor="let lote of loteSeleccionar" value="{{lote.id}}">{{lote.alias}}</option>
+        </select>
+
+        <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott"
+            style="margin: 6px; margin-left: 40px;" (click)="buscarLotes()"></button>
+        <button pButton pRipple type="button" label="SETEAR LOTE" class="p-button-info bott"
+            style="margin: 6px; margin-left: 40px;" (click)="setearLotes()"></button>
+        <button pButton pRipple type="button" label="SETEAR KILOS" class="p-button-info bott"
+            style="margin: 6px; margin-left: 40px;" (click)="setearKilos()"></button>
+
+
     </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
@@ -40,42 +55,69 @@
                 {{col.header}} <p-sortIcon field="{{col.field}}"></p-sortIcon>
             </th>
             <th>
-                
+                Local
+            </th>
+            <th>
             </th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-registro let-columns="columns" let-rowIndex="rowIndex">
-        <tr [pSelectableRow]="registro" [pSelectableRowIndex]="rowIndex">
-            <td *ngFor="let col of columns" [style]="{padding: '0px', height: '50px'}" title="{{col.header}}">
+        <tr [pSelectableRow]="registro" [pSelectableRowIndex]="rowIndex" [style]="{height: '25px'}">
+            <td *ngFor="let col of columns" [style]="{padding: '0px'}" title="{{col.header}}">
 
-                <div *ngIf="(col.field != 'kg_bruto') && (col.field != 'kg_tara') && (col.field != 'kg_neto') && (col.field != 'kg_neto_final') && (col.field != 'kg_campo') && (col.field != 'observaciones') && (col.field != 'kg_regulacion') && (col.field != 'id_deposito') && (col.field != 'id_origen')">
+                <div
+                    *ngIf="(col.field != 'observaciones') && (col.field != 'local_kilos') && (col.field != 'local_kilos2') && (col.field != 'local_origen') && (col.field != 'local_origen2')">
                     {{registro[col.field]}}
                 </div>
-                <div *ngIf="(col.field == 'kg_bruto') || (col.field == 'kg_tara') || (col.field == 'kg_neto') || (col.field == 'kg_neto_final') || (col.field == 'kg_campo') || (col.field == 'kg_regulacion')">
-                    <input class="input-text-codigo" type="number" step="10" [(ngModel)]="registro[col.field]" (ngModelChange)="calcularKilos(col.field, registro.id)">
-                </div>
 
-                <div *ngIf="(col.field == 'id_deposito')">
-                    <select class="input-text-codigo" style="width: 110px;" [(ngModel)]="registro[col.field]">
-                        <option *ngFor="let deposito of db_depositos" value="{{deposito.id}}">{{deposito.alias}}</option>
-                    </select>
-                </div>
-                <div *ngIf="(col.field == 'id_origen')">
-                    <select class="input-text-codigo" style="width: 160px;" [(ngModel)]="registro[col.field]">
-                        <option *ngFor="let establecimiento of db_establecimientos" value="{{establecimiento.id}}">{{establecimiento.alias}}</option>
+                <div *ngIf="(col.field == 'local_origen') || (col.field == 'local_origen2')">
+                    <select class="input-text-codigo" style="margin-left: 15px; width: 80px; height: 30px;"
+                        [(ngModel)]="registro[col.field]">
+                        <option *ngFor="let lote of loteSeleccionar" value="{{lote.id}}">{{lote.alias}}</option>
                     </select>
                 </div>
 
+                <div *ngIf="(col.field == 'local_kilos') || (col.field == 'local_kilos2')">
+                    <input type="number" style="margin: 0px; padding: 0px; width: 65px;" [(ngModel)]="registro[col.field]">
+                </div>
 
-
-                <div *ngIf="col.field == 'observaciones'">
-                    <input class="input-text-codigo" type="text" style="width: 300px;" [(ngModel)]="registro[col.field]">
+                <div *ngIf="col.field == 'observaciones' && registro[col.field]">
+                    <button pButton pRipple type="button" icon="pi pi-eye" class="p-button-success bott"
+                        style="margin: 1px; padding: 0px; width: 30px;"
+                        (click)="(displayObservacion = true) && (datosObservacion = registro[col.field])"></button>
                 </div>
 
             </td>
-            <td [style]="{padding: '0px', width: '65px'}">
-                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott" style="margin: 1px; padding: 0px; width: 30px;" (click)="guardarMovimiento(registro.id)"></button>
+            <td [style]="{padding: '0px', width: '80px', 'text-align':'center'}">
+                <button class="indicadorCua {{ registro.ok_mov ? 'fondoVerde' : 'fondoRojo'}}"></button>
+                <button class="indicador {{ registro.ok_origen ? 'fondoVerde' : 'fondoRojo'}}"></button>
+                <button class="indicador {{ registro.ok_balanza ? 'fondoVerde' : 'fondoRojo'}}"></button>
+                <button class="indicador {{ registro.ok_acondicionadora ? 'fondoVerde' : 'fondoRojo'}}"></button>
+                <button class="indicador {{ registro.ok_descarga ? 'fondoVerde' : 'fondoRojo'}}"></button>
+                <button class="indicador {{ registro.ok_contratos ? 'fondoVerde' : 'fondoRojo'}}"></button>
+            </td>
+            <td [style]="{padding: '0px', width: '150px', 'text-align':'center'}">
+                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
+                    style="margin: 1px; padding: 0px; width: 30px;"
+                    (click)="crearMovimientoLocal(registro.id)"></button>
+                <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger bott"
+                    style="margin: 1px; padding: 0px; width: 30px;"
+                    (click)="borrarMovimientoLocal(registro.id)"></button>
+                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
+                    style="margin: 1px; padding: 0px; width: 30px;"
+                    (click)="crearMovimientoOrigen(registro)"></button>
+                <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger bott"
+                    style="margin: 1px; padding: 0px; width: 30px;"
+                    (click)="borrarLotesLocal(registro.id)"></button>
             </td>
         </tr>
     </ng-template>
 </p-table>
+
+<p-dialog header="Observaciones:" [(visible)]="displayObservacion" [style]="{width: '50vw'}">
+    <p>{{datosObservacion}}</p>
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="displayObservacion=false" label="Ok"
+            styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>

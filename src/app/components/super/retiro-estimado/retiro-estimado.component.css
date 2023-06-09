@@ -1,0 +1,20 @@
+.tarjeta {
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    width: 600px;
+    height: 800px;
+    margin: 100px;
+}
+
+.input-text-codigo {
+    width: 100px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 5px;
+}

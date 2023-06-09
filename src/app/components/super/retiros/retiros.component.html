@@ -219,14 +219,14 @@
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th style="padding: 3px;" *ngFor="let col of colsSociedad">
+                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedad">
                                 {{col.header}}
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let dato of datosTablaSociedad">
-                            <td style="padding: 2px;" *ngFor="let col of colsSociedad">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
                                 <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
                                 <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
                             </td>
@@ -234,7 +234,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td style="padding: 2px;" *ngFor="let col of colsSociedad">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
                                 <label><strong>{{datosTablaSociedadTotales[col.field]}}</strong></label>
                             </td>
                         </tr>

@@ -93,6 +93,7 @@ import { SistemaComponent } from './components/super/sistema/sistema.component';
 import { CpeComponent } from './components/cpe/cpe.component';
 import { KilosComponent } from './components/kilos/kilos.component';
 import { KilosCampoComponent } from './components/super/kilos-campo/kilos-campo.component';
+import { RetiroEstimadoComponent } from './components/super/retiro-estimado/retiro-estimado.component';
 
 
 @NgModule({
@@ -133,7 +134,8 @@ import { KilosCampoComponent } from './components/super/kilos-campo/kilos-campo.
     SistemaComponent,
     CpeComponent,
     KilosComponent,
-    KilosCampoComponent
+    KilosCampoComponent,
+    RetiroEstimadoComponent
   ],
   imports: [
     BrowserModule,

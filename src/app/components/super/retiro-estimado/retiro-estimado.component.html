@@ -1,0 +1,85 @@
+
+
+<div class="formgrid row">
+    <div class="col">
+        <select class="input-text-codigo" [(ngModel)]="id_establecimiento" (ngModelChange)="onEst()">
+            <option *ngFor="let etbcmt of db_establecimientos" value="{{etbcmt.id}}">{{etbcmt.alias}}</option>
+        </select>
+        <select class="input-text-codigo" [(ngModel)]="id_cultivo" (ngModelChange)="onGrano()">
+            <option *ngFor="let gn of db_granos" value="{{gn.id}}">{{gn.alias}}</option>
+        </select>
+    </div>
+    <div class="col">
+        <div class="tarjeta">
+            <h6>RETIROS KG SOCIO/ESTABLECIMIENTO</h6>
+            <p>{{fechaActual}}</p>
+            <h3>{{establecimiento}} - ({{cultivo}})</h3>
+        
+            <br>
+
+            <div class="formgrid row" style="text-align: left;">
+                <h4>TOTAL CAMIONES: <strong>{{totalCamiones}}</strong></h4>
+                <h4>TOTAL CAMIONES C/ KGS: <strong>{{totalCamionesKgs}}</strong></h4>
+            </div>
+            <hr>
+        
+
+            <div style="padding: 20px;">
+                <div class="formgrid row" style="text-align: right;">
+                    <div class="col"></div>
+                    <div class="col">
+                        <h6>NORTE/PLANJAR</h6>
+                    </div>
+                    <div class="col">
+                        <h6>YAGUA</h6>
+                    </div>
+                </div>
+                <div class="formgrid row" style="text-align: right;">
+                    <div class="col">
+                        <h6>CAMIONES</h6>
+                    </div>
+                    <div class="col">
+                        <h6>{{transf(totalCamionesNorte, 'n')}}</h6>
+                    </div>
+                    <div class="col">
+                        <h6>{{transf(totalCamionesYagua, 'n')}}</h6>
+                    </div>
+                </div>
+
+                <div class="formgrid row" style="text-align: right;">
+                    <div class="col">
+                        <h6>KILOS</h6>
+                    </div>
+                    <div class="col">
+                        <h6>{{transf(totalKgsNorte, 'n')}} kgs</h6>
+                    </div>
+                    <div class="col">
+                        <h6>{{transf(totalKgsYagua, 'n')}} kgs</h6>
+                    </div>
+                </div>
+                <br>
+                <div class="formgrid row" style="text-align: right;">
+                    <div class="col">
+                        <h6>Estimado</h6>
+                    </div>
+                    <div class="col">
+                        <h6>~ {{transf(totalEstimadoNorte, 'n')}} kgs</h6>
+                    </div>
+                    <div class="col">
+                        <h6>~ {{transf(totalEstimadoYagua, 'n')}} kgs</h6>
+                    </div>
+                </div>
+                <br><br>
+                <div class="formgrid row" style="text-align: right;">
+                    <div class="col">
+                    </div>
+                    <div class="col">
+                        <p-chart type="pie" [data]="data" [style]="{'width': '20%'}"></p-chart>
+                    </div>
+                    <div class="col">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

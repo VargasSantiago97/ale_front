@@ -102,3 +102,18 @@ input[type="checkbox"] {
 .fondoVerde {
     background-color: rgba(24, 228, 17, 0.527);
 }
+.fondoRojo {
+    background-color: rgba(228, 17, 17, 0.527);
+}
+
+.indicadorCua {
+    border: 0px;
+    height: 10px;
+    border-radius: 10%;
+    margin-right: 4px;
+}
+.indicador {
+    border: 0px;
+    height: 10px;
+    border-radius: 100%;
+}
