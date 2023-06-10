@@ -49,10 +49,8 @@
                     <button style="margin: 0px; border: none; outline: none; width: 40px;"
                         class="{{registro.movimientoLocal}}" (click)="verDatosRegistro(registro.id)">VER</button>
                 </td>
-                <td *ngFor="let col of cols" style="padding: 1px;">
-                    <input type="text" [(ngModel)]="registro[col.field]"
-                        style="width: 100%; margin: 0px; border: none; outline: none; min-width: 100px;"
-                        class="{{registro[col.field] == 'SI' ? 'colorSI' : ((registro[col.field] == 'NO' || (col.field=='dif_balanza_tolva' && registro.dif_balanza_tolva_pintar) || (col.field=='dif_destino_balanza' && registro.dif_destino_balanza_pintar)) ? 'colorNO' : (i % 2 == 0 ? 'even-row': 'odd-row') ) }}">
+                <td *ngFor="let col of cols" style="height: 40px;" class="{{registro[col.field] == 'SI' ? 'colorSI' : ((registro[col.field] == 'NO' || (col.field=='dif_balanza_tolva' && registro.dif_balanza_tolva_pintar) || (col.field=='dif_destino_balanza' && registro.dif_destino_balanza_pintar)) ? 'colorNO' : (i % 2 == 0 ? 'even-row': 'odd-row') ) }}">
+                    {{registro[col.field]}}
                 </td>
             </tr>
         </tbody>

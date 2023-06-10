@@ -589,7 +589,7 @@ export class CamionesComponent {
                 var benef: any = ""
                 var ctg: any = ""
                 carta_porte.forEach((e: any) => {
-                    cpe += e.sucursal.toString().padStart(2, '0') + "-" + e.nro_cpe.toString().padStart(5, '0') + " "
+                    cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
                     ctg += e.nro_ctg.toString() + " "
                     benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante, "socioCuit") : "-"
                 })

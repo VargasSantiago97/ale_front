@@ -31,7 +31,10 @@ export class RetiroEstimadoComponent {
     totalKgsYagua: any = 0
     totalEstimadoNorte: any = 0
     totalEstimadoYagua: any = 0
+    totalCamionesNorteDesc: any = 0
+    totalCamionesYaguaDesc: any = 0
 
+    dataReales: any;
     data: any;
 
     constructor(
@@ -102,6 +105,8 @@ export class RetiroEstimadoComponent {
         this.totalCamionesKgs = 0
         this.totalCamionesNorte = 0
         this.totalCamionesYagua = 0
+        this.totalCamionesNorteDesc = 0
+        this.totalCamionesYaguaDesc = 0
         this.totalKgsNorte = 0
         this.totalKgsYagua = 0
         this.totalEstimadoNorte = 0
@@ -111,9 +116,16 @@ export class RetiroEstimadoComponent {
             this.totalCamiones++
             if(mov.kg_neto){
                 this.totalCamionesKgs++
+
+                if((mov.id_socio == ID_NORTE) || (mov.id_socio == ID_PLANJAR)){
+                    this.totalCamionesNorteDesc++
+                }
+                if((mov.id_socio == ID_YAGUA)){
+                    this.totalCamionesYaguaDesc++
+                }
             }
 
-            if((mov.id_socio == ID_NORTE) || mov.id_socio == ID_PLANJAR){
+            if((mov.id_socio == ID_NORTE) || (mov.id_socio == ID_PLANJAR)){
                 this.totalCamionesNorte++
 
                 if(mov.kg_neto){
@@ -131,12 +143,31 @@ export class RetiroEstimadoComponent {
 
         const kilosPorCamion = (this.totalKgsNorte + this.totalKgsYagua) / this.totalCamionesKgs
 
-        this.totalEstimadoNorte = (kilosPorCamion * this.totalCamionesNorte)
-        this.totalEstimadoYagua = (kilosPorCamion * this.totalCamionesYagua)
+        this.totalEstimadoNorte = (kilosPorCamion * this.totalCamionesNorte).toFixed(0)
+        this.totalEstimadoYagua = (kilosPorCamion * this.totalCamionesYagua).toFixed(0)
 
-        const porNor = this.totalEstimadoNorte / (this.totalEstimadoNorte + this.totalEstimadoYagua) * 100
-        const porYag = this.totalEstimadoYagua / (this.totalEstimadoNorte + this.totalEstimadoYagua) * 100
+        const porNorReal = this.totalKgsNorte / (this.totalKgsNorte + this.totalKgsNorte)
+        const porYagReal = this.totalKgsYagua / (this.totalKgsNorte + this.totalKgsNorte)
 
+        const porNor = (kilosPorCamion * this.totalCamionesNorte) / ((kilosPorCamion * this.totalCamionesNorte) + (kilosPorCamion * this.totalCamionesYagua)) * 100
+        const porYag = (kilosPorCamion * this.totalCamionesYagua) / ((kilosPorCamion * this.totalCamionesNorte) + (kilosPorCamion * this.totalCamionesYagua)) * 100
+
+        this.dataReales = {
+            labels: ['NORTE/PLANJAR','YAGUA'],
+            datasets: [
+                {
+                    data: [porNorReal, porYagReal],
+                    backgroundColor: [
+                        "#42A5F5",
+                        "#66BB6A",
+                    ],
+                    hoverBackgroundColor: [
+                        "#64B5F6",
+                        "#81C784",
+                    ]
+                }
+            ]
+        };
         this.data = {
             labels: ['NORTE/PLANJAR','YAGUA'],
             datasets: [
@@ -160,6 +191,9 @@ export class RetiroEstimadoComponent {
     transf(dato:any, tipo:any){
         if(tipo == 'n'){
             return dato.toLocaleString()
+        }
+        if (tipo=='numeroEntero'){
+            return dato.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
         }
         return dato
     }
