@@ -12,6 +12,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class ProduccionDetalleComponent {
 
     idEstablecimiento: any = ''
+    idGrano: any = null
 
     db_socios: any = []
 
@@ -26,6 +27,7 @@ export class ProduccionDetalleComponent {
     db_cartaPorte: any = []
     db_camiones: any = []
     db_intervinientes: any = []
+    db_granos: any = []
 
     load_est: any = true;
     load_soc: any = true;
@@ -103,80 +105,87 @@ export class ProduccionDetalleComponent {
         this.route.queryParams.subscribe(params => {
             const parametro = params['idd'];
             if(parametro){
-                this.idEstablecimiento = parametro
-                this.loadPage = true
 
-                this.cols = [
-                    { field: 'lote', header: 'Lote' },
-                    { field: 'has', header: 'Has' },
-                    { field: 'kg_trilla', header: 'Kgs desde Trilla' },
-                    { field: 'kg_silo', header: 'Kgs a Silo' },
-                    { field: 'kg_total', header: 'TOTALES' },
-                    { field: 'rinde', header: 'Rinde' },
-                ]
-                this.colsSilos = [
-                    { field: 'silo', header: 'Silo' },
-                    { field: 'kg_carga', header: 'Kgs ENTRADA' },
-                    { field: 'kg_descarga', header: 'Kgs SALIDA' },
-                    { field: 'kg_pendiente', header: 'Kgs EN SILO' },
-                    { field: 'porcentaje', header: '% Pendiente' },
-                ]
-                this.colsCamiones = [
-                    { field: 'fecha', header: 'Fecha' },
-                    { field: 'origen', header: 'L/S' },
-                    { field: 'orden_carga', header: 'O.C.' },
-                    { field: 'nro_cpe', header: 'CPE' },
-                    { field: 'nro_ctg', header: 'CTG' },
-                    { field: 'patentes', header: 'Pat.' },
-                    { field: 'beneficiario', header: 'Benef.' },
-                    { field: 'corredor', header: 'Corr.' },
-                    { field: 'destino', header: 'Dest.' },
-                    { field: 'kg_campo', header: 'KG Campo' },
-                    { field: 'porcentaje', header: '%' },
-                    { field: 'kg_balanza', header: 'KG Bal.' },
-                    { field: 'kg_regulacion', header: 'KG Reg.' },
-                    { field: 'kg_neto', header: 'KG Neto' },
-                    { field: 'kg_destino', header: 'KG Dest' },
-                    { field: 'kg_final', header: 'KG Final' },
-                ]
+                if(!this.idGrano){
+                    alert('Seleccione grano')
+                } else {
+
+                    this.idEstablecimiento = parametro
+                    this.loadPage = true
     
-                this.obtenerSociosDB()
-                this.obtenerMovimientosDB()
-                this.obtenerOrdenCargaDB()
-                this.obtenerCartaPorteDB()
-                this.obtenerCamionesDB()
-                this.obtenerIntervinientesDB()
-    
-                this.getDB('lotes', () => {
-                    this.load_lote = false
-                    this.generarDatosTabla()
-                })
-                this.getDB('silos', () => {
-                    this.load_silo = false
-                    this.generarDatosTabla()
-                })
-                this.getDB('movimientos', () => {
-                    this.load_mov = false
-                    this.generarDatosTabla()
-                })
-                this.getDB('movimiento_origen', () => {
-                    this.load_mov_orig = false
-                    this.generarDatosTabla()
-                })
-                this.getDB('lote_a_silo', () => {
-                    this.load_lote_silo = false
-                    this.generarDatosTabla()
-                })
-                this.getDB('movimiento_contrato', () => {
-                    this.load_movimiento_contrato = false
-                    this.generarDatosTabla()
-                })
-                this.getDB('contratos', () => {
-                    this.load_contratos = false
-                    this.generarDatosTabla()
-                })
+                    this.cols = [
+                        { field: 'lote', header: 'Lote' },
+                        { field: 'has', header: 'Has' },
+                        { field: 'kg_trilla', header: 'Kgs desde Trilla' },
+                        { field: 'kg_silo', header: 'Kgs a Silo' },
+                        { field: 'kg_total', header: 'TOTALES' },
+                        { field: 'rinde', header: 'Rinde' },
+                    ]
+                    this.colsSilos = [
+                        { field: 'silo', header: 'Silo' },
+                        { field: 'kg_carga', header: 'Kgs ENTRADA' },
+                        { field: 'kg_descarga', header: 'Kgs SALIDA' },
+                        { field: 'kg_pendiente', header: 'Kgs EN SILO' },
+                        { field: 'porcentaje', header: '% Pendiente' },
+                    ]
+                    this.colsCamiones = [
+                        { field: 'fecha', header: 'Fecha' },
+                        { field: 'origen', header: 'L/S' },
+                        { field: 'orden_carga', header: 'O.C.' },
+                        { field: 'nro_cpe', header: 'CPE' },
+                        { field: 'nro_ctg', header: 'CTG' },
+                        { field: 'patentes', header: 'Pat.' },
+                        { field: 'beneficiario', header: 'Benef.' },
+                        { field: 'corredor', header: 'Corr.' },
+                        { field: 'destino', header: 'Dest.' },
+                        { field: 'kg_campo', header: 'KG Campo' },
+                        { field: 'porcentaje', header: '%' },
+                        { field: 'kg_balanza', header: 'KG Bal.' },
+                        { field: 'kg_regulacion', header: 'KG Reg.' },
+                        { field: 'kg_neto', header: 'KG Neto' },
+                        { field: 'kg_destino', header: 'KG Dest' },
+                        { field: 'kg_final', header: 'KG Final' },
+                    ]
+        
+                    this.obtenerSociosDB()
+                    this.obtenerMovimientosDB()
+                    this.obtenerOrdenCargaDB()
+                    this.obtenerCartaPorteDB()
+                    this.obtenerCamionesDB()
+                    this.obtenerIntervinientesDB()
+        
+                    this.getDB('lotes', () => {
+                        this.load_lote = false
+                        this.generarDatosTabla()
+                    })
+                    this.getDB('silos', () => {
+                        this.load_silo = false
+                        this.generarDatosTabla()
+                    })
+                    this.getDB('movimientos', () => {
+                        this.load_mov = false
+                        this.generarDatosTabla()
+                    })
+                    this.getDB('movimiento_origen', () => {
+                        this.load_mov_orig = false
+                        this.generarDatosTabla()
+                    })
+                    this.getDB('lote_a_silo', () => {
+                        this.load_lote_silo = false
+                        this.generarDatosTabla()
+                    })
+                    this.getDB('movimiento_contrato', () => {
+                        this.load_movimiento_contrato = false
+                        this.generarDatosTabla()
+                    })
+                    this.getDB('contratos', () => {
+                        this.load_contratos = false
+                        this.generarDatosTabla()
+                    })
+                }
             }
         });
+        this.obtenerGranosDB()
     }
 
     obtenerSociosDB() {
@@ -185,6 +194,16 @@ export class ProduccionDetalleComponent {
                 this.db_socios = res
                 this.load_soc = false
                 this.generarDatosTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerGranosDB() {
+        this.comunicacionService.getDB('granos').subscribe(
+            (res: any) => {
+                this.db_granos = res
             },
             (err: any) => {
                 console.log(err)
@@ -297,7 +316,7 @@ export class ProduccionDetalleComponent {
 
             var DIC_LOTES:any = {}
 
-            var lotes = this.db_locales.lotes.filter((f: any) => { return f.id_establecimiento == establecimiento.id })
+            var lotes = this.db_locales.lotes.filter((f: any) => { return (f.id_establecimiento == establecimiento.id) && (f.id_grano == this.idGrano) })
             lotes.forEach((lote: any) => {
                 DIC_LOTES[lote.id] = lote.alias
 
@@ -318,7 +337,8 @@ export class ProduccionDetalleComponent {
 
                     //SILOS
                     var totalKilosSilo: any = 0
-                    var lote_a_silo = this.db_locales.lote_a_silo.filter((f: any) => { return f.id_lote == lote.id })
+                    var silos_est = this.db_locales.silos.filter((s:any) => { return (s.id_establecimiento == establecimiento.id) && (s.id_grano == this.idGrano) })
+                    var lote_a_silo = this.db_locales.lote_a_silo.filter((f: any) => { return (f.id_lote == lote.id) && (silos_est.some((sil:any) => { return sil.id == f.id_silo})) })
                     lote_a_silo.forEach((f: any) => {
                         const kilos = f.kilos ? parseInt(f.kilos) : 0
                         totalKilosSilo += kilos
@@ -381,7 +401,7 @@ export class ProduccionDetalleComponent {
 
             var DIC_SILOS:any = {}
 
-            var silos = this.db_locales.silos.filter((f: any) => { return f.id_establecimiento == establecimiento.id })
+            var silos = this.db_locales.silos.filter((f: any) => { return (f.id_establecimiento == establecimiento.id) && (f.id_grano == this.idGrano) })
             silos.forEach((silo: any) => {
                 DIC_SILOS[silo.id] = silo.alias
 
@@ -453,7 +473,8 @@ export class ProduccionDetalleComponent {
             var kg_destinoTotales: any = 0
             var kg_finalTotales: any = 0
 
-            var movimientos_origenes = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.tipo_origen == 'lote') && (mov_orig.id_establecimiento == establecimiento.id) })
+            var movimientos_granos = this.db_movimientos.filter((mov:any) => { return mov.id_grano == this.idGrano })
+            var movimientos_origenes = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.tipo_origen == 'lote') && (mov_orig.id_establecimiento == establecimiento.id) && (movimientos_granos.some((m:any) => { return m.id == mov_orig.id_movimiento}) ) })
 
             movimientos_origenes.forEach((movimiento_origen : any) => {
                 //tener en cuenta que por "CONTRATO" puede beneficiar a varios socios.
@@ -668,7 +689,8 @@ export class ProduccionDetalleComponent {
             kg_destinoTotales = 0
             kg_finalTotales = 0
 
-            var movimientos_origenes = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.tipo_origen == 'silo') && (mov_orig.id_establecimiento == establecimiento.id) })
+            var movimientos_granos = this.db_movimientos.filter((mov:any) => { return mov.id_grano == this.idGrano })
+            var movimientos_origenes = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return (mov_orig.tipo_origen == 'silo') && (mov_orig.id_establecimiento == establecimiento.id) && (movimientos_granos.some((m:any) => { return m.id == mov_orig.id_movimiento}) ) })
 
             movimientos_origenes.forEach((movimiento_origen : any) => {
                 //tener en cuenta que por "CONTRATO" puede beneficiar a varios socios.

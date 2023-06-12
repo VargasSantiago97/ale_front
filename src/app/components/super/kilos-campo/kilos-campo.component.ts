@@ -468,6 +468,8 @@ export class KilosCampoComponent {
 
         if (!(this.load_camiones || this.load_choferes || this.load_socios || this.load_transportistas_all || this.load_depositos || this.load_establecimientos || this.load_granos || this.load_ordenes_carga || this.load_intervinientes || this.load_movimientos || this.load_carta_porte || this.load_ordenes_pago)) {
 
+            this.buscarLotes()
+
             this.db_movimientos.filter((e:any) => { return (e.id_origen == this.establecimiento_seleccionado) && (e.id_grano == this.grano_seleccionado) }).forEach((e: any) => {
 
                 //FILTROS RAPIDOS
@@ -487,6 +489,7 @@ export class KilosCampoComponent {
             orden: this.transformDatoTabla(mov.id, "ordenNumero"),
             benef_orden: mov.id_socio ? this.transformDatoTabla(mov.id_socio, "socio") : "-",
             id_origen: mov.id_origen ? this.transformDatoTabla(mov.id_origen, "campo") : null,
+            id_establecimiento: mov.id_origen ? mov.id_origen : null,
             tipo_orig: mov.tipo_origen ? this.transformDatoTabla(mov.tipo_origen, "tipo_orig") : "-",
             pat: mov.id_camion ? this.transformDatoTabla(mov.id_camion, "pat") : "-",
             patAc: mov.id_camion ? this.transformDatoTabla(mov.id_camion, "patAc") : "-",
@@ -559,6 +562,19 @@ export class KilosCampoComponent {
             dato.ok_acondicionadora = movLocal.ok_acondicionadora == 1
             dato.ok_descarga = movLocal.ok_descarga == 1
             dato.ok_contratos = movLocal.ok_contratos == 1
+        }
+
+        if(dato.ok_origen){
+            const movs_orgs = this.db_locales['movimiento_origen'].filter((mov_orig:any) => { return mov_orig.id_movimiento == mov.id })
+            if(movs_orgs[0]){
+                dato.local_origen = movs_orgs[0].id_origen
+                dato.local_kilos = movs_orgs[0].kilos
+            }
+            if(movs_orgs[1]){
+                dato.local_origen2 = movs_orgs[1].id_origen
+                dato.local_kilos2 = movs_orgs[1].kilos
+            }
+
         }
 
 
@@ -717,16 +733,23 @@ export class KilosCampoComponent {
 
     crearMovimientoOrigen(registro:any){
         if(registro.local_kilos && registro.local_origen){
-            var data = {
+            var data:any = {
                 id: 0,
                 id_movimiento: registro.id,
-                id_establecimiento: 0,
+                id_establecimiento: registro.id_establecimiento,
                 id_origen: registro.local_origen,
                 tipo_origen: registro.tipo_orig == 'Trilla' ? 'lote' : 'silo', //lote silo
                 kilos: registro.local_kilos,
             }
+            var movLocal:any = this.db_locales['movimientos'].find((m:any) => { return m.id_movimiento == registro.id })
+            movLocal.ok_origen = 1
+
+            data.id = this.generarID('movimiento_origen')
+
+            this.crearDatoDB('movimiento_origen', data, ()=>{
+                this.editarDB('movimientos', movLocal)
+            })
         }
-        console.log(registro)
     }
     borrarMovimientoLocal(idd:any){
         if(confirm('Borrar MOVIMIENTO LOCAL ?')){
@@ -739,13 +762,24 @@ export class KilosCampoComponent {
     borrarLotesLocal(idd:any){
         if(confirm('Borrar MOVIMIENTOS-LOTE ?')){
             const mov = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == idd })
-
+            
             if(mov){
-                const movs_lotes = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == mov.id })
+                const movs_lotes = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == mov.id_movimiento })
+                
+                console.log(movs_lotes)
 
                 movs_lotes.forEach((mov_lote:any) => {
-                    this.borrarDB('movimiento_origen', mov_lote.id, ()=>{ this.getDB('movimientos', () => { this.datosParaTablaBuscar() }) })
+                    this.borrarDB('movimiento_origen', mov_lote.id)
                 });
+
+                setTimeout(() => {
+                    var movLocal:any = this.db_locales['movimientos'].find((m:any) => { return m.id_movimiento == mov.id_movimiento })
+                    movLocal.ok_origen = 0
+    
+                    this.editarDB('movimientos', movLocal, ()=>{
+                        this.getDB('movimientos', () => { this.datosParaTablaBuscar() })
+                    })
+                }, 100);
             }
         }
     }

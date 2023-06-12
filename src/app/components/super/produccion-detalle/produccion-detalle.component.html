@@ -4,6 +4,9 @@
         <select [(ngModel)]="idEstablecimiento" (ngModelChange)="navegarConParametro()">
             <option *ngFor="let dato of db_locales.establecimientos" value="{{dato.id}}">{{dato.alias}}</option>
         </select>
+        <select [(ngModel)]="idGrano">
+            <option *ngFor="let dato of db_granos" value="{{dato.id}}">{{dato.alias}}</option>
+        </select>
         <button (click)="display_imprimir = true" style="margin-left: 50px;">IMPRIMIR</button>
     </div>
 </div>
