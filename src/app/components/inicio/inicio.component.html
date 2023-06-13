@@ -94,8 +94,9 @@
                 </div>
 
                 <div *ngIf="col.field == 'banderas'">
-                    <p-tag *ngFor="let bandera of registro.banderas" severity="{{bandera.fondo}}"><i
-                            class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag>
+                    <div *ngFor="let bandera of registro.banderas">
+                        <p-tag *ngIf="bandera" severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag>
+                    </div>
                 </div>
             </td>
         </tr>

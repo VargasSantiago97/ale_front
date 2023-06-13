@@ -29,6 +29,8 @@ import { CpeComponent } from './components/cpe/cpe.component';
 import { KilosComponent } from './components/kilos/kilos.component';
 import { KilosCampoComponent } from './components/super/kilos-campo/kilos-campo.component';
 import { RetiroEstimadoComponent } from './components/super/retiro-estimado/retiro-estimado.component';
+import { KilosBalanzaComponent } from './components/super/kilos-balanza/kilos-balanza.component';
+import { DepositosresComponent } from './components/super/depositosres/depositosres.component';
 
 
 const routes: Routes = [
@@ -71,6 +73,9 @@ const routes: Routes = [
     { path: 'retiroEstimado', component: RetiroEstimadoComponent },
 
     { path: 'kilosCampo', component: KilosCampoComponent },
+    { path: 'kilosBalanza', component: KilosBalanzaComponent },
+
+    { path: 'depositos', component: DepositosresComponent },
 
 
 

@@ -13,46 +13,18 @@ export class SistemaComponent {
     db: any = {}
     db_locales: any = {}
 
-    ///
-    movimientosTotales: any = null
-    movimientosKilosBalanza: any = 0
-    movimientosKilosCampo: any = 0
 
-    movimientosTotalesLocales: any = 0
-
-    ok_origen: any = 0
-    ok_balanza: any = 0
-    ok_acondicionadora: any = 0
-    ok_descarga: any = 0
-    ok_contratos: any = 0
-
-    cpeTotales: any = 0
-    cpeConfirmadas: any = 0
-    cpeAnuladas: any = 0
-    cpeActivas: any = 0
-    cpeRechhazadas: any = 0
-
-    establecimientos: any = 0
-    establecimientosSocio: any = 0
-
-    colsProd:any = []
-
-    cols:any = []
-    datosMovimientos: any = []
-
-
-    datosTabla: any = []
-    datosTablaProduccion: any = []
-
-    ok_movimientos: any = false
-    ok_movimientos_local: any = false
-    ok_cpe: any = false
-    ok_socios: any = false
-    ok_establecimientos: any = false
-    ok_establecimientoProduccion: any = false
 
     varr: any = 0
+    colsProd: any = []
 
+    datoTabla: any = []
+
+    colsCorr: any = []
+    datoTablaCorredores: any = []
+
+    colsDep:any = []
+    datoTablaDeposito:any = []
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -61,50 +33,37 @@ export class SistemaComponent {
     ) {}
 
     ngOnInit() {
-        this.cols = [
-            { field: 'socio', header: 'SOCIO'},
-            { field: 'produccion', header: 'CORRESPONDE'},
-        ]
-
         this.colsProd = [
-            { field: 'establecimiento', header: 'ESTABLECIMIENTO'},
-            { field: 'kilos', header: 'TOTAL KGS'}
-        ]
+            {field: 'id', header: 'Id'},
+            {field: 'socio_movimiento_id', header: 'Id Soc. Mov.'},
+            {field: 'socio_movimiento', header: 'Soc. Mov.'},
+            {field: 'socio_cpe_cuit', header: 'Soc. Cpe. CUIT'},
+            {field: 'socio_cpe', header: 'Soc. Cpe.'},
+            {field: 'estado', header: 'Est. Cpe.'},
+        ];
+        this.colsCorr = [
+            {field: 'id', header: 'Id'},
+            {field: 'corredor_movimiento_id', header: 'Id Corr. Mov.'},
+            {field: 'corredor_movimiento', header: 'Corr. Mov.'},
+            {field: 'corredor_cpe_cuit', header: 'Corr. Cpe. CUIT'},
+            {field: 'corredor_cpe', header: 'Corr. Cpe.'},
+            {field: 'corredor_cpe_cuit_sec', header: 'Corr. Cpe. CUIT (sec)'},
+            {field: 'corredor_cpe_sec', header: 'Corr. Cpe. (sec)'},
+            {field: 'estado', header: 'Est. Cpe.'},
+        ];
+        this.colsDep = [
+            {field: 'id', header: 'Id'},
+            {field: 'deposito', header: 'Deposito Mov.'},
+            {field: 'creado_por', header: 'Creado'},
+            {field: 'editado_por', header: 'Editado'},
+            {field: 'kilos', header: 'Kgs'},
+            {field: 'obs', header: 'Obs.'},
+        ];
 
-        this.getAll('movimientos', () => {
-            this.ok_movimientos = true
-            this.analizarMovimientosTotales()
-            this.armarDatosMovimientos()
-        })
-        this.getAll('carta_porte', () => {
-            this.ok_cpe = true
-            this.analizarCPE()
-            this.armarDatosMovimientos()
-        })
-        this.getAll('socios', () => {
-            this.db['socios'].forEach((e:any) => { this.colsProd.push({ field: e.alias, header: e.alias}) })
+        this.getAll('socios')
+        this.getAll('intervinientes')
+        this.getAll('depositos')
 
-            this.ok_socios = true
-            this.armarDatosMovimientos()
-        })
-
-        this.getAllLocal('movimientos', () => {
-            this.ok_movimientos_local = true
-            this.analizarMovimientosTotalesLocales()
-            this.armarDatosMovimientos()
-        })
-        this.getAllLocal('produccion', () => {
-            this.ok_establecimientoProduccion = true
-            this.analizarEstablecimientos()
-            this.armarDatosMovimientos()
-        })
-        this.getAll('establecimientos', () => {
-            this.ok_establecimientos = true
-            this.analizarEstablecimientos()
-            this.armarDatosMovimientos()
-        })
-
-        this.genNum()
     }
 
     getAll(tabla:any, func:any=null){
@@ -144,145 +103,204 @@ export class SistemaComponent {
         )
     }
 
-    //DATOS GENERALES
-    analizarMovimientosTotales(){
-        this.movimientosTotales = this.db['movimientos'].length
 
-        this.db['movimientos'].forEach((mov:any) => {
-            if(mov.kg_neto_final){
-                this.movimientosKilosBalanza ++;
-            }
-            if(mov.kg_campo){
-                this.movimientosKilosCampo ++;
-            }
-        });
+    //MOVIMIENTOS - SOCIOS
+    obtenerMovimientos(){
+        this.datoTabla = []
+        this.getAll('movimientos', ()=>{
+            this.db['movimientos'].forEach((mov:any) => {
+                this.datoTabla.push({
+                    id: mov.id, 
+                    socio_movimiento_id: mov.id_socio, 
+                    socio_movimiento: this.transf(mov.id_socio, 'socio'), 
+                    socio_cpe: '',
+                    diferencia: false
+                })
+            });
+        })
     }
-    analizarMovimientosTotalesLocales(){
-        this.movimientosTotalesLocales = this.db_locales['movimientos'].length
+    obtenerSociosCPE(){
+        this.getAll('carta_porte', ()=>{
+            this.db['carta_porte'].forEach((cpe:any) => {
+                if(cpe.data){
+                    if(JSON.parse(cpe.data)){
+                        if((JSON.parse(cpe.data).estado == 'CN') || (JSON.parse(cpe.data).estado == 'AC') || (JSON.parse(cpe.data).estado == 'CF') ){
 
-        this.ok_origen = 0
-        this.ok_balanza = 0
-        this.ok_acondicionadora = 0
-        this.ok_descarga = 0
-        this.ok_contratos = 0
+                            var dato = this.datoTabla.find((e:any) => { return e.id == cpe.id_movimiento})
 
-        var uno:any = 0
-        var otro:any = 0
+                            if(dato){
+                                dato.socio_cpe_cuit = cpe.cuit_solicitante
+                                dato.estado = JSON.parse(cpe.data).estado
+                                dato.socio_cpe = this.transf(cpe.cuit_solicitante, 'socioCuit')
+                                dato.socio_cpe_id = this.transf(cpe.cuit_solicitante, 'socioCuitId')
 
-        this.db_locales['movimientos'].forEach((mov:any) => {
-            if(mov.ok_origen == 1){
-                this.ok_origen ++;
-            }
-            if(mov.ok_balanza == 1){
-                this.ok_balanza ++;
-            }
-            if(mov.ok_acondicionadora == 1){
-                this.ok_acondicionadora ++;
-            }
-            if(mov.ok_descarga == 1){
-                this.ok_descarga ++;
-            }
-            if(mov.ok_contratos == 1){
-                this.ok_contratos ++;
-                mov.id_socio == "141ea05753ff" ? uno++ : otro++
-            }
-        });
-        console.log(uno, otro)
-    }
-    analizarCPE(){
-        this.cpeTotales = this.db['carta_porte'].length
-
-        this.cpeConfirmadas = 0
-        this.cpeAnuladas = 0
-        this.cpeActivas = 0
-        this.cpeRechhazadas = 0
-
-        this.db['carta_porte'].forEach((cpe:any) => {
-            if(cpe.data){
-                if(JSON.parse(cpe.data)){
-                    if(JSON.parse(cpe.data).estado){
-                        const estado = JSON.parse(cpe.data).estado
-
-                        if(estado == 'CN'){
-                            this.cpeConfirmadas ++;
-                        }
-                        if(estado == 'AN'){
-                            this.cpeAnuladas ++;
-                        }
-                        if(estado == 'AC'){
-                            this.cpeActivas ++;
-                        }
-                        if(estado == 'RE'){
-                            this.cpeRechhazadas ++;
+                                dato.diferencia = !(dato.socio_cpe_id == dato.socio_movimiento_id)
+                            }
                         }
                     }
                 }
-            }
-        });
-
-    }
-    analizarEstablecimientos(){
-        if(this.ok_establecimientoProduccion && this.ok_establecimientos){
-            this.establecimientos = this.db['establecimientos'].length
-
-            this.establecimientosSocio = 0
-    
-            this.db['establecimientos'].forEach((est:any) => {
-                if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id})){
-                    this.establecimientosSocio ++
-                }
-            });
-        }
-    }
-
-    //DATOS MOVIMIENTOS
-
-    armarDatosMovimientos(){
-
-        if(this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion){
-
-            this.datosTablaProduccion = []
-            this.db['establecimientos'].forEach((est:any) => {
-                this.datosTablaProduccion.push({
-                    establecimiento: est.alias
-                })
             })
-
-
-
-
-            this.datosMovimientos = []
-
-            this.db['socios'].forEach((socio:any) => {
-                this.datosMovimientos.push({
-                    socio: socio
-                })
-            })
-            this.armarDatosParaTabla()
-        }
-    }
-
-    armarDatosParaTabla(){
-        this.datosTabla = []
-
-        this.datosMovimientos.forEach((mov:any) => {
-
-            this.datosTabla.push({
-                socio: mov['socio']['razon_social'], header: 'Socio'
-            })
-
         })
+    }
+    modificar(idd:any){
+        var dato = this.datoTabla.find((e:any) => { return e.id == idd})
 
-        console.log(this.db['establecimientos'])
+        var datoMovimiento = this.db['movimientos'].find((mov:any) => { return mov.id == idd })
+        datoMovimiento.id_socio = dato.socio_cpe_id
+
+        this.editarMovimiento(datoMovimiento, ()=>{
+            dato.socio_movimiento_id = dato.socio_cpe_id
+            dato.socio_movimiento = dato.socio_cpe
+            dato.diferencia = false
+        })
     }
 
-    genNum(){
-        setInterval(() => {
-            this.varr++
-            if(this.varr >= 100){
-                this.varr = 0
+
+
+    //MOVIMIENTOS - CORREDORES
+    obtenerMovimientosCorredor(){
+        this.datoTablaCorredores = []
+        this.getAll('movimientos', ()=>{
+            this.db['movimientos'].forEach((mov:any) => {
+                this.datoTablaCorredores.push({
+                    id: mov.id, 
+                    corredor_movimiento_id: mov.id_corredor, 
+                    corredor_movimiento: this.transf(mov.id_corredor, 'interviniente'), 
+                    diferencia: false
+                })
+            });
+        })
+    }
+    obtenerCorredorCPE(){
+        this.getAll('carta_porte', ()=>{
+            this.db['carta_porte'].forEach((cpe:any) => {
+                if(cpe.data){
+                    if(JSON.parse(cpe.data)){
+                        if((JSON.parse(cpe.data).estado == 'CN') || (JSON.parse(cpe.data).estado == 'AC') || (JSON.parse(cpe.data).estado == 'CF') ){
+
+                            var dato = this.datoTablaCorredores.find((e:any) => { return e.id == cpe.id_movimiento})
+
+                            if(dato){
+                                dato.corredor_cpe_cuit = cpe.cuit_corredor_venta_primaria
+                                dato.estado = JSON.parse(cpe.data).estado
+                                dato.corredor_cpe = this.transf(cpe.cuit_corredor_venta_primaria, 'intervinienteCuit')
+                                dato.corredor_cpe_id = this.transf(cpe.cuit_corredor_venta_primaria, 'intervinienteCuitId')
+
+                                dato.corredor_cpe_cuit_sec = cpe.cuit_corredor_venta_secundaria
+                                dato.corredor_cpe_sec = this.transf(cpe.cuit_corredor_venta_secundaria, 'intervinienteCuit')
+                                dato.corredor_cpe_id_sec = this.transf(cpe.cuit_corredor_venta_secundaria, 'intervinienteCuitId')
+                                
+                                
+
+                                dato.diferencia = !(dato.corredor_cpe_id == dato.corredor_movimiento_id)
+                            }
+                        }
+                    }
+                }
+            })
+        })
+    }
+    modificarCorredor(idd:any){
+        var dato = this.datoTablaCorredores.find((e:any) => { return e.id == idd})
+
+        var datoMovimiento = this.db['movimientos'].find((mov:any) => { return mov.id == idd })
+        datoMovimiento.id_corredor = dato.corredor_cpe_id
+
+        this.editarMovimiento(datoMovimiento, ()=>{
+            dato.corredor_movimiento_id = dato.corredor_cpe_id
+            dato.corredor_movimiento = dato.corredor_cpe
+            dato.diferencia = false
+        })
+    }
+
+
+
+    //MOVIMIENTOS - DEPOSITOS
+    obtenerMovimientosDepositos(){
+        this.datoTablaDeposito = []
+        this.getAll('movimientos', ()=>{
+            this.db['movimientos'].forEach((mov:any) => {
+                this.datoTablaDeposito.push({
+                    id: mov.id, 
+                    deposito: mov.id_deposito,
+                    creado_por: mov.creado_por,
+                    editado_por: mov.editado_por,
+                    kilos: mov.kg_regulacion,
+                    obs: mov.observaciones,
+                    diferencia: false
+                })
+            });
+        })
+    }
+    modificarDeposito(idd:any){
+        var dato = this.datoTablaDeposito.find((e:any) => { return e.id == idd})
+
+        var datoMovimiento = this.db['movimientos'].find((mov:any) => { return mov.id == idd })
+        datoMovimiento.id_deposito = dato.deposito
+
+        this.editarMovimiento(datoMovimiento, ()=>{})
+    }
+    borrarDeposito(idd:any){
+
+        var datoMovimiento = this.db['movimientos'].find((mov:any) => { return mov.id == idd })
+        datoMovimiento.id_deposito = ''
+
+        this.editarMovimiento(datoMovimiento, ()=>{})
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    transf(dato:any, tipo:any){
+        if(tipo=='socio'){
+            return this.db['socios'].some((e:any) => { return e.id == dato }) ? this.db['socios'].find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if(tipo=='socioCuit'){
+            return this.db['socios'].some((e:any) => { return e.cuit == dato }) ? this.db['socios'].find((e:any) => { return e.cuit == dato }).alias : dato
+        }
+        if(tipo=='socioCuitId'){
+            return this.db['socios'].some((e:any) => { return e.cuit == dato }) ? this.db['socios'].find((e:any) => { return e.cuit == dato }).id : dato
+        }
+        
+        if(tipo=='interviniente'){
+            return this.db['intervinientes'].some((e:any) => { return e.id == dato }) ? this.db['intervinientes'].find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if(tipo=='intervinienteCuit'){
+            return this.db['intervinientes'].some((e:any) => { return e.cuit == dato }) ? this.db['intervinientes'].find((e:any) => { return e.cuit == dato }).alias : dato
+        }
+        if(tipo=='intervinienteCuitId'){
+            return this.db['intervinientes'].some((e:any) => { return e.cuit == dato }) ? this.db['intervinientes'].find((e:any) => { return e.cuit == dato }).id : dato
+        }
+        return dato
+    }
+
+    editarMovimiento(datosMovimiento:any, fnn:any) {
+        this.comunicacionService.updateDB("movimientos", datosMovimiento).subscribe(
+            (res: any) => {
+                res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
+                
+                if(res.mensaje){
+                    fnn()
+                }
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al conectar al backend' })
             }
-        }, 1000);
+        )
     }
+
 
 }
