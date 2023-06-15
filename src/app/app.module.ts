@@ -96,6 +96,7 @@ import { KilosCampoComponent } from './components/super/kilos-campo/kilos-campo.
 import { RetiroEstimadoComponent } from './components/super/retiro-estimado/retiro-estimado.component';
 import { KilosBalanzaComponent } from './components/super/kilos-balanza/kilos-balanza.component';
 import { DepositosresComponent } from './components/super/depositosres/depositosres.component';
+import { ImportacionesComponent } from './components/super/importaciones/importaciones.component';
 
 
 @NgModule({
@@ -139,7 +140,8 @@ import { DepositosresComponent } from './components/super/depositosres/depositos
     KilosCampoComponent,
     RetiroEstimadoComponent,
     KilosBalanzaComponent,
-    DepositosresComponent
+    DepositosresComponent,
+    ImportacionesComponent
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,7 @@ var vars = {
 
     //API_URI: 'https://sny.com.ar/api_ale',
     API_URI: 'http://localhost/api',
+    API_URI_IMPORTAR: 'http://localhost/api/importaciones',
 
     API_URI_NUBE: 'http://154.49.246.119/api',
 

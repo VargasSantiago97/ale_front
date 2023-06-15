@@ -191,7 +191,7 @@ export class SistemaComponent {
                                 dato.corredor_cpe_id_sec = this.transf(cpe.cuit_corredor_venta_secundaria, 'intervinienteCuitId')
 
 
-                                dato.diferencia = !(dato.corredor_cpe_id == dato.corredor_movimiento_id)
+                                dato.diferencia = !(dato.corredor_cpe_id == dato.corredor_movimiento_id || dato.corredor_cpe_id_sec == dato.corredor_movimiento_id)
                             }
                         }
                     }
