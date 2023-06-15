@@ -747,7 +747,9 @@ export class KilosCampoComponent {
             data.id = this.generarID('movimiento_origen')
 
             this.crearDatoDB('movimiento_origen', data, ()=>{
-                this.editarDB('movimientos', movLocal)
+                this.editarDB('movimientos', movLocal, () => {
+                    registro.ok_origen = true
+                })
             })
         }
     }

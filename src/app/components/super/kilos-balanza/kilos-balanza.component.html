@@ -34,17 +34,15 @@
             style="margin: 6px; margin-left: 40px;" (click)="datosParaTablaBuscar()"></button>
 
 
-
-        <select class="input-text-codigo" style="margin-left: 15px; width: 200px;" [(ngModel)]="loteSelecc">
-            <option *ngFor="let lote of loteSeleccionar" value="{{lote.id}}">{{lote.alias}}</option>
-        </select>
-
-        <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott"
-            style="margin: 6px; margin-left: 40px;" (click)="buscarLotes()"></button>
-        <button pButton pRipple type="button" label="SETEAR LOTE" class="p-button-info bott"
-            style="margin: 6px; margin-left: 40px;" (click)="setearLotes()"></button>
         <button pButton pRipple type="button" label="SETEAR KILOS" class="p-button-info bott"
             style="margin: 6px; margin-left: 40px;" (click)="setearKilos()"></button>
+
+        <button *ngIf="selectedTablaInicio" pButton pRipple type="button" label="GUARDAR KILOS"
+            class="p-button-success bott" style="margin: 6px; margin-left: 40px;"
+            (click)="setearKilosEnMovimientos(0)"></button>
+        <button *ngIf="selectedTablaInicio" pButton pRipple type="button" label="GUARDAR OK ACOND."
+            class="p-button-success bott" style="margin: 6px; margin-left: 40px;" (click)="setearAconds(0)"></button>
+        <button (click)="toggleFullscreen()">Alternar pantalla completa</button>
 
 
     </ng-template>
@@ -66,19 +64,13 @@
             <td *ngFor="let col of columns" [style]="{padding: '0px'}" title="{{col.header}}">
 
                 <div
-                    *ngIf="(col.field != 'observaciones') && (col.field != 'local_kilos') && (col.field != 'local_kilos2') && (col.field != 'local_origen') && (col.field != 'local_origen2')">
+                    *ngIf="(col.field != 'observaciones') && (col.field != 'neto') && (col.field != 'regulacion') && (col.field != 'final')">
                     {{registro[col.field]}}
                 </div>
 
-                <div *ngIf="(col.field == 'local_origen') || (col.field == 'local_origen2')">
-                    <select class="input-text-codigo" style="margin-left: 15px; width: 80px; height: 30px;"
+                <div *ngIf="(col.field == 'neto') || (col.field == 'regulacion') || (col.field == 'final')">
+                    <input type="number" style="margin: 0px; padding: 0px; width: 65px;"
                         [(ngModel)]="registro[col.field]">
-                        <option *ngFor="let lote of loteSeleccionar" value="{{lote.id}}">{{lote.alias}}</option>
-                    </select>
-                </div>
-
-                <div *ngIf="(col.field == 'local_kilos') || (col.field == 'local_kilos2')">
-                    <input type="number" style="margin: 0px; padding: 0px; width: 65px;" [(ngModel)]="registro[col.field]">
                 </div>
 
                 <div *ngIf="col.field == 'observaciones' && registro[col.field]">
@@ -96,7 +88,7 @@
                 <button class="indicador {{ registro.ok_descarga ? 'fondoVerde' : 'fondoRojo'}}"></button>
                 <button class="indicador {{ registro.ok_contratos ? 'fondoVerde' : 'fondoRojo'}}"></button>
             </td>
-            <td [style]="{padding: '0px', width: '150px', 'text-align':'center'}">
+            <td [style]="{padding: '0px', width: '145px', 'text-align':'center'}">
                 <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
                     style="margin: 1px; padding: 0px; width: 30px;"
                     (click)="crearMovimientoLocal(registro.id)"></button>
@@ -105,10 +97,9 @@
                     (click)="borrarMovimientoLocal(registro.id)"></button>
                 <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
                     style="margin: 1px; padding: 0px; width: 30px;"
-                    (click)="crearMovimientoOrigen(registro)"></button>
-                <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger bott"
-                    style="margin: 1px; padding: 0px; width: 30px;"
-                    (click)="borrarLotesLocal(registro.id)"></button>
+                    (click)="setearKilosEnMovimiento(registro)"></button>
+                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
+                    style="margin: 1px; padding: 0px; width: 30px;" (click)="setearAcond(registro)"></button>
             </td>
         </tr>
     </ng-template>
