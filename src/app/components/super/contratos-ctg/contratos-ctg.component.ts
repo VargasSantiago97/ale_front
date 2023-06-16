@@ -507,4 +507,8 @@ export class ContratosCtgComponent {
         /* Descargar el archivo */
         XLSX.writeFile(workbook, 'contratos.xlsx');
     }
+
+    exportToExcelInforme(){
+        
+    }
 }

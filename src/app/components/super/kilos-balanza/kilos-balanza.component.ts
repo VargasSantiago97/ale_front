@@ -1046,5 +1046,5 @@ export class KilosBalanzaComponent {
             this.isFullscreen = false;
           }
         }
-      }
+    }
 }

@@ -17,6 +17,9 @@ export class ImportacionesComponent {
 
     colsDescargaMermaNeto: any = []
     datoTablaDescargaMermaNeto: any = []
+    
+    colsContratos: any = []
+    datoTablaContratos: any = []
 
     db_locales: any = []
     db: any = []
@@ -45,6 +48,24 @@ export class ImportacionesComponent {
             {field:'loc_neto', header:'LOC: Kg Neto'},
             {field:'loc_diferencia', header:'Dest-Salida'},
         ]
+        
+        this.colsContratos = [
+            {field:'nro_ctg', header:'CTG'},
+            {field:'kilos', header:'KILOS'},
+            {field:'contrato', header:'CONTRATO'},
+            {field:'neto', header:'NETO FINAL'},
+            {field:'coincide', header:'COINCIDE'},
+            {field:'cp_sistema', header:'CPE en Sistema'},
+            {field:'id_movimiento', header:'MOV ID'},
+            {field:'cp_mov', header:'MOV Local con CPE'},
+            {field:'loc_salida', header:'LOC: Kg salida'},
+            {field:'loc_destino', header:'LOC: Kg Dest'},
+            {field:'loc_mermas', header:'LOC: Kg Merm'},
+            {field:'loc_neto', header:'LOC: Kg Neto'},
+            {field:'loc_diferencia', header:'Dest-Salida'},
+        ]
+
+        this.getLocalDB('movimiento_contrato')
     }
 
     onUpload(event: any) {
@@ -138,6 +159,80 @@ export class ImportacionesComponent {
 
         this.editarDB('movimientos', movLocal)
     }
+
+
+
+
+    datosExcelContratos(){
+        this.importaciones.getExcel().subscribe(
+            (res:any) => {
+
+                var ctgs:any = []
+                res.forEach((element:any) => {
+                    ctgs.includes(element["COL1"]) ? null : ctgs.push(element["COL1"])
+                });
+
+
+                this.datoTablaContratos = []
+                ctgs.forEach((ctg:any) => {
+                    var dato = {
+                        nro_ctg: ctg,
+                        contratos: [ ... res.filter((e:any) => { return e["COL1"] == ctg })]
+                    }
+
+                    this.datoTablaContratos.push(dato)
+
+                });
+
+                console.log(this.datoTablaContratos)
+
+            },
+            (err:any) => {
+                console.error(err)
+            }
+        )
+    }
+    buscarCPESContratos(){
+        this.getDB('carta_porte', () => {
+            this.datoTablaContratos.forEach((registro:any) => {
+                const carta_porte = this.db['carta_porte'].filter((e:any) => { return e.nro_ctg == registro.nro_ctg })
+                if(carta_porte.length == 1){
+                    registro.pintar = 'verde'
+                    registro.cp_sistema = 'OK'
+                    registro.id_movimiento = carta_porte[0].id_movimiento
+                }
+                if(carta_porte.length > 1){
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'CTG ' + carta_porte[0].nro_ctg + ' REPETIDO!' })
+                    registro.pintar = 'rojo'
+                    registro.cp_sistema = 'REPETIDO'
+                }
+            });
+        })
+
+    }
+    buscarMovimientosLocalesCpe(){
+        this.getLocalDB('movimientos', () => {
+            this.datoTablaContratos.forEach((registro:any) => {
+
+                var kilos = 0
+
+                this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == registro.id_movimiento }).forEach((cto:any) => {
+                    kilos += parseInt(cto.kilos)
+                });
+
+                registro.pintar = 'amarillo'
+
+                if(registro.kilos){
+                    registro.pintar = ''
+                }
+                if(registro.kilos == kilos){
+                    registro.pintar = 'verde'
+                }
+            });
+        })
+    }
+
+
 
 
     getLocalDB(tabla: any, func: any = false) {

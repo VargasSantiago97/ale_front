@@ -55,29 +55,67 @@
                 <tbody>
                     <tr *ngFor="let dato of datoTablaDescargaMermaNeto" class="{{dato.pintar}}">
                         <td style="padding: 2px;" *ngFor="let col of colsDescargaMermaNeto">
-                            <label *ngIf="col.field != 'descarga' && col.field != 'merma' && col.field != 'neto'">{{dato[col.field]}}</label>
-                            <input *ngIf="col.field == 'descarga' || col.field == 'merma' || col.field == 'neto'" type="number" [(ngModel)]="dato[col.field]">
+                            <label
+                                *ngIf="col.field != 'descarga' && col.field != 'merma' && col.field != 'neto'">{{dato[col.field]}}</label>
+                            <input *ngIf="col.field == 'descarga' || col.field == 'merma' || col.field == 'neto'"
+                                type="number" [(ngModel)]="dato[col.field]">
                         </td>
                         <td>
                             <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
-                            style="margin: 1px; padding: 0px; width: 30px;"
-                            (click)="guardarDescargaMermaNeto(dato)"></button>
+                                style="margin: 1px; padding: 0px; width: 30px;"
+                                (click)="guardarDescargaMermaNeto(dato)"></button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </p-accordionTab>
-        <p-accordionTab header="Header II">
-            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-                architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
-                voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.</p>
-        </p-accordionTab>
-        <p-accordionTab header="Header III">
-            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-                        cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
-                        Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.</p>
-        </p-accordionTab>
-    </p-accordion>
+        <p-accordion>
+            <p-accordionTab header="Importar APLICACIONES DE CONTRATOS">
+                <p>Excel con encabezados. (Datos desde fila 2)</p>
+                <p>Col 1: CTG</p>
+                <p>Col 2: KG A Afectar</p>
+                <p>Col 3: Contrato</p>
+                <button (click)="datosExcelContratos()">TRAER DATOS EXCEL</button>
+                <button (click)="buscarCPESContratos()">BUSCAR CARTAS DE PORTE</button>
+                <button (click)="buscarMovimientosLocalesCpe()">BUSCAR MOVS LOCALES</button>
+                <br><br>
 
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of colsContratos">
+                                {{col.header}}
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datoTablaContratos" class="{{dato.pintar}}">
+                            <td style="padding: 2px;" *ngFor="let col of colsContratos">
+                                <label>{{dato[col.field]}}</label>
+                            </td>
+                            <td>
+                                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
+                                    style="margin: 1px; padding: 0px; width: 30px;"></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </p-accordionTab>
+            <p-accordionTab header="Header II">
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
+                    totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
+                    architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+                    aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
+                    voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.</p>
+            </p-accordionTab>
+            <p-accordionTab header="Header III">
+                <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
+                    deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
+                    cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est
+                    laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
+                    Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.</p>
+            </p-accordionTab>
+        </p-accordion>
 
-</div>
