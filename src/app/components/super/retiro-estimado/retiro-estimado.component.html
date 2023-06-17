@@ -8,7 +8,7 @@
         <select class="input-text-codigo" [(ngModel)]="id_cultivo" (ngModelChange)="onGrano()">
             <option *ngFor="let gn of db_granos" value="{{gn.id}}">{{gn.alias}}</option>
         </select>
-        <a href="http://localhost/api/xlsx" target="_blank"><button>DESC</button></a>
+        <button (click)="imprimirReporteExcel()">DESC</button>
     </div>
     <div class="col">
         <div class="tarjeta">

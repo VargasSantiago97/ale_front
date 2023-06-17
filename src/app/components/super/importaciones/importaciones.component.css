@@ -7,3 +7,17 @@
 .amarillo {
     background-color: rgba(213, 236, 5, 0.438);
 }
+.tarjeta {
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+}
+.boton {
+    background-color: rgba(73, 218, 29, 0.253);
+    border: none;
+    border-radius: 5px;
+    margin: 3px;
+    padding: 2px;
+}

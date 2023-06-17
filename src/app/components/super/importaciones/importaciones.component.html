@@ -77,31 +77,55 @@
                 <p>Col 3: Contrato</p>
                 <button (click)="datosExcelContratos()">TRAER DATOS EXCEL</button>
                 <button (click)="buscarCPESContratos()">BUSCAR CARTAS DE PORTE</button>
-                <button (click)="buscarMovimientosLocalesCpe()">BUSCAR MOVS LOCALES</button>
+                <button (click)="buscarMovimientosLocalesCpe()">BUSCAR MOVS LOCALES Y CTOS</button>
                 <br><br>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="padding: 3px;" *ngFor="let col of colsContratos">
-                                {{col.header}}
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let dato of datoTablaContratos" class="{{dato.pintar}}">
-                            <td style="padding: 2px;" *ngFor="let col of colsContratos">
-                                <label>{{dato[col.field]}}</label>
-                            </td>
-                            <td>
-                                <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
-                                    style="margin: 1px; padding: 0px; width: 30px;"></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="tarjeta" *ngFor="let ctg of datoTablaContratos">
+                    <div class="formrid row">
+                        <div class="col">
+                            <h3>{{ctg.nro_ctg}}</h3>
+                        </div>
+                        <div class="col">
+                            <div class="formrid row" *ngFor="let cto of ctg.contratos">
+                                <div class="col">Cto: {{cto["COL3"]}}</div>
+                                <div class="col">Kgs: {{cto["COL2"]}}</div>
+                            </div>
+                            <div class="formrid row">
+                                <div class="col"></div>
+                                <div class="col"><strong>Tot: {{ctg.kilos}}</strong></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h5 class="{{ctg.cp_pintar}}">CPE SIS {{ctg.cp_sistema}}</h5>
+                            <h5>MOV ID: {{ctg.id_movimiento}}</h5>
+                        </div>
+                        <div class="col">
+                            <h5 class="{{ctg.kilos_mov_pintar}}">KG MOV LOCAL {{ctg.kilos_mov}}</h5>
+                        </div>
+                        <div class="col">
+                            <div class="formgrid row" *ngFor="let cto of ctg.ctos_locales">
+                                <div class="col {{cto.color}}">Cto: {{cto.contrato}}</div>
+                                <div class="col {{cto.color}}">Kgs: {{cto.kilos}}</div>
+                            </div>
+                            <div class="formgrid row">
+                                <div class="col"></div>
+                                <div class="col {{ctg.kilos_ctos_pintar}}"><strong>Tot: {{ctg.kilos_ctos}}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="tarjeta" style="margin: 1px; padding: 1px;" *ngFor="let cto of ctg.contratos">
+                                <div class="formgrid row">
+                                    <div class="col-5">Cto: {{cto["COL3"]}}</div>
+                                    <div class="col-5">Kgs: {{cto["COL2"]}}</div>
+                                    <div class="col-2" style="text-align: right;">
+                                        <button class="boton" (click)="guardarMovimientoContrato(cto, ctg)"><i class="pi pi-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </p-accordionTab>
             <p-accordionTab header="Header II">
                 <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
@@ -118,4 +142,3 @@
                     Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.</p>
             </p-accordionTab>
         </p-accordion>
-

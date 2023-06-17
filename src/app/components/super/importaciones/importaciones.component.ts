@@ -65,6 +65,7 @@ export class ImportacionesComponent {
             {field:'loc_diferencia', header:'Dest-Salida'},
         ]
 
+        this.getLocalDB('contratos')
         this.getLocalDB('movimiento_contrato')
     }
 
@@ -166,26 +167,22 @@ export class ImportacionesComponent {
     datosExcelContratos(){
         this.importaciones.getExcel().subscribe(
             (res:any) => {
-
+                //sacamos los ctgs (Sin repetir)
                 var ctgs:any = []
                 res.forEach((element:any) => {
                     ctgs.includes(element["COL1"]) ? null : ctgs.push(element["COL1"])
                 });
 
-
+                //iteramos cada CTG
                 this.datoTablaContratos = []
                 ctgs.forEach((ctg:any) => {
                     var dato = {
                         nro_ctg: ctg,
-                        contratos: [ ... res.filter((e:any) => { return e["COL1"] == ctg })]
+                        contratos: [ ... res.filter((e:any) => { return e["COL1"] == ctg })],
+                        kilos: res.filter((e:any) => { return e["COL1"] == ctg }).reduce((acc:any, cur:any) => { return acc + parseInt(cur["COL2"]) }, 0)
                     }
-
                     this.datoTablaContratos.push(dato)
-
                 });
-
-                console.log(this.datoTablaContratos)
-
             },
             (err:any) => {
                 console.error(err)
@@ -196,8 +193,12 @@ export class ImportacionesComponent {
         this.getDB('carta_porte', () => {
             this.datoTablaContratos.forEach((registro:any) => {
                 const carta_porte = this.db['carta_porte'].filter((e:any) => { return e.nro_ctg == registro.nro_ctg })
+                if(carta_porte.length == 0){
+                    registro.cp_pintar = 'rojo'
+                    registro.cp_sistema = 'NO ENC.'
+                }
                 if(carta_porte.length == 1){
-                    registro.pintar = 'verde'
+                    registro.cp_pintar = 'verde'
                     registro.cp_sistema = 'OK'
                     registro.id_movimiento = carta_porte[0].id_movimiento
                 }
@@ -214,22 +215,65 @@ export class ImportacionesComponent {
         this.getLocalDB('movimientos', () => {
             this.datoTablaContratos.forEach((registro:any) => {
 
-                var kilos = 0
+                
+                const contratos = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == registro.id_movimiento })
 
-                this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == registro.id_movimiento }).forEach((cto:any) => {
-                    kilos += parseInt(cto.kilos)
+                var kilos = contratos.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                registro.ctos_locales = []
+                contratos.forEach((ctto:any) => {
+
+                    const cto =  this.db_locales['contratos'].find((e:any) => { return e.id == ctto.id_contrato })
+
+                    const pintar = registro.contratos.some((e:any) => { return (e["COL3"] == cto.alias) && ((e["COL2"] == ctto.kilos))})
+
+                    registro.ctos_locales.push({
+                        contrato: cto.alias,
+                        kilos: ctto.kilos,
+                        color: pintar ? 'verde' : 'rojo'
+                    })
                 });
+                registro.kilos_ctos = kilos
+                registro.kilos_ctos_pintar = (kilos == registro.kilos) ? 'verde' : 'rojo'
 
-                registro.pintar = 'amarillo'
-
-                if(registro.kilos){
-                    registro.pintar = ''
-                }
-                if(registro.kilos == kilos){
-                    registro.pintar = 'verde'
+                const mov_local = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == registro.id_movimiento })
+                if(mov_local){
+                    registro.kilos_mov = mov_local.kg_final
+                    registro.kilos_mov_pintar = (registro.kilos_mov == registro.kilos) ? 'verde' : 'rojo'
+                } else {
+                    registro.kilos_mov_pintar = 'rojo'
                 }
             });
         })
+    }
+    guardarMovimientoContrato(cto:any, ctg:any){
+
+        const ctto =  this.db_locales['contratos'].find((e:any) => { return e.alias == cto['COL3'] })
+
+        var dataMov:any = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == ctg.id_movimiento })
+
+        if(ctg.id_movimiento && ctto.id && dataMov){
+            var data = {
+                id: this.generarID('movimiento_contrato'),
+                id_movimiento: ctg.id_movimiento,
+                id_contrato: ctto.id,
+                kilos: cto['COL2']
+            }
+            this.crearDatoDB('movimiento_contrato', data, () => {
+                ctg.ctos_locales.push({
+                    color: 'amarillo',
+                    contrato: cto['COL3'],
+                    kilos: cto['COL2']
+                })
+                ctg.kilos_ctos += parseInt(cto['COL2'])
+                ctg.kilos_ctos_pintar = 'amarillo'
+    
+                dataMov.ok_contratos = 1
+                this.editarDB('movimientos', dataMov)
+            })
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No existe Mov local o Cto' })
+        }
     }
 
 
@@ -292,5 +336,52 @@ export class ImportacionesComponent {
                 console.log(err)
             }
         )
+    }
+    crearDatoDB(tabla:any, data:any, func:any = false){
+        this.sqlite.createDB(tabla,data).subscribe(
+            (res:any) => {
+                if(res){
+                    if(res.mensaje){
+                        this.messageService.add({ severity: 'success', summary: 'CORRECTO', detail: 'Creado con exito' })
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error en backend' })
+                    }
+                    if(func){
+                        func()
+                    }
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta' })
+                }
+            },
+            (err:any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND' })
+            }
+        )
+    }
+    generarID(tabla:any){
+        var idd:any = this.generateUUID()
+        if(!this.db_locales[tabla].some((e:any) => { return e.id == idd})){
+            return idd
+        }
+        idd = this.generateUUID()
+        if(!this.db_locales[tabla].some((e:any) => { return e.id == idd})){
+            return idd
+        }
+        idd = this.generateUUID()
+        if(!this.db_locales[tabla].some((e:any) => { return e.id == idd})){
+            return idd
+        }
+        idd = this.generateUUID()
+        return idd
+    }
+    generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
     }
 }
