@@ -28,6 +28,9 @@ export class ComunicacionService {
     getDB(tabla: any) {
         return this.http.get(`${this.API_URI}/index.php?op=getAll&tabla=${tabla}`);
     }
+    getStatusTest() {
+        return this.http.get(`http://192.168.50.106/estado`);
+    }
     getDBAll(tabla: any) {
         return this.http.get(`${this.API_URI}/index.php?op=getAllAll&tabla=${tabla}`);
     }

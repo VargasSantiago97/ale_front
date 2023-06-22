@@ -26,6 +26,12 @@ export class SistemaComponent {
     colsDep:any = []
     datoTablaDeposito:any = []
 
+    variador: any = 0;
+    background: any = 'green'
+
+    temperatura: any = 0;
+    humedad: any = 0;
+
     constructor(
         private comunicacionService: ComunicacionService,
         private sqlite: SqliteService,
@@ -297,5 +303,26 @@ export class SistemaComponent {
         )
     }
 
+    testEstado(varr:any = false){
+
+        if(this.variador < 20){
+            this.comunicacionService.getStatusTest().subscribe(
+                (res:any) => {
+                    console.log(res)
+
+                    this.temperatura = parseFloat(res.temperature).toFixed(1)
+                    this.humedad = res.humidity
+
+                    this.background = res.estado ? 'green' : 'red'
+
+
+                    setTimeout(() => { this.testEstado() }, 1000)
+                },
+                (err:any) => {
+                    console.error(err)
+                }
+            )
+        }
+    }
 
 }

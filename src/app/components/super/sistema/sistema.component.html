@@ -131,3 +131,15 @@
 
 </div>
 
+<button (click)="testEstado(true)" [style]="{'background-color': background}">ESTADO</button>
+
+<div class="formgrid row text-center">
+    <div class="field col">
+        <h5>Temperatura</h5>
+        <p-knob [(ngModel)]="temperatura" valueTemplate="{value} C°" [readonly]="true" [size]="200"></p-knob>
+    </div>
+    <div class="field col">
+        <h5>Humedad</h5>
+        <p-knob [(ngModel)]="humedad" valueTemplate="{value} %" [readonly]="true" [size]="200"></p-knob>
+    </div>
+</div>
