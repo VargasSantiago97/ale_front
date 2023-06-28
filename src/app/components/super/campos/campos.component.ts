@@ -29,7 +29,7 @@ export class CamposComponent {
 
     silos:any = [];
     silo:any = [];
-    totalKilosSilos:any = 0;
+    totalKilosSilos:any = [];
 
     produccion:any = []
     produce:any = []
@@ -149,7 +149,7 @@ export class CamposComponent {
     }
     acualizarDatosSilos(){
         this.silos = []
-        this.totalKilosSilos = 0
+        this.totalKilosSilos = []
 
         this.getDB('silos', ()=>{
             this.silos = this.db_locales['silos'].filter((e:any) => { return (e.id_establecimiento == this.campo_select.id) && (e.estado == 1)})
@@ -173,12 +173,21 @@ export class CamposComponent {
 
                     e.kilos = parseInt(kilos)
 
-                    this.totalKilosSilos += parseInt(e.kilos)
-
                     e.grano = ''
                     if(this.db_granos.some((grano:any) => { return grano.id == e.id_grano })){
                         e.grano = this.db_granos.find((grano:any) => { return grano.id == e.id_grano }).alias
                     }
+
+                    if(this.totalKilosSilos.some((s:any) => { return s.grano == e.grano })){
+                        var totalKilosSilos = this.totalKilosSilos.find((s:any) => { return s.grano == e.grano })
+                        totalKilosSilos.total += e.kilos
+                    } else {
+                        this.totalKilosSilos.push({
+                            grano: e.grano,
+                            total: e.kilos
+                        })
+                    }
+
                 })
             })
         })
@@ -270,9 +279,9 @@ export class CamposComponent {
 
         this.getDB("lote_a_silo", () => {
 
-            this.totalKilosSilos = 0
-            const totales = this.db_locales['lote_a_silo'].filter((lotSil:any) => { return lotSil.id_establecimiento == this.campo_select.id })
-            totales.forEach((e:any) => { this.totalKilosSilos += parseInt(e.kilos) })
+            //this.totalKilosSilos = 0
+            //const totales = this.db_locales['lote_a_silo'].filter((lotSil:any) => { return lotSil.id_establecimiento == this.campo_select.id })
+            //totales.forEach((e:any) => { this.totalKilosSilos += parseInt(e.kilos) })
 
             var kilos:any = 0
 

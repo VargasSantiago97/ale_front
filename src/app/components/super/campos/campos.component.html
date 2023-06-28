@@ -153,13 +153,14 @@
                             </td>
                         </tr>
                     </tbody>
+                    <br>
                     <tfoot>
-                        <tr>
+                        <tr *ngFor="let total of totalKilosSilos">
                             <td>
-                                <strong>TOTAL:</strong>
+                                <strong>TOTAL {{total.grano}}:</strong>
                             </td>
                             <td>
-                                <strong>{{transformarDatoMostrarTabla(totalKilosSilos, 'numero')}}</strong>
+                                <strong>{{transformarDatoMostrarTabla(total.total, 'numero')}}</strong>
                             </td>
                             <td>
                             </td>

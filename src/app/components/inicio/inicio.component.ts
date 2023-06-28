@@ -1185,6 +1185,7 @@ export class InicioComponent {
         }
     }
     mostrarMovimiento(mov_id: any) {
+        console.log('MOV ID: ', mov_id)
         this.datosMovimiento = { ... this.db_movimientos.find((e:any) => { return e.id == mov_id}) }
 
         const fecha = new Date(this.datosMovimiento.fecha);
