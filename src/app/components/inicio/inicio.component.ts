@@ -110,7 +110,7 @@ export class InicioComponent {
     establecimiento: any;
 
     disFlag: any = { icono: null, fondo: null, color: null };
-    fondosFlag: any = ['info', 'success', 'warning', 'danger'];
+    fondosFlag: any = ['primary', 'secondary', 'success', 'info', 'warning', 'help', 'danger'];
     iconsFlag: any = ['pi-flag-fill', 'pi-bookmark-fill', 'pi-calendar', 'pi-check-square', 'pi-circle-fill', 'pi-cog', 'pi-dollar', 'pi-file-edit', 'pi-info-circle', 'pi-sync', 'pi-thumbs-up-fill', 'pi-thumbs-down-fill', 'pi-user', 'pi-exclamation-triangle', 'pi-exclamation-circle'];
 
     datosMovimiento: any;
