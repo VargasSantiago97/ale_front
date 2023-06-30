@@ -32,6 +32,8 @@ export class ResumenCuentasComponent {
 
     ordenarPor: any = 'razon_social'
 
+    diferencia: any = 10
+
     constructor(
         private comunicacionService: ComunicacionService
     ) { }
@@ -101,7 +103,7 @@ export class ResumenCuentasComponent {
                     saldo = saldo + haber - debe
 
                 });
-                if((saldo == 0 && this.selectCtasCero) || (saldo < 0 && this.selectCtasDeudoras) || (saldo > 0 && this.selectCtasAcreedoras)){
+                if(((saldo == 0 && this.selectCtasCero) || (saldo < 0 && this.selectCtasDeudoras) || (saldo > 0 && this.selectCtasAcreedoras)) && (Math.abs(saldo) >= this.diferencia )){
                     this.datosCuentasTransportistas.push(
                         {
                             codigo: transportista.codigo,

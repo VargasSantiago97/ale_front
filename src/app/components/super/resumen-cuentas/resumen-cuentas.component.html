@@ -17,6 +17,20 @@
             </select>
         </div>
         <div class="field col">
+            <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott" (click)="buscarSaldosTransportistas()"></button>
+        </div>
+        <div class="field col">
+        </div>
+        <div class="field col">
+        </div>
+        <div class="field col">
+        </div>
+    </div>
+
+    <br>
+
+    <div class="formgrid row">
+        <div class="field col">
             <label for="ctasSinMov" style="margin: 0px 10px 0px 30px;">Ctas sin mov:</label>
             <input id="ctasSinMov" type="checkbox" [(ngModel)]="selectCtasSinMov">
         </div>
@@ -44,7 +58,8 @@
             </select>
         </div>
         <div class="field col">
-            <button pButton pRipple type="button" label="BUSCAR" class="p-button-info bott" (click)="buscarSaldosTransportistas()"></button>
+            <label for="diff" style="margin: 0px 10px 0px 30px;">Dif.:</label>
+            <input id="diff" type="number" [(ngModel)]="diferencia">
         </div>
     </div>
 
