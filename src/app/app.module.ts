@@ -97,6 +97,7 @@ import { RetiroEstimadoComponent } from './components/super/retiro-estimado/reti
 import { KilosBalanzaComponent } from './components/super/kilos-balanza/kilos-balanza.component';
 import { DepositosresComponent } from './components/super/depositosres/depositosres.component';
 import { ImportacionesComponent } from './components/super/importaciones/importaciones.component';
+import { GMapModule } from 'primeng/gmap';
 
 
 @NgModule({
@@ -191,7 +192,8 @@ import { ImportacionesComponent } from './components/super/importaciones/importa
     InputTextareaModule,
     ScrollerModule,
     SplitButtonModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    GMapModule
   ],
   providers: [MessageService, ConfirmationService],
   bootstrap: [AppComponent]

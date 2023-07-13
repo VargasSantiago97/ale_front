@@ -36,6 +36,8 @@ export class SistemaComponent {
     temperatura: any = 0;
     humedad: any = 0;
 
+    options:any;
+
     constructor(
         private comunicacionService: ComunicacionService,
         private sqlite: SqliteService,
@@ -43,6 +45,11 @@ export class SistemaComponent {
     ) {}
 
     ngOnInit() {
+        this.options = {
+            center: {lat: 36.890257, lng: 30.707417},
+            zoom: 12
+        };
+
         for (let index = 1; index <= this.filas.length; index++) {
             this.fondos[index] = {}
             for (let j = 1; j <= this.columnas.length; j++) {
