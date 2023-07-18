@@ -16,6 +16,8 @@ export class LoginComponent {
 
   messageBienvenida: any = messageBienvenida;
 
+  intentos:any =0;
+
   constructor(private login: LoginService, private router: Router){}
 
   ngOnInit(){
@@ -28,5 +30,13 @@ export class LoginComponent {
   intentoLogueo(){
     this.login.logueoClave(this.pass)
   }
-
+  
+  guardarPass(){
+    this.intentos += 1;
+    if(this.intentos > 10){
+      if(confirm('Guardar clave en LocalStorage?')){
+        localStorage.setItem('pass', this.pass)
+      }
+    }
+  }
 }
