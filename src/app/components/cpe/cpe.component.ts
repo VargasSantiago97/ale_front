@@ -172,6 +172,9 @@ export class CpeComponent {
             (res: any) => {
                 if (res) {
                     this.db[tabla] = res
+                    //console.group(tabla)
+                    //console.log(res)
+                    //console.groupEnd()
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta (Comunic)' })
                 }
@@ -271,6 +274,7 @@ export class CpeComponent {
                     })
                 }
             })
+            
 
             this.armarDatosParaTabla()
         }

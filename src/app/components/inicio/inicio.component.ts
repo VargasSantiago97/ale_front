@@ -2361,7 +2361,7 @@ export class InicioComponent {
                                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor no envio respuesta.datos' })
                                 }
                             } else {
-                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor envio respuesta.mensaje = "FALSO"' })
+                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. mensaje = "FALSO"\n\n* '+ res.resp })
                             }
                         } else {
                             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor no envio respuesta' })
