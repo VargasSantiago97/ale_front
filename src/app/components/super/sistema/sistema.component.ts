@@ -67,6 +67,7 @@ export class SistemaComponent {
         ];
         this.colsCorr = [
             {field: 'id', header: 'Id'},
+            {field: 'ctg', header: 'CTG'},
             {field: 'corredor_movimiento_id', header: 'Id Corr. Mov.'},
             {field: 'corredor_movimiento', header: 'Corr. Mov.'},
             {field: 'corredor_cpe_cuit', header: 'Corr. Cpe. CUIT'},
@@ -205,6 +206,7 @@ export class SistemaComponent {
                             var dato = this.datoTablaCorredores.find((e:any) => { return e.id == cpe.id_movimiento})
 
                             if(dato){
+                                dato.ctg = cpe.nro_ctg
                                 dato.corredor_cpe_cuit = cpe.cuit_corredor_venta_primaria
                                 dato.estado = JSON.parse(cpe.data).estado
                                 dato.corredor_cpe = this.transf(cpe.cuit_corredor_venta_primaria, 'intervinienteCuit')

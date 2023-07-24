@@ -908,8 +908,10 @@ export class KilosBalanzaComponent {
     setearKilos() {
         if (this.selectedTablaInicio) {
             this.selectedTablaInicio.forEach((registro: any) => {
+                var kg_reg = registro.kg_regulacion ? registro.kg_regulacion : 0
+
                 registro.neto = registro.kg_neto
-                registro.regulacion = registro.kg_regulacion
+                registro.regulacion = kg_reg
                 registro.final = registro.kg_neto_final
             })
         }
