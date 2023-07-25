@@ -3046,7 +3046,7 @@ export class InicioComponent {
     exportToExcel() {
         /* Crear un libro de trabajo */
         const workbook = XLSX.utils.book_new();
-      
+
         /* Crear una hoja de cálculo */
         const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
       

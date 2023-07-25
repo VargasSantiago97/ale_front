@@ -83,6 +83,7 @@ export class SistemaComponent {
             {field: 'editado_por', header: 'Editado'},
             {field: 'kilos', header: 'Kgs'},
             {field: 'obs', header: 'Obs.'},
+            {field: 'orden', header: 'Nro Orden'},
         ];
 
         this.getAll('socios')
@@ -243,18 +244,33 @@ export class SistemaComponent {
     //MOVIMIENTOS - DEPOSITOS
     obtenerMovimientosDepositos(){
         this.datoTablaDeposito = []
-        this.getAll('movimientos', ()=>{
-            this.db['movimientos'].forEach((mov:any) => {
-                this.datoTablaDeposito.push({
-                    id: mov.id, 
-                    deposito: mov.id_deposito,
-                    creado_por: mov.creado_por,
-                    editado_por: mov.editado_por,
-                    kilos: mov.kg_regulacion,
-                    obs: mov.observaciones,
-                    diferencia: false
-                })
-            });
+
+        this.getAll('orden_carga', () => {
+
+            this.getAll('movimientos', ()=>{
+                this.db['movimientos'].forEach((mov:any) => {
+
+                    var nro_orden = ''
+
+                    if(this.db['orden_carga'].some((g:any) => { return g.id_movimiento == mov.id })){
+                        var orden_ca = this.db['orden_carga'].find((g:any) => { return g.id_movimiento == mov.id })
+
+                        nro_orden = orden_ca.numero 
+                    }
+
+                    this.datoTablaDeposito.push({
+                        id: mov.id,
+                        deposito: mov.id_deposito,
+                        creado_por: mov.creado_por,
+                        editado_por: mov.editado_por,
+                        kilos: mov.kg_regulacion,
+                        obs: mov.observaciones,
+                        orden: nro_orden,
+                        diferencia: false
+                    })
+                });
+            })
+
         })
     }
     modificarDeposito(idd:any){

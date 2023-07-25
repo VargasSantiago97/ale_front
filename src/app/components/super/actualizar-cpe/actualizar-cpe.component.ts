@@ -91,7 +91,7 @@ export class ActualizarCPEComponent {
 
                 const estado = this.transformDatoTabla(cpe.data, "estadoCPE")
 
-                if(estado != 'CN' && estado != 'AN' && estado != 'RE'){
+                if(estado != 'CN' && estado != 'AN' && estado != 'RE' && estado != 'DE' && cpe.cuit_solicitante != 20211753049){ //DE 
                     const dato = {
                         socio: this.transformDatoTabla(cpe.cuit_solicitante, "socioCuit"),
                         nro_ctg: cpe.nro_ctg,

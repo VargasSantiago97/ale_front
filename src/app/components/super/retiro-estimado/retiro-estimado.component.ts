@@ -203,762 +203,448 @@ export class RetiroEstimadoComponent {
     }
 
     imprimirReporteExcel() {
-        var datos:any = {
-            "tituloReporte": "REPORTE",
-            "fechaReporte": "17 de Junio de 2023",
+        const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+        const fechaActual = new Date();
+
+        const dia = fechaActual.getDate();
+        const mes = meses[fechaActual.getMonth()];
+        const anio = fechaActual.getFullYear();
+
+        var fechaReporte = `${dia} de ${mes} de ${anio}`;
+
+
+    // Uso de la función:
+        
+        var datos: any = {
+            "tituloReporte": "REPORTE DE CARGAS ENVIADAS",
+            "fechaReporte": fechaReporte,
             "emisorReporteNombre": "Norte Semillas S.R.L.",
             "emisorReporteDireccion": "Ruta Nacional 16 km 262",
             "emisorReporteLocalidad": "Pampa del Infierno, Chaco",
             "emisorReporteLogo": "norte.png",
             "datos": [
+        {
+            "labels": [
                 {
-                    "labels": [
-                        {
-                            "field": "col1",
-                            "header": "Col 1",
-                            "columna": "A",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col2",
-                            "header": "Col 2",
-                            "columna": "B",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col3",
-                            "header": "Col 1",
-                            "columna": "C",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col4",
-                            "header": "Col 2",
-                            "columna": "D",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col5",
-                            "header": "Col 1",
-                            "columna": "E",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col6",
-                            "header": "Col 2",
-                            "columna": "F",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col7",
-                            "header": "Col 1",
-                            "columna": "G",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col8",
-                            "header": "Col 2",
-                            "columna": "H",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col9",
-                            "header": "Col 1",
-                            "columna": "I",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col10",
-                            "header": "Col 2",
-                            "columna": "J",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col11",
-                            "header": "Col 1",
-                            "columna": "K",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col12",
-                            "header": "Col 2",
-                            "columna": "L",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col13",
-                            "header": "Col 1",
-                            "columna": "M",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col14",
-                            "header": "Col 2",
-                            "columna": "N",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col15",
-                            "header": "Col 1",
-                            "columna": "O",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col16",
-                            "header": "Col 2",
-                            "columna": "P",
-                            "fila": 10
-                        }],
-                    "encabezados": [
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "A5",
-                            "cellData": "B5"
-                        },
-                        {
-                            "header": "Destino:",
-                            "data": "Vargas",
-                            "cellHeader": "A7",
-                            "cellData": "B7"
-                        },
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "G5",
-                            "cellData": "H5"
-                        },
-                        {
-                            "header": "Destino:",
-                            "data": "Vargas",
-                            "cellHeader": "G7",
-                            "cellData": "H7"
-                        }],
-                    "datos": [
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "S_col1",
-                            "col2": "S_col2",
-                            "col3": "S_col3",
-                            "col4": "S_col4",
-                            "col5": "55",
-                            "col6": "S_col6",
-                            "col7": "S_col7",
-                            "col8": "S_col8",
-                            "col9": "S_col9",
-                            "col10": "S_col10",
-                            "col11": "S_col11",
-                            "col12": "S_col12",
-                            "col13": "S_col13",
-                            "col14": "S_col14",
-                            "col15": "S_col15",
-                            "col16": "15"
-                        },
-                        {
-                            "col1": "T_col1",
-                            "col2": "T_col2",
-                            "col3": "T_col3",
-                            "col4": "T_col4",
-                            "col5": "T_col5",
-                            "col6": "T_col6",
-                            "col7": "T_col7",
-                            "col8": "T_col8",
-                            "col9": "T_col9",
-                            "col10": "T_col10",
-                            "col11": "T_col11",
-                            "col12": "T_col12",
-                            "col13": "T_col13",
-                            "col14": "T_col14",
-                            "col15": "T_col15",
-                            "col16": "T_col16"
-                        }],
-                    "datosTotales":
-                    {
-                        "col4": "P_col4",
-                        "col5": "P_col4",
-                        "col6": "P_col6"
-                    }
+                    "field": "col1",
+                    "header": "Col 1",
+                    "columna": "A",
+                    "fila": 10
                 },
                 {
-                    "labels": [
-                        {
-                            "field": "col1",
-                            "header": "Col 1",
-                            "columna": "A",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col2",
-                            "header": "Col 2",
-                            "columna": "B",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col3",
-                            "header": "Col 1",
-                            "columna": "C",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col4",
-                            "header": "Col 2",
-                            "columna": "D",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col5",
-                            "header": "Col 1",
-                            "columna": "E",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col6",
-                            "header": "Col 2",
-                            "columna": "F",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col7",
-                            "header": "Col 1",
-                            "columna": "G",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col8",
-                            "header": "Col 2",
-                            "columna": "H",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col9",
-                            "header": "Col 1",
-                            "columna": "I",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col10",
-                            "header": "Col 2",
-                            "columna": "J",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col11",
-                            "header": "Col 1",
-                            "columna": "K",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col12",
-                            "header": "Col 2",
-                            "columna": "L",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col13",
-                            "header": "Col 1",
-                            "columna": "M",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col14",
-                            "header": "Col 2",
-                            "columna": "N",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col15",
-                            "header": "Col 1",
-                            "columna": "O",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col16",
-                            "header": "Col 2",
-                            "columna": "P",
-                            "fila": 23
-                        }],
-                    "encabezados": [
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "A18",
-                            "cellData": "B18"
-                        },
-                        {
-                            "header": "Destino:",
-                            "data": "Vargas",
-                            "cellHeader": "A20",
-                            "cellData": "B20"
-                        },
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "G18",
-                            "cellData": "H18"
-                        },
-                        {
-                            "header": "Destino:",
-                            "data": "Vargas",
-                            "cellHeader": "G20",
-                            "cellData": "H20"
-                        }],
-                    "datos": [
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "S_col1",
-                            "col2": "S_col2",
-                            "col3": "S_col3",
-                            "col4": "S_col4",
-                            "col5": "55",
-                            "col6": "S_col6",
-                            "col7": "S_col7",
-                            "col8": "S_col8",
-                            "col9": "S_col9",
-                            "col10": "S_col10",
-                            "col11": "S_col11",
-                            "col12": "S_col12",
-                            "col13": "S_col13",
-                            "col14": "S_col14",
-                            "col15": "S_col15",
-                            "col16": "15"
-                        },
-                        {
-                            "col1": "T_col1",
-                            "col2": "T_col2",
-                            "col3": "T_col3",
-                            "col4": "T_col4",
-                            "col5": "T_col5",
-                            "col6": "T_col6",
-                            "col7": "T_col7",
-                            "col8": "T_col8",
-                            "col9": "T_col9",
-                            "col10": "T_col10",
-                            "col11": "T_col11",
-                            "col12": "T_col12",
-                            "col13": "T_col13",
-                            "col14": "T_col14",
-                            "col15": "T_col15",
-                            "col16": "T_col16"
-                        }],
-                    "datosTotales":
-                    {
-                        "col4": "P_col4",
-                        "col5": "P_col4",
-                        "col6": "P_col6"
-                    }
-                }]
-        }
-
-        
-        datos = {
-            "tituloReporte": "REPORTE",
-            "fechaReporte": "17 de Junio de 2023",
-            "emisorReporteNombre": "Norte",
-            "emisorReporteDireccion": "Ruta",
-            "emisorReporteLocalidad": "Pampa",
-            emisorReporteLogo: "norte.png",
+                    "field": "col2",
+                    "header": "Col 2",
+                    "columna": "B",
+                    "fila": 10
+                },
+                {
+                    "field": "col3",
+                    "header": "Col 1",
+                    "columna": "C",
+                    "fila": 10
+                },
+                {
+                    "field": "col4",
+                    "header": "Col 2",
+                    "columna": "D",
+                    "fila": 10
+                },
+                {
+                    "field": "col5",
+                    "header": "Col 1",
+                    "columna": "E",
+                    "fila": 10
+                },
+                {
+                    "field": "col6",
+                    "header": "Col 2",
+                    "columna": "F",
+                    "fila": 10
+                },
+                {
+                    "field": "col7",
+                    "header": "Col 1",
+                    "columna": "G",
+                    "fila": 10
+                },
+                {
+                    "field": "col8",
+                    "header": "Col 2",
+                    "columna": "H",
+                    "fila": 10
+                },
+                {
+                    "field": "col9",
+                    "header": "Col 1",
+                    "columna": "I",
+                    "fila": 10
+                },
+                {
+                    "field": "col10",
+                    "header": "Col 2",
+                    "columna": "J",
+                    "fila": 10
+                },
+                {
+                    "field": "col11",
+                    "header": "Col 1",
+                    "columna": "K",
+                    "fila": 10
+                },
+                {
+                    "field": "col12",
+                    "header": "Col 2",
+                    "columna": "L",
+                    "fila": 10
+                },
+                {
+                    "field": "col13",
+                    "header": "Col 1",
+                    "columna": "M",
+                    "fila": 10
+                },
+                {
+                    "field": "col14",
+                    "header": "Col 2",
+                    "columna": "N",
+                    "fila": 10
+                },
+                {
+                    "field": "col15",
+                    "header": "Col 1",
+                    "columna": "O",
+                    "fila": 10
+                },
+                {
+                    "field": "col16",
+                    "header": "Col 2",
+                    "columna": "P",
+                    "fila": 10
+                }],
+            "encabezados": [
+                {
+                    "header": "Cliente:",
+                    "data": "Santiago",
+                    "cellHeader": "A5",
+                    "cellData": "B5"
+                },
+                {
+                    "header": "Destino:",
+                    "data": "Vargas",
+                    "cellHeader": "A7",
+                    "cellData": "B7"
+                },
+                {
+                    "header": "Cliente:",
+                    "data": "Santiago",
+                    "cellHeader": "G5",
+                    "cellData": "H5"
+                },
+                {
+                    "header": "Destino:",
+                    "data": "Vargas",
+                    "cellHeader": "G7",
+                    "cellData": "H7"
+                }],
             "datos": [
                 {
-                    "labels": [
-                        {
-                            "field": "col1",
-                            "header": "Col 1",
-                            "columna": "A",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col2",
-                            "header": "Col 2",
-                            "columna": "B",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col3",
-                            "header": "Col 1",
-                            "columna": "C",
-                            "fila": 10
-                        },
-                        {
-                            "field": "col4",
-                            "header": "Col 2",
-                            "columna": "D",
-                            "fila": 10
-                        }
-                    ],
-                    "encabezados": [
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "A5",
-                            "cellData": "B5"
-                        }
-                    ],
-                    "datos": [
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "S_col1",
-                            "col2": "S_col2",
-                            "col3": "S_col3",
-                            "col4": "S_col4",
-                            "col5": "55",
-                            "col6": "S_col6",
-                            "col7": "S_col7",
-                            "col8": "S_col8",
-                            "col9": "S_col9",
-                            "col10": "S_col10",
-                            "col11": "S_col11",
-                            "col12": "S_col12",
-                            "col13": "S_col13",
-                            "col14": "S_col14",
-                            "col15": "S_col15",
-                            "col16": "15"
-                        },
-                        {
-                            "col1": "T_col1",
-                            "col2": "T_col2",
-                            "col3": "T_col3",
-                            "col4": "T_col4",
-                            "col5": "T_col5",
-                            "col6": "T_col6",
-                            "col7": "T_col7",
-                            "col8": "T_col8",
-                            "col9": "T_col9",
-                            "col10": "T_col10",
-                            "col11": "T_col11",
-                            "col12": "T_col12",
-                            "col13": "T_col13",
-                            "col14": "T_col14",
-                            "col15": "T_col15",
-                            "col16": "T_col16"
-                        }],
-                    "datosTotales":
-                    {
-                        "col4": "(D11:D15)",
-                        "col5": "P_col4",
-                        "col6": "P_col6"
-                    }
+                    "col1": "P_col1sssssssss",
+                    "col2": "P_col2",
+                    "col3": "P_col3",
+                    "col4": "P_col4",
+                    "col5": "2541",
+                    "col6": "P_col6",
+                    "col7": "P_col7",
+                    "col8": "P_cssssssol8",
+                    "col9": "P_col9",
+                    "col10": "P_col10",
+                    "col11": "P_col11",
+                    "col12": "P_col12",
+                    "col13": "P_col13",
+                    "col14": "P_col14",
+                    "col15": "P_col15",
+                    "col16": "16"
                 },
                 {
-                    "labels": [
-                        {
-                            "field": "col1",
-                            "header": "Col 1",
-                            "columna": "A",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col2",
-                            "header": "Col 2",
-                            "columna": "B",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col3",
-                            "header": "Col 1",
-                            "columna": "C",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col4",
-                            "header": "Col 2",
-                            "columna": "D",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col5",
-                            "header": "Col 1",
-                            "columna": "E",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col6",
-                            "header": "Col 2",
-                            "columna": "F",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col7",
-                            "header": "Col 1",
-                            "columna": "G",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col8",
-                            "header": "Col 2",
-                            "columna": "H",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col9",
-                            "header": "Col 1",
-                            "columna": "I",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col10",
-                            "header": "Col 2",
-                            "columna": "J",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col11",
-                            "header": "Col 1",
-                            "columna": "K",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col12",
-                            "header": "Col 2",
-                            "columna": "L",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col13",
-                            "header": "Col 1",
-                            "columna": "M",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col14",
-                            "header": "Col 2",
-                            "columna": "N",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col15",
-                            "header": "Col 1",
-                            "columna": "O",
-                            "fila": 23
-                        },
-                        {
-                            "field": "col16",
-                            "header": "Col 2",
-                            "columna": "P",
-                            "fila": 23
-                        }],
-                    "encabezados": [
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "A18",
-                            "cellData": "B18"
-                        },
-                        {
-                            "header": "Destino:",
-                            "data": "Vargas",
-                            "cellHeader": "A20",
-                            "cellData": "B20"
-                        },
-                        {
-                            "header": "Cliente:",
-                            "data": "Santiago",
-                            "cellHeader": "G18",
-                            "cellData": "H18"
-                        },
-                        {
-                            "header": "Destino:",
-                            "data": "Vargas",
-                            "cellHeader": "G20",
-                            "cellData": "H20"
-                        }],
-                    "datos": [
-                        {
-                            "col1": "P_col1sssssssss",
-                            "col2": "P_col2",
-                            "col3": "P_col3",
-                            "col4": "P_col4",
-                            "col5": "2541",
-                            "col6": "P_col6",
-                            "col7": "P_col7",
-                            "col8": "P_cssssssol8",
-                            "col9": "P_col9",
-                            "col10": "P_col10",
-                            "col11": "P_col11",
-                            "col12": "P_col12",
-                            "col13": "P_col13",
-                            "col14": "P_col14",
-                            "col15": "P_col15",
-                            "col16": "16"
-                        },
-                        {
-                            "col1": "S_col1",
-                            "col2": "S_col2",
-                            "col3": "S_col3",
-                            "col4": "S_col4",
-                            "col5": "55",
-                            "col6": "S_col6",
-                            "col7": "S_col7",
-                            "col8": "S_col8",
-                            "col9": "S_col9",
-                            "col10": "S_col10",
-                            "col11": "S_col11",
-                            "col12": "S_col12",
-                            "col13": "S_col13",
-                            "col14": "S_col14",
-                            "col15": "S_col15",
-                            "col16": "15"
-                        },
-                        {
-                            "col1": "T_col1",
-                            "col2": "T_col2",
-                            "col3": "T_col3",
-                            "col4": "T_col4",
-                            "col5": "T_col5",
-                            "col6": "T_col6",
-                            "col7": "T_col7",
-                            "col8": "T_col8",
-                            "col9": "T_col9",
-                            "col10": "T_col10",
-                            "col11": "T_col11",
-                            "col12": "T_col12",
-                            "col13": "T_col13",
-                            "col14": "T_col14",
-                            "col15": "T_col15",
-                            "col16": "T_col16"
-                        }],
-                    "datosTotales":
-                    {
-                        "col4": "P_col4",
-                        "col5": "P_col4",
-                        "col6": "P_col6"
-                    }
-                }]
-        }
+                    "col1": "P_col1sssssssss",
+                    "col2": "P_col2",
+                    "col3": "P_col3",
+                    "col4": "P_col4",
+                    "col5": "2541",
+                    "col6": "P_col6",
+                    "col7": "P_col7",
+                    "col8": "P_cssssssol8",
+                    "col9": "P_col9",
+                    "col10": "P_col10",
+                    "col11": "P_col11",
+                    "col12": "P_col12",
+                    "col13": "P_col13",
+                    "col14": "P_col14",
+                    "col15": "P_col15",
+                    "col16": "16"
+                },
+                {
+                    "col1": "P_col1sssssssss",
+                    "col2": "P_col2",
+                    "col3": "P_col3",
+                    "col4": "P_col4",
+                    "col5": "2541",
+                    "col6": "P_col6",
+                    "col7": "P_col7",
+                    "col8": "P_cssssssol8",
+                    "col9": "P_col9",
+                    "col10": "P_col10",
+                    "col11": "P_col11",
+                    "col12": "P_col12",
+                    "col13": "P_col13",
+                    "col14": "P_col14",
+                    "col15": "P_col15",
+                    "col16": "16"
+                },
+                {
+                    "col1": "S_col1",
+                    "col2": "S_col2",
+                    "col3": "S_col3",
+                    "col4": "S_col4",
+                    "col5": "55",
+                    "col6": "S_col6",
+                    "col7": "S_col7",
+                    "col8": "S_col8",
+                    "col9": "S_col9",
+                    "col10": "S_col10",
+                    "col11": "S_col11",
+                    "col12": "S_col12",
+                    "col13": "S_col13",
+                    "col14": "S_col14",
+                    "col15": "S_col15",
+                    "col16": "15"
+                },
+                {
+                    "col1": "T_col1",
+                    "col2": "T_col2",
+                    "col3": "T_col3",
+                    "col4": "T_col4",
+                    "col5": "T_col5",
+                    "col6": "T_col6",
+                    "col7": "T_col7",
+                    "col8": "T_col8",
+                    "col9": "T_col9",
+                    "col10": "T_col10",
+                    "col11": "T_col11",
+                    "col12": "T_col12",
+                    "col13": "T_col13",
+                    "col14": "T_col14",
+                    "col15": "T_col15",
+                    "col16": "T_col16"
+                }],
+            "datosTotales":
+            {
+                "col4": "P_col4",
+                "col5": "P_col4",
+                "col6": "P_col6"
+            }
+        },
+        {
+            "labels": [
+                {
+                    "field": "col1",
+                    "header": "Col 1",
+                    "columna": "A",
+                    "fila": 23
+                },
+                {
+                    "field": "col2",
+                    "header": "Col 2",
+                    "columna": "B",
+                    "fila": 23
+                },
+                {
+                    "field": "col3",
+                    "header": "Col 1",
+                    "columna": "C",
+                    "fila": 23
+                },
+                {
+                    "field": "col4",
+                    "header": "Col 2",
+                    "columna": "D",
+                    "fila": 23
+                },
+                {
+                    "field": "col5",
+                    "header": "Col 1",
+                    "columna": "E",
+                    "fila": 23
+                },
+                {
+                    "field": "col6",
+                    "header": "Col 2",
+                    "columna": "F",
+                    "fila": 23
+                },
+                {
+                    "field": "col7",
+                    "header": "Col 1",
+                    "columna": "G",
+                    "fila": 23
+                },
+                {
+                    "field": "col8",
+                    "header": "Col 2",
+                    "columna": "H",
+                    "fila": 23
+                },
+                {
+                    "field": "col9",
+                    "header": "Col 1",
+                    "columna": "I",
+                    "fila": 23
+                },
+                {
+                    "field": "col10",
+                    "header": "Col 2",
+                    "columna": "J",
+                    "fila": 23
+                },
+                {
+                    "field": "col11",
+                    "header": "Col 1",
+                    "columna": "K",
+                    "fila": 23
+                },
+                {
+                    "field": "col12",
+                    "header": "Col 2",
+                    "columna": "L",
+                    "fila": 23
+                },
+                {
+                    "field": "col13",
+                    "header": "Col 1",
+                    "columna": "M",
+                    "fila": 23
+                },
+                {
+                    "field": "col14",
+                    "header": "Col 2",
+                    "columna": "N",
+                    "fila": 23
+                },
+                {
+                    "field": "col15",
+                    "header": "Col 1",
+                    "columna": "O",
+                    "fila": 23
+                },
+                {
+                    "field": "col16",
+                    "header": "Col 2",
+                    "columna": "P",
+                    "fila": 23
+                }],
+            "encabezados": [
+                {
+                    "header": "Cliente:",
+                    "data": "Santiago",
+                    "cellHeader": "A18",
+                    "cellData": "B18"
+                },
+                {
+                    "header": "Destino:",
+                    "data": "Vargas",
+                    "cellHeader": "A20",
+                    "cellData": "B20"
+                },
+                {
+                    "header": "Cliente:",
+                    "data": "Santiago",
+                    "cellHeader": "G18",
+                    "cellData": "H18"
+                },
+                {
+                    "header": "Destino:",
+                    "data": "Vargas",
+                    "cellHeader": "G20",
+                    "cellData": "H20"
+                }],
+            "datos": [
+                {
+                    "col1": "P_col1sssssssss",
+                    "col2": "P_col2",
+                    "col3": "P_col3",
+                    "col4": "P_col4",
+                    "col5": "2541",
+                    "col6": "P_col6",
+                    "col7": "P_col7",
+                    "col8": "P_cssssssol8",
+                    "col9": "P_col9",
+                    "col10": "P_col10",
+                    "col11": "P_col11",
+                    "col12": "P_col12",
+                    "col13": "P_col13",
+                    "col14": "P_col14",
+                    "col15": "P_col15",
+                    "col16": "16"
+                },
+                {
+                    "col1": "S_col1",
+                    "col2": "S_col2",
+                    "col3": "S_col3",
+                    "col4": "S_col4",
+                    "col5": "55",
+                    "col6": "S_col6",
+                    "col7": "S_col7",
+                    "col8": "S_col8",
+                    "col9": "S_col9",
+                    "col10": "S_col10",
+                    "col11": "S_col11",
+                    "col12": "S_col12",
+                    "col13": "S_col13",
+                    "col14": "S_col14",
+                    "col15": "S_col15",
+                    "col16": "15"
+                },
+                {
+                    "col1": "T_col1",
+                    "col2": "T_col2",
+                    "col3": "T_col3",
+                    "col4": "T_col4",
+                    "col5": "T_col5",
+                    "col6": "T_col6",
+                    "col7": "T_col7",
+                    "col8": "T_col8",
+                    "col9": "T_col9",
+                    "col10": "T_col10",
+                    "col11": "T_col11",
+                    "col12": "T_col12",
+                    "col13": "T_col13",
+                    "col14": "T_col14",
+                    "col15": "T_col15",
+                    "col16": "T_col16"
+                }],
+            "datosTotales":
+            {
+                "col4": "P_col4",
+                "col5": "P_col4",
+                "col6": "P_col6"
+            }
+        }]
+}
 
-        var url = `${this.API_URI_REPORTE_XLSX}/index.php?&o=${this.objUtf8ToBase64(datos)}`
-        window.open(url + '&D=D');
+
+
+var url = `${this.API_URI_REPORTE_XLSX}/index.php?&o=${this.objUtf8ToBase64(datos)}`
+window.open(url + '&D=D');
 
     }
 
-    
 
-    objUtf8ToBase64(ent: any) {
-        let str = JSON.stringify(ent)
-        let bytes = new TextEncoder().encode(str);
-        let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
-        return base64;
-    }
+
+objUtf8ToBase64(ent: any) {
+    let str = JSON.stringify(ent)
+    let bytes = new TextEncoder().encode(str);
+    let base64 = btoa(String.fromCharCode(...new Uint8Array(bytes.buffer)));
+    return base64;
+}
 }
