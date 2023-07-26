@@ -1119,5 +1119,12 @@ export class ProduccionDetalleComponent {
         window.print()
     }
 
+    grano(){
+        if(this.idGrano){
+            var grano = this.db_granos.find((e:any) => { return e.id == this.idGrano })
+            return grano.alias
+        }
+    }
+
 
 }
