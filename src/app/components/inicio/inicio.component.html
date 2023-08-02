@@ -33,16 +33,16 @@
 
         <input type="text" class="input-text-codigo {{filtroRapido.orden ? 'fondoVerde' : ''}}"
             style="width: 100px; margin-left: 10px;" placeholder="ORDEN" [(ngModel)]="filtroRapido.orden"
-            (ngModelChange)="datosParaTabla(false, true)">
+            (keydown.enter)="datosParaTabla(false, true)">
         <input type="text" class="input-text-codigo {{filtroRapido.cpe ? 'fondoVerde' : ''}}"
             style="width: 100px; margin-left: 10px;" placeholder="CPE" [(ngModel)]="filtroRapido.cpe"
-            (ngModelChange)="datosParaTabla(false, true)">
+            (keydown.enter)="datosParaTabla(false, true)">
         <input type="text" class="input-text-codigo {{filtroRapido.ctg ? 'fondoVerde' : ''}}"
             style="width: 150px; margin-left: 10px;" placeholder="CTG" [(ngModel)]="filtroRapido.ctg"
-            (ngModelChange)="datosParaTabla(false, true)">
+            (keydown.enter)="datosParaTabla(false, true)">
         <input type="text" class="input-text-codigo {{filtroRapido.patente ? 'fondoVerde' : ''}}"
             style="width: 100px; margin-left: 10px;" placeholder="PAT" [(ngModel)]="filtroRapido.patente"
-            (ngModelChange)="datosParaTabla(false, true)">
+            (keydown.enter)="datosParaTabla(false, true)">
 
     </ng-template>
     <ng-template pTemplate="header" let-columns>

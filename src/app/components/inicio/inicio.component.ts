@@ -1187,6 +1187,7 @@ export class InicioComponent {
     mostrarMovimiento(mov_id: any) {
         console.log('MOV ID: ', mov_id)
         this.datosMovimiento = { ... this.db_movimientos.find((e:any) => { return e.id == mov_id}) }
+        console.log(this.datosMovimiento)
 
         const fecha = new Date(this.datosMovimiento.fecha);
 
@@ -3048,6 +3049,15 @@ export class InicioComponent {
         const workbook = XLSX.utils.book_new();
 
         /* Crear una hoja de cálculo */
+        const datos = this.dataParaMostrarTabla.map((e:any) => {
+
+            var banderas = ''
+            e.banderas.forEach((band:any) => {
+                banderas += (band.alias + ', ')
+            })
+
+            e.banderas = banderas
+        })
         const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
       
         /* Agregar la hoja de cálculo al libro de trabajo */
