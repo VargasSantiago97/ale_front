@@ -113,7 +113,7 @@ export class RetirosComponent {
 
         this.colsSociedad = [
             { field: 'socio', header: 'SOCIO' },
-            { field: 'corresponde', header: 'CORRESPONDE' },
+            { field: 'corresponde', header: 'CORRESPONDE (Trilla)' },
             { field: 'retiros', header: 'RETIROS TRILLA' },
             { field: 'camara', header: 'CAMARA' },
             { field: 'clientes', header: 'CLIENTES' },
@@ -121,7 +121,7 @@ export class RetirosComponent {
             { field: 'lotes_yc', header: 'LOTES YC' },
             { field: 'lotes_pl', header: 'LOTES PL' },
             { field: 'saldo_lotes', header: 'SALDO' },
-            { field: 'bolsones', header: 'CORRESPONDE BOLSONES' },
+            { field: 'bolsones', header: 'CORRESPONDE (Bolsones)' },
             { field: 'retiros_bolsones', header: 'RETIROS BOLSONES' },
             { field: 'saldo_final', header: 'SALDO FINAL' },
         ]
@@ -632,7 +632,7 @@ export class RetirosComponent {
         const ID_PLANJAR = '9c89bfa40ad1'
 
         const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
-        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb']
+        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d']
 
         //Armamos establecimientos que estan en sociedad / Lotes PL / Lotes YC
         var establecimientosSociedad: any = []
