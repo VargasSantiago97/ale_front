@@ -809,17 +809,21 @@ export class KilosBalanzaComponent {
             return
         }
 
+        movLocal.kg_neto = 0
+        movLocal.kg_regulacion = 0
+        movLocal.kg_neto_final = 0
+
+        movLocal.ok_balanza = 1
+
         if (registro.neto && registro.final) {
             movLocal.kg_neto = registro.neto
             movLocal.kg_regulacion = registro.regulacion
             movLocal.kg_neto_final = registro.final
-
-            movLocal.ok_balanza = 1
-
-            this.editarDB('movimientos', movLocal, () => {
-                registro.ok_balanza = true
-            })
         }
+
+        this.editarDB('movimientos', movLocal, () => {
+            registro.ok_balanza = true
+        })
     }
 
     //varios (los seleccionados)
