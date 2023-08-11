@@ -11,6 +11,7 @@ import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 export class ProduccionComponent {
 
     db_socios: any = []
+    db_granos: any = []
 
     db_locales: any = {
         lotes: [],
@@ -24,6 +25,8 @@ export class ProduccionComponent {
     load_mov:any = true;
     load_mov_orig: any = true;
     load_lote_silo: any = true;
+
+    idGrano: any = ''
 
 
 
@@ -88,26 +91,28 @@ export class ProduccionComponent {
         };
 
         this.obtenerSociosDB()
+        this.obtenerGranosDB()
 
         this.getDB('lotes', () => {
             this.load_lote = false
-            this.generarDatosTabla()
         })
         this.getDB('establecimientos', () => {
             this.load_est = false
-            this.generarDatosTabla()
         })
         this.getDB('movimientos', () => {
             this.load_mov = false
-            this.generarDatosTabla()
         })
         this.getDB('movimiento_origen', () => {
             this.load_mov_orig = false
-            this.generarDatosTabla()
         })
         this.getDB('lote_a_silo', () => {
             this.load_lote_silo = false
-            this.generarDatosTabla()
+        })
+        this.getDB('lotes', () => {
+            this.load_lote_silo = false
+        })
+        this.getDB('silos', () => {
+            this.load_lote_silo = false
         })
     }
 
@@ -116,7 +121,16 @@ export class ProduccionComponent {
             (res: any) => {
                 this.db_socios = res
                 this.load_soc = false
-                this.generarDatosTabla()
+            },
+            (err: any) => {
+                console.log(err)
+            }
+        )
+    }
+    obtenerGranosDB() {
+        this.comunicacionService.getDB('granos').subscribe(
+            (res: any) => {
+                this.db_granos = res
             },
             (err: any) => {
                 console.log(err)
@@ -138,7 +152,7 @@ export class ProduccionComponent {
                 var kg_total = 0
 
                 //HAS
-                var lotes = this.db_locales.lotes.filter((f:any) => { return f.id_establecimiento == e.id})
+                var lotes = this.db_locales.lotes.filter((f:any) => { return f.id_establecimiento == e.id && f.id_grano == this.idGrano })
                 lotes.forEach((f:any) => {
                     if(f.estado == 1){
                         const hasLote = f.has ? parseInt(f.has) : 0
@@ -146,15 +160,31 @@ export class ProduccionComponent {
                     }
                 })
 
+
+                var lotesHabilitados:any = []
+                var silosHabilitados:any = []
+
+                this.db_locales.lotes.map( (f:any) => {
+                    if(f.id_grano == this.idGrano && f.id_establecimiento == e.id){
+                        lotesHabilitados.push(f.id)
+                    }
+                })
+
+                this.db_locales.silos.map( (f:any) => {
+                    if(f.id_grano == this.idGrano && f.id_establecimiento == e.id){
+                        silosHabilitados.push(f.id)
+                    }
+                })
+
                 //TRILLA
-                var movimiento_origen = this.db_locales.movimiento_origen.filter((f:any) => { return f.id_establecimiento == e.id})
+                var movimiento_origen = this.db_locales.movimiento_origen.filter((f:any) => { return (lotesHabilitados.includes(f.id_origen) )})
                 movimiento_origen.forEach((f:any) => {
                     const kgMov = f.kilos ? parseInt(f.kilos) : 0
                     kg_trilla += kgMov
                 })
 
                 //SILOS
-                var lote_a_silo = this.db_locales.lote_a_silo.filter((f:any) => { return f.id_establecimiento == e.id}) 
+                var lote_a_silo = this.db_locales.lote_a_silo.filter((f:any) => { return silosHabilitados.includes(f.id_silo) }) 
                 lote_a_silo.forEach((f:any) => {
                     const kilos = f.kilos ? parseInt(f.kilos) : 0
                     kg_silo += kilos

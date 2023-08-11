@@ -1,5 +1,14 @@
 <br>
 
+<div class="ocultarImpresion formgrid row">
+    <div class="field col">
+        <select [(ngModel)]="idGrano">
+            <option *ngFor="let dato of db_granos" value="{{dato.id}}">{{dato.alias}}</option>
+        </select>
+        <button (click)="generarDatosTabla()" style="margin-left: 50px;">BUSCAR</button>
+    </div>
+</div>
+
 <div style="margin: 100px;">
     <div class="formgrid row">
         <div #CAMPOS class="field col">
