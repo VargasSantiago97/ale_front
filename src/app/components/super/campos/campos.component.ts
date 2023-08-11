@@ -377,13 +377,19 @@ export class CamposComponent {
     }
 
     agregarLoteSilo(){
-        this.silo.lote_a_silo.push({
+        var nuevoRegistro = {
             id: false,
             id_lote: null,
             id_silo: this.silo.id,
             id_establecimiento: this.campo_select.id,
             kilos: null
-        })
+        }
+
+        if(this.lotes.length == 1){
+            nuevoRegistro.id_lote = this.lotes[0].id
+        }
+
+        this.silo.lote_a_silo.push(nuevoRegistro)
     }
     borrarLoteSilo(idd:any){
         if(confirm('Desea eliminar?')){
