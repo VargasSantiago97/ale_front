@@ -243,4 +243,72 @@
             </div>
         </div>
     </div>
+
+    <br>
+
+    <div *ngIf="idGranosSeleccionado == '465b2f38ca75'" class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>SOCIEDAD - TIJUANA: ANDION</strong></h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedad">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaSociedad">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
+                                <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
+                                <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
+                                <label><strong>{{datosTablaSociedadTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div *ngIf="idGranosSeleccionado == '465b2f38ca75'" class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>SOCIEDAD - TRAVIESAS: MANANTIAL POZO</strong></h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedad">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaSociedad">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
+                                <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
+                                <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
+                                <label><strong>{{datosTablaSociedadTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

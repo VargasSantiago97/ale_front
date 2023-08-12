@@ -302,6 +302,7 @@ export class RetirosComponent {
 
     //DATOS MOVIMIENTOS
     armarDatosMovimientos() {
+        console.log(this.idGranosSeleccionado)
 
         this.datosProduccion = []
 
@@ -598,7 +599,7 @@ export class RetirosComponent {
         this.datosTablaSociedad = []
 
         var dataNP: any = {
-            socio: 'NORTE-PLANJAR',
+            socio: 'NORTE-PLANJAR (50%)',
             corresponde: 0,
             retiros: 0,
             camara: 0,
@@ -613,7 +614,7 @@ export class RetirosComponent {
         }
 
         var dataY: any = {
-            socio: 'YAGUA',
+            socio: 'YAGUA (50%)',
             corresponde: 0,
             retiros: 0,
             camara: 0,
@@ -643,7 +644,7 @@ export class RetirosComponent {
             if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
                 const producenSocios:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
 
-                if(producenSocios.some((e:any) => { return e.id_socio == ID_NORTE }) && producenSocios.some((e:any) => { return e.id_socio == ID_YAGUA })){
+                if(producenSocios.some((e:any) => { return (e.id_socio == ID_NORTE) && (e.porcentaje == 50) }) && producenSocios.some((e:any) => { return (e.id_socio == ID_YAGUA) && ( e.porcentaje == 50) })){
                     establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
                 }
 
@@ -756,7 +757,21 @@ export class RetirosComponent {
                 }
 
             } else {
-                const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                //SI NO EXISTIERA MOVIMIENTO LOCAL:
+                var kilos = 35000
+
+                if(movimiento.kg_campo){
+                    if(parseInt(movimiento.kg_campo)){
+                        kilos = parseInt(movimiento.kg_campo)
+                    }
+                }
+                
+                if(movimiento.kg_neto){
+                    if(parseInt(movimiento.kg_neto)){
+                        kilos = parseInt(movimiento.kg_neto)
+                    }
+                }
+
                 paqueteMovimientos.push({
                     kilos: kilos,
                     id_grano: movimiento.id_grano,
