@@ -40,6 +40,8 @@ export class ActualizarCPEComponent {
         DD: "Descargado en destino",
     }
 
+    cpeNoIncluir: any = ["10111467560", "10111467731", "10111469147", "10111465612", "10111467602", "10111467673"]
+
     constructor(
         private comunicacionService: ComunicacionService,
         private cpeService: CpeService,
@@ -91,7 +93,9 @@ export class ActualizarCPEComponent {
 
                 const estado = this.transformDatoTabla(cpe.data, "estadoCPE")
 
-                if(estado != 'CN' && estado != 'AN' && estado != 'RE' && estado != 'DE' && cpe.cuit_solicitante != 20211753049){ //DE 
+
+
+                if(estado != 'CN' && estado != 'AN' && estado != 'RE' && estado != 'DE' && cpe.cuit_solicitante != 20211753049 && cpe.nro_ctg[2] == 1 && !(this.cpeNoIncluir.includes(cpe.nro_ctg))){ //DE
                     const dato = {
                         socio: this.transformDatoTabla(cpe.cuit_solicitante, "socioCuit"),
                         nro_ctg: cpe.nro_ctg,
