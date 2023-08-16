@@ -27,10 +27,15 @@ export class ProduccionComponent {
     load_lote_silo: any = true;
 
     idGrano: any = ''
+    tipo_grano: any = ''
 
 
 
     datosTabla:any = []
+    datosTablaTotales:any = {}
+
+    datosTablaSociedades:any = []
+    datosTablaSociedadesTotales:any = {}
 
     campo_select: any;
 
@@ -50,6 +55,7 @@ export class ProduccionComponent {
 
 
     cols: any = []
+    colsSociedades: any = []
     graficoKilos: any = []
     graficoRinde: any = []
 
@@ -61,11 +67,24 @@ export class ProduccionComponent {
 
     ngOnInit() {
         this.cols = [
+            { field: 'produce', header: 'Produce'},
             { field: 'campo', header: 'Establecimiento'},
             { field: 'has', header: 'Has'},
             { field: 'kg_trilla', header: 'Kgs Trilla'},
             { field: 'kg_silo', header: 'Kgs a Silo'},
             { field: 'kg_total', header: 'TOTALES'},
+            { field: 'kg_desde_silo', header: 'Kgs desde Silo'},
+            { field: 'kg_en_silos', header: 'Kgs en Silos'},
+            { field: 'rinde', header: 'Rinde'},
+        ]
+        this.colsSociedades = [
+            { field: 'produce', header: 'Produce'},
+            { field: 'has', header: 'Has'},
+            { field: 'kg_trilla', header: 'Kgs Trilla'},
+            { field: 'kg_silo', header: 'Kgs a Silo'},
+            { field: 'kg_total', header: 'TOTALES'},
+            { field: 'kg_desde_silo', header: 'Kgs desde Silo'},
+            { field: 'kg_en_silos', header: 'Kgs en Silos'},
             { field: 'rinde', header: 'Rinde'},
         ]
 
@@ -114,6 +133,7 @@ export class ProduccionComponent {
         this.getDB('silos', () => {
             this.load_lote_silo = false
         })
+        this.getDB('produccion')
     }
 
     obtenerSociosDB() {
@@ -142,6 +162,15 @@ export class ProduccionComponent {
     generarDatosTabla(){
         if(!(this.load_est || this.load_soc || this.load_lote || this.load_mov || this.load_mov_orig || this.load_lote_silo)){
             this.datosTabla = []
+
+            this.tipo_grano = ' - ' + this.transformarDatoMostrarTabla(this.idGrano, 'granos')
+
+            var has_totales = 0
+            var kg_trilla_totales = 0
+            var kg_silo_totales = 0
+            var kg_total_totales = 0
+            var kg_desde_silo_totales = 0
+            var kg_en_silos_totales = 0
             
             this.db_locales.establecimientos.forEach((e:any) => {
 
@@ -149,7 +178,10 @@ export class ProduccionComponent {
                 var rinde = 0
                 var kg_trilla = 0
                 var kg_silo = 0
+                var kg_desde_silo = 0
                 var kg_total = 0
+                var kg_en_silos = 0
+                var produce:any = []
 
                 //HAS
                 var lotes = this.db_locales.lotes.filter((f:any) => { return f.id_establecimiento == e.id && f.id_grano == this.idGrano })
@@ -176,42 +208,149 @@ export class ProduccionComponent {
                     }
                 })
 
-                //TRILLA
+                //DESDE TRILLA
                 var movimiento_origen = this.db_locales.movimiento_origen.filter((f:any) => { return (lotesHabilitados.includes(f.id_origen) )})
                 movimiento_origen.forEach((f:any) => {
                     const kgMov = f.kilos ? parseInt(f.kilos) : 0
                     kg_trilla += kgMov
                 })
+                //DESDE SILOS
+                var movimiento_origen = this.db_locales.movimiento_origen.filter((f:any) => { return (silosHabilitados.includes(f.id_origen) )})
+                movimiento_origen.forEach((f:any) => {
+                    const kgMov = f.kilos ? parseInt(f.kilos) : 0
+                    kg_desde_silo += kgMov
+                })
 
-                //SILOS
+                //TRILLA A SILOS
                 var lote_a_silo = this.db_locales.lote_a_silo.filter((f:any) => { return silosHabilitados.includes(f.id_silo) }) 
                 lote_a_silo.forEach((f:any) => {
                     const kilos = f.kilos ? parseInt(f.kilos) : 0
                     kg_silo += kilos
                 })
+                
+                //PRODUCE
+                var producen = this.db_locales.produccion.filter((f:any) => { return f.id_establecimiento == e.id })
+                producen.forEach((f:any) => {
+                    produce.push(this.transformarDatoMostrarTabla(f.id_socio, 'socio'))
+                })
 
+
+                kg_en_silos = kg_silo - kg_desde_silo
                 kg_total = kg_trilla + kg_silo
 
                 if(has){
                     rinde = kg_total/has
                 }
 
-                this.datosTabla.push({
-                    id: e.id,
-                    campo: e.alias,
+                //AGREGAR A LA LISTA
+                if(has){
+                    this.datosTabla.push({
+                        id: e.id,
+                        produce: produce.join(', '),
+                        campo: e.alias,
+                        has: this.transformarDatoMostrarTabla(has, "numero"),
+                        rinde: this.transformarDatoMostrarTabla(rinde, "numero"),
+                        kg_trilla: this.transformarDatoMostrarTabla(kg_trilla, "numero"),
+                        kg_silo: this.transformarDatoMostrarTabla(kg_silo, "numero"),
+                        kg_total: this.transformarDatoMostrarTabla(kg_total, "numero"),
+                        kg_desde_silo: this.transformarDatoMostrarTabla(kg_desde_silo, "numero"),
+                        kg_en_silos: this.transformarDatoMostrarTabla(kg_en_silos, "numero"),
+
+                        num_has: has,
+                        num_kg_trilla: kg_trilla,
+                        num_kg_silo: kg_silo,
+                        num_kg_total: kg_total,
+                        num_kg_desde_silo: kg_desde_silo,
+                        num_kg_en_silos: kg_en_silos,
+
+                    })
+    
+                    this.graficoKilos.labels.push(e.alias)
+                    this.graficoKilos.datasets[0].data.push(kg_total)
+                    this.graficoRinde.labels.push(e.alias)
+                    this.graficoRinde.datasets[0].data.push(rinde)
+
+
+                    has_totales += has
+                    kg_trilla_totales += kg_trilla
+                    kg_silo_totales += kg_silo
+                    kg_total_totales += kg_total
+                    kg_desde_silo_totales += kg_desde_silo
+                    kg_en_silos_totales += kg_en_silos
+                }
+            })
+
+            var rinde_totales = 0
+            if(has_totales){
+                rinde_totales = kg_total_totales/has_totales
+            }
+
+            this.datosTablaTotales = {
+                has: this.transformarDatoMostrarTabla(has_totales, "numero"),
+                rinde: this.transformarDatoMostrarTabla(rinde_totales, "numero"),
+                kg_trilla: this.transformarDatoMostrarTabla(kg_trilla_totales, "numero"),
+                kg_silo: this.transformarDatoMostrarTabla(kg_silo_totales, "numero"),
+                kg_total: this.transformarDatoMostrarTabla(kg_total_totales, "numero"),
+                kg_desde_silo: this.transformarDatoMostrarTabla(kg_desde_silo_totales, "numero"),
+                kg_en_silos: this.transformarDatoMostrarTabla(kg_en_silos_totales, "numero")
+            }
+
+            //DATOS TABLA POR SOCIEDADES
+            var sociedades:any = [];
+            this.datosTablaSociedades = []
+
+            const dividedArrays = this.datosTabla.reduce((result:any, item:any) => {
+                const id = item.produce;
+                if (!result[id]) {
+                  result[id] = [];
+                }
+                if (!sociedades.includes(id)) {
+                    sociedades.push(id);
+                }
+                result[id].push(item);
+                return result;
+            }, {});
+            
+            sociedades.forEach((soc:any) => {
+                var elementos = dividedArrays[soc]
+
+                var has = elementos.reduce((result:any, item:any) => { return result + item.num_has }, 0)
+                var kg_trilla = elementos.reduce((result:any, item:any) => { return result + item.num_kg_trilla }, 0)
+                var kg_silo = elementos.reduce((result:any, item:any) => { return result + item.num_kg_silo }, 0)
+                var kg_total = elementos.reduce((result:any, item:any) => { return result + item.num_kg_total }, 0)
+                var kg_desde_silo = elementos.reduce((result:any, item:any) => { return result + item.num_kg_desde_silo }, 0)
+                var kg_en_silos = elementos.reduce((result:any, item:any) => { return result + item.num_kg_en_silos }, 0)
+                
+                var rinde = 0
+                if(has){
+                    rinde = kg_total/has
+                }
+
+                this.datosTablaSociedades.push({
+                    produce: soc,
                     has: this.transformarDatoMostrarTabla(has, "numero"),
                     rinde: this.transformarDatoMostrarTabla(rinde, "numero"),
                     kg_trilla: this.transformarDatoMostrarTabla(kg_trilla, "numero"),
                     kg_silo: this.transformarDatoMostrarTabla(kg_silo, "numero"),
                     kg_total: this.transformarDatoMostrarTabla(kg_total, "numero"),
+                    kg_desde_silo: this.transformarDatoMostrarTabla(kg_desde_silo, "numero"),
+                    kg_en_silos: this.transformarDatoMostrarTabla(kg_en_silos, "numero"),
                 })
+            });
 
-                this.graficoKilos.labels.push(e.alias)
-                this.graficoKilos.datasets[0].data.push(kg_total)
-                this.graficoRinde.labels.push(e.alias)
-                this.graficoRinde.datasets[0].data.push(rinde)
 
-            })
+            /*this.datosTablaSociedades.push({
+                id: e.id,
+                produce: produce.join(', '),
+                campo: e.alias,
+                has: this.transformarDatoMostrarTabla(has, "numero"),
+                rinde: this.transformarDatoMostrarTabla(rinde, "numero"),
+                kg_trilla: this.transformarDatoMostrarTabla(kg_trilla, "numero"),
+                kg_silo: this.transformarDatoMostrarTabla(kg_silo, "numero"),
+                kg_total: this.transformarDatoMostrarTabla(kg_total, "numero"),
+                kg_desde_silo: this.transformarDatoMostrarTabla(kg_desde_silo, "numero"),
+                kg_en_silos: this.transformarDatoMostrarTabla(kg_en_silos, "numero")
+            }) */
         }
     }
         
@@ -397,6 +536,9 @@ export class ProduccionComponent {
         }
         if (tipo == 'socio') {
             return this.db_socios.some((e: any) => { return e.id == dato }) ? this.db_socios.find((e: any) => { return e.id == dato }).alias : dato
+        }
+        if (tipo == 'granos') {
+            return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).alias : dato
         }
 
         if (tipo == 'has') {

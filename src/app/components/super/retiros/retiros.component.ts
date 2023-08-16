@@ -116,13 +116,15 @@ export class RetirosComponent {
             { field: 'corresponde', header: 'CORRESPONDE (Trilla)' },
             { field: 'retiros', header: 'RETIROS TRILLA' },
             { field: 'camara', header: 'CAMARA' },
-            { field: 'clientes', header: 'CLIENTES' },
+            { field: 'clientes', header: 'RET. CLIENTES' },
             { field: 'saldo', header: 'SALDO PROD.' },
             { field: 'lotes_yc', header: 'LOTES YC' },
             { field: 'lotes_pl', header: 'LOTES PL' },
             { field: 'saldo_lotes', header: 'SALDO' },
             { field: 'bolsones', header: 'CORRESPONDE (Bolsones)' },
             { field: 'retiros_bolsones', header: 'RETIROS BOLSONES' },
+            { field: 'retiros_bolsones_camara', header: 'RET. BOL A CAM.' },
+            { field: 'retiros_bolsones_clientes', header: 'RET. CLIENTES (BOL.)' },
             { field: 'saldo_final', header: 'SALDO FINAL' },
         ]
 
@@ -636,7 +638,7 @@ export class RetirosComponent {
         const ID_TRAVIESAS = '3461420d81eb'
 
         const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
-        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629']
+        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629', '59a44d418ed9', 'da0f0840146a']
 
         //Armamos establecimientos que estan en sociedad / Lotes PL / Lotes YC
         var establecimientosSociedad: any = []
@@ -959,13 +961,37 @@ export class RetirosComponent {
         var norteRetiroBolsones = 0
         var yaguaRetiroBolsones = 0
 
+        var norteRetiroBolsonesClientes = 0
+        var yaguaRetiroBolsonesClientes = 0
+        
+        var norteRetiroBolsonesCamara = 0
+        var yaguaRetiroBolsonesCamara = 0
+
         //SILOS RETIROS
         paqueteMovimientos.filter((e:any) => { return establecimientosSociedad.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='silo') }).forEach((mov:any) => {
-            if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
-                norteRetiroBolsones += mov.kilos
+            if(ID_CONTRATO_CAMARA.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norteRetiroBolsonesCamara += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yaguaRetiroBolsonesCamara += mov.kilos
+                }
             }
-            if(mov.id_socio == ID_YAGUA){
-                yaguaRetiroBolsones += mov.kilos
+            if(ID_CONTRATO_CLIENTES.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norteRetiroBolsonesClientes += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yaguaRetiroBolsonesClientes += mov.kilos
+                }
+            }
+            if(!ID_CONTRATO_CAMARA.includes(mov.contrato) && !ID_CONTRATO_CLIENTES.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norteRetiroBolsones += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yaguaRetiroBolsones += mov.kilos
+                }
             }
         })
 
@@ -976,8 +1002,8 @@ export class RetirosComponent {
         var norteSaldoLotes = norteSaldo + nortelotes_pl + nortelotes_yc
         var yaguaSaldoLotes = yaguaSaldo + yagualotes_pl + yagualotes_yc
 
-        var norteSaldoFinal = norteSaldoLotes + (kilosTotalesSilosSociedad/2) - norteRetiroBolsones
-        var yaguaSaldoFinal = yaguaSaldoLotes + (kilosTotalesSilosSociedad/2) - yaguaRetiroBolsones
+        var norteSaldoFinal = norteSaldoLotes + (kilosTotalesSilosSociedad/2) - norteRetiroBolsones - norteRetiroBolsonesClientes - norteRetiroBolsonesCamara
+        var yaguaSaldoFinal = yaguaSaldoLotes + (kilosTotalesSilosSociedad/2) - yaguaRetiroBolsones - yaguaRetiroBolsonesClientes - yaguaRetiroBolsonesCamara
 
 
         dataNP.corresponde = this.transformarDatoMostrarTabla(correspondeNorte.toFixed(), "numeroEntero")
@@ -990,6 +1016,8 @@ export class RetirosComponent {
         dataNP.saldo_lotes = this.transformarDatoMostrarTabla(norteSaldoLotes.toFixed(), "numeroEntero")
         dataNP.bolsones = this.transformarDatoMostrarTabla((kilosTotalesSilosSociedad/2).toFixed(), "numeroEntero")
         dataNP.retiros_bolsones = this.transformarDatoMostrarTabla(norteRetiroBolsones.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_camara = this.transformarDatoMostrarTabla(norteRetiroBolsonesCamara.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_clientes = this.transformarDatoMostrarTabla(norteRetiroBolsonesClientes.toFixed(), "numeroEntero")
         dataNP.saldo_final = this.transformarDatoMostrarTabla(norteSaldoFinal.toFixed(), "numeroEntero")
 
         dataY.corresponde = this.transformarDatoMostrarTabla(correspondeYagua.toFixed(), "numeroEntero")
@@ -1002,6 +1030,8 @@ export class RetirosComponent {
         dataY.saldo_lotes = this.transformarDatoMostrarTabla(yaguaSaldoLotes.toFixed(), "numeroEntero")
         dataY.bolsones = this.transformarDatoMostrarTabla((kilosTotalesSilosSociedad/2).toFixed(), "numeroEntero")
         dataY.retiros_bolsones = this.transformarDatoMostrarTabla(yaguaRetiroBolsones.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones_camara = this.transformarDatoMostrarTabla(yaguaRetiroBolsonesCamara.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones_clientes = this.transformarDatoMostrarTabla(yaguaRetiroBolsonesClientes.toFixed(), "numeroEntero")
         dataY.saldo_final = this.transformarDatoMostrarTabla(yaguaSaldoFinal.toFixed(), "numeroEntero")
 
 
@@ -1020,6 +1050,8 @@ export class RetirosComponent {
             saldo_lotes: this.transformarDatoMostrarTabla((norteSaldoLotes+yaguaSaldoLotes).toFixed(), "numeroEntero"),
             bolsones: this.transformarDatoMostrarTabla(kilosTotalesSilosSociedad.toFixed(), "numeroEntero"),
             retiros_bolsones: this.transformarDatoMostrarTabla((norteRetiroBolsones+yaguaRetiroBolsones).toFixed(), "numeroEntero"),
+            retiros_bolsones_camara: this.transformarDatoMostrarTabla((norteRetiroBolsonesCamara+yaguaRetiroBolsonesCamara).toFixed(), "numeroEntero"),
+            retiros_bolsones_clientes: this.transformarDatoMostrarTabla((norteRetiroBolsonesClientes+yaguaRetiroBolsonesClientes).toFixed(), "numeroEntero"),
             saldo_final: this.transformarDatoMostrarTabla((norteSaldoFinal+yaguaSaldoFinal).toFixed(), "numeroEntero"), 
         }
     }

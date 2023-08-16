@@ -13,7 +13,7 @@
     <div class="formgrid row">
         <div #CAMPOS class="field col">
             <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
-                <h5 style="text-align: center;"><strong>CAMPOS</strong></h5>
+                <h5 style="text-align: center;"><strong>PRODUCCION CAMPOS{{tipo_grano}}</strong></h5>
                 <style>
                     table {
                         border-collapse: collapse;
@@ -51,11 +51,71 @@
                             </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr style="background-color: #f2f2f2;">
+                            <td style="padding: 2px;" *ngFor="let col of cols" class="negrita">
+                                <label>{{datosTablaTotales[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
     </div>
-    <br><br>
+    <br>
+    <div class="formgrid row">
+        <div #CAMPOS class="field col">
+            <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>PRODUCCION POR SOCIEDADES{{tipo_grano}}</strong></h5>
+                <style>
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+            
+                    th,
+                    td {
+                        text-align: left;
+                        padding: 8px;
+                        border-bottom: 1px solid #ddd;
+                    }
+            
+                    th {
+                        background-color: #f2f2f2;
+                    }
+            
+                    tr:hover {
+                        background-color: #f5f5f5;
+                    }
+                </style>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of colsSociedades">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaSociedades">
+                            <td style="padding: 2px;" *ngFor="let col of colsSociedades" class="{{ col.field == 'kg_total' ? 'negrita' : ''}}">
+                                <label>{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background-color: #f2f2f2;">
+                            <td style="padding: 2px;" *ngFor="let col of colsSociedades" class="negrita">
+                                <label>{{datosTablaSociedadesTotales[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
     <div class="formgrid row">
         <div #GRAFICO_KILOS class="field col">
             <div class="tarjeta" style="margin: 0px 0px 30px 0px;">
