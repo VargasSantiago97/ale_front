@@ -628,15 +628,20 @@ export class RetirosComponent {
             saldo_final: 0,
         }
 
+
         const ID_NORTE = '141ea05753ff'
         const ID_YAGUA = 'bcb3d28daa6b'
         const ID_PLANJAR = '9c89bfa40ad1'
+        const ID_TIJUANA = 'afb70d896b9e'
+        const ID_TRAVIESAS = '3461420d81eb'
 
         const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
-        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d']
+        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629']
 
         //Armamos establecimientos que estan en sociedad / Lotes PL / Lotes YC
         var establecimientosSociedad: any = []
+        var establecimientosSociedadTijuana: any = []
+        var establecimientosSociedadTraviesas: any = []
         var establecimientosPL: any = []
         var establecimientosYC: any = []
 
@@ -644,8 +649,17 @@ export class RetirosComponent {
             if(this.db_locales['produccion'].some((e:any) => { return e.id_establecimiento == est.id_establecimiento })){
                 const producenSocios:any = this.db_locales['produccion'].filter((e:any) => { return e.id_establecimiento == est.id_establecimiento })
 
+                //SOCIEDAD NORTE-YAGUA
                 if(producenSocios.some((e:any) => { return (e.id_socio == ID_NORTE) && (e.porcentaje == 50) }) && producenSocios.some((e:any) => { return (e.id_socio == ID_YAGUA) && ( e.porcentaje == 50) })){
                     establecimientosSociedad.includes(est.id_establecimiento) ? null : establecimientosSociedad.push(est.id_establecimiento)
+                }
+                //SOCIEDAD CON TIJUANA
+                if(producenSocios.some((e:any) => { return (e.id_socio == ID_NORTE) && (e.porcentaje == 25) }) && producenSocios.some((e:any) => { return (e.id_socio == ID_YAGUA) && ( e.porcentaje == 25) }) && producenSocios.some((e:any) => { return (e.id_socio == ID_TIJUANA) && ( e.porcentaje == 50) })){
+                    establecimientosSociedadTijuana.includes(est.id_establecimiento) ? null : establecimientosSociedadTijuana.push(est.id_establecimiento)
+                }
+                //SOCIEDAD CON TRAVIESAS
+                if(producenSocios.some((e:any) => { return (e.id_socio == ID_NORTE) && (e.porcentaje == 25) }) && producenSocios.some((e:any) => { return (e.id_socio == ID_YAGUA) && ( e.porcentaje == 25) }) && producenSocios.some((e:any) => { return (e.id_socio == ID_TRAVIESAS) && ( e.porcentaje == 50) })){
+                    establecimientosSociedadTraviesas.includes(est.id_establecimiento) ? null : establecimientosSociedadTraviesas.push(est.id_establecimiento)
                 }
 
                 if(producenSocios.length == 1){
@@ -659,8 +673,9 @@ export class RetirosComponent {
             }
         })
 
+
+
         //MOVIMIENTOS POR DIVISIONES:
-        const kilosRef = 'kg_neto'
         var paqueteMovimientos:any = []
 
         this.db['movimientos'].forEach((movimiento:any) => {
@@ -689,7 +704,20 @@ export class RetirosComponent {
 
                                 const proporcionCtos = (movCto.kilos / kilosTotCtos)
 
-                                const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                                var kilos = 35000
+
+                                if(movimiento.kg_campo){
+                                    if(parseInt(movimiento.kg_campo)){
+                                        kilos = parseInt(movimiento.kg_campo)
+                                    }
+                                }
+                                
+                                if(movimiento.kg_neto){
+                                    if(parseInt(movimiento.kg_neto)){
+                                        kilos = parseInt(movimiento.kg_neto)
+                                    }
+                                }
+
                                 const kilosComputar = proporcionOrig * proporcionCtos * kilos
 
                                 paqueteMovimientos.push({
@@ -704,7 +732,20 @@ export class RetirosComponent {
                             })
 
                         } else {
-                            const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                            var kilos = 35000
+
+                            if(movimiento.kg_campo){
+                                if(parseInt(movimiento.kg_campo)){
+                                    kilos = parseInt(movimiento.kg_campo)
+                                }
+                            }
+                            
+                            if(movimiento.kg_neto){
+                                if(parseInt(movimiento.kg_neto)){
+                                    kilos = parseInt(movimiento.kg_neto)
+                                }
+                            }
+
                             const kilosComputar = proporcionOrig * kilos
                             paqueteMovimientos.push({
                                 kilos: kilosComputar,
@@ -728,7 +769,20 @@ export class RetirosComponent {
                         movimientos_contratos.forEach((movCto:any) => {
                             const contrato = this.db_locales['contratos'].find((e:any) => { return e.id == movCto.id_contrato })
 
-                            const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                            var kilos = 35000
+
+                            if(movimiento.kg_campo){
+                                if(parseInt(movimiento.kg_campo)){
+                                    kilos = parseInt(movimiento.kg_campo)
+                                }
+                            }
+                            
+                            if(movimiento.kg_neto){
+                                if(parseInt(movimiento.kg_neto)){
+                                    kilos = parseInt(movimiento.kg_neto)
+                                }
+                            }
+
                             const kilosComputar = movCto.kilos/kilosTotCtos * kilos
 
                             paqueteMovimientos.push({
@@ -743,7 +797,20 @@ export class RetirosComponent {
                         })
 
                     } else {
-                        const kilos = movimiento[kilosRef] ? parseInt(movimiento[kilosRef]) : 0
+                        var kilos = 35000
+
+                        if(movimiento.kg_campo){
+                            if(parseInt(movimiento.kg_campo)){
+                                kilos = parseInt(movimiento.kg_campo)
+                            }
+                        }
+                        
+                        if(movimiento.kg_neto){
+                            if(parseInt(movimiento.kg_neto)){
+                                kilos = parseInt(movimiento.kg_neto)
+                            }
+                        }
+
                         paqueteMovimientos.push({
                             kilos: kilos,
                             id_grano: movimiento.id_grano,
@@ -784,24 +851,32 @@ export class RetirosComponent {
             }
         })
 
-        /* 
-        kilos
-        id_grano
-        id_establecimiento
-        id_socio
-        tipo_origen
-        id_destino
-        contrato
-         */
+
 
         //CORRESPONDE
-        const produccionSociedad = paqueteMovimientos.reduce((acc:any, curr:any) => { 
-            var valor = 0
-            if(establecimientosSociedad.includes(curr.id_establecimiento) && curr.id_grano == this.idGranosSeleccionado && curr.tipo_origen=='lote'){
-                valor = curr.kilos 
+        var produccionSociedad = 0
+        var produccionSociedadTijuana = 0
+        var produccionSociedadTraviesas = 0
+        
+        paqueteMovimientos.forEach((paq:any) => { 
+            if(paq.id_grano == this.idGranosSeleccionado && paq.tipo_origen=='lote'){
+                if(establecimientosSociedad.includes(paq.id_establecimiento)){
+                    produccionSociedad += paq.kilos 
+                }
+                if(establecimientosSociedadTijuana.includes(paq.id_establecimiento)){
+                    produccionSociedadTijuana += paq.kilos 
+                }
+                if(establecimientosSociedadTraviesas.includes(paq.id_establecimiento)){
+                    produccionSociedadTraviesas += paq.kilos 
+                }
             }
-            return acc + valor
-        }, 0)
+        })
+
+        //console.group("Prod sociedades")
+        //console.log('soc. ', produccionSociedad)
+        //console.log('tij. ', produccionSociedadTijuana)
+        //console.log('tra. ', produccionSociedadTraviesas)
+        //console.groupEnd()
 
         const correspondeNorte = produccionSociedad/2
         const correspondeYagua = produccionSociedad/2

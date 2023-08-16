@@ -37,5 +37,12 @@ export class CpeService {
         return this.http.get(`${this.API_URI}/moverArchivo.php?nro_ctg=${nro_ctg}&estado=${estado}&nro_cpe=${nro_cpe}`);
     }
 
+    guardarArchivo(archivo:any){
+
+        const dataEnviar = { key: encodeURIComponent(archivo) };
+
+        return this.http.post(`http://localhost/cpe/guardar.php`, dataEnviar)
+    }
+
 
 }

@@ -2611,6 +2611,16 @@ export class InicioComponent {
             (res: any) => {
                 if(res){
                     if(res.mensaje){
+                        if(res.mensaje.archivo){
+                            this.cpeService.guardarArchivo(res.mensaje.archivo).subscribe(
+                                (respue:any) => {
+                                    console.log(respue)
+                                },
+                                (erroor:any) => {
+                                    console.error(erroor)
+                                }
+                            )
+                        }
                         if(res.mensaje.nroCTG){
                             if(res.mensaje.nroCTG.toString().length == 11){
                                 this.compararDatosCPE(datoVerCPE, res.mensaje)

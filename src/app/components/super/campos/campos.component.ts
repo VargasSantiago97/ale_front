@@ -36,10 +36,14 @@ export class CamposComponent {
     socio_id: any = ''
     totalPorcentaje: any = []
 
+    encargados: any = []
+    encargado:any = {}
+
 
     displayLote: any = false
     displaySilo: any = false
     displayProduce: any = false
+    displayEncargado: any = false
 
     constructor(
         private sqlite: SqliteService,
@@ -53,6 +57,7 @@ export class CamposComponent {
         this.obtenerGranosDB()
 
         this.getDB('lotes')
+        this.getDB('encargados')
     }
 
     //SINCRONIZAR LOS CAMPOS
@@ -108,7 +113,6 @@ export class CamposComponent {
         )
     }
 
-    
     obtenerSociosDB(){
         this.comunicacionService.getDB('socios').subscribe(
             (res:any) => {
@@ -119,8 +123,6 @@ export class CamposComponent {
             }
         )
     }
-
-
 
 
     seleccionarCampo(campo:any){
@@ -407,6 +409,38 @@ export class CamposComponent {
 
     }
 
+    abrirModalEncargado(encargado:any = false){
+        if(!this.campo_select){
+            alert('seleccione un campo')
+            return
+        }
+
+        if(encargado){
+            this.encargado = encargado
+        } else {
+            this.encargado = {
+                id: false, 
+                alias: ''
+            }
+        }
+
+        this.displayEncargado = true
+    }
+    borrarEncargado(idd:any){
+        if(confirm('Desea eliminar?')){
+            this.borrarDB('lote_a_silo', idd, ()=>{
+                this.abrirModalSilo(this.silo)
+            })
+        }
+    }
+    guardarEncargado(Encargado:any){
+        var idd = this.generarID('lote_a_silo')
+        Encargado.id = idd
+        this.crearDatoDB('lote_a_silo', Encargado, ()=>{
+            this.abrirModalSilo(this.silo)
+        })
+
+    }
 
     getDB(tabla:any, func:any = false){
         this.sqlite.getDB(tabla).subscribe(
