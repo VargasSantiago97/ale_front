@@ -2332,29 +2332,43 @@ export class InicioComponent {
                                     this.datosCPE.data = '{"kg_descarga":0,"estado":"AC"}'
 
                                     //mover archivo
-                                    this.cpeService.moverArchivo(nro_ctg.toString(), "AC", nro_cpe_completo).subscribe(
-                                        (resp: any) => {
-                                            if(resp){
-                                                if(resp.mensaje){
-                                                    this.abrirModalVerCPE(this.datosCPE.id_movimiento, false)
+                                    if(res.datos.archivo){
+                                        this.cpeService.guardarArchivo(res.datos.archivo).subscribe(
+                                            (respue:any) => {
+                                                if(respue){
+                                                    if(respue.ok){
+                                                        this.cpeService.moverArchivo(nro_ctg.toString(), "AC", nro_cpe_completo).subscribe(
+                                                            (resp: any) => {
+                                                                if(resp){
+                                                                    if(resp.mensaje){
+                                                                        this.abrirModalVerCPE(this.datosCPE.id_movimiento, false)
 
-                                                    const setear = {nro_ctg: nro_ctg}
-                                                    const nombreArch = "CPE " + nro_cpe_completo + " - CTG " + nro_ctg + " - " + "AC" + ".pdf"
-                                                    this.setearUrl(setear, nombreArch)
+                                                                        const setear = {nro_ctg: nro_ctg}
+                                                                        const nombreArch = "CPE " + nro_cpe_completo + " - CTG " + nro_ctg + " - " + "AC" + ".pdf"
+                                                                        this.setearUrl(setear, nombreArch)
 
-                                                    this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
-                                                } else {
-                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo. respuesta.mensaje = FALSO' })
+                                                                        this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
+                                                                    } else {
+                                                                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo...' })
+                                                                    }
+                                                                } else {
+                                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo..' })
+                                                                }
+                                                            },
+                                                            (errr: any) => {
+                                                                console.log(errr)
+                                                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo.' })
+                                                            },
+                                                        )
+                                                    }
                                                 }
-                                            } else {
-                                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo. No hay respuesta' })
+                                            },
+                                            (erroor:any) => {
+                                                console.error(erroor)
                                             }
-                                        },
-                                        (errr: any) => {
-                                            console.log(errr)
-                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo. (conectando con backend)' })
-                                        },
-                                    )
+                                        )
+
+                                    }
 
                                     this.CPE_guardarDB()
 
@@ -2614,7 +2628,34 @@ export class InicioComponent {
                         if(res.mensaje.archivo){
                             this.cpeService.guardarArchivo(res.mensaje.archivo).subscribe(
                                 (respue:any) => {
-                                    console.log(respue)
+                                    if(respue){
+                                        if(respue.ok){
+                                            const nro_cpe = res.mensaje.sucursal.toString().padStart(2, '0') + "-" + res.mensaje.nroOrden.toString().padStart(5, '0')
+                                            this.cpeService.moverArchivo(res.mensaje.nroCTG.toString(), res.mensaje.estado, nro_cpe).subscribe(
+                                                (resp: any) => {
+                                                    if(resp){
+                                                        if(resp.mensaje){
+                                                            this.abrirModalVerCPE(datoVerCPE.id_movimiento, false)
+        
+                                                            const setear = {nro_ctg: res.mensaje.nroCTG}
+                                                            const nombreArch = "CPE " + nro_cpe + " - CTG " + res.mensaje.nroCTG + " - " + res.mensaje.estado + ".pdf"
+                                                            this.setearUrl(setear, nombreArch)
+        
+                                                            this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
+                                                        } else {
+                                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo...' })
+                                                        }
+                                                    } else {
+                                                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo..' })
+                                                    }
+                                                },
+                                                (errr: any) => {
+                                                    console.log(errr)
+                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo.' })
+                                                },
+                                            )
+                                        }
+                                    }
                                 },
                                 (erroor:any) => {
                                     console.error(erroor)
@@ -2624,33 +2665,6 @@ export class InicioComponent {
                         if(res.mensaje.nroCTG){
                             if(res.mensaje.nroCTG.toString().length == 11){
                                 this.compararDatosCPE(datoVerCPE, res.mensaje)
-                                if(res.mensaje.estado){
-                                    const nro_cpe = res.mensaje.sucursal.toString().padStart(2, '0') + "-" + res.mensaje.nroOrden.toString().padStart(5, '0')
-                                    this.cpeService.moverArchivo(res.mensaje.nroCTG.toString(), res.mensaje.estado, nro_cpe).subscribe(
-                                        (resp: any) => {
-                                            if(resp){
-                                                if(resp.mensaje){
-                                                    this.abrirModalVerCPE(datoVerCPE.id_movimiento, false)
-
-                                                    const setear = {nro_ctg: res.mensaje.nroCTG}
-                                                    const nombreArch = "CPE " + nro_cpe + " - CTG " + res.mensaje.nroCTG + " - " + res.mensaje.estado + ".pdf"
-                                                    this.setearUrl(setear, nombreArch)
-
-                                                    this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
-                                                } else {
-                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
-                                                }
-                                            } else {
-                                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
-                                            }
-                                        },
-                                        (errr: any) => {
-                                            console.log(errr)
-                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
-                                        },
-                                    )
-                                }
-
                             }
                         }
                     }

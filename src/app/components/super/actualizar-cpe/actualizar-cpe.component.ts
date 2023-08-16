@@ -145,31 +145,41 @@ export class ActualizarCPEComponent {
             (res: any) => {
                 if(res){
                     if(res.mensaje){
+                        if(res.mensaje.archivo){
+                            this.cpeService.guardarArchivo(res.mensaje.archivo).subscribe(
+                                (respue:any) => {
+                                    if(respue){
+                                        if(respue.ok){
+                                            const nro_cpe = res.mensaje.sucursal.toString().padStart(2, '0') + "-" + res.mensaje.nroOrden.toString().padStart(5, '0')
+                                            this.cpeService.moverArchivo(res.mensaje.nroCTG.toString(), res.mensaje.estado, nro_cpe).subscribe(
+                                                (resp: any) => {
+                                                    if(resp){
+                                                        if(resp.mensaje){
+                                                            datoEntrada.actualizado = true
+                                                            this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
+                                                        } else {
+                                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo...' })
+                                                        }
+                                                    } else {
+                                                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo..' })
+                                                    }
+                                                },
+                                                (errr: any) => {
+                                                    console.log(errr)
+                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo.' })
+                                                },
+                                            )
+                                        }
+                                    }
+                                },
+                                (erroor:any) => {
+                                    console.error(erroor)
+                                }
+                            )
+                        }
                         if(res.mensaje.nroCTG){
                             if(res.mensaje.nroCTG.toString().length == 11){
                                 this.compararDatosCPE(datoVerCPE, res.mensaje)
-                                if(res.mensaje.estado){
-                                    const nro_cpe = res.mensaje.sucursal.toString().padStart(2, '0') + "-" + res.mensaje.nroOrden.toString().padStart(5, '0')
-                                    this.cpeService.moverArchivo(res.mensaje.nroCTG.toString(), res.mensaje.estado, nro_cpe).subscribe(
-                                        (resp: any) => {
-                                            if(resp){
-                                                if(resp.mensaje){
-                                                    datoEntrada.actualizado = true
-                                                    this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
-                                                } else {
-                                                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
-                                                }
-                                            } else {
-                                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
-                                            }
-                                        },
-                                        (errr: any) => {
-                                            console.log(errr)
-                                            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo' })
-                                        },
-                                    )
-                                }
-
                             }
                         }
                     }

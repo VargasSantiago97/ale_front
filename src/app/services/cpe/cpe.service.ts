@@ -9,6 +9,7 @@ declare var vars: any;
 export class CpeService {
 
     API_URI = vars.API_CPE;
+    API_URI_ARCHIVOS = vars.API_CPE_ARCHIVOS;
     USER_ID: any = 0;
     BLOQUEAR_EDICION_CPE: any = vars.BLOQUEAR_EDICION_CPE
 
@@ -34,14 +35,14 @@ export class CpeService {
     }
 
     moverArchivo(nro_ctg:any, estado:any, nro_cpe:any){
-        return this.http.get(`${this.API_URI}/moverArchivo.php?nro_ctg=${nro_ctg}&estado=${estado}&nro_cpe=${nro_cpe}`);
+        return this.http.get(`${this.API_URI_ARCHIVOS}/moverArchivo.php?nro_ctg=${nro_ctg}&estado=${estado}&nro_cpe=${nro_cpe}`);
     }
 
     guardarArchivo(archivo:any){
 
         const dataEnviar = { key: encodeURIComponent(archivo) };
 
-        return this.http.post(`http://localhost/cpe/guardar.php`, dataEnviar)
+        return this.http.post(`${this.API_URI_ARCHIVOS}/guardar.php`, dataEnviar)
     }
 
 

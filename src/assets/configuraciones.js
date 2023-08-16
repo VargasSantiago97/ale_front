@@ -8,7 +8,7 @@ var vars = {
     API_URI_NUBE: 'http://154.49.246.119/api',
 
     //API_URI_PADRON: 'http://localhost/ng_fact/camacho/api', //OFICINA
-    API_URI_PADRON: 'http://localhost/api/afip/api', //HOME
+    API_URI_PADRON: 'http://norteyagua.online/api/afip/api', //HOME
     API_URI_UPLOAD: 'http://localhost/api',
 
     //API_URI_CONAGRO: 'http://localhost/api'
@@ -16,6 +16,7 @@ var vars = {
 
     //API_CPE: 'http://localhost/cpe',
     API_CPE: 'http://norteyagua.online/cpe',
+    API_CPE_ARCHIVOS: 'http://localhost/cpe',
 
     ORDEN_CARGA: 'http://localhost/api/pdf',
 
