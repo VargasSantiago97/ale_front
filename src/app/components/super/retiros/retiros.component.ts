@@ -60,9 +60,16 @@ export class RetirosComponent {
     datosTablaRetirosTotales: any = {}
 
     colsSociedad: any = []
+    colsSociedadTerceros: any = []
+
     datosSociedad: any = []
     datosTablaSociedad: any = []
     datosTablaSociedadTotales: any = {}
+    
+    datosTablaSociedadTijuana: any = []
+    datosTablaSociedadTotalesTijuana: any = {}
+    datosTablaSociedadTraviesas: any = []
+    datosTablaSociedadTotalesTraviesas: any = {}
 
     ok_movimientos: any = false
     ok_movimientos_local: any = false
@@ -125,6 +132,24 @@ export class RetirosComponent {
             { field: 'retiros_bolsones', header: 'RETIROS BOLSONES' },
             { field: 'retiros_bolsones_camara', header: 'RET. BOL A CAM.' },
             { field: 'retiros_bolsones_clientes', header: 'RET. CLIENTES (BOL.)' },
+            { field: 'retiros_bolsones_lotes_yc', header: 'RET. BOL. YC' },
+            { field: 'retiros_bolsones_lotes_pl', header: 'RET. BOL. PL' },
+            { field: 'saldo_final', header: 'SALDO FINAL' },
+        ]
+        this.colsSociedadTerceros = [
+            { field: 'socio', header: 'SOCIO' },
+            { field: 'corresponde', header: 'CORRESPONDE (Trilla)' },
+            { field: 'retiros', header: 'RETIROS TRILLA' },
+            { field: 'saldo', header: 'SALDO PROD.' },
+            { field: 'lotes_yc', header: 'LOTES YC' },
+            { field: 'lotes_pl', header: 'LOTES PL' },
+            { field: 'lotes_ny', header: 'LOTES SOC NY' },
+            { field: 'saldo_lotes', header: 'SALDO' },
+            { field: 'bolsones', header: 'CORRESPONDE (Bolsones)' },
+            { field: 'retiros_bolsones', header: 'RETIROS BOLSONES' },
+            { field: 'retiros_bolsones_lotes_yc', header: 'RET. BOL. YC' },
+            { field: 'retiros_bolsones_lotes_pl', header: 'RET. BOL. PL' },
+            { field: 'retiros_bolsones_lotes_ny', header: 'RET. BOL. SOC NY' },
             { field: 'saldo_final', header: 'SALDO FINAL' },
         ]
 
@@ -639,11 +664,13 @@ export class RetirosComponent {
 
         const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
         const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629', '59a44d418ed9', 'da0f0840146a']
+        const ID_CONTRATO_CLIENTES_MEDIAS = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629', '59a44d418ed9', 'da0f0840146a']
 
         //Armamos establecimientos que estan en sociedad / Lotes PL / Lotes YC
         var establecimientosSociedad: any = []
         var establecimientosSociedadTijuana: any = []
         var establecimientosSociedadTraviesas: any = []
+
         var establecimientosPL: any = []
         var establecimientosYC: any = []
 
@@ -726,7 +753,7 @@ export class RetirosComponent {
                                     kilos: kilosComputar,
                                     id_grano: movimiento.id_grano,
                                     id_establecimiento: movOrig.id_establecimiento,
-                                    id_socio: contrato.id_socio,
+                                    id_socio: movimiento.id_socio,
                                     tipo_origen: movOrig.tipo_origen,
                                     id_destino: movimiento.id_destino,
                                     contrato: contrato.id,
@@ -857,19 +884,11 @@ export class RetirosComponent {
 
         //CORRESPONDE
         var produccionSociedad = 0
-        var produccionSociedadTijuana = 0
-        var produccionSociedadTraviesas = 0
         
         paqueteMovimientos.forEach((paq:any) => { 
             if(paq.id_grano == this.idGranosSeleccionado && paq.tipo_origen=='lote'){
                 if(establecimientosSociedad.includes(paq.id_establecimiento)){
                     produccionSociedad += paq.kilos 
-                }
-                if(establecimientosSociedadTijuana.includes(paq.id_establecimiento)){
-                    produccionSociedadTijuana += paq.kilos 
-                }
-                if(establecimientosSociedadTraviesas.includes(paq.id_establecimiento)){
-                    produccionSociedadTraviesas += paq.kilos 
                 }
             }
         })
@@ -892,22 +911,24 @@ export class RetirosComponent {
         var norteClientes = 0
         var yaguaClientes = 0
 
-        //SALIDAS A CAMARA - CLIENTES - RETIROS
+        //SALIDAS A CAMARA - CLIENTES - RETIROS DESDE TRILLA
         paqueteMovimientos.filter((e:any) => { return establecimientosSociedad.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='lote') }).forEach((mov:any) => {
             if(ID_CONTRATO_CAMARA.includes(mov.contrato)){
-                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
-                    norteCamara += mov.kilos
-                }
-                if(mov.id_socio == ID_YAGUA){
-                    yaguaCamara += mov.kilos
-                }
+                norteCamara += mov.kilos/2
+                yaguaCamara += mov.kilos/2
+
             }
             if(ID_CONTRATO_CLIENTES.includes(mov.contrato)){
-                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                if(ID_CONTRATO_CLIENTES_MEDIAS.includes(mov.contrato)){
+                    norteClientes += mov.kilos/2
+                    yaguaClientes += mov.kilos/2
+                } else if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
                     norteClientes += mov.kilos
-                }
-                if(mov.id_socio == ID_YAGUA){
+                } else if(mov.id_socio == ID_YAGUA){
                     yaguaClientes += mov.kilos
+                } else {
+                    norteClientes += mov.kilos/2
+                    yaguaClientes += mov.kilos/2
                 }
             }
             if(!ID_CONTRATO_CAMARA.includes(mov.contrato) && !ID_CONTRATO_CLIENTES.includes(mov.contrato)){
@@ -942,6 +963,28 @@ export class RetirosComponent {
             }
         })
 
+        var nortebolson_yc = 0
+        var yaguabolson_yc = 0
+        
+        var nortebolson_pl = 0
+        var yaguabolson_pl = 0
+        
+        //BOLSONES DE YAGUA Y PLANJAR
+        paqueteMovimientos.filter((e:any) => { return (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='silo') }).forEach((mov:any) => {
+            if(establecimientosPL.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_YAGUA){
+                    yaguabolson_pl -= mov.kilos
+                    nortebolson_pl += mov.kilos
+                }
+            }
+            if(establecimientosYC.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    nortebolson_yc -= mov.kilos
+                    yaguabolson_yc += mov.kilos
+                }
+            }
+        })
+
         //SILOS
         var kilosTotalesSilosSociedad:any = 0
         establecimientosSociedad.forEach((est:any) => {
@@ -970,21 +1013,24 @@ export class RetirosComponent {
         //SILOS RETIROS
         paqueteMovimientos.filter((e:any) => { return establecimientosSociedad.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='silo') }).forEach((mov:any) => {
             if(ID_CONTRATO_CAMARA.includes(mov.contrato)){
-                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
-                    norteRetiroBolsonesCamara += mov.kilos
-                }
-                if(mov.id_socio == ID_YAGUA){
-                    yaguaRetiroBolsonesCamara += mov.kilos
-                }
+                norteRetiroBolsonesCamara += mov.kilos/2
+                yaguaRetiroBolsonesCamara += mov.kilos/2
             }
+
             if(ID_CONTRATO_CLIENTES.includes(mov.contrato)){
-                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                if(ID_CONTRATO_CLIENTES_MEDIAS.includes(mov.contrato)){
+                    norteRetiroBolsonesClientes += mov.kilos/2
+                    yaguaRetiroBolsonesClientes += mov.kilos/2
+                } else if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
                     norteRetiroBolsonesClientes += mov.kilos
-                }
-                if(mov.id_socio == ID_YAGUA){
+                } else if(mov.id_socio == ID_YAGUA){
                     yaguaRetiroBolsonesClientes += mov.kilos
+                } else {
+                    norteRetiroBolsonesClientes += mov.kilos/2
+                    yaguaRetiroBolsonesClientes += mov.kilos/2
                 }
             }
+
             if(!ID_CONTRATO_CAMARA.includes(mov.contrato) && !ID_CONTRATO_CLIENTES.includes(mov.contrato)){
                 if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
                     norteRetiroBolsones += mov.kilos
@@ -1002,8 +1048,8 @@ export class RetirosComponent {
         var norteSaldoLotes = norteSaldo + nortelotes_pl + nortelotes_yc
         var yaguaSaldoLotes = yaguaSaldo + yagualotes_pl + yagualotes_yc
 
-        var norteSaldoFinal = norteSaldoLotes + (kilosTotalesSilosSociedad/2) - norteRetiroBolsones - norteRetiroBolsonesClientes - norteRetiroBolsonesCamara
-        var yaguaSaldoFinal = yaguaSaldoLotes + (kilosTotalesSilosSociedad/2) - yaguaRetiroBolsones - yaguaRetiroBolsonesClientes - yaguaRetiroBolsonesCamara
+        var norteSaldoFinal = norteSaldoLotes + (kilosTotalesSilosSociedad/2) - norteRetiroBolsones - norteRetiroBolsonesClientes - norteRetiroBolsonesCamara + nortebolson_pl + nortebolson_yc
+        var yaguaSaldoFinal = yaguaSaldoLotes + (kilosTotalesSilosSociedad/2) - yaguaRetiroBolsones - yaguaRetiroBolsonesClientes - yaguaRetiroBolsonesCamara + yaguabolson_pl + yaguabolson_yc
 
 
         dataNP.corresponde = this.transformarDatoMostrarTabla(correspondeNorte.toFixed(), "numeroEntero")
@@ -1018,6 +1064,8 @@ export class RetirosComponent {
         dataNP.retiros_bolsones = this.transformarDatoMostrarTabla(norteRetiroBolsones.toFixed(), "numeroEntero")
         dataNP.retiros_bolsones_camara = this.transformarDatoMostrarTabla(norteRetiroBolsonesCamara.toFixed(), "numeroEntero")
         dataNP.retiros_bolsones_clientes = this.transformarDatoMostrarTabla(norteRetiroBolsonesClientes.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_lotes_yc = this.transformarDatoMostrarTabla(nortebolson_yc.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_lotes_pl = this.transformarDatoMostrarTabla(nortebolson_pl.toFixed(), "numeroEntero")
         dataNP.saldo_final = this.transformarDatoMostrarTabla(norteSaldoFinal.toFixed(), "numeroEntero")
 
         dataY.corresponde = this.transformarDatoMostrarTabla(correspondeYagua.toFixed(), "numeroEntero")
@@ -1032,6 +1080,8 @@ export class RetirosComponent {
         dataY.retiros_bolsones = this.transformarDatoMostrarTabla(yaguaRetiroBolsones.toFixed(), "numeroEntero")
         dataY.retiros_bolsones_camara = this.transformarDatoMostrarTabla(yaguaRetiroBolsonesCamara.toFixed(), "numeroEntero")
         dataY.retiros_bolsones_clientes = this.transformarDatoMostrarTabla(yaguaRetiroBolsonesClientes.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones_lotes_yc = this.transformarDatoMostrarTabla(yaguabolson_yc.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones_lotes_pl = this.transformarDatoMostrarTabla(yaguabolson_pl.toFixed(), "numeroEntero")
         dataY.saldo_final = this.transformarDatoMostrarTabla(yaguaSaldoFinal.toFixed(), "numeroEntero")
 
 
@@ -1052,8 +1102,319 @@ export class RetirosComponent {
             retiros_bolsones: this.transformarDatoMostrarTabla((norteRetiroBolsones+yaguaRetiroBolsones).toFixed(), "numeroEntero"),
             retiros_bolsones_camara: this.transformarDatoMostrarTabla((norteRetiroBolsonesCamara+yaguaRetiroBolsonesCamara).toFixed(), "numeroEntero"),
             retiros_bolsones_clientes: this.transformarDatoMostrarTabla((norteRetiroBolsonesClientes+yaguaRetiroBolsonesClientes).toFixed(), "numeroEntero"),
+            retiros_bolsones_lotes_yc: this.transformarDatoMostrarTabla((nortebolson_yc+yaguabolson_yc).toFixed(), "numeroEntero"),
+            retiros_bolsones_lotes_pl: this.transformarDatoMostrarTabla((nortebolson_pl+yaguabolson_pl).toFixed(), "numeroEntero"),
             saldo_final: this.transformarDatoMostrarTabla((norteSaldoFinal+yaguaSaldoFinal).toFixed(), "numeroEntero"), 
         }
+
+
+        //SOCIEDADES CON TIJUANA
+        this.datosTablaSociedadTijuana = []
+        
+        var dataT: any = {
+            socio: "TIJUANA (50%)",
+            corresponde: 0,
+            retiros: 0,
+            saldo: 0,
+            lotes_yc: 0,
+            lotes_pl: 0,
+            lotes_ny: 0,
+            saldo_lotes: 0,
+            bolsones: 0,
+            retiros_bolsones: 0,
+            retiros_bolsones_lotes_yc: 0,
+            retiros_bolsones_lotes_pl: 0,
+            retiros_bolsones_lotes_ny: 0,
+            saldo_final: 0,
+        }
+        var dataNP: any = {
+            socio: "NORTE-PLANJAR (25%)",
+            corresponde: 0,
+            retiros: 0,
+            saldo: 0,
+            lotes_yc: 0,
+            lotes_pl: 0,
+            lotes_ny: 0,
+            saldo_lotes: 0,
+            bolsones: 0,
+            retiros_bolsones: 0,
+            retiros_bolsones_lotes_yc: 0,
+            retiros_bolsones_lotes_pl: 0,
+            retiros_bolsones_lotes_ny: 0,
+            saldo_final: 0,
+        }
+        var dataY: any = {
+            socio: "YAGUA (25%)",
+            corresponde: 0,
+            retiros: 0,
+            saldo: 0,
+            lotes_yc: 0,
+            lotes_pl: 0,
+            lotes_ny: 0,
+            saldo_lotes: 0,
+            bolsones: 0,
+            retiros_bolsones: 0,
+            retiros_bolsones_lotes_yc: 0,
+            retiros_bolsones_lotes_pl: 0,
+            retiros_bolsones_lotes_ny: 0,
+            saldo_final: 0,
+        }
+
+        //CORRESPONDE
+        var produccionSociedadTijuana = 0
+        paqueteMovimientos.forEach((paq:any) => { 
+            if(paq.id_grano == this.idGranosSeleccionado && paq.tipo_origen=='lote'){
+                if(establecimientosSociedadTijuana.includes(paq.id_establecimiento)){
+                    produccionSociedadTijuana += paq.kilos 
+                }
+            }
+        })
+
+        const correspondeTijuana_socTij = produccionSociedadTijuana*0.5
+        const correspondeNorte_socTij = produccionSociedadTijuana*0.25
+        const correspondeYagua_socTij = produccionSociedadTijuana*0.25
+
+
+        //RETIROS - SALIDAS DE SOCIEDAD TIJUANA
+        var tijuanaRetiros = 0
+        var norteRetiros = 0
+        var yaguaRetiros = 0
+
+        paqueteMovimientos.filter((e:any) => { return establecimientosSociedadTijuana.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='lote') }).forEach((mov:any) => {
+            if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                norteRetiros += mov.kilos
+            }
+            if(mov.id_socio == ID_YAGUA){
+                yaguaRetiros += mov.kilos
+            }
+            if(mov.id_socio == ID_TIJUANA){
+                tijuanaRetiros += mov.kilos
+            }
+        })
+
+        //SALDOS
+        var tijuanaSaldo = correspondeTijuana_socTij - tijuanaRetiros
+        var norteSaldo = correspondeNorte_socTij - norteRetiros
+        var yaguaSaldo = correspondeYagua_socTij - yaguaRetiros
+
+
+        //LOTES DE YAGUA Y PLANJAR Y SOC NY
+        var tijuanalotes_yc = 0
+        var tijuanalotes_pl = 0
+        var tijuanalotes_ny = 0
+
+        var nortelotes_pl = 0
+        var nortelotes_ny = 0
+        
+        var yagualotes_yc = 0
+        var yagualotes_ny = 0
+
+        paqueteMovimientos.filter((e:any) => { return (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='lote') }).forEach((mov:any) => {
+            if(establecimientosPL.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuanalotes_pl -= mov.kilos
+                    nortelotes_pl += mov.kilos
+                }
+            }
+            if(establecimientosYC.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuanalotes_yc -= mov.kilos
+                    yagualotes_yc += mov.kilos
+                }
+            }
+            if(establecimientosSociedad.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuanalotes_ny -= mov.kilos
+                    nortelotes_ny += mov.kilos/2
+                    yagualotes_ny += mov.kilos/2
+                }
+            }
+        })
+
+        //SALDO LOTES
+        var tijuanaSaldo_lotes = tijuanaSaldo + tijuanalotes_yc + tijuanalotes_pl + tijuanalotes_ny
+        var norteSaldo_lotes = norteSaldo + nortelotes_pl + nortelotes_ny
+        var yaguaSaldo_lotes = yaguaSaldo + yagualotes_yc + yagualotes_ny
+
+
+        //BOLSONES - CORRESPONDE
+        var kilosTotalesSilosSociedad:any = 0
+        establecimientosSociedadTijuana.forEach((est:any) => {
+            const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return (silo.id_establecimiento == est) && (silo.id_grano == this.idGranosSeleccionado) })
+            if(silosDelLote.length){
+                var kgs_entrada = 0
+                silosDelLote.forEach((silo:any) => {
+                    const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_silo == silo.id })
+                    kilosASilo.forEach((kgs:any) => {
+                        kgs_entrada += parseInt(kgs.kilos)
+                    })
+                })
+                kilosTotalesSilosSociedad += kgs_entrada
+            }
+        })
+
+        var tijuana_bolsones = kilosTotalesSilosSociedad*0.5
+        var norte_bolsones = kilosTotalesSilosSociedad*0.25
+        var yagua_bolsones = kilosTotalesSilosSociedad*0.25
+
+        //RETIRO BOLSONES
+        var tijuana_retiro_bolsones = 0
+        var norte_retiro_bolsones = 0
+        var yagua_retiro_bolsones = 0
+
+        paqueteMovimientos.filter((e:any) => { return establecimientosSociedadTijuana.includes(e.id_establecimiento) && (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='silo') }).forEach((mov:any) => {
+            if(ID_CONTRATO_CAMARA.includes(mov.contrato)){
+                norte_retiro_bolsones += mov.kilos/2
+                yagua_retiro_bolsones += mov.kilos/2
+            }
+
+            if(ID_CONTRATO_CLIENTES.includes(mov.contrato)){
+                if(ID_CONTRATO_CLIENTES_MEDIAS.includes(mov.contrato)){
+                    norte_retiro_bolsones += mov.kilos/2
+                    yagua_retiro_bolsones += mov.kilos/2
+                } else if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norte_retiro_bolsones += mov.kilos
+                } else if(mov.id_socio == ID_YAGUA){
+                    yagua_retiro_bolsones += mov.kilos
+                } else {
+                    norte_retiro_bolsones += mov.kilos/2
+                    yagua_retiro_bolsones += mov.kilos/2
+                }
+            }
+
+            if(!ID_CONTRATO_CAMARA.includes(mov.contrato) && !ID_CONTRATO_CLIENTES.includes(mov.contrato)){
+                if(mov.id_socio == ID_NORTE || mov.id_socio == ID_PLANJAR){
+                    norte_retiro_bolsones += mov.kilos
+                }
+                if(mov.id_socio == ID_YAGUA){
+                    yagua_retiro_bolsones += mov.kilos
+                }
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuana_retiro_bolsones += mov.kilos
+                }
+            }
+        })
+
+
+        //RETIRO BOLSONES DE YAGUA - NORTE - SOCIEDAD NY
+        var tijuanaBolsones_yc = 0
+        var tijuanaBolsones_pl = 0
+        var tijuanaBolsones_ny = 0
+
+        var norteBolsones_pl = 0
+        var norteBolsones_ny = 0
+        
+        var yaguaBolsones_yc = 0
+        var yaguaBolsones_ny = 0
+
+        paqueteMovimientos.filter((e:any) => { return (e.id_grano == this.idGranosSeleccionado) && (e.tipo_origen=='silo') }).forEach((mov:any) => {
+            if(establecimientosPL.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuanaBolsones_pl -= mov.kilos
+                    norteBolsones_pl += mov.kilos
+                }
+            }
+            if(establecimientosYC.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuanaBolsones_yc -= mov.kilos
+                    yaguaBolsones_yc += mov.kilos
+                }
+            }
+            if(establecimientosSociedad.includes(mov.id_establecimiento)){
+                if(mov.id_socio == ID_TIJUANA){
+                    tijuanaBolsones_ny -= mov.kilos
+                    norteBolsones_ny += mov.kilos/2
+                    yaguaBolsones_ny += mov.kilos/2
+                }
+            }
+        })
+
+
+        //SALDOS TOTALES
+        var tijuana_saldo_final = tijuanaSaldo_lotes + tijuana_bolsones - tijuana_retiro_bolsones + tijuanaBolsones_yc + tijuanaBolsones_pl + tijuanaBolsones_ny
+        var norte_saldo_final = norteSaldo_lotes + norte_bolsones - norte_retiro_bolsones + norteBolsones_pl + norteBolsones_ny
+        var yagua_saldo_final = yaguaSaldo_lotes + yagua_bolsones - yagua_retiro_bolsones + yaguaBolsones_yc + yaguaBolsones_ny
+
+
+
+        dataT.corresponde = this.transformarDatoMostrarTabla(correspondeTijuana_socTij.toFixed(), "numeroEntero")
+        dataNP.corresponde = this.transformarDatoMostrarTabla(correspondeNorte_socTij.toFixed(), "numeroEntero")
+        dataY.corresponde = this.transformarDatoMostrarTabla(correspondeYagua_socTij.toFixed(), "numeroEntero")
+
+        dataT.retiros = this.transformarDatoMostrarTabla(tijuanaRetiros.toFixed(), "numeroEntero")
+        dataNP.retiros = this.transformarDatoMostrarTabla(norteRetiros.toFixed(), "numeroEntero")
+        dataY.retiros = this.transformarDatoMostrarTabla(yaguaRetiros.toFixed(), "numeroEntero")
+
+        dataT.saldo = this.transformarDatoMostrarTabla(tijuanaSaldo.toFixed(), "numeroEntero")
+        dataNP.saldo = this.transformarDatoMostrarTabla(norteSaldo.toFixed(), "numeroEntero")
+        dataY.saldo = this.transformarDatoMostrarTabla(yaguaSaldo.toFixed(), "numeroEntero")
+
+        dataT.lotes_yc = this.transformarDatoMostrarTabla(tijuanalotes_yc.toFixed(), "numeroEntero")
+        dataNP.lotes_yc = 0
+        dataY.lotes_yc = this.transformarDatoMostrarTabla(yagualotes_yc.toFixed(), "numeroEntero")
+
+        dataT.lotes_pl = this.transformarDatoMostrarTabla(tijuanalotes_pl.toFixed(), "numeroEntero")
+        dataNP.lotes_pl = this.transformarDatoMostrarTabla(nortelotes_pl.toFixed(), "numeroEntero")
+        dataY.lotes_pl = 0
+
+        dataT.lotes_ny = this.transformarDatoMostrarTabla(tijuanalotes_ny.toFixed(), "numeroEntero")
+        dataNP.lotes_ny = this.transformarDatoMostrarTabla(nortelotes_ny.toFixed(), "numeroEntero")
+        dataY.lotes_ny = this.transformarDatoMostrarTabla(yagualotes_ny.toFixed(), "numeroEntero")
+
+        dataT.saldo_lotes = this.transformarDatoMostrarTabla(tijuanaSaldo_lotes.toFixed(), "numeroEntero")
+        dataNP.saldo_lotes = this.transformarDatoMostrarTabla(norteSaldo_lotes.toFixed(), "numeroEntero")
+        dataY.saldo_lotes = this.transformarDatoMostrarTabla(yaguaSaldo_lotes.toFixed(), "numeroEntero")
+
+        dataT.bolsones = this.transformarDatoMostrarTabla(tijuana_bolsones.toFixed(), "numeroEntero")
+        dataNP.bolsones = this.transformarDatoMostrarTabla(norte_bolsones.toFixed(), "numeroEntero")
+        dataY.bolsones = this.transformarDatoMostrarTabla(yagua_bolsones.toFixed(), "numeroEntero")
+
+        dataT.retiros_bolsones = this.transformarDatoMostrarTabla(tijuana_retiro_bolsones.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones = this.transformarDatoMostrarTabla(norte_retiro_bolsones.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones = this.transformarDatoMostrarTabla(yagua_retiro_bolsones.toFixed(), "numeroEntero")
+
+        dataT.retiros_bolsones_lotes_yc = this.transformarDatoMostrarTabla(tijuanaBolsones_yc.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_lotes_yc = 0
+        dataY.retiros_bolsones_lotes_yc = this.transformarDatoMostrarTabla(yaguaBolsones_yc.toFixed(), "numeroEntero")
+
+        dataT.retiros_bolsones_lotes_pl = this.transformarDatoMostrarTabla(tijuanaBolsones_pl.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_lotes_pl = this.transformarDatoMostrarTabla(norteBolsones_pl.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones_lotes_pl = 0
+
+        dataT.retiros_bolsones_lotes_ny = this.transformarDatoMostrarTabla(tijuanaBolsones_ny.toFixed(), "numeroEntero")
+        dataNP.retiros_bolsones_lotes_ny = this.transformarDatoMostrarTabla(norteBolsones_ny.toFixed(), "numeroEntero")
+        dataY.retiros_bolsones_lotes_ny = this.transformarDatoMostrarTabla(yaguaBolsones_ny.toFixed(), "numeroEntero")
+
+        dataT.saldo_final = this.transformarDatoMostrarTabla(tijuana_saldo_final.toFixed(), "numeroEntero")
+        dataNP.saldo_final = this.transformarDatoMostrarTabla(norte_saldo_final.toFixed(), "numeroEntero")
+        dataY.saldo_final = this.transformarDatoMostrarTabla(yagua_saldo_final.toFixed(), "numeroEntero")
+
+
+
+
+
+
+        this.datosTablaSociedadTijuana.push(dataT)
+        this.datosTablaSociedadTijuana.push(dataNP)
+        this.datosTablaSociedadTijuana.push(dataY)
+
+        this.datosTablaSociedadTotalesTijuana = {
+            socio: 'TOTAL',
+            corresponde: this.transformarDatoMostrarTabla(produccionSociedadTijuana.toFixed(), "numeroEntero"),
+            retiros: this.transformarDatoMostrarTabla((tijuanaRetiros+norteRetiros+yaguaRetiros).toFixed(), "numeroEntero"),
+            saldo: this.transformarDatoMostrarTabla((tijuanaSaldo+norteSaldo+yaguaSaldo).toFixed(), "numeroEntero"),
+            lotes_yc: this.transformarDatoMostrarTabla((tijuanalotes_yc+yagualotes_yc).toFixed(), "numeroEntero"),
+            lotes_pl: this.transformarDatoMostrarTabla((tijuanalotes_pl+nortelotes_pl).toFixed(), "numeroEntero"),
+            lotes_ny: this.transformarDatoMostrarTabla((tijuanalotes_ny+nortelotes_ny+yagualotes_ny).toFixed(), "numeroEntero"),
+            saldo_lotes: this.transformarDatoMostrarTabla((tijuanaSaldo_lotes+norteSaldo_lotes+yaguaSaldo_lotes).toFixed(), "numeroEntero"),
+            bolsones: this.transformarDatoMostrarTabla(kilosTotalesSilosSociedad.toFixed(), "numeroEntero"),
+            retiros_bolsones: this.transformarDatoMostrarTabla((tijuana_retiro_bolsones+norte_retiro_bolsones+yagua_retiro_bolsones).toFixed(), "numeroEntero"),
+            retiros_bolsones_lotes_yc: this.transformarDatoMostrarTabla((tijuanaBolsones_yc+yaguaBolsones_yc).toFixed(), "numeroEntero"),
+            retiros_bolsones_lotes_pl: this.transformarDatoMostrarTabla((tijuanaBolsones_pl+norteBolsones_pl).toFixed(), "numeroEntero"),
+            retiros_bolsones_lotes_ny: this.transformarDatoMostrarTabla((tijuanaBolsones_ny+norteBolsones_ny+yaguaBolsones_ny).toFixed(), "numeroEntero"),
+            saldo_final: this.transformarDatoMostrarTabla((tijuana_saldo_final+norte_saldo_final+yagua_saldo_final).toFixed(), "numeroEntero")
+        }
+
     }
 
 

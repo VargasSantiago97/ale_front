@@ -253,14 +253,14 @@
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedad">
+                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedadTerceros">
                                 {{col.header}}
                             </th>
                         </tr>
                     </thead>
-                    <!--tbody>
-                        <tr *ngFor="let dato of datosTablaSociedad">
-                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaSociedadTijuana">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedadTerceros">
                                 <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
                                 <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
                             </td>
@@ -268,11 +268,11 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
-                                <label><strong>{{datosTablaSociedadTotales[col.field]}}</strong></label>
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedadTerceros">
+                                <label><strong>{{datosTablaSociedadTotalesTijuana[col.field]}}</strong></label>
                             </td>
                         </tr>
-                    </tfoot-->
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -287,14 +287,14 @@
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedad">
+                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsSociedadTerceros">
                                 {{col.header}}
                             </th>
                         </tr>
                     </thead>
-                    <!--tbody>
-                        <tr *ngFor="let dato of datosTablaSociedad">
-                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaSociedadTraviesas">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedadTerceros">
                                 <label *ngIf="col.field == 'socio'"><strong>{{dato[col.field]}}</strong></label>
                                 <label *ngIf="col.field != 'socio'">{{dato[col.field]}}</label>
                             </td>
@@ -302,11 +302,11 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedad">
-                                <label><strong>{{datosTablaSociedadTotales[col.field]}}</strong></label>
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsSociedadTerceros">
+                                <label><strong>{{datosTablaSociedadTotalesTraviesas[col.field]}}</strong></label>
                             </td>
                         </tr>
-                    </tfoot-->
+                    </tfoot>
                 </table>
             </div>
         </div>
