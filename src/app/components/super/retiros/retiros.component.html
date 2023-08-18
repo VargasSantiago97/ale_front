@@ -242,6 +242,14 @@
                 </table>
             </div>
         </div>
+        <p-inplace [closable]="true">
+            <ng-template pTemplate="display">
+                {{anotaciones}}
+            </ng-template>
+            <ng-template pTemplate="content">
+                <textarea type="text" pInputText [(ngModel)]="anotaciones"></textarea>
+            </ng-template>
+        </p-inplace>
     </div>
 
     <br>

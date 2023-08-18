@@ -85,6 +85,8 @@ export class RetirosComponent {
     ok_contratosDB: any = false
     ok_movimiento_contrato: any = false
 
+    anotaciones:any = 'asdd'
+
 
     constructor(
         private comunicacionService: ComunicacionService,
