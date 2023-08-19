@@ -85,7 +85,13 @@ export class RetirosComponent {
     ok_contratosDB: any = false
     ok_movimiento_contrato: any = false
 
-    anotaciones:any = 'asdd'
+    anotaciones:any = {
+        "465b2f38ca75" : {
+            sociedad: ["men 1", "men 2"],
+            sociedadTijuana: ["mens 4", "men 4"],
+            sociedadTraviesas: ["men 5", "men 56"]
+        }
+    }
 
 
     constructor(

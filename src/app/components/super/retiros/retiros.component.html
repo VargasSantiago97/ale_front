@@ -241,15 +241,10 @@
                     </tfoot>
                 </table>
             </div>
+            <ul *ngIf="idGranosSeleccionado">
+                <li *ngFor="let anotacion of anotaciones[idGranosSeleccionado]['sociedad']">{{anotacion}}</li>
+            </ul>
         </div>
-        <p-inplace [closable]="true">
-            <ng-template pTemplate="display">
-                {{anotaciones}}
-            </ng-template>
-            <ng-template pTemplate="content">
-                <textarea type="text" pInputText [(ngModel)]="anotaciones"></textarea>
-            </ng-template>
-        </p-inplace>
     </div>
 
     <br>
@@ -283,6 +278,9 @@
                     </tfoot>
                 </table>
             </div>
+            <ul>
+                <li *ngFor="let anotacion of anotaciones[idGranosSeleccionado].sociedadTijuana">{{anotacion}}</li>
+            </ul>
         </div>
     </div>
 
@@ -317,6 +315,10 @@
                     </tfoot>
                 </table>
             </div>
+            
+            <ul>
+                <li *ngFor="let anotacion of anotaciones[idGranosSeleccionado].sociedadTraviesas">{{anotacion}}</li>
+            </ul>
         </div>
     </div>
 </div>
