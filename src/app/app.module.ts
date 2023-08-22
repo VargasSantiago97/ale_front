@@ -53,6 +53,7 @@ import {ScrollerModule} from 'primeng/scroller';
 import {SplitButtonModule} from 'primeng/splitbutton';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {InplaceModule} from 'primeng/inplace';
+import {TooltipModule} from 'primeng/tooltip';
 
 
 
@@ -194,7 +195,8 @@ import { GMapModule } from 'primeng/gmap';
     SplitButtonModule,
     ConfirmDialogModule,
     GMapModule,
-    InplaceModule
+    InplaceModule,
+    TooltipModule
   ],
   providers: [MessageService, ConfirmationService],
   bootstrap: [AppComponent]
