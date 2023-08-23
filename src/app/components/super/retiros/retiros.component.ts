@@ -72,6 +72,9 @@ export class RetirosComponent {
     datosTablaSociedadTraviesas: any = []
     datosTablaSociedadTotalesTraviesas: any = {}
 
+    datosTablaRetirosSocio: any = []
+    datosTablaRetirosSocioTotales: any = {}
+
     ok_movimientos: any = false
     ok_movimientos_local: any = false
     ok_cpe: any = false
@@ -90,10 +93,14 @@ export class RetirosComponent {
         "465b2f38ca75" : {
             sociedad: [
                 "~ TOTALES KILOS SOCIEDAD (No tiene en cuenta ANDION / MANATIAL POZO) ~",
-                "Trilla Retiros Clientes: SABATE 92.134kgs (Picado + 25tn en tolva)",
-                "Trilla Retiros Clientes: TIJUANA kgs",
+                "Trilla Retiros Clientes: SABATE 92.134kgs (Picado + 25tn en tolva). El resto TIJUANA",
                 "Bolson Retiros Clientes: LEGUIZA 216.140 kg de Bolson LA NINA"
             ],
+            sociedadTijuana: [],
+            sociedadTraviesas: []
+        },
+        "d81473ae9754" : {
+            sociedad: ["Trilla Retiros Clientes: DOÑA CHICA (EST. LA FE) - 92.950 kgs"],
             sociedadTijuana: [],
             sociedadTraviesas: []
         }
@@ -972,6 +979,10 @@ export class RetirosComponent {
                 if(mov.id_socio == ID_YAGUA){
                     yaguaRetiros += mov.kilos
                 }
+                if(mov.id_socio == ID_TIJUANA || mov.id_socio == ID_TRAVIESAS){
+                    norteClientes += mov.kilos/2
+                    yaguaClientes += mov.kilos/2
+                }
             }
         })
 
@@ -1790,6 +1801,80 @@ export class RetirosComponent {
             saldo_final: this.transformarDatoMostrarTabla((traviesas_saldo_final+norte_saldo_final+yagua_saldo_final).toFixed(), "numeroEntero")
         }
 
+
+
+
+
+
+        /*
+         _____  ______ _______ _____ _____   ____   _____   _____  ______    _____  ____   _____ _____ ____   _____   _____   ____  _____     _____          __  __ _____   ____   _____ 
+        |  __ \|  ____|__   __|_   _|  __ \ / __ \ / ____|  |  __ \|  ____|   / ____|/ __ \ / ____|_   _/ __ \ / ____|   |  __ \ / __ \|  __ \     / ____|   /\   |  \/  |  __ \ / __ \ / ____|
+        | |__) | |__     | |    | | | |__) | |  | | (___    | |  | | |__     | (___ | |  | | |      | || |  | | (___     | |__) | |  | | |__) |   | |       /  \  | \  / | |__) | |  | | (___  
+        |  _  /|  __|    | |    | | |  _  /| |  | |\___ \   | |  | |  __|     \___ \| |  | | |      | || |  | |\___ \    |  ___/| |  | |  _  /    | |      / /\ \ | |\/| |  ___/| |  | |\___ \ 
+        | | \ \| |____   | |   _| |_| | \ \| |__| |____) |  | |__| | |____    ____) | |__| | |____ _| || |__| |____) |   | |    | |__| | | \ \    | |____ / ____ \| |  | | |    | |__| |____) |
+        |_|  \_\______|  |_|  |_____|_|  \_\\____/|_____/   |_____/|______|  |_____/ \____/ \_____|_____\____/|_____/    |_|     \____/|_|  \_\    \_____/_/    \_\_|  |_|_|     \____/|_____/ 
+        */
+        var establecimientos:any = []
+        var socios:any = []
+
+        const paquetesPorEstablecimientos = paqueteMovimientos.filter((e:any) => { return e.id_grano == this.idGranosSeleccionado }).reduce((result:any, item:any) => {
+            const id = item.id_establecimiento;
+            if (!establecimientos.includes(id)) {
+                establecimientos.push(id)
+              }
+            if (!result[id]) {
+              result[id] = [];
+            }
+            result[id].push(item);
+            return result;
+        }, {});
+
+        this.datosTablaRetirosSocio = []
+        this.datosTablaRetirosSocioTotales = {}
+
+        var totalKilosTotal = 0
+
+        establecimientos.forEach((est:any) => {
+
+            var item:any = {ID_NORTE: [], ID_YAGUA: []}
+
+            var establecimiento = this.transformarDatoMostrarTabla(est, 'establecimiento')
+            var totalKilos = paquetesPorEstablecimientos[est].reduce((acc:any, curr:any) => { return acc + curr.kilos }, 0)
+
+            paquetesPorEstablecimientos[est].forEach((element:any) => {
+                if(!item[element.id_socio]){
+                    item[element.id_socio] = 0
+                }
+
+                if(ID_CONTRATO_CAMARA.includes(element.contrato) || ID_CONTRATO_CLIENTES_MEDIAS.includes(element.contrato)){
+                    item[ID_YAGUA] = item[ID_YAGUA] + (element.kilos / 2)
+                    item[ID_NORTE] = item[ID_NORTE] + (element.kilos / 2)
+                } else {
+                    item[element.id_socio] = item[element.id_socio] + element.kilos
+                }
+                
+            });
+            
+
+            item.establecimiento = establecimiento
+            item.kg = this.transformarDatoMostrarTabla(totalKilos.toFixed(), "numeroEntero")
+
+            totalKilosTotal += totalKilos
+
+            this.db['socios'].forEach((soc:any) => {
+                if(item[soc.id]){
+                    item[soc.id] = this.transformarDatoMostrarTabla(item[soc.id].toFixed(), "numeroEntero")
+                }
+
+                const totalSocio = paqueteMovimientos.filter((e:any) => { return (e.id_grano == this.idGranosSeleccionado) && (e.id_socio == soc.id) }).reduce((acc:any, curr:any) => { return acc + curr.kilos }, 0)
+                this.datosTablaRetirosSocioTotales[soc.id] = this.transformarDatoMostrarTabla(totalSocio.toFixed(), "numeroEntero")
+            });
+
+            this.datosTablaRetirosSocio.push(item)
+
+        });
+
+        this.datosTablaRetirosSocioTotales.kg = this.transformarDatoMostrarTabla(totalKilosTotal.toFixed(), "numeroEntero")
     }
 
 
@@ -1817,6 +1902,9 @@ export class RetirosComponent {
         }
         if (tipo=='numeroEntero'){
             return dato.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        }
+        if (tipo=='establecimiento'){
+            return this.db['establecimientos'].some((e:any) => { return e.id == dato }) ? this.db['establecimientos'].find((e:any) => { return e.id == dato }).alias : dato
         }
 
         return dato
