@@ -1,5 +1,5 @@
 <div style="margin: 20px 50px;">
-    <div class="formgrid row">
+    <div #DATOS class="formgrid row {{mostrar_imprimir.datos ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div class="field col">
             <div class="card tarjeta">
                 <h5>MOVIMIENTOS TOTALES</h5><br>
@@ -97,7 +97,7 @@
     
     <br>
     
-    <div class="formgrid row">
+    <div class="formgrid row ocultarImpresion">
         <div class="field col">
             <select
                 *ngIf="this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes && this.ok_produccion && this.ok_contratosDB && this.ok_movimiento_contrato"
@@ -106,10 +106,15 @@
             </select>
         </div>
     </div>
+    <div *ngIf="idGranosSeleccionado" class="formgrid row">
+        <div class="field col">
+            <h1 style="text-align: center;">Cultivo: {{transformarDatoMostrarTabla(idGranosSeleccionado, "grano")}}</h1>
+        </div>
+        <br><br>
+    </div>
 
-    <br><br>
 
-    <div class="formgrid row">
+    <div #PRODUCCION_CAMPOS class="formgrid row {{mostrar_imprimir.produccion_campos ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>PRODUCCION CAMPOS/SOCIOS - CON KILOS DE BALANZA</strong></h5>
@@ -138,11 +143,11 @@
                 </table>
             </div>
         </div>
+        <br><br><br>
     </div>
 
-    <br><br><br>
 
-    <div class="formgrid row">
+    <div #TOTALES_KILOS_CORRESPONDE_POR_SOCIO class="formgrid row {{mostrar_imprimir.totales_kilos_corresponde_por_socio ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>TOTALES KILOS QUE CORRESPONDE POR SOCIO</strong></h5>
@@ -174,11 +179,11 @@
                 </table>
             </div>
         </div>
+        <br><br><br>
     </div>
 
-    <br><br><br>
 
-    <div class="formgrid row">
+    <div #TOTALES_KILOS_RETIRADOS class="formgrid row {{mostrar_imprimir.totales_kilos_retirados ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>TOTALES KILOS RETIRADOS</strong></h5>
@@ -208,11 +213,11 @@
                 </table>
             </div>
         </div>
+        <br><br><br>
     </div>
 
-    <br><br><br>
 
-    <div #TOTALES_KILOS_SOCIEDAD class="formgrid row">
+    <div #TOTALES_KILOS_SOCIEDAD class="formgrid row {{mostrar_imprimir.totales_kilos_sociedad ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>TOTALES KILOS SOCIEDAD</strong></h5>
@@ -245,11 +250,11 @@
                 <li *ngFor="let anotacion of anotaciones[idGranosSeleccionado]['sociedad']">{{anotacion}}</li>
             </ul>
         </div>
+        <br>
     </div>
 
-    <br>
 
-    <div #TOTALES_KILOS_TIJUANA *ngIf="idGranosSeleccionado == '465b2f38ca75'" class="formgrid row">
+    <div #TOTALES_KILOS_TIJUANA *ngIf="idGranosSeleccionado == '465b2f38ca75'" class="formgrid row {{mostrar_imprimir.totales_kilos_tijuana ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>SOCIEDAD - TIJUANA: ANDION</strong></h5>
@@ -282,11 +287,11 @@
                 <li *ngFor="let anotacion of anotaciones[idGranosSeleccionado].sociedadTijuana">{{anotacion}}</li>
             </ul>
         </div>
+        <br>
     </div>
 
-    <br>
 
-    <div #TOTALES_KILOS_TRAVIESAS *ngIf="idGranosSeleccionado == '465b2f38ca75'" class="formgrid row">
+    <div #TOTALES_KILOS_TRAVIESAS *ngIf="idGranosSeleccionado == '465b2f38ca75'" class="formgrid row {{mostrar_imprimir.totales_kilos_traviesas ? 'mostrarImpresion' : 'ocultarImpresion' }}">
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
                 <h5 style="text-align: center;"><strong>SOCIEDAD - TRAVIESAS: MANANTIAL POZO</strong></h5>
@@ -320,40 +325,175 @@
                 <li *ngFor="let anotacion of anotaciones[idGranosSeleccionado].sociedadTraviesas">{{anotacion}}</li>
             </ul>
         </div>
+        <br>
     </div>
 
-    <br>
 
-    <div #TOTALES_RETIRADOS_CAMPOS class="formgrid row">
+    <div #TOTALES_RETIRADOS_CAMPOS class="formgrid row {{mostrar_imprimir.totales_retirados_campos ? 'mostrarImpresion' : 'ocultarImpresion' }}"> 
         <div #CAMPOS class="field col">
             <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
-                <h5 style="text-align: center;"><strong>RETIROS DE SOCIOS POR CAMPOS (DE TRILLA Y BOLSONES)</strong></h5>
+                <h5 style="text-align: center;"><strong>RESUMEN TOTAL POR ESTABLECIMIENTOS</strong></h5>
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th style="padding: 3px; text-align: right;" *ngFor="let col of colsRetirosPorSocio">
-                                {{col.header}}
+                            <th colspan="6" style="padding: 3px; text-align: center; border: 1px solid black;">
+                                PRODUCCION
+                            </th>
+                            <th colspan="5" style="padding: 3px; text-align: center; border: 1px solid black;">
+                                CORRESPONDE
+                            </th>
+                            <th colspan="5" style="padding: 3px; text-align: center; border: 1px solid black;">
+                                RETIROS
+                            </th>
+                            <th colspan="6" style="padding: 3px; text-align: center; border: 1px solid black;">
+                                SALDOS
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="border-left: 1px solid black; text-align: center">
+                                Establecimiento
+                            </th>
+                            <th style="text-align: center">
+                                Has
+                            </th>
+                            <th style="text-align: center">
+                                De Trilla
+                            </th>
+                            <th style="text-align: center">
+                                A Silo
+                            </th>
+                            <th style="text-align: center">
+                                TOTAL
+                            </th>
+                            <th style="border-right: 1px solid black; text-align: center">
+                                RINDE
+                            </th>
+                            <th style="text-align: center">
+                                NORTE
+                            </th>
+                            <th style="text-align: center">
+                                YAGUA
+                            </th>
+                            <th style="text-align: center">
+                                PLANJAR
+                            </th>
+                            <th style="text-align: center">
+                                TIJUANA
+                            </th>
+                            <th style="border-right: 1px solid black; text-align: center">
+                                TRAVIESAS
+                            </th>
+                            <th style="text-align: center">
+                                NORTE
+                            </th>
+                            <th style="text-align: center">
+                                YAGUA
+                            </th>
+                            <th style="text-align: center">
+                                PLANJAR
+                            </th>
+                            <th style="text-align: center">
+                                TIJUANA
+                            </th>
+                            <th style="border-right: 1px solid black; text-align: center">
+                                TRAVIESAS
+                            </th>
+                            <th style="text-align: center">
+                                NORTE
+                            </th>
+                            <th style="text-align: center">
+                                YAGUA
+                            </th>
+                            <th style="text-align: center">
+                                PLANJAR
+                            </th>
+                            <th style="text-align: center">
+                                TIJUANA
+                            </th>
+                            <th style="border-right: 1px solid black; text-align: center">
+                                TRAVIESAS
+                            </th>
+                            <th style="border-right: 1px solid black; text-align: center">
+                                EN BOLSON
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let dato of datosTablaRetirosSocio">
-                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsRetirosPorSocio">
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsRetirosCampos">
                                 <label *ngIf="col.field == 'establecimiento'"><strong>{{dato[col.field]}}</strong></label>
-                                <label *ngIf="col.field == 'kg'"><strong>{{dato[col.field]}}</strong></label>
-                                <label *ngIf="(col.field != 'establecimiento') && (col.field != 'kg')">{{dato[col.field]}}</label>
+                                <label *ngIf="col.field == 'total'"><strong>{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</strong></label>
+                                <label *ngIf="col.field == 'saldo_bolsones'"><strong>{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</strong></label>
+                                <label *ngIf="col.field == 'rinde'"><em>{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</em></label>
+                                <label *ngIf="(col.field != 'establecimiento') && (col.field != 'total') && (col.field != 'saldo_bolsones') && (col.field != 'rinde')">{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</label>
                             </td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsRetirosPorSocio">
-                                <label><strong>{{datosTablaRetirosSocioTotales[col.field]}}</strong></label>
+                            <td style="padding: 2px; text-align: right;" *ngFor="let col of colsRetirosCampos">
+                                <label *ngIf="col.field == 'establecimiento'"><strong>TOTAL:</strong></label>
+                                <label *ngIf="col.field != 'establecimiento'"><strong>{{transformarDatoMostrarTabla(datosTablaRetirosSocioTotales[col.field], 'numero')}}</strong></label>
                             </td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
+        <br>
+    </div>
+
+    
+    <div class="ocultarImpresion formgrid row">
+        <div class="field col">
+            <button (click)="display_imprimir = true" style="margin-left: 50px;">IMPRIMIR</button>
+        </div>
     </div>
 </div>
+
+
+<p-dialog class="ocultarImpresion" header="IMPRIMIR" [(visible)]="display_imprimir" [style]="{width: '500px', height: '500px'}">
+
+    <div class="formgrid row">
+        <div class="field col">
+            <ul>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.datos">
+                    <label for="item1">datos</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.produccion_campos">
+                    <label for="item2">produccion_campos</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.totales_kilos_corresponde_por_socio">
+                    <label for="item3">totales_kilos_corresponde_por_socio</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.totales_kilos_retirados">
+                    <label for="item4">totales_kilos_retirados</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.totales_kilos_sociedad">
+                    <label for="item5">totales_kilos_sociedad</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.totales_kilos_tijuana">
+                    <label for="item6">totales_kilos_tijuana</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.totales_kilos_traviesas">
+                    <label for="item7">totales_kilos_traviesas</label>
+                </li>
+                <li>
+                    <input type="checkbox" [(ngModel)]="mostrar_imprimir.totales_retirados_campos">
+                    <label for="item8">RESUMEN TOTAL POR ESTABLECIMIENTOS</label>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" (click)="imprimir()" label="IMPRIMIR" styleClass="p-button-success"></p-button>
+    </ng-template>
+</p-dialog>

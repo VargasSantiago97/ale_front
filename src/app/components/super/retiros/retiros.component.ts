@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
@@ -89,6 +89,12 @@ export class RetirosComponent {
     ok_contratosDB: any = false
     ok_movimiento_contrato: any = false
 
+    display_imprimir: any = false
+    mostrar_imprimir: any = {
+        totales_retirados_campos: true
+    }
+    colsRetirosCampos: any = []
+
     anotaciones:any = {
         "465b2f38ca75" : {
             sociedad: [
@@ -110,7 +116,8 @@ export class RetirosComponent {
     constructor(
         private comunicacionService: ComunicacionService,
         private sqlite: SqliteService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private renderer: Renderer2
     ) { }
 
     ngOnInit() {
@@ -194,6 +201,30 @@ export class RetirosComponent {
             { field: 'saldo_final', header: 'SALDO FINAL' },
         ]
 
+        this.colsRetirosCampos = [
+            { field: 'establecimiento', header: 'establecimiento' },
+            { field: 'has', header: 'has' },
+            { field: 'trilla', header: 'trilla' },
+            { field: 'silo', header: 'silo' },
+            { field: 'total', header: 'total' },
+            { field: 'rinde', header: 'rinde' },
+            { field: 'corresponde_norte', header: 'corresponde_norte' },
+            { field: 'corresponde_yagua', header: 'corresponde_yagua' },
+            { field: 'corresponde_planjar', header: 'corresponde_planjar' },
+            { field: 'corresponde_tijuana', header: 'corresponde_tijuana' },
+            { field: 'corresponde_traviesas', header: 'corresponde_traviesas' },
+            { field: 'retiros_norte', header: 'retiros_norte' },
+            { field: 'retiros_yagua', header: 'retiros_yagua' },
+            { field: 'retiros_planjar', header: 'retiros_planjar' },
+            { field: 'retiros_tijuana', header: 'retiros_tijuana' },
+            { field: 'retiros_traviesas', header: 'retiros_traviesas' },
+            { field: 'saldos_norte', header: 'saldos_norte' },
+            { field: 'saldos_yagua', header: 'saldos_yagua' },
+            { field: 'saldos_planjar', header: 'saldos_planjar' },
+            { field: 'saldos_tijuana', header: 'saldos_tijuana' },
+            { field: 'saldos_traviesas', header: 'saldos_traviesas' },
+            { field: 'saldo_bolsones', header: 'saldo_bolsones' },
+        ]
 
 
         this.getAll('granos')
@@ -1815,13 +1846,12 @@ export class RetirosComponent {
         |_|  \_\______|  |_|  |_____|_|  \_\\____/|_____/   |_____/|______|  |_____/ \____/ \_____|_____\____/|_____/    |_|     \____/|_|  \_\    \_____/_/    \_\_|  |_|_|     \____/|_____/ 
         */
         var establecimientos:any = []
-        var socios:any = []
 
-        const paquetesPorEstablecimientos = paqueteMovimientos.filter((e:any) => { return e.id_grano == this.idGranosSeleccionado }).reduce((result:any, item:any) => {
+        var paquetesPorEstablecimientos = paqueteMovimientos.filter((e:any) => { return e.id_grano == this.idGranosSeleccionado }).reduce((result:any, item:any) => {
             const id = item.id_establecimiento;
             if (!establecimientos.includes(id)) {
                 establecimientos.push(id)
-              }
+            }
             if (!result[id]) {
               result[id] = [];
             }
@@ -1829,52 +1859,215 @@ export class RetirosComponent {
             return result;
         }, {});
 
+        console.log(establecimientos)
+
+        this.db_locales['silos'].filter((silo:any) => { return silo.id_grano == this.idGranosSeleccionado }).map((silo:any) => {
+            if (!establecimientos.includes(silo.id_establecimiento)) {
+                establecimientos.push(silo.id_establecimiento)
+            }
+            if (!paquetesPorEstablecimientos[silo.id_establecimiento]) {
+                paquetesPorEstablecimientos[silo.id_establecimiento] = [];
+              }
+        })
+
         this.datosTablaRetirosSocio = []
         this.datosTablaRetirosSocioTotales = {}
 
-        var totalKilosTotal = 0
+        var totales_has:any = 0
+        var totales_trilla:any = 0
+        var totales_silo:any = 0
+        var totales_total:any = 0
+        var totales_rinde:any = 0
+        var totales_corresponde_norte:any = 0
+        var totales_corresponde_yagua:any = 0
+        var totales_corresponde_planjar:any = 0
+        var totales_corresponde_tijuana:any = 0
+        var totales_corresponde_traviesas:any = 0
+        var totales_retiros_norte:any = 0
+        var totales_retiros_yagua:any = 0
+        var totales_retiros_planjar:any = 0
+        var totales_retiros_tijuana:any = 0
+        var totales_retiros_traviesas:any = 0
+        var totales_saldos_norte:any = 0
+        var totales_saldos_yagua:any = 0
+        var totales_saldos_planjar:any = 0
+        var totales_saldos_tijuana:any = 0
+        var totales_saldos_traviesas:any = 0
+        var totales_saldo_bolsones:any = 0
 
         establecimientos.forEach((est:any) => {
 
-            var item:any = {ID_NORTE: [], ID_YAGUA: []}
+            var item:any = {
+                establecimiento: this.transformarDatoMostrarTabla(est, 'establecimiento'),
+                has: 0,
+                trilla: 0,
+                silo: 0,
+                total: 0,
+                rinde: 0,
 
-            var establecimiento = this.transformarDatoMostrarTabla(est, 'establecimiento')
-            var totalKilos = paquetesPorEstablecimientos[est].reduce((acc:any, curr:any) => { return acc + curr.kilos }, 0)
+                corresponde_norte: 0,
+                corresponde_yagua: 0,
+                corresponde_planjar: 0,
+                corresponde_tijuana: 0,
+                corresponde_traviesas: 0,
+
+                retiros_norte: 0,
+                retiros_yagua: 0,
+                retiros_planjar: 0,
+                retiros_tijuana: 0,
+                retiros_traviesas: 0,
+
+                saldos_norte: 0,
+                saldos_yagua: 0,
+                saldos_planjar: 0,
+                saldos_tijuana: 0,
+                saldos_traviesas: 0,
+
+                saldo_bolsones: 0
+            }
+
+            //HAS
+            item.has = this.db_locales['lotes'].filter((e:any) => { return (e.id_establecimiento == est) && (e.id_grano == this.idGranosSeleccionado) }).reduce((acc:any, cur:any) => { return acc + parseInt(cur.has) },0)
+            totales_has += item.has
+
+            //DE TRILLA
+            item.trilla = paquetesPorEstablecimientos[est].filter((e:any) => { return e.tipo_origen == 'lote' }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+            totales_trilla += item.trilla
+
+            //SILOS
+            const silosDelLote = this.db_locales['silos'].filter((silo:any) => { return (silo.id_establecimiento == est) && (silo.id_grano == this.idGranosSeleccionado) })
+            var kgs_entrada_silo = 0
+            if(silosDelLote.length){
+                silosDelLote.forEach((silo:any) => {
+                    const kilosASilo = this.db_locales['lote_a_silo'].filter((lote_a_silo:any) => { return lote_a_silo.id_silo == silo.id })
+                    kgs_entrada_silo += kilosASilo.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+                })
+            }
+            item.silo = kgs_entrada_silo
+            totales_silo += item.silo
+
+            item.total = item.trilla + kgs_entrada_silo
+            totales_total += item.total
+
+            if(item.has){
+                item.rinde = (item.total / item.has).toFixed()
+            }
+
+            //CORRESPONDE
+            const porcentaje_norte = this.db_locales['produccion'].some((e:any) => { return (e.id_socio == ID_NORTE) && (e.id_establecimiento == est) }) ? this.db_locales['produccion'].find((e:any) => { return (e.id_socio == ID_NORTE) && (e.id_establecimiento == est) }).porcentaje : 0
+            const porcentaje_yagua = this.db_locales['produccion'].some((e:any) => { return (e.id_socio == ID_YAGUA) && (e.id_establecimiento == est) }) ? this.db_locales['produccion'].find((e:any) => { return (e.id_socio == ID_YAGUA) && (e.id_establecimiento == est) }).porcentaje : 0
+            const porcentaje_planjar = this.db_locales['produccion'].some((e:any) => { return (e.id_socio == ID_PLANJAR) && (e.id_establecimiento == est) }) ? this.db_locales['produccion'].find((e:any) => { return (e.id_socio == ID_PLANJAR) && (e.id_establecimiento == est) }).porcentaje : 0
+            const porcentaje_tijuana = this.db_locales['produccion'].some((e:any) => { return (e.id_socio == ID_TIJUANA) && (e.id_establecimiento == est) }) ? this.db_locales['produccion'].find((e:any) => { return (e.id_socio == ID_TIJUANA) && (e.id_establecimiento == est) }).porcentaje : 0
+            const porcentaje_traviesas = this.db_locales['produccion'].some((e:any) => { return (e.id_socio == ID_TRAVIESAS) && (e.id_establecimiento == est) }) ? this.db_locales['produccion'].find((e:any) => { return (e.id_socio == ID_TRAVIESAS) && (e.id_establecimiento == est) }).porcentaje : 0
+
+            item.corresponde_norte = (porcentaje_norte / 100 * item.total).toFixed()
+            item.corresponde_yagua = (porcentaje_yagua / 100 * item.total).toFixed()
+            item.corresponde_planjar = (porcentaje_planjar / 100 * item.total).toFixed()
+            item.corresponde_tijuana = (porcentaje_tijuana / 100 * item.total).toFixed()
+            item.corresponde_traviesas = (porcentaje_traviesas / 100 * item.total).toFixed()
+
+            totales_corresponde_norte += parseInt(item.corresponde_norte)
+            totales_corresponde_yagua += parseInt(item.corresponde_yagua)
+            totales_corresponde_planjar += parseInt(item.corresponde_planjar)
+            totales_corresponde_tijuana += parseInt(item.corresponde_tijuana)
+            totales_corresponde_traviesas += parseInt(item.corresponde_traviesas)
+
+
+            //RETIROS
+            const retiros_norte = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_NORTE }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+            const retiros_yagua = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_YAGUA }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+            const retiros_planjar = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_PLANJAR }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+            const retiros_tijuana = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_TIJUANA }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+            const retiros_traviesas = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_TRAVIESAS }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+            item.retiros_norte = retiros_norte.toFixed()
+            item.retiros_yagua = retiros_yagua.toFixed()
+            item.retiros_planjar = retiros_planjar.toFixed()
+            item.retiros_tijuana = retiros_tijuana.toFixed()
+            item.retiros_traviesas = retiros_traviesas.toFixed()
+
+            totales_retiros_norte += parseInt(item.retiros_norte)
+            totales_retiros_yagua += parseInt(item.retiros_yagua)
+            totales_retiros_planjar += parseInt(item.retiros_planjar)
+            totales_retiros_tijuana += parseInt(item.retiros_tijuana)
+            totales_retiros_traviesas += parseInt(item.retiros_traviesas)
+
+            ///SALDOS
+            const saldos_norte = item.corresponde_norte - item.retiros_norte
+            const saldos_yagua = item.corresponde_yagua - item.retiros_yagua
+            const saldos_planjar = item.corresponde_planjar - item.retiros_planjar
+            const saldos_tijuana = item.corresponde_tijuana - item.retiros_tijuana
+            const saldos_traviesas = item.corresponde_traviesas - item.retiros_traviesas
+            
+            item.saldos_norte = saldos_norte.toFixed()
+            item.saldos_yagua = saldos_yagua.toFixed()
+            item.saldos_planjar = saldos_planjar.toFixed()
+            item.saldos_tijuana = saldos_tijuana.toFixed()
+            item.saldos_traviesas = saldos_traviesas.toFixed()
+
+
+            totales_saldos_norte += parseInt(item.saldos_norte)
+            totales_saldos_yagua += parseInt(item.saldos_yagua)
+            totales_saldos_planjar += parseInt(item.saldos_planjar)
+            totales_saldos_tijuana += parseInt(item.saldos_tijuana)
+            totales_saldos_traviesas += parseInt(item.saldos_traviesas)
+
+
+            const saldo_bolsones = item.total - item.retiros_norte - item.retiros_yagua - item.retiros_planjar - item.retiros_tijuana - item.retiros_traviesas
+            item.saldo_bolsones = saldo_bolsones.toFixed()
+            totales_saldo_bolsones += parseInt(item.saldo_bolsones)
+
 
             paquetesPorEstablecimientos[est].forEach((element:any) => {
                 if(!item[element.id_socio]){
                     item[element.id_socio] = 0
                 }
-
                 if(ID_CONTRATO_CAMARA.includes(element.contrato) || ID_CONTRATO_CLIENTES_MEDIAS.includes(element.contrato)){
                     item[ID_YAGUA] = item[ID_YAGUA] + (element.kilos / 2)
                     item[ID_NORTE] = item[ID_NORTE] + (element.kilos / 2)
                 } else {
                     item[element.id_socio] = item[element.id_socio] + element.kilos
                 }
-                
             });
-            
 
-            item.establecimiento = establecimiento
-            item.kg = this.transformarDatoMostrarTabla(totalKilos.toFixed(), "numeroEntero")
-
-            totalKilosTotal += totalKilos
-
-            this.db['socios'].forEach((soc:any) => {
-                if(item[soc.id]){
-                    item[soc.id] = this.transformarDatoMostrarTabla(item[soc.id].toFixed(), "numeroEntero")
-                }
-
-                const totalSocio = paqueteMovimientos.filter((e:any) => { return (e.id_grano == this.idGranosSeleccionado) && (e.id_socio == soc.id) }).reduce((acc:any, curr:any) => { return acc + curr.kilos }, 0)
-                this.datosTablaRetirosSocioTotales[soc.id] = this.transformarDatoMostrarTabla(totalSocio.toFixed(), "numeroEntero")
-            });
 
             this.datosTablaRetirosSocio.push(item)
-
         });
 
-        this.datosTablaRetirosSocioTotales.kg = this.transformarDatoMostrarTabla(totalKilosTotal.toFixed(), "numeroEntero")
+        
+        if(totales_has){
+            totales_rinde = (totales_total / totales_has).toFixed()
+        }
+
+        this.datosTablaRetirosSocioTotales = {
+            establecimiento: 'TOTALES:',
+            has: totales_has,
+            trilla: totales_trilla,
+            silo: totales_silo,
+            total: totales_total,
+            rinde: totales_rinde,
+
+            corresponde_norte: totales_corresponde_norte,
+            corresponde_yagua: totales_corresponde_yagua,
+            corresponde_planjar: totales_corresponde_planjar,
+            corresponde_tijuana: totales_corresponde_tijuana,
+            corresponde_traviesas: totales_corresponde_traviesas,
+
+            retiros_norte: totales_retiros_norte,
+            retiros_yagua: totales_retiros_yagua,
+            retiros_planjar: totales_retiros_planjar,
+            retiros_tijuana: totales_retiros_tijuana,
+            retiros_traviesas: totales_retiros_traviesas,
+
+            saldos_norte: totales_saldos_norte,
+            saldos_yagua: totales_saldos_yagua,
+            saldos_planjar: totales_saldos_planjar,
+            saldos_tijuana: totales_saldos_tijuana,
+            saldos_traviesas: totales_saldos_traviesas,
+
+            saldo_bolsones: totales_saldo_bolsones
+        }
+
     }
 
 
@@ -1898,7 +2091,11 @@ export class RetirosComponent {
         }
         if (tipo=='numero'){
             let dev = dato
-            return dev.toLocaleString('es-AR');
+            if(dev){
+                return parseInt(dev).toLocaleString('es-AR');
+            } else {
+                return dev
+            }
         }
         if (tipo=='numeroEntero'){
             return dato.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
@@ -1906,7 +2103,16 @@ export class RetirosComponent {
         if (tipo=='establecimiento'){
             return this.db['establecimientos'].some((e:any) => { return e.id == dato }) ? this.db['establecimientos'].find((e:any) => { return e.id == dato }).alias : dato
         }
+        if (tipo=='grano'){
+            return this.db['granos'].some((e:any) => { return e.id == dato }) ? this.db['granos'].find((e:any) => { return e.id == dato }).alias : dato
+        }
 
         return dato
+    }
+
+    imprimir(){
+        this.display_imprimir = false
+        this.renderer.setStyle(document.body, 'webkitPrintColorAdjust', 'exact');
+        window.print()
     }
 }
