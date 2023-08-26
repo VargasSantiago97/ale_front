@@ -1974,11 +1974,27 @@ export class RetirosComponent {
 
 
             //RETIROS
-            const retiros_norte = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_NORTE }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
-            const retiros_yagua = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_YAGUA }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
-            const retiros_planjar = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_PLANJAR }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
-            const retiros_tijuana = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_TIJUANA }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
-            const retiros_traviesas = paquetesPorEstablecimientos[est].filter((e:any) => { return e.id_socio == ID_TRAVIESAS }).reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+            var retiros_norte:any = 0
+            var retiros_yagua:any = 0
+            var retiros_planjar:any = 0
+            var retiros_tijuana:any = 0
+            var retiros_traviesas:any = 0
+
+            paquetesPorEstablecimientos[est].forEach((mov:any) => {
+                if( (ID_CONTRATO_CAMARA.includes(mov.contrato) || ID_CONTRATO_CLIENTES_MEDIAS.includes(mov.contrato)) && (mov.id_socio == ID_NORTE || mov.id_socio == ID_YAGUA) ){
+                    retiros_norte += (mov.kilos / 2)
+                    retiros_yagua += (mov.kilos / 2)
+                } else {
+                    retiros_norte     += mov.id_socio == ID_NORTE ? mov.kilos : 0
+                    retiros_yagua     += mov.id_socio == ID_YAGUA ? mov.kilos : 0
+                    retiros_planjar   += mov.id_socio == ID_PLANJAR ? mov.kilos : 0
+                    retiros_tijuana   += mov.id_socio == ID_TIJUANA ? mov.kilos : 0
+                    retiros_traviesas += mov.id_socio == ID_TRAVIESAS ? mov.kilos : 0
+                }
+            });
+
+
+
 
             item.retiros_norte = retiros_norte.toFixed()
             item.retiros_yagua = retiros_yagua.toFixed()
@@ -2016,20 +2032,6 @@ export class RetirosComponent {
             const saldo_bolsones = item.total - item.retiros_norte - item.retiros_yagua - item.retiros_planjar - item.retiros_tijuana - item.retiros_traviesas
             item.saldo_bolsones = saldo_bolsones.toFixed()
             totales_saldo_bolsones += parseInt(item.saldo_bolsones)
-
-
-            paquetesPorEstablecimientos[est].forEach((element:any) => {
-                if(!item[element.id_socio]){
-                    item[element.id_socio] = 0
-                }
-                if(ID_CONTRATO_CAMARA.includes(element.contrato) || ID_CONTRATO_CLIENTES_MEDIAS.includes(element.contrato)){
-                    item[ID_YAGUA] = item[ID_YAGUA] + (element.kilos / 2)
-                    item[ID_NORTE] = item[ID_NORTE] + (element.kilos / 2)
-                } else {
-                    item[element.id_socio] = item[element.id_socio] + element.kilos
-                }
-            });
-
 
             this.datosTablaRetirosSocio.push(item)
         });
