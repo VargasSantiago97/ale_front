@@ -190,6 +190,7 @@ export class InicioComponent {
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
             
+            { field: "planta", header: "N° Planta" },
             { field: "banderas", header: "" },
         ];
         this.selectedColumns = [
@@ -786,6 +787,7 @@ export class InicioComponent {
             cpe: '',
             benef: '',
             ctg: '',
+            planta: '',
 
             banderas: []
 
@@ -800,23 +802,27 @@ export class InicioComponent {
                 var sucursal:any = carta_porte[0].sucursal ? carta_porte[0].sucursal.toString().padStart(2, '0') : ''
                 var cpe:any = carta_porte[0].nro_cpe ? carta_porte[0].nro_cpe.toString().padStart(5, '0') : ''
 
-                dato.cpe= sucursal + "-" + cpe
-                dato.benef= carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante,"socioCuit") : "-"
-                dato.ctg= carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
+                dato.cpe = sucursal + "-" + cpe
+                dato.benef = carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante,"socioCuit") : "-"
+                dato.ctg = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
+                dato.planta = carta_porte[0].planta_destino ? carta_porte[0].planta_destino : ''
                 dato.permiteCrearCTG = false
             } else {
                 var cpe:any = ""
                 var benef:any = ""
                 var ctg:any = ""
+                var planta:any = ""
                 carta_porte.forEach((e:any) => {
                     cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
                     ctg += (e.nro_ctg ? e.nro_ctg.toString() : '') + " "
+                    planta += (e.planta_destino ? e.planta_destino.toString() : '') + " "
                     benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"
                 })
 
                 dato.cpe= cpe
                 dato.benef= benef
                 dato.ctg= ctg
+                dato.planta = planta
                 dato.permiteCrearCTG = false
             }
         }
