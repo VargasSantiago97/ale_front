@@ -336,7 +336,7 @@
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th colspan="6" style="padding: 3px; text-align: center; border: 1px solid black;">
+                            <th colspan="7" style="padding: 3px; text-align: center; border: 1px solid black;">
                                 PRODUCCION
                             </th>
                             <th colspan="5" style="padding: 3px; text-align: center; border: 1px solid black;">
@@ -351,6 +351,9 @@
                         </tr>
                         <tr>
                             <th style="border-left: 1px solid black; text-align: center">
+                                Enc.
+                            </th>
+                            <th style="text-align: center">
                                 Establecimiento
                             </th>
                             <th style="text-align: center">
@@ -421,11 +424,12 @@
                     <tbody>
                         <tr *ngFor="let dato of datosTablaRetirosSocio">
                             <td style="padding: 2px; text-align: right;" *ngFor="let col of colsRetirosCampos">
+                                <label *ngIf="col.field == 'encargado'"><em>{{dato[col.field]}}</em></label>
                                 <label *ngIf="col.field == 'establecimiento'"><strong>{{dato[col.field]}}</strong></label>
                                 <label *ngIf="col.field == 'total'"><strong>{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</strong></label>
                                 <label *ngIf="col.field == 'saldo_bolsones'"><strong>{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</strong></label>
                                 <label *ngIf="col.field == 'rinde'"><em>{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</em></label>
-                                <label *ngIf="(col.field != 'establecimiento') && (col.field != 'total') && (col.field != 'saldo_bolsones') && (col.field != 'rinde')">{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</label>
+                                <label *ngIf="(col.field != 'establecimiento') && (col.field != 'total') && (col.field != 'saldo_bolsones') && (col.field != 'rinde') && (col.field != 'encargado')">{{transformarDatoMostrarTabla(dato[col.field], 'numero')}}</label>
                             </td>
                         </tr>
                     </tbody>

@@ -112,6 +112,59 @@ export class RetirosComponent {
         }
     }
 
+    encargados: any = [
+        {id: "81f01651370e", encargado: "MANU",	establecimiento: "VERBECK"},
+        {id: "fba493f3d681", encargado: "DAVALOS",	establecimiento: "DORADO"},
+        {id: "02d62eb5ecd5", encargado: "DOMITROVIC",	establecimiento: "OCHETTI"},
+        {id: "1d34df6042eb", encargado: "RUBENS",	establecimiento: "TANITO"},
+        {id: "1cfde2badf96", encargado: "RUBENS",	establecimiento: "YUCHAN"},
+        {id: "69cd3d6ba763", encargado: "JAVIER",	establecimiento: "MAZOLA"},
+        {id: "9efddf081918", encargado: "DOMITROVIC",	establecimiento: "PAOLETTI BERMEJO"},
+        {id: "b99511f71834", encargado: "DOMITROVIC",	establecimiento: "REDONDO"},
+        {id: "d44ef6ce5631", encargado: "RUBENS",	establecimiento: "BOHACEK"},
+        {id: "5ce5a87275c7", encargado: "DAVALOS",	establecimiento: "CUSSIGH"},
+        {id: "b4cbd068c56c", encargado: "",	establecimiento: "FOGAR"},
+        {id: "1382c1329140", encargado: "JAVIER/JONA",	establecimiento: "LA SEVERA 2"},
+        {id: "e4a6546a10a2", encargado: "DAVALOS",	establecimiento: "LAS NOVENTAS "},
+        {id: "847f0e000531", encargado: "DOMITROVIC",	establecimiento: "DON JUAN"},
+        {id: "6b0e33f38e57", encargado: "DAVALOS",	establecimiento: "CISKA L"},
+        {id: "6ae13c65c6da", encargado: "DAVALOS",	establecimiento: "ALLENDE"},
+        {id: "ef1932bf6dc7", encargado: "DAVALOS",	establecimiento: "PAOLETTI RUTA"},
+        {id: "75b0a129c168", encargado: "JAVIER",	establecimiento: "DOÑA BLANCO"},
+        {id: "2b525c1a0c47", encargado: "JAVIER",	establecimiento: "VILCHEZ"},
+        {id: "903a8dce11e4", encargado: "JAVIER",	establecimiento: "LA NINA"},
+        {id: "c064cec5275e", encargado: "DOMITROVIC",	establecimiento: "KOHN"},
+        {id: "3c0a6995ab6d", encargado: "RUBENS",	establecimiento: "EL TANITO"},
+        {id: "fc97687123e8", encargado: "",	establecimiento: "LA NINA NO"},
+        {id: "c2a47a02e7d7", encargado: "JAVIER",	establecimiento: "LA VERONICA"},
+        {id: "9a6c78129dad", encargado: "DAVALOS",	establecimiento: "LA FE"},
+        {id: "32b755cf498e", encargado: "",	establecimiento: "SALOMON"},
+        {id: "772459ddf44e", encargado: "DOMITROVIC",	establecimiento: "BRIGUI"},
+        {id: "5cf2aaebc1ea", encargado: "DAVALOS",	establecimiento: "CISKA J A"},
+        {id: "9e33b1deb52c", encargado: "JAVIER/JONA",	establecimiento: "LA TOLOSITA"},
+        {id: "ff7d09a94950", encargado: "JAVIER",	establecimiento: "PAOLETTI SILENCIO"},
+        {id: "c8c37bbcda94", encargado: "DAVALOS",	establecimiento: "LA JUANITA"},
+        {id: "e2000b49953a", encargado: "DOMITROVIC",	establecimiento: "FALA"},
+        {id: "e228e4a8b12b", encargado: "MANU",	establecimiento: "ANDION"},
+        {id: "66aa2a3ab78f", encargado: "MANU",	establecimiento: "BALEANI"},
+        {id: "9f64db1d744e", encargado: "DOMITROVIC",	establecimiento: "MOSIMANN"},
+        {id: "6cf5e60f1b25", encargado: "DAVALOS",	establecimiento: "SABATE"},
+        {id: "42e4980affc2", encargado: "DOMITROVIC",	establecimiento: "JABZDA"},
+        {id: "97c61741be74", encargado: "JAVIER/JONA",	establecimiento: "LA SEVERA"},
+        {id: "28175e08a2e4", encargado: "MANU",	establecimiento: "PB PAOLETTI"},
+        {id: "b4f28e48a704", encargado: "RUBENS",	establecimiento: "LA JULIETA"},
+        {id: "d26f218fd3e6", encargado: "DAVALOS",	establecimiento: "LA CALANDRIA"},
+        {id: "5e22f482e3ed", encargado: "JAVIER",	establecimiento: "BIASSI"},
+        {id: "b03bb8ee0140", encargado: "",	establecimiento: "MERCANTI 128"},
+        {id: "7e7fe6705318", encargado: "JAVIER",	establecimiento: "LA PROVIDENCIA"},
+        {id: "e66a3e837a50", encargado: "RUBENS",	establecimiento: "LA BANDERITA "},
+        {id: "bfd648424a87", encargado: "RUBENS",	establecimiento: "GARCIA 82"},
+        {id: "987e1de9f9e2", encargado: "RUBENS",	establecimiento: "LA ANA"},
+        {id: "73830a647729", encargado: "RUBENS",	establecimiento: "LA ESMERALDA"},
+        {id: "3de996f2ff1b", encargado: "MANU",	establecimiento: "MANANTIAL POZO"},
+        
+    ]
+
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -202,6 +255,7 @@ export class RetirosComponent {
         ]
 
         this.colsRetirosCampos = [
+            { field: 'encargado', header: 'encargado' },
             { field: 'establecimiento', header: 'establecimiento' },
             { field: 'has', header: 'has' },
             { field: 'trilla', header: 'trilla' },
@@ -1898,6 +1952,7 @@ export class RetirosComponent {
         establecimientos.forEach((est:any) => {
 
             var item:any = {
+                encargado: this.transformarDatoMostrarTabla(est, 'encargado'),
                 establecimiento: this.transformarDatoMostrarTabla(est, 'establecimiento'),
                 has: 0,
                 trilla: 0,
@@ -2107,6 +2162,9 @@ export class RetirosComponent {
         }
         if (tipo=='grano'){
             return this.db['granos'].some((e:any) => { return e.id == dato }) ? this.db['granos'].find((e:any) => { return e.id == dato }).alias : dato
+        }
+        if(tipo=='encargado'){
+            return this.encargados.some((e:any) => { return e.id == dato }) ? this.encargados.find((e:any) => { return e.id == dato }).encargado : dato
         }
 
         return dato
