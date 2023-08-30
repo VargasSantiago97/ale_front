@@ -117,7 +117,7 @@ export class RetirosComponent {
         {id: "fba493f3d681", encargado: "DAVALOS",	establecimiento: "DORADO"},
         {id: "02d62eb5ecd5", encargado: "DOMITROVIC",	establecimiento: "OCHETTI"},
         {id: "1d34df6042eb", encargado: "RUBENS",	establecimiento: "TANITO"},
-        {id: "1cfde2badf96", encargado: "RUBENS",	establecimiento: "YUCHAN"},
+        {id: "1cfde2badf96", encargado: "RUBENS/JONA",	establecimiento: "YUCHAN"},
         {id: "69cd3d6ba763", encargado: "JAVIER",	establecimiento: "MAZOLA"},
         {id: "9efddf081918", encargado: "DOMITROVIC",	establecimiento: "PAOLETTI BERMEJO"},
         {id: "b99511f71834", encargado: "DOMITROVIC",	establecimiento: "REDONDO"},
