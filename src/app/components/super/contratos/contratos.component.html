@@ -1,5 +1,4 @@
-<div style="text-align: center;"
-    *ngIf="spinnerSocios || spinnerContratos || spinnerGranos || spinnerIntervinientes">
+<div style="text-align: center;" *ngIf="spinnerSocios || spinnerContratos || spinnerGranos || spinnerIntervinientes">
     <br><br><br><br><p-progressSpinner></p-progressSpinner><br><br>
 </div>
 
@@ -7,19 +6,31 @@
     <div class="formgrid row">
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px; margin-left: 30px;">SOCIO</label>
-            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_socios" [(ngModel)]="socios_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_socios" [(ngModel)]="socios_seleccionados"
+                defaultLabel="Seleccionar" optionLabel="alias" optionValue="id"
+                selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}"
+                scrollHeight="800px"></p-multiSelect>
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">CORREDOR</label>
-            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_corredores" [(ngModel)]="corredores_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="cuit" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_corredores"
+                [(ngModel)]="corredores_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="cuit"
+                selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}"
+                scrollHeight="800px"></p-multiSelect>
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">COMPRADOR</label>
-            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_compradores" [(ngModel)]="compradores_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="cuit" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_compradores"
+                [(ngModel)]="compradores_seleccionados" defaultLabel="Seleccionar" optionLabel="alias"
+                optionValue="cuit" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}"
+                scrollHeight="800px"></p-multiSelect>
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">GRANOS</label>
-            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_granos" [(ngModel)]="granos_seleccionados" defaultLabel="Seleccionar" optionLabel="alias" optionValue="id" selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}" scrollHeight="800px"></p-multiSelect>
+            <p-multiSelect (onChange)="crearDatosTabla()" [options]="opt_granos" [(ngModel)]="granos_seleccionados"
+                defaultLabel="Seleccionar" optionLabel="alias" optionValue="id"
+                selectedItemsLabel="{0} items seleccionados" [style]="{width: '400px'}"
+                scrollHeight="800px"></p-multiSelect>
         </div>
     </div>
 </div>
@@ -53,7 +64,8 @@
     <table>
         <thead>
             <tr style="padding: 0px;">
-                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;" (click)="ordenarTabla(col.field)">
+                <th *ngFor="let col of cols" style="padding: 0px; text-align: center;"
+                    (click)="ordenarTabla(col.field)">
                     {{col.header}}
                 </th>
             </tr>
@@ -62,6 +74,10 @@
             <tr *ngFor="let registro of dataParaMostrarTabla" (dblclick)="mostrarContrato(registro.id)">
                 <td *ngFor="let col of cols" style="padding: 1px;">
                     {{registro[col.field]}}
+                </td>
+                <td style="padding: 0px;">
+                    <button pButton type="button" style="margin: 0px; padding: 0px;" (click)="duplicarContrato(registro.id)">
+                        <i class="pi pi-arrow-down"></i></button>
                 </td>
             </tr>
         </tbody>
@@ -76,15 +92,18 @@
     <div class="formgrid row">
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">FECHA CONTRATO</label>
-            <p-calendar [(ngModel)]="contratoMostrar.fecha_contrato" dateFormat="dd/mm/yy" inputId="dateformat"></p-calendar>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_contrato" dateFormat="dd/mm/yy"
+                inputId="dateformat"></p-calendar>
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">FECHA DESDE</label>
-            <p-calendar [(ngModel)]="contratoMostrar.fecha_desde" dateFormat="dd/mm/yy" inputId="dateformat" (ngModelChange)="setearFechaHasta()"></p-calendar>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_desde" dateFormat="dd/mm/yy" inputId="dateformat"
+                (ngModelChange)="setearFechaHasta()"></p-calendar>
         </div>
         <div class="field col">
             <label for="dateformat" style="margin-right: 30px;">FECHA HASTA</label>
-            <p-calendar [(ngModel)]="contratoMostrar.fecha_hasta" dateFormat="dd/mm/yy" inputId="dateformat"></p-calendar>
+            <p-calendar [(ngModel)]="contratoMostrar.fecha_hasta" dateFormat="dd/mm/yy"
+                inputId="dateformat"></p-calendar>
         </div>
     </div>
     <br>
@@ -121,7 +140,8 @@
                     KILOS PACTADOS
                 </div>
                 <div class="field col">
-                    <input type="number" step="10" class="input-text-codigo" style="width: 140px;" [(ngModel)]="contratoMostrar.kilos"> kgs
+                    <input type="number" step="10" class="input-text-codigo" style="width: 140px;"
+                        [(ngModel)]="contratoMostrar.kilos"> kgs
                 </div>
             </div>
         </div>
@@ -131,7 +151,8 @@
                     CONTRATO
                 </div>
                 <div class="field col">
-                    <input type="text" class="input-text-codigo" style="width: 200px;" [(ngModel)]="contratoMostrar.alias">
+                    <input type="text" class="input-text-codigo" style="width: 200px;"
+                        [(ngModel)]="contratoMostrar.alias">
                 </div>
             </div>
             <br>
@@ -141,7 +162,8 @@
                 </div>
                 <div class="field col">
                     <select class="input-text-codigo" style="width: 200px;" [(ngModel)]="contratoMostrar.tipo_contrato">
-                        <option *ngFor="let tipo_contrato of tipos_contrato" value="{{tipo_contrato.field}}">{{tipo_contrato.header}}</option>
+                        <option *ngFor="let tipo_contrato of tipos_contrato" value="{{tipo_contrato.field}}">
+                            {{tipo_contrato.header}}</option>
                     </select>
                 </div>
             </div>
@@ -151,7 +173,8 @@
                     PRECIO
                 </div>
                 <div class="field col">
-                    <input type="number" step="10" class="input-text-codigo" style="width: 120px;" [(ngModel)]="contratoMostrar.precio">
+                    <input type="number" step="10" class="input-text-codigo" style="width: 120px;"
+                        [(ngModel)]="contratoMostrar.precio">
                     <select class="input-text-codigo" style="width: 80px;" [(ngModel)]="contratoMostrar.moneda">
                         <option *ngFor="let moneda of monedas" value="{{moneda.field}}">{{moneda.header}}</option>
                     </select>
@@ -165,8 +188,10 @@
                     COMPRADOR
                 </div>
                 <div class="field col">
-                    <select class="input-text-codigo" style="width: 200px;" [(ngModel)]="contratoMostrar.cuit_comprador">
-                        <option *ngFor="let interviniente of db_intervinientes" value="{{interviniente.cuit}}">{{interviniente.razon_social}}</option>
+                    <select class="input-text-codigo" style="width: 200px;"
+                        [(ngModel)]="contratoMostrar.cuit_comprador">
+                        <option *ngFor="let interviniente of db_intervinientes" value="{{interviniente.cuit}}">
+                            {{interviniente.razon_social}}</option>
                     </select>
                 </div>
             </div>
@@ -177,7 +202,8 @@
                 </div>
                 <div class="field col">
                     <select class="input-text-codigo" style="width: 200px;" [(ngModel)]="contratoMostrar.cuit_corredor">
-                        <option *ngFor="let interviniente of db_intervinientes" value="{{interviniente.cuit}}">{{interviniente.razon_social}}</option>
+                        <option *ngFor="let interviniente of db_intervinientes" value="{{interviniente.cuit}}">
+                            {{interviniente.razon_social}}</option>
                     </select>
                 </div>
             </div>
@@ -187,14 +213,17 @@
                     DESTINO
                 </div>
                 <div class="field col">
-                    <input type="text" class="input-text-codigo" style="width: 300px;" [(ngModel)]="contratoMostrar.destino">
+                    <input type="text" class="input-text-codigo" style="width: 300px;"
+                        [(ngModel)]="contratoMostrar.destino">
                 </div>
             </div>
         </div>
     </div>
 
     <ng-template pTemplate="footer">
-        <p-button icon="pi pi-check" (click)="borrarContrato(contratoMostrar.id)" label="Borrar" styleClass="p-button-danger"></p-button>
-        <p-button icon="pi pi-check" (click)="guardarEditarContrato(contratoMostrar)" label="Guardar" styleClass="p-button-success"></p-button>
+        <p-button icon="pi pi-check" (click)="borrarContrato(contratoMostrar.id)" label="Borrar"
+            styleClass="p-button-danger"></p-button>
+        <p-button icon="pi pi-check" (click)="guardarEditarContrato(contratoMostrar)" label="Guardar"
+            styleClass="p-button-success"></p-button>
     </ng-template>
 </p-dialog>

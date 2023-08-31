@@ -352,6 +352,14 @@ export class ContratosComponent {
             })
         }
     }
+    duplicarContrato(idd:any){
+        if(idd){
+            var contratoMostrar: any = this.db_locales['contratos'].find((e:any) => { return e.id == idd })
+            contratoMostrar.id = false
+
+            this.guardarEditarContrato(contratoMostrar)
+        }
+    }
 
     setearFechaHasta(){
         var fecha = new Date(this.contratoMostrar.fecha_desde)
