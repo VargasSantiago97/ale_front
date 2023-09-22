@@ -2471,6 +2471,37 @@ export class InicioComponent {
             this.datosEditarCPE.dominio3 = dominios[2] ? dominios[2] : ''
         }
     }
+    informarContingencia(datoCPE:any){
+        var data:any = {
+            cuit: datoCPE.cuit_solicitante,
+            ejecutar: "informar_contingencia",
+            data: {
+                nro_ctg: datoCPE.nro_ctg,
+            }
+        }
+
+        console.log(data)
+
+        if(confirm("Contingencia por desperfecto mecánico?")){
+            this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
+                (res: any) => {
+                    if(res){
+                        if(res.mensaje){
+                            this.messageService.add({ severity: 'success', summary: 'CONTINGENCIA INFORMADA CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg})
+                        } else {
+                            this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA'})
+                        }
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA'})
+                    }
+                },
+                (err: any) => {
+                    console.log(err)
+                    this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA'})
+                }
+            )
+        }
+    }
     autorizarEditarCPE(){
 
         var data:any = {

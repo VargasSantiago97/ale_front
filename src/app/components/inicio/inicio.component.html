@@ -95,7 +95,9 @@
 
                 <div *ngIf="col.field == 'banderas'">
                     <div *ngFor="let bandera of registro.banderas">
-                        <p-tag pTooltip="{{bandera.alias}}" tooltipPosition="left" *ngIf="bandera" severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}" [style]="{color: bandera.color}"></i></p-tag>
+                        <p-tag pTooltip="{{bandera.alias}}" tooltipPosition="left" *ngIf="bandera"
+                            severity="{{bandera.fondo}}"><i class="pi {{bandera.icono}}"
+                                [style]="{color: bandera.color}"></i></p-tag>
                     </div>
                 </div>
             </td>
