@@ -43,8 +43,10 @@
             style="margin: 6px; margin-left: 40px;" (click)="buscarLotes()"></button>
         <button pButton pRipple type="button" label="SETEAR LOTE" class="p-button-info bott"
             style="margin: 6px; margin-left: 40px;" (click)="setearLotes()"></button>
-        <button pButton pRipple type="button" label="SETEAR KILOS" class="p-button-info bott"
+        <button pButton pRipple type="button" label="SETEAR KILOS CAMPO" class="p-button-info bott"
             style="margin: 6px; margin-left: 40px;" (click)="setearKilos()"></button>
+        <button pButton pRipple type="button" label="SETEAR KILOS BAL" class="p-button-info bott"
+            style="margin: 6px; margin-left: 40px;" (click)="setearKilosBal()"></button>
 
 
     </ng-template>
@@ -78,7 +80,8 @@
                 </div>
 
                 <div *ngIf="(col.field == 'local_kilos') || (col.field == 'local_kilos2')">
-                    <input type="number" style="margin: 0px; padding: 0px; width: 65px;" [(ngModel)]="registro[col.field]">
+                    <input type="number" style="margin: 0px; padding: 0px; width: 65px;"
+                        [(ngModel)]="registro[col.field]">
                 </div>
 
                 <div *ngIf="col.field == 'observaciones' && registro[col.field]">
@@ -104,11 +107,9 @@
                     style="margin: 1px; padding: 0px; width: 30px;"
                     (click)="borrarMovimientoLocal(registro.id)"></button>
                 <button pButton pRipple type="button" icon="pi pi-save" class="p-button-success bott"
-                    style="margin: 1px; padding: 0px; width: 30px;"
-                    (click)="crearMovimientoOrigen(registro)"></button>
+                    style="margin: 1px; padding: 0px; width: 30px;" (click)="crearMovimientoOrigen(registro)"></button>
                 <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger bott"
-                    style="margin: 1px; padding: 0px; width: 30px;"
-                    (click)="borrarLotesLocal(registro.id)"></button>
+                    style="margin: 1px; padding: 0px; width: 30px;" (click)="borrarLotesLocal(registro.id)"></button>
             </td>
         </tr>
     </ng-template>

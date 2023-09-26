@@ -823,6 +823,13 @@ export class KilosCampoComponent {
             })
         }
     }
+    setearKilosBal(){
+        if(this.selectedTablaInicio){
+            this.selectedTablaInicio.forEach((registro:any) => {
+                registro.local_kilos = registro.kg_neto
+            })
+        }
+    }
     
     getDB(tabla:any, func:any = false){
         this.sqlite.getDB(tabla).subscribe(
