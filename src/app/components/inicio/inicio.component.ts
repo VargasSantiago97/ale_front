@@ -191,6 +191,14 @@ export class InicioComponent {
             { field: "observaciones", header: "Obser" },
             
             { field: "planta", header: "N° Planta" },
+            { field: "corredor_pri", header: "CPE Corr." },
+            { field: "corredor_sec", header: "CPE Corr. Sec." },
+            { field: "rte_pri", header: "Rte. Pri." },
+            { field: "rte_sec", header: "Rte. Sec." },
+            { field: "rte_sec_dos", header: "Rte. Sec. 2" },
+            { field: "destino", header: "CPE Destino" },
+            { field: "destinatario", header: "CPE Destinatario" },
+
             { field: "banderas", header: "" },
         ];
         this.selectedColumns = [
@@ -788,6 +796,13 @@ export class InicioComponent {
             benef: '',
             ctg: '',
             planta: '',
+            corredor_pri: '',
+            corredor_sec: '',
+            rte_pri: '',
+            rte_sec: '',
+            rte_sec_dos: '',
+            destino: '',
+            destinatario: '',
 
             banderas: []
 
@@ -807,23 +822,54 @@ export class InicioComponent {
                 dato.ctg = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
                 dato.planta = carta_porte[0].planta_destino ? carta_porte[0].planta_destino : ''
                 dato.permiteCrearCTG = false
+
+                dato.corredor_pri = carta_porte[0].cuit_corredor_venta_primaria ? this.transformDatoTabla(carta_porte[0].cuit_corredor_venta_primaria,"intervinienteCuit") : ""
+                dato.corredor_sec = carta_porte[0].cuit_corredor_venta_secundaria ? this.transformDatoTabla(carta_porte[0].cuit_corredor_venta_secundaria,"intervinienteCuit") : ""
+                dato.rte_pri = carta_porte[0].cuit_remitente_comercial_venta_primaria ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_primaria,"intervinienteCuit") : ""
+                dato.rte_sec = carta_porte[0].cuit_remitente_comercial_venta_secundaria ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_secundaria,"intervinienteCuit") : ""
+                dato.rte_sec_dos = carta_porte[0].cuit_remitente_comercial_venta_secundaria2 ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") : ""
+                dato.destino = carta_porte[0].cuit_destino ? this.transformDatoTabla(carta_porte[0].cuit_destino,"intervinienteCuit") : ""
+                dato.destinatario = carta_porte[0].cuit_destinatario ? this.transformDatoTabla(carta_porte[0].cuit_destinatario,"intervinienteCuit") : ""
             } else {
                 var cpe:any = ""
                 var benef:any = ""
                 var ctg:any = ""
                 var planta:any = ""
+                var corredor_pri:any = ""
+                var corredor_sec:any = ""
+                var rte_pri:any = ""
+                var rte_sec:any = ""
+                var rte_sec_dos:any = ""
+                var destino:any = ""
+                var destinatario:any = ""
+
                 carta_porte.forEach((e:any) => {
                     cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
                     ctg += (e.nro_ctg ? e.nro_ctg.toString() : '') + " "
                     planta += (e.planta_destino ? e.planta_destino.toString() : '') + " "
                     benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"
+
+                    corredor_pri += this.transformDatoTabla(e.cuit_corredor_venta_primaria,"intervinienteCuit") + " "
+                    corredor_sec += this.transformDatoTabla(e.cuit_corredor_venta_secundaria,"intervinienteCuit") + " "
+                    rte_pri += this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria,"intervinienteCuit") + " "
+                    rte_sec += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria,"intervinienteCuit") + " "
+                    rte_sec_dos += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") + " "
+                    destino += this.transformDatoTabla(e.cuit_destino,"intervinienteCuit") + " "
+                    destinatario += this.transformDatoTabla(e.cuit_destinatario,"intervinienteCuit") + " "
                 })
 
-                dato.cpe= cpe
-                dato.benef= benef
-                dato.ctg= ctg
+                dato.cpe = cpe
+                dato.benef = benef
+                dato.ctg = ctg
                 dato.planta = planta
                 dato.permiteCrearCTG = false
+                dato.corredor_pri = corredor_pri
+                dato.corredor_sec = corredor_sec
+                dato.rte_pri = rte_pri
+                dato.rte_sec = rte_sec
+                dato.rte_sec_dos = rte_sec_dos
+                dato.destino = destino
+                dato.destinatario = destinatario
             }
         }
 
@@ -890,6 +936,9 @@ export class InicioComponent {
         }
         if (tipo == 'intervinientes') {
             return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato}).alias : '-'
+        }
+        if (tipo == 'intervinienteCuit') {
+            return this.db_intervinientes.some((e: any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e: any) => { return e.cuit == dato}).alias : dato
         }
         if (tipo == 'kg') {
             return dato ? dato.toLocaleString("es-AR") : '-'
