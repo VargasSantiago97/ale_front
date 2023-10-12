@@ -844,18 +844,28 @@ export class InicioComponent {
                 var destinatario:any = ""
 
                 carta_porte.forEach((e:any) => {
+                    var agregar = false
+                    
+                    try {
+                        var data = JSON.parse(e.data)
+                        agregar = (data.estado == 'CN') || (data.estado == 'AC') || (data.estado == 'CF')
+                    } catch {
+                    }
+
+                    if(agregar){
+                        planta += (e.planta_destino ? e.planta_destino.toString() : '') + " "
+                        benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"    
+                        corredor_pri += this.transformDatoTabla(e.cuit_corredor_venta_primaria,"intervinienteCuit") + " "
+                        corredor_sec += this.transformDatoTabla(e.cuit_corredor_venta_secundaria,"intervinienteCuit") + " "
+                        rte_pri += this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria,"intervinienteCuit") + " "
+                        rte_sec += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria,"intervinienteCuit") + " "
+                        rte_sec_dos += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") + " "
+                        destino += this.transformDatoTabla(e.cuit_destino,"intervinienteCuit") + " "
+                        destinatario += this.transformDatoTabla(e.cuit_destinatario,"intervinienteCuit") + " "
+                    }
+
                     cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
                     ctg += (e.nro_ctg ? e.nro_ctg.toString() : '') + " "
-                    planta += (e.planta_destino ? e.planta_destino.toString() : '') + " "
-                    benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"
-
-                    corredor_pri += this.transformDatoTabla(e.cuit_corredor_venta_primaria,"intervinienteCuit") + " "
-                    corredor_sec += this.transformDatoTabla(e.cuit_corredor_venta_secundaria,"intervinienteCuit") + " "
-                    rte_pri += this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria,"intervinienteCuit") + " "
-                    rte_sec += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria,"intervinienteCuit") + " "
-                    rte_sec_dos += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") + " "
-                    destino += this.transformDatoTabla(e.cuit_destino,"intervinienteCuit") + " "
-                    destinatario += this.transformDatoTabla(e.cuit_destinatario,"intervinienteCuit") + " "
                 })
 
                 dato.cpe = cpe
