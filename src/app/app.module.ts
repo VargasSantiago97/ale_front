@@ -99,6 +99,7 @@ import { KilosBalanzaComponent } from './components/super/kilos-balanza/kilos-ba
 import { DepositosresComponent } from './components/super/depositosres/depositosres.component';
 import { ImportacionesComponent } from './components/super/importaciones/importaciones.component';
 import { GMapModule } from 'primeng/gmap';
+import { RegistrosComponent } from './components/super/registros/registros.component';
 
 
 @NgModule({
@@ -143,7 +144,8 @@ import { GMapModule } from 'primeng/gmap';
     RetiroEstimadoComponent,
     KilosBalanzaComponent,
     DepositosresComponent,
-    ImportacionesComponent
+    ImportacionesComponent,
+    RegistrosComponent
   ],
   imports: [
     BrowserModule,

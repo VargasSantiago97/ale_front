@@ -1,0 +1,36 @@
+<div style="margin: 20px 50px;">
+
+
+
+    <div #PRODUCCION_CAMPOS class="formgrid row mostrarImpresion">
+        <div #CAMPOS class="field col">
+            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
+                <h5 style="text-align: center;"><strong>PRODUCCION CAMPOS/SOCIOS - CON KILOS DE BALANZA</strong></h5>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 3px;" *ngFor="let col of colsProd">
+                                {{col.header}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dato of datosTablaProduccion">
+                            <td style="padding: 2px;" *ngFor="let col of colsProd">
+                                <label>{{dato[col.field]}}</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="padding: 2px;" *ngFor="let col of colsProd">
+                                <label><strong>{{datosTablaProduccionTotales[col.field]}}</strong></label>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <br><br><br>
+    </div>
+</div>

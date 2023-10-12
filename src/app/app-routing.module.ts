@@ -32,6 +32,7 @@ import { RetiroEstimadoComponent } from './components/super/retiro-estimado/reti
 import { KilosBalanzaComponent } from './components/super/kilos-balanza/kilos-balanza.component';
 import { DepositosresComponent } from './components/super/depositosres/depositosres.component';
 import { ImportacionesComponent } from './components/super/importaciones/importaciones.component';
+import { RegistrosComponent } from './components/super/registros/registros.component';
 
 
 const routes: Routes = [
@@ -72,6 +73,7 @@ const routes: Routes = [
 
     { path: 'retiros', component: RetirosComponent },
     { path: 'retiroEstimado', component: RetiroEstimadoComponent },
+    { path: 'registros', component: RegistrosComponent },
 
     { path: 'kilosCampo', component: KilosCampoComponent },
     { path: 'kilosBalanza', component: KilosBalanzaComponent },
