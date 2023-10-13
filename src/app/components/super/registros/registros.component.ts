@@ -2,6 +2,7 @@ import { Component, Renderer2 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ComunicacionService } from 'src/app/services/comunicacion.service';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
+import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'app-registros',
@@ -94,6 +95,9 @@ export class RegistrosComponent {
         totales_retirados_campos: true
     }
     colsRetirosCampos: any = []
+
+    fechaDesde: any = '2023-04-01'
+    fechaHasta: any = '2023-12-31'
 
     anotaciones: any = {
         "465b2f38ca75": {
@@ -402,6 +406,7 @@ export class RegistrosComponent {
     ) { }
 
     ngOnInit() {
+        this.fechaHasta = this.obtenerFecha(new Date())
 
         this.colsProd = [
             { field: 'establecimiento', header: 'ESTABLECIMIENTO' },
@@ -509,51 +514,220 @@ export class RegistrosComponent {
     }
 
     //DATOS MOVIMIENTOS
-    armarDatosMovimientos() {
-        this.datosTablaProduccion = []
+    armarDatosMovimientos(){
 
-        this.db['movimientos'].forEach((movimiento:any) => {
-            var mov = {
-                establecimiento: this.transformarDatoMostrarTabla(movimiento.id_origen, 'establecimiento'),
-                grano: this.transformarDatoMostrarTabla(movimiento.id_grano, 'grano'),
-                desde: movimiento.tipo_origen,
-                produce: this.transformarDatoMostrarTabla(movimiento.id_origen, 'produce'),
-                retira: '',
-                entrega: '',
-                exportador: '',
-                corredor: '',
-                destino: '',
-                kg_bruto: '',
-                kg_tara: '',
-                kg_neto: '',
-                kg_regulacion: '',
-                kg_salida: '',
-                kg_campo: '',
-                kg_acondicionado: '',
-                kg_destino: '',
-                kg_mermas: '',
-                kg_final: '',
-                contrato: '',
+        const ID_NORTE = '141ea05753ff'
+        const ID_YAGUA = 'bcb3d28daa6b'
+        const ID_PLANJAR = '9c89bfa40ad1'
+        const ID_TIJUANA = 'afb70d896b9e'
+        const ID_TRAVIESAS = '3461420d81eb'
+
+        const ID_CONTRATO_CAMARA = ['982f36b64653', 'fca0ef6ebd87']
+        const ID_CONTRATO_CLIENTES = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629', '59a44d418ed9', 'da0f0840146a']
+        const ID_CONTRATO_CLIENTES_MEDIAS = ['021b3c0a8357', '8502307611bb', 'e626f63756d1', 'a43add8a956d', 'f6d0b22e90b5', '863162fd7629', '59a44d418ed9', 'da0f0840146a']
+
+
+        //MOVIMIENTOS POR DIVISIONES:
+        var paqueteMovimientos:any = []
+
+        this.db['movimientos']
+        .filter((movimiento:any) => {
+            var fecha = new Date(movimiento.fecha)
+            fecha.setHours(fecha.getHours() + 3)
+
+            var desde = new Date(this.fechaDesde)
+            desde.setHours(desde.getHours() + 3)
+
+            var hasta = new Date(this.fechaHasta)
+            hasta.setHours(hasta.getHours() + 26)
+            hasta.setMinutes(hasta.getMinutes() + 59)
+
+            var ok_desde = fecha >= desde
+            var ok_hasta = fecha <= hasta
+            var ok_grano = movimiento.id_grano == this.idGranosSeleccionado
+
+            return ok_desde && ok_hasta && ok_grano
+        })
+        .forEach((movimiento:any) => {
+            //si existe movimiento local
+            if(this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                //si existe origen local:
+                if(this.db_locales['movimiento_origen'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                    const movimientos_origenes = this.db_locales['movimiento_origen'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+
+                    const kilosTotOrig = movimientos_origenes.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                    movimientos_origenes.forEach((movOrig:any) => {
+
+                        const proporcionOrig = (movOrig.kilos / kilosTotOrig)
+
+                        //si existe destino local (contrato):
+                        if(this.db_locales['movimiento_contrato'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                            const movimientos_contratos = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+                            const kilosTotCtos = movimientos_contratos.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                            movimientos_contratos.forEach((movCto:any) => {
+                                const contrato = this.db_locales['contratos'].find((e:any) => { return e.id == movCto.id_contrato })
+
+                                const proporcionCtos = (movCto.kilos / kilosTotCtos)
+
+                                var kilos = 35000
+
+                                if(movimiento.kg_campo){
+                                    if(parseInt(movimiento.kg_campo)){
+                                        kilos = parseInt(movimiento.kg_campo)
+                                    }
+                                }
+                                
+                                if(movimiento.kg_neto){
+                                    if(parseInt(movimiento.kg_neto)){
+                                        kilos = parseInt(movimiento.kg_neto)
+                                    }
+                                }
+
+                                const kilosComputar = proporcionOrig * proporcionCtos * kilos
+
+                                paqueteMovimientos.push({
+                                    id_movimiento: movimiento.id,
+                                    kilos: kilosComputar,
+                                    id_grano: movimiento.id_grano,
+                                    id_establecimiento: movOrig.id_establecimiento,
+                                    id_socio: movimiento.id_socio,
+                                    tipo_origen: movOrig.tipo_origen,
+                                    id_destino: movimiento.id_destino,
+                                    contrato: contrato.id,
+                                })
+                            })
+
+                        } else {
+                            var kilos = 35000
+
+                            if(movimiento.kg_campo){
+                                if(parseInt(movimiento.kg_campo)){
+                                    kilos = parseInt(movimiento.kg_campo)
+                                }
+                            }
+                            
+                            if(movimiento.kg_neto){
+                                if(parseInt(movimiento.kg_neto)){
+                                    kilos = parseInt(movimiento.kg_neto)
+                                }
+                            }
+
+                            const kilosComputar = proporcionOrig * kilos
+                            paqueteMovimientos.push({
+                                id_movimiento: movimiento.id,
+                                kilos: kilosComputar,
+                                id_grano: movimiento.id_grano,
+                                id_establecimiento: movOrig.id_establecimiento,
+                                id_socio: movimiento.id_socio,
+                                tipo_origen: movOrig.tipo_origen,
+                                id_destino: movimiento.id_destino,
+                                contrato: 0
+                            })
+                        }
+                    })
+                } else {
+
+                    //si existe destino local (contrato):
+                    if(this.db_locales['movimiento_contrato'].some((e:any) => { return e.id_movimiento == movimiento.id })){
+
+                        const movimientos_contratos = this.db_locales['movimiento_contrato'].filter((e:any) => { return e.id_movimiento == movimiento.id })
+                        const kilosTotCtos = movimientos_contratos.reduce((acc:any, curr:any) => { return acc + parseInt(curr.kilos) }, 0)
+
+                        movimientos_contratos.forEach((movCto:any) => {
+                            const contrato = this.db_locales['contratos'].find((e:any) => { return e.id == movCto.id_contrato })
+
+                            var kilos = 35000
+
+                            if(movimiento.kg_campo){
+                                if(parseInt(movimiento.kg_campo)){
+                                    kilos = parseInt(movimiento.kg_campo)
+                                }
+                            }
+                            
+                            if(movimiento.kg_neto){
+                                if(parseInt(movimiento.kg_neto)){
+                                    kilos = parseInt(movimiento.kg_neto)
+                                }
+                            }
+
+                            const kilosComputar = movCto.kilos/kilosTotCtos * kilos
+
+                            paqueteMovimientos.push({
+                                id_movimiento: movimiento.id,
+                                kilos: kilosComputar,
+                                id_grano: movimiento.id_grano,
+                                id_establecimiento: movimiento.id_origen,
+                                id_socio: contrato.id_socio,
+                                tipo_origen: movimiento.tipo_origen == 'T' ? 'lote' : 'silo',
+                                id_destino: movimiento.id_destino,
+                                contrato: contrato.id,
+                            })
+                        })
+
+                    } else {
+                        var kilos = 35000
+
+                        if(movimiento.kg_campo){
+                            if(parseInt(movimiento.kg_campo)){
+                                kilos = parseInt(movimiento.kg_campo)
+                            }
+                        }
+
+                        if(movimiento.kg_neto){
+                            if(parseInt(movimiento.kg_neto)){
+                                kilos = parseInt(movimiento.kg_neto)
+                            }
+                        }
+
+                        paqueteMovimientos.push({
+                            id_movimiento: movimiento.id,
+                            kilos: kilos,
+                            id_grano: movimiento.id_grano,
+                            id_establecimiento: movimiento.id_origen,
+                            id_socio: movimiento.id_socio,
+                            tipo_origen: movimiento.tipo_origen == 'T' ? 'lote' : 'silo',
+                            id_destino: movimiento.id_destino,
+                            contrato: 0
+                        })
+                    }
+                }
+
+            } else {
+                //SI NO EXISTIERA MOVIMIENTO LOCAL:
+                var kilos = 35000
+
+                if(movimiento.kg_campo){
+                    if(parseInt(movimiento.kg_campo)){
+                        kilos = parseInt(movimiento.kg_campo)
+                    }
+                }
+                
+                if(movimiento.kg_neto){
+                    if(parseInt(movimiento.kg_neto)){
+                        kilos = parseInt(movimiento.kg_neto)
+                    }
+                }
+
+                paqueteMovimientos.push({
+                    id_movimiento: movimiento.id,
+                    kilos: kilos,
+                    id_grano: movimiento.id_grano,
+                    id_establecimiento: movimiento.id_origen,
+                    id_socio: movimiento.id_socio,
+                    tipo_origen: movimiento.tipo_origen == 'T' ? 'lote' : 'silo',
+                    id_destino: movimiento.id_destino,
+                    contrato: 0,
+                })
             }
+        })
 
-            this.datosTablaProduccion.push(mov)
-        });
 
-        var dat:any = []
-        this.db['movimientos'].forEach((movimiento:any) => {
-            if(!dat.includes(movimiento.id_origen)){
-                dat.push(movimiento.id_origen)
-            }
-        });
-        var mostrar: any = []
-        dat.forEach((element:any) => {
-            mostrar.push({
-                id: element,
-                establecimiento: this.transformarDatoMostrarTabla(element, 'establecimiento')
-            })
-        });
-        console.log(mostrar)
-
+        this.exportToExcel(paqueteMovimientos)
     }
 
     transformarDatoMostrarTabla(dato: any, tipo: any) {
@@ -604,5 +778,35 @@ export class RegistrosComponent {
         this.display_imprimir = false
         this.renderer.setStyle(document.body, 'webkitPrintColorAdjust', 'exact');
         window.print()
+    }
+
+    obtenerFecha(fec:any) {
+        const fecha = new Date(fec);
+      
+        const ano = fecha.getFullYear();
+        var mes:any = fecha.getMonth() + 1; // Los meses comienzan desde 0
+        var dia:any = fecha.getDate();
+      
+        // Asegurarse de que el mes y el día tengan dos dígitos
+        mes = mes < 10 ? `0${mes}` : mes;
+        dia = dia < 10 ? `0${dia}` : dia;
+      
+        const formatoAAAAMMDD = `${ano}-${mes}-${dia}`;
+      
+        return formatoAAAAMMDD;
+      }
+
+    exportToExcel(data:any) {
+        /* Crear un libro de trabajo */
+        const workbook = XLSX.utils.book_new();
+      
+        /* Crear una hoja de cálculo */
+        const worksheet = XLSX.utils.json_to_sheet(data);
+      
+        /* Agregar la hoja de cálculo al libro de trabajo */
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+      
+        /* Descargar el archivo */
+        XLSX.writeFile(workbook, 'data.xlsx');
     }
 }

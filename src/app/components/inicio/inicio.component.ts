@@ -189,7 +189,8 @@ export class InicioComponent {
             { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
             { field: "observaciones", header: "Obser" },
-            
+
+            { field: "cpe_definitiva", header: "CPE Def" },
             { field: "planta", header: "N° Planta" },
             { field: "corredor_pri", header: "CPE Corr." },
             { field: "corredor_sec", header: "CPE Corr. Sec." },
@@ -793,6 +794,7 @@ export class InicioComponent {
             pagado: 'NO',
 
             cpe: '',
+            cpe_definitiva: '',
             benef: '',
             ctg: '',
             planta: '',
@@ -820,6 +822,7 @@ export class InicioComponent {
                 dato.cpe = sucursal + "-" + cpe
                 dato.benef = carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante,"socioCuit") : "-"
                 dato.ctg = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
+                dato.cpe_definitiva = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
                 dato.planta = carta_porte[0].planta_destino ? carta_porte[0].planta_destino : ''
                 dato.permiteCrearCTG = false
 
@@ -843,6 +846,8 @@ export class InicioComponent {
                 var destino:any = ""
                 var destinatario:any = ""
 
+                var ctgDef:any = []
+
                 carta_porte.forEach((e:any) => {
                     var agregar = false
                     
@@ -862,6 +867,7 @@ export class InicioComponent {
                         rte_sec_dos += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") + " "
                         destino += this.transformDatoTabla(e.cuit_destino,"intervinienteCuit") + " "
                         destinatario += this.transformDatoTabla(e.cuit_destinatario,"intervinienteCuit") + " "
+                        ctgDef.push(e.nro_ctg)
                     }
 
                     cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
@@ -880,6 +886,7 @@ export class InicioComponent {
                 dato.rte_sec_dos = rte_sec_dos
                 dato.destino = destino
                 dato.destinatario = destinatario
+                dato.cpe_definitiva = ctgDef.toString()
             }
         }
 

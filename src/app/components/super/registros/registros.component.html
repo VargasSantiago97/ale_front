@@ -1,39 +1,25 @@
 <div style="margin: 20px 50px;">
 
-    <button pButton pRipple type="button" label="Buscar" class="p-button-success bott" (click)="armarDatosMovimientos()"></button>
 
-
-    <div #PRODUCCION_CAMPOS class="formgrid row mostrarImpresion">
-        <div #CAMPOS class="field col">
-            <div class="tablaDatos" style="margin: 0px 0px 30px 0px;">
-                <h5 style="text-align: center;"><strong>PRODUCCION CAMPOS/SOCIOS - CON KILOS DE BALANZA</strong></h5>
-                <table style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th style="padding: 3px;" *ngFor="let col of colsProd">
-                                {{col.header}}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let dato of datosTablaProduccion">
-                            <td style="padding: 2px;" *ngFor="let col of colsProd">
-                                <label>{{dato[col.field]}}</label>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <!--
-                    <tfoot>
-                        <tr>
-                            <td style="padding: 2px;" *ngFor="let col of colsProd">
-                                <label><strong>{{datosTablaProduccionTotales[col.field]}}</strong></label>
-                            </td>
-                        </tr>
-                    </tfoot>
-                    -->
-                </table>
-            </div>
+    <div class="formgrid row ocultarImpresion">
+        <div class="field col">
+            <select
+                *ngIf="this.ok_movimientos && this.ok_movimientos_local && this.ok_cpe && this.ok_socios && this.ok_establecimientos && this.ok_establecimientoProduccion && this.ok_silos && this.ok_loteASilos && this.ok_movimiento_origen && this.ok_lotes && this.ok_produccion && this.ok_contratosDB && this.ok_movimiento_contrato"
+                [(ngModel)]="idGranosSeleccionado">
+                <option *ngFor="let dato of db.granos" value="{{dato.id}}">{{dato.alias}}</option>
+            </select>
         </div>
-        <br><br><br>
+        <div class="field col">
+            <input type="date" [(ngModel)]="fechaDesde">
+        </div>
+        <div class="field col">
+            <input type="date" [(ngModel)]="fechaHasta">
+        </div>
+        <div class="field col">
+            <button pButton pRipple type="button" label="Buscar" class="p-button-success bott" (click)="armarDatosMovimientos()"></button>
+        </div>
     </div>
+
+
+
 </div>
