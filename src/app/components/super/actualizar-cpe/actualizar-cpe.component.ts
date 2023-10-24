@@ -96,6 +96,7 @@ export class ActualizarCPEComponent {
 
 
                 if(estado != 'CN' && estado != 'AN' && estado != 'RE' && estado != 'DE' && cpe.cuit_solicitante != 20211753049 && cpe.nro_ctg[2] == 1 && !(this.cpeNoIncluir.includes(cpe.nro_ctg))){ //DE
+                //if(cpe.cuit_solicitante != 20211753049 && cpe.nro_ctg[2] == 1 && !(this.cpeNoIncluir.includes(cpe.nro_ctg))){ //DE
                     const dato = {
                         socio: this.transformDatoTabla(cpe.cuit_solicitante, "socioCuit"),
                         nro_ctg: cpe.nro_ctg,
@@ -460,7 +461,7 @@ export class ActualizarCPEComponent {
 
         if(act.intervinientes){
             let int = act.intervinientes
-            if(int.cuitCorredorVentaPrimaria){
+            if(int.cuitCorredorVentaPrimaria || ant.cuit_corredor_venta_primaria){
                 if(int.cuitCorredorVentaPrimaria != ant.cuit_corredor_venta_primaria){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -472,7 +473,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitCorredorVentaSecundaria){
+            if(int.cuitCorredorVentaSecundaria || ant.cuit_corredor_venta_secundaria){
                 if(int.cuitCorredorVentaSecundaria != ant.cuit_corredor_venta_secundaria){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -484,7 +485,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitMercadoATermino){
+            if(int.cuitMercadoATermino || ant.cuit_mercado_a_termino){
                 if(int.cuitMercadoATermino != ant.cuit_mercado_a_termino){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -496,7 +497,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitRemitenteComercialVentaPrimaria){
+            if(int.cuitRemitenteComercialVentaPrimaria || ant.cuit_remitente_comercial_venta_primaria){
                 if(int.cuitRemitenteComercialVentaPrimaria != ant.cuit_remitente_comercial_venta_primaria){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -508,7 +509,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitRemitenteComercialVentaSecundaria){
+            if(int.cuitRemitenteComercialVentaSecundaria || ant.cuit_remitente_comercial_venta_secundaria){
                 if(int.cuitRemitenteComercialVentaSecundaria != ant.cuit_remitente_comercial_venta_secundaria){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -520,7 +521,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitRemitenteComercialVentaSecundaria2){
+            if(int.cuitRemitenteComercialVentaSecundaria2 || ant.cuit_remitente_comercial_venta_secundaria2){
                 if(int.cuitRemitenteComercialVentaSecundaria2 != ant.cuit_remitente_comercial_venta_secundaria2){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -532,7 +533,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitRepresentanteEntregador){
+            if(int.cuitRepresentanteEntregador || ant.cuit_representante_entregador){
                 if(int.cuitRepresentanteEntregador != ant.cuit_representante_entregador){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
@@ -544,7 +545,7 @@ export class ActualizarCPEComponent {
                     diferencias += 1
                 }
             }
-            if(int.cuitRepresentanteRecibidor){
+            if(int.cuitRepresentanteRecibidor || ant.cuit_representante_recibidor){
                 if(int.cuitRepresentanteRecibidor != ant.cuit_representante_recibidor){
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
