@@ -805,6 +805,7 @@ export class InicioComponent {
             rte_sec_dos: '',
             destino: '',
             destinatario: '',
+            deposito: mov.id_deposito ? this.transformDatoTabla(mov.id_deposito,"deposito") : "-",
 
             banderas: []
 
@@ -924,6 +925,11 @@ export class InicioComponent {
     transformDatoTabla(dato: any, tipo: any, registro:any=0) {
         if (tipo == 'grano') {
             return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo=='deposito'){
+            if(dato == '820432e06a30') return 'ALE';
+            if(dato == '815386d01a94') return 'MOLIENDAS';
+            return dato
         }
         if (tipo == 'fecha') {
             var fecha = new Date(dato)
