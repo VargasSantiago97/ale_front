@@ -727,8 +727,12 @@ export class KilosCampoComponent {
         }
 
         this.crearDatoDB('movimientos', this.movimientoLocal, () => { 
-            this.getDB('movimientos', () => { this.datosParaTablaBuscar() })
+            //this.getDB('movimientos', () => { this.datosParaTablaBuscar() })
         })
+    }
+
+    actualizarListado(){
+        this.getDB('movimientos', () => { this.datosParaTablaBuscar() })
     }
 
     crearMovimientoOrigen(registro:any){

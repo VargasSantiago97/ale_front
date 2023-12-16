@@ -921,6 +921,16 @@ export class KilosBalanzaComponent {
         }
     }
 
+    setearKilosCampo(){
+        if (this.selectedTablaInicio) {
+            this.selectedTablaInicio.forEach((registro: any) => {
+                registro.neto = registro.kg_campo
+                registro.regulacion = 0
+                registro.final = registro.kg_campo
+            })
+        }
+    }
+
     getDB(tabla: any, func: any = false) {
         this.sqlite.getDB(tabla).subscribe(
             (res: any) => {

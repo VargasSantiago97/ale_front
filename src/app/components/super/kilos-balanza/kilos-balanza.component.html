@@ -42,7 +42,8 @@
             (click)="setearKilosEnMovimientos(0)"></button>
         <button *ngIf="selectedTablaInicio" pButton pRipple type="button" label="GUARDAR OK ACOND."
             class="p-button-success bott" style="margin: 6px; margin-left: 40px;" (click)="setearAconds(0)"></button>
-        <button (click)="toggleFullscreen()">Alternar pantalla completa</button>
+        <button *ngIf="selectedTablaInicio" pButton pRipple type="button" label="SET KG CAMPO"
+            class="p-button-success bott" style="margin: 6px; margin-left: 40px;" (click)="setearKilosCampo()"></button>
 
 
     </ng-template>

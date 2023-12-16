@@ -623,7 +623,7 @@ export class ProduccionDetalleComponent {
                     kg_regulacion: ok_balanza ? this.transformarDatoMostrarTabla(kg_regulacionPropor, 'numero') : '-',
                     kg_neto: ok_balanza ? this.transformarDatoMostrarTabla(kg_salidaPropor, 'numero') : '-',
                     kg_destino: ok_descarga ? this.transformarDatoMostrarTabla(kg_descargaPropor, 'numero') : '-',
-                    kg_final: ok_contratos ? this.transformarDatoMostrarTabla(kg_finalPropor, 'numero') : '-',
+                    kg_final: ok_descarga ? this.transformarDatoMostrarTabla(kg_finalPropor, 'numero') : '-',
                 })
 
                 //calculamos total
@@ -839,7 +839,7 @@ export class ProduccionDetalleComponent {
                     kg_regulacion: ok_balanza ? this.transformarDatoMostrarTabla(kg_regulacionPropor, 'numero') : '-',
                     kg_neto: ok_balanza ? this.transformarDatoMostrarTabla(kg_salidaPropor, 'numero') : '-',
                     kg_destino: ok_descarga ? this.transformarDatoMostrarTabla(kg_descargaPropor, 'numero') : '-',
-                    kg_final: ok_contratos ? this.transformarDatoMostrarTabla(kg_finalPropor, 'numero') : '-',
+                    kg_final: ok_descarga ? this.transformarDatoMostrarTabla(kg_finalPropor, 'numero') : '-',
                 })
 
                 //calculamos total

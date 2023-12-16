@@ -5,12 +5,13 @@ import { DatePipe } from '@angular/common';
 import { PadronService } from 'src/app/services/padron.service';
 import { CpeService } from 'src/app/services/cpe/cpe.service';
 import * as XLSX from 'xlsx';
+import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 
 declare var vars: any;
 
 const API_URI = vars.API_URI;
 const ORDEN_CARGA = vars.ORDEN_CARGA;
-const CPE_PROVINCIAS:any = vars.CPE_PROVINCIAS;
+const CPE_PROVINCIAS: any = vars.CPE_PROVINCIAS;
 const SUCURSAL = vars.SUCURSAL;
 const PDF_CPE_URI = vars.PDF_CPE_URI;
 const PUNTO_ORDEN_CARGA = vars.PUNTO_ORDEN_CARGA;
@@ -44,7 +45,7 @@ export class InicioComponent {
     displayCPE: Boolean = false;
     displayVerCPE: Boolean = false;
     displayEditarCPE: Boolean = false;
-    
+
     spinnerActualizarCPE: Boolean = false;
 
     accordeonVer = [false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
@@ -71,6 +72,8 @@ export class InicioComponent {
     db_carta_porte: any = []
     db_asientos: any = []
     db_ordenes_pago: any = []
+
+    db_locales: any = {}
 
 
     load_camiones: any = true
@@ -130,7 +133,7 @@ export class InicioComponent {
     cpePlantasDestino: any = [];
     cpeCamposDestino: any = [];
 
-    datosFiltro:any = {
+    datosFiltro: any = {
         fechaDesde: new Date('01/01/2023'),
         fechaHasta: new Date('12/31/2023'),
         granos: ['vacios', 'todos'],
@@ -141,19 +144,20 @@ export class InicioComponent {
         acopios: ['vacios', 'todos'],
         id_bandera: []
     };
-    datos_filtrar_granos : any = []
-    datos_filtrar_socios : any = []
-    datos_filtrar_establecimientos : any = []
-    datos_filtrar_transportistas : any = []
-    datos_filtrar_corredores : any = []
-    datos_filtrar_acopios : any = []
+    datos_filtrar_granos: any = []
+    datos_filtrar_socios: any = []
+    datos_filtrar_establecimientos: any = []
+    datos_filtrar_transportistas: any = []
+    datos_filtrar_corredores: any = []
+    datos_filtrar_acopios: any = []
 
     filtroRapido: any = {}
 
-    selectedTablaInicio:any
+    selectedTablaInicio: any
 
     constructor(
         private comunicacionService: ComunicacionService,
+        private sqlite: SqliteService,
         private messageService: MessageService,
         private padronService: PadronService,
         private cpeService: CpeService
@@ -177,14 +181,14 @@ export class InicioComponent {
             { field: "cuit_transp", header: "CUIT Transp" },
             { field: "id_corredor", header: "Corredor" },
             { field: "id_acopio", header: "Acopio" },
-            
+
             { field: "kg_tara", header: "Tara" },
             { field: "kg_bruto", header: "Bruto" },
             { field: "kg_neto", header: "Neto" },
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
             { field: "kg_campo", header: "Neto Campo" },
-            
+
             { field: "factura", header: "Facturas" },
             { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
@@ -226,7 +230,7 @@ export class InicioComponent {
             { field: "kg_regulacion", header: "Carga/Desc" },
             { field: "kg_neto_final", header: "Neto Final" },
             { field: "kg_campo", header: "Neto Campo" },
-            
+
             { field: "factura", header: "Facturas" },
             { field: "gastos", header: "Gastos" },
             { field: "pagado", header: "Pagado" },
@@ -374,9 +378,9 @@ export class InicioComponent {
                 this.db_socios = res;
                 this.load_socios = false;
 
-                this.datos_filtrar_socios = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_socios ]
+                this.datos_filtrar_socios = [{ id: 'todos', alias: '[TODOS]' }, { id: 'vacios', alias: '[Vacios]' }, ... this.db_socios]
 
-                res.forEach((e:any) => {
+                res.forEach((e: any) => {
                     this.datosFiltro.socios.push(e.id)
                 })
 
@@ -406,9 +410,9 @@ export class InicioComponent {
                 this.db_transportistas_all = res;
                 this.load_transportistas_all = false;
 
-                this.datos_filtrar_transportistas  = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_transportistas_all ]
+                this.datos_filtrar_transportistas = [{ id: 'todos', alias: '[TODOS]' }, { id: 'vacios', alias: '[Vacios]' }, ... this.db_transportistas_all]
 
-                res.forEach((e:any) => {
+                res.forEach((e: any) => {
                     this.datosFiltro.transportistas.push(e.id)
                 })
 
@@ -449,9 +453,9 @@ export class InicioComponent {
                 this.db_establecimientos = res;
                 this.load_establecimientos = false;
 
-                this.datos_filtrar_establecimientos  = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_establecimientos ]
+                this.datos_filtrar_establecimientos = [{ id: 'todos', alias: '[TODOS]' }, { id: 'vacios', alias: '[Vacios]' }, ... this.db_establecimientos]
 
-                res.forEach((e:any) => {
+                res.forEach((e: any) => {
                     this.datosFiltro.establecimientos.push(e.id)
                 })
 
@@ -479,9 +483,9 @@ export class InicioComponent {
             (res: any) => {
                 this.db_granos = res;
                 this.load_granos = false;
-                this.datos_filtrar_granos = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_granos ]
+                this.datos_filtrar_granos = [{ id: 'todos', alias: '[TODOS]' }, { id: 'vacios', alias: '[Vacios]' }, ... this.db_granos]
 
-                res.forEach((e:any) => {
+                res.forEach((e: any) => {
                     this.datosFiltro.granos.push(e.id)
                 })
                 this.datosParaTabla()
@@ -496,8 +500,8 @@ export class InicioComponent {
             (res: any) => {
                 this.db_banderas = res;
 
-                this.db_banderas.forEach((band:any) => {
-                    this.datosFiltro.id_bandera.push(band.id)                    
+                this.db_banderas.forEach((band: any) => {
+                    this.datosFiltro.id_bandera.push(band.id)
                 });
 
                 this.load_banderas = false;
@@ -508,7 +512,7 @@ export class InicioComponent {
             }
         )
     }
-    obtenerOrdenesCarga(){
+    obtenerOrdenesCarga() {
         this.comunicacionService.getDB('orden_carga').subscribe(
             (res: any) => {
                 this.db_ordenes_carga = res;
@@ -520,35 +524,35 @@ export class InicioComponent {
             }
         )
     }
-    obtenerIntervinientes(){
+    obtenerIntervinientes() {
         this.comunicacionService.getDB('intervinientes').subscribe(
             (res: any) => {
                 this.db_intervinientes = res;
-                this.db_acopios = [... res.filter((e:any) => { return e.dstno == 1})]
-                this.db_corredores = [... res.filter((e:any) => { return e.corvtapri == 1})]
+                this.db_acopios = [...res.filter((e: any) => { return e.dstno == 1 })]
+                this.db_corredores = [...res.filter((e: any) => { return e.corvtapri == 1 })]
 
-                this.db_intervinientes.forEach((e:any) => {
+                this.db_intervinientes.forEach((e: any) => {
                     this.datosFiltro.acopios.push(e.id)
                     this.datosFiltro.corredores.push(e.id)
                 })
 
-                this.datos_filtrar_corredores = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_intervinientes ]
-                this.datos_filtrar_acopios = [ {id:'todos', alias: '[TODOS]'}, {id:'vacios', alias:'[Vacios]'} , ... this.db_intervinientes ]
+                this.datos_filtrar_corredores = [{ id: 'todos', alias: '[TODOS]' }, { id: 'vacios', alias: '[Vacios]' }, ... this.db_intervinientes]
+                this.datos_filtrar_acopios = [{ id: 'todos', alias: '[TODOS]' }, { id: 'vacios', alias: '[Vacios]' }, ... this.db_intervinientes]
 
                 this.intervinientesCPE = {
-                    destinatario: [... res.filter((e:any) => { return e.dstro == 1})],
-                    destino: [... res.filter((e:any) => { return e.dstno == 1})],
-                    corredor_venta_primaria: [... res.filter((e:any) => { return e.corvtapri == 1})],
-                    corredor_venta_secundaria: [... res.filter((e:any) => { return e.corvtasec == 1})],
-                    mercado_a_termino: [... res.filter((e:any) => { return e.mertermino == 1})],
-                    remitente_comercial_venta_primaria: [... res.filter((e:any) => { return e.rtecomvtapri == 1})],
-                    remitente_comercial_venta_secundaria: [... res.filter((e:any) => { return e.rtecomvtasec == 1})],
-                    remitente_comercial_venta_secundaria2: [... res.filter((e:any) => { return e.rtecomvtasec2 == 1})],
-                    representante_entregador: [... res.filter((e:any) => { return e.rteent == 1})],
-                    representante_recibidor: [... res.filter((e:any) => { return e.rterec == 1})],
-                    remitente_comercial_productor: [... res.filter((e:any) => { return e.rtecomprod == 1})],
-                    intermediario_flete: [... res.filter((e:any) => { return e.intflet == 1})],
-                    pagador_flete: [... res.filter((e:any) => { return e.pagflet == 1})],
+                    destinatario: [...res.filter((e: any) => { return e.dstro == 1 })],
+                    destino: [...res.filter((e: any) => { return e.dstno == 1 })],
+                    corredor_venta_primaria: [...res.filter((e: any) => { return e.corvtapri == 1 })],
+                    corredor_venta_secundaria: [...res.filter((e: any) => { return e.corvtasec == 1 })],
+                    mercado_a_termino: [...res.filter((e: any) => { return e.mertermino == 1 })],
+                    remitente_comercial_venta_primaria: [...res.filter((e: any) => { return e.rtecomvtapri == 1 })],
+                    remitente_comercial_venta_secundaria: [...res.filter((e: any) => { return e.rtecomvtasec == 1 })],
+                    remitente_comercial_venta_secundaria2: [...res.filter((e: any) => { return e.rtecomvtasec2 == 1 })],
+                    representante_entregador: [...res.filter((e: any) => { return e.rteent == 1 })],
+                    representante_recibidor: [...res.filter((e: any) => { return e.rterec == 1 })],
+                    remitente_comercial_productor: [...res.filter((e: any) => { return e.rtecomprod == 1 })],
+                    intermediario_flete: [...res.filter((e: any) => { return e.intflet == 1 })],
+                    pagador_flete: [...res.filter((e: any) => { return e.pagflet == 1 })],
                     chofer: [... this.db_choferes],
                     transportista: [... this.db_transportistas]
                 }
@@ -585,7 +589,7 @@ export class InicioComponent {
             }
         )
     }
-    obtenerAsientos(){
+    obtenerAsientos() {
         this.comunicacionService.getDB('asientos').subscribe(
             (res: any) => {
                 this.db_asientos = res;
@@ -597,7 +601,7 @@ export class InicioComponent {
             }
         )
     }
-    obtenerOrdenesPago(){
+    obtenerOrdenesPago() {
         this.comunicacionService.getDB('orden_pago').subscribe(
             (res: any) => {
                 this.db_ordenes_pago = res;
@@ -646,7 +650,7 @@ export class InicioComponent {
         )
     }
 
-    datosParaTabla(mantenerFiltro:any = false, permiteFiltrosRapidos:any = null) {
+    datosParaTabla(mantenerFiltro: any = false, permiteFiltrosRapidos: any = null) {
         if (!(this.load_transportistas_all || this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
@@ -658,23 +662,23 @@ export class InicioComponent {
             var kg_campo = 0.0;
 
             //FILTROS RAPIDOS (DATOS PARA FILTRAR)
-            var ordenesPermitidas:any = []
-            var cartaPortePermitidas:any = []
-            var cartaPortePermitidas:any = []
-            var camionesPermitidos:any = []
+            var ordenesPermitidas: any = []
+            var cartaPortePermitidas: any = []
+            var cartaPortePermitidas: any = []
+            var camionesPermitidos: any = []
 
-            if(permiteFiltrosRapidos){
-                if(this.filtroRapido.orden){
-                    ordenesPermitidas = this.db_ordenes_carga.filter((odc:any) => { return odc.numero.includes(this.filtroRapido.orden) })
+            if (permiteFiltrosRapidos) {
+                if (this.filtroRapido.orden) {
+                    ordenesPermitidas = this.db_ordenes_carga.filter((odc: any) => { return odc.numero.includes(this.filtroRapido.orden) })
                 }
-                if(this.filtroRapido.cpe){
-                    cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_cpe.includes(this.filtroRapido.cpe) })
+                if (this.filtroRapido.cpe) {
+                    cartaPortePermitidas = this.db_carta_porte.filter((cdp: any) => { return cdp.nro_cpe.includes(this.filtroRapido.cpe) })
                 }
-                if(this.filtroRapido.ctg){
-                    cartaPortePermitidas = this.db_carta_porte.filter((cdp:any) => { return cdp.nro_ctg.includes(this.filtroRapido.ctg) })
+                if (this.filtroRapido.ctg) {
+                    cartaPortePermitidas = this.db_carta_porte.filter((cdp: any) => { return cdp.nro_ctg.includes(this.filtroRapido.ctg) })
                 }
-                if(this.filtroRapido.patente){
-                    camionesPermitidos = this.db_camiones.filter((camion:any) => { return camion.patente_chasis.includes(this.filtroRapido.patente.toUpperCase()) || camion.patente_acoplado.includes(this.filtroRapido.patente.toUpperCase()) })
+                if (this.filtroRapido.patente) {
+                    camionesPermitidos = this.db_camiones.filter((camion: any) => { return camion.patente_chasis.includes(this.filtroRapido.patente.toUpperCase()) || camion.patente_acoplado.includes(this.filtroRapido.patente.toUpperCase()) })
                 }
             } else {
                 this.filtroRapido = {}
@@ -704,34 +708,34 @@ export class InicioComponent {
                 const ok_fechaHasta = e.fecha ? (new Date(e.fecha) <= new Date(this.datosFiltro.fechaHasta)) : true
                 const ok_corredor = todos_corredor ? true : (e.id_corredor ? this.datosFiltro.corredores.includes(e.id_corredor) : vacio_corredor)
                 const ok_acopio = todos_acopio ? true : (e.id_acopio ? this.datosFiltro.acopios.includes(e.id_acopio) : vacio_acopio)
-                
+
                 var ok_bandera = this.datosFiltro.id_bandera.length == this.db_banderas.length
-                if(e.id_bandera){
+                if (e.id_bandera) {
                     var banderas = typeof e.id_bandera == 'string' ? JSON.parse(e.id_bandera) : e.id_bandera
-                    if(banderas.length){
-                        ok_bandera = banderas.some((bandera:any) => this.datosFiltro.id_bandera.includes(bandera))
+                    if (banderas.length) {
+                        ok_bandera = banderas.some((bandera: any) => this.datosFiltro.id_bandera.includes(bandera))
                     }
                 }
 
                 //FILTROS RAPIDOS
                 var ok_filtrosRapidos = true
-                if(permiteFiltrosRapidos){
-                    if(this.filtroRapido.orden){
-                        ok_filtrosRapidos = ordenesPermitidas.some((odc:any) => { return odc.id_movimiento == e.id })
+                if (permiteFiltrosRapidos) {
+                    if (this.filtroRapido.orden) {
+                        ok_filtrosRapidos = ordenesPermitidas.some((odc: any) => { return odc.id_movimiento == e.id })
                     }
-                    if(this.filtroRapido.cpe && ok_filtrosRapidos){
-                        ok_filtrosRapidos = cartaPortePermitidas.some((cdp:any) => { return cdp.id_movimiento == e.id })
+                    if (this.filtroRapido.cpe && ok_filtrosRapidos) {
+                        ok_filtrosRapidos = cartaPortePermitidas.some((cdp: any) => { return cdp.id_movimiento == e.id })
                     }
-                    if(this.filtroRapido.ctg && ok_filtrosRapidos){
-                        ok_filtrosRapidos = cartaPortePermitidas.some((cdp:any) => { return cdp.id_movimiento == e.id })
+                    if (this.filtroRapido.ctg && ok_filtrosRapidos) {
+                        ok_filtrosRapidos = cartaPortePermitidas.some((cdp: any) => { return cdp.id_movimiento == e.id })
                     }
-                    if(this.filtroRapido.patente && ok_filtrosRapidos){
-                        ok_filtrosRapidos = camionesPermitidos.some((camion:any) => { return camion.id == e.id_camion })
+                    if (this.filtroRapido.patente && ok_filtrosRapidos) {
+                        ok_filtrosRapidos = camionesPermitidos.some((camion: any) => { return camion.id == e.id_camion })
                     }
                 }
 
 
-                if(ok_filtrosRapidos && ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta && ok_bandera){
+                if (ok_filtrosRapidos && ok_acopio && ok_corredor && ok_grano && ok_socio && ok_establecimiento && ok_transportista && ok_fechaDesde && ok_fechaHasta && ok_bandera) {
                     this.dataParaMostrarTabla.push(this.movimientoToMostrarTabla(e))
 
                     //totales
@@ -754,41 +758,41 @@ export class InicioComponent {
             }
 
 
-            if(mantenerFiltro){
+            if (mantenerFiltro) {
                 this.displayFiltros = false
             }
         }
     }
-    movimientoToMostrarTabla(mov:any){
-        var dato:any = {
+    movimientoToMostrarTabla(mov: any) {
+        var dato: any = {
             id: mov.id,
-            cultivo: mov.id_grano ? this.transformDatoTabla(mov.id_grano,"grano") : "-",
-            fecha: mov.fecha ? this.transformDatoTabla(mov.fecha,"fecha") : "-",
-            orden: this.transformDatoTabla(mov.id,"ordenNumero"),
-            benef_orden: mov.id_socio ? this.transformDatoTabla(mov.id_socio,"socio") : "-",
-            campo: mov.id_origen ? this.transformDatoTabla(mov.id_origen,"campo") : "-",
-            tipo_orig: mov.tipo_origen ? this.transformDatoTabla(mov.tipo_origen,"tipo_orig") : "-",
-            pat: mov.id_camion ? this.transformDatoTabla(mov.id_camion,"pat") : "-",
-            patAc: mov.id_camion ? this.transformDatoTabla(mov.id_camion,"patAc") : "-",
-            transporte: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte,"transporte") : "-",
-            cuit_transp: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte,"cuit_transp") : "-",
-            chofer: mov.id_chofer ? this.transformDatoTabla(mov.id_chofer,"chofer") : "-",
-            id_corredor: mov.id_corredor ? this.transformDatoTabla(mov.id_corredor,"intervinientes") : "-",
-            id_acopio: mov.id_acopio ? this.transformDatoTabla(mov.id_acopio,"intervinientes") : "-",
+            cultivo: mov.id_grano ? this.transformDatoTabla(mov.id_grano, "grano") : "-",
+            fecha: mov.fecha ? this.transformDatoTabla(mov.fecha, "fecha") : "-",
+            orden: this.transformDatoTabla(mov.id, "ordenNumero"),
+            benef_orden: mov.id_socio ? this.transformDatoTabla(mov.id_socio, "socio") : "-",
+            campo: mov.id_origen ? this.transformDatoTabla(mov.id_origen, "campo") : "-",
+            tipo_orig: mov.tipo_origen ? this.transformDatoTabla(mov.tipo_origen, "tipo_orig") : "-",
+            pat: mov.id_camion ? this.transformDatoTabla(mov.id_camion, "pat") : "-",
+            patAc: mov.id_camion ? this.transformDatoTabla(mov.id_camion, "patAc") : "-",
+            transporte: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte, "transporte") : "-",
+            cuit_transp: mov.id_transporte ? this.transformDatoTabla(mov.id_transporte, "cuit_transp") : "-",
+            chofer: mov.id_chofer ? this.transformDatoTabla(mov.id_chofer, "chofer") : "-",
+            id_corredor: mov.id_corredor ? this.transformDatoTabla(mov.id_corredor, "intervinientes") : "-",
+            id_acopio: mov.id_acopio ? this.transformDatoTabla(mov.id_acopio, "intervinientes") : "-",
 
-            kg_tara: mov.kg_tara ? this.transformDatoTabla(mov.kg_tara,"kg") : "-",
-            kg_bruto: mov.kg_bruto ? this.transformDatoTabla(mov.kg_bruto,"kg") : "-",
-            kg_neto: mov.kg_neto ? this.transformDatoTabla(mov.kg_neto,"kg") : "-",
-            kg_regulacion: mov.kg_regulacion ? this.transformDatoTabla(mov.kg_regulacion,"kg") : "-",
-            kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final,"kg") : "-",
-            kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo,"kg") : "-",
+            kg_tara: mov.kg_tara ? this.transformDatoTabla(mov.kg_tara, "kg") : "-",
+            kg_bruto: mov.kg_bruto ? this.transformDatoTabla(mov.kg_bruto, "kg") : "-",
+            kg_neto: mov.kg_neto ? this.transformDatoTabla(mov.kg_neto, "kg") : "-",
+            kg_regulacion: mov.kg_regulacion ? this.transformDatoTabla(mov.kg_regulacion, "kg") : "-",
+            kg_neto_final: mov.kg_neto_final ? this.transformDatoTabla(mov.kg_neto_final, "kg") : "-",
+            kg_campo: mov.kg_campo ? this.transformDatoTabla(mov.kg_campo, "kg") : "-",
 
-            observaciones:  mov.observaciones ? mov.observaciones.substring(0, 40) + (mov.observaciones.length > 40 ? " (...)" : "") : "",
+            observaciones: mov.observaciones ? mov.observaciones.substring(0, 40) + (mov.observaciones.length > 40 ? " (...)" : "") : "",
             observacionesCompleta: mov.observaciones ? mov.observaciones : "",
 
             permiteCrearCTG: true,
-            existeOrdenDeCarga: this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == mov.id}),
-            
+            existeOrdenDeCarga: this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == mov.id }),
+
             gastos: '',
             factura: '',
             pagado: 'NO',
@@ -805,7 +809,9 @@ export class InicioComponent {
             rte_sec_dos: '',
             destino: '',
             destinatario: '',
-            deposito: mov.id_deposito ? this.transformDatoTabla(mov.id_deposito,"deposito") : "-",
+            deposito: mov.id_deposito ? this.transformDatoTabla(mov.id_deposito, "deposito") : "-",
+            produce: mov.id_origen ? this.transformDatoTabla(mov.id_origen, "campoProduce") : "-",
+            entrega: '',
 
             banderas: []
 
@@ -814,60 +820,64 @@ export class InicioComponent {
         var haber = 0.0
         var debe = 0.0
 
-        if(this.db_carta_porte.some((e:any) => { return e.id_movimiento == mov.id})){
-            const carta_porte = this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov.id})
-            if(carta_porte.length == 1){
-                var sucursal:any = carta_porte[0].sucursal ? carta_porte[0].sucursal.toString().padStart(2, '0') : ''
-                var cpe:any = carta_porte[0].nro_cpe ? carta_porte[0].nro_cpe.toString().padStart(5, '0') : ''
+        if (this.db_carta_porte.some((e: any) => { return e.id_movimiento == mov.id })) {
+            const carta_porte = this.db_carta_porte.filter((e: any) => { return e.id_movimiento == mov.id })
+            if (carta_porte.length == 1) {
+                var sucursal: any = carta_porte[0].sucursal ? carta_porte[0].sucursal.toString().padStart(2, '0') : ''
+                var cpe: any = carta_porte[0].nro_cpe ? carta_porte[0].nro_cpe.toString().padStart(5, '0') : ''
 
                 dato.cpe = sucursal + "-" + cpe
-                dato.benef = carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante,"socioCuit") : "-"
+                dato.benef = carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante, "socioCuit") : "-"
                 dato.ctg = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
                 dato.cpe_definitiva = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
                 dato.planta = carta_porte[0].planta_destino ? carta_porte[0].planta_destino : ''
                 dato.permiteCrearCTG = false
 
-                dato.corredor_pri = carta_porte[0].cuit_corredor_venta_primaria ? this.transformDatoTabla(carta_porte[0].cuit_corredor_venta_primaria,"intervinienteCuit") : ""
-                dato.corredor_sec = carta_porte[0].cuit_corredor_venta_secundaria ? this.transformDatoTabla(carta_porte[0].cuit_corredor_venta_secundaria,"intervinienteCuit") : ""
-                dato.rte_pri = carta_porte[0].cuit_remitente_comercial_venta_primaria ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_primaria,"intervinienteCuit") : ""
-                dato.rte_sec = carta_porte[0].cuit_remitente_comercial_venta_secundaria ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_secundaria,"intervinienteCuit") : ""
-                dato.rte_sec_dos = carta_porte[0].cuit_remitente_comercial_venta_secundaria2 ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") : ""
-                dato.destino = carta_porte[0].cuit_destino ? this.transformDatoTabla(carta_porte[0].cuit_destino,"intervinienteCuit") : ""
-                dato.destinatario = carta_porte[0].cuit_destinatario ? this.transformDatoTabla(carta_porte[0].cuit_destinatario,"intervinienteCuit") : ""
+                dato.corredor_pri = carta_porte[0].cuit_corredor_venta_primaria ? this.transformDatoTabla(carta_porte[0].cuit_corredor_venta_primaria, "intervinienteCuit") : ""
+                dato.corredor_sec = carta_porte[0].cuit_corredor_venta_secundaria ? this.transformDatoTabla(carta_porte[0].cuit_corredor_venta_secundaria, "intervinienteCuit") : ""
+                dato.rte_pri = carta_porte[0].cuit_remitente_comercial_venta_primaria ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_primaria, "intervinienteCuit") : ""
+                dato.rte_sec = carta_porte[0].cuit_remitente_comercial_venta_secundaria ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_secundaria, "intervinienteCuit") : ""
+                dato.rte_sec_dos = carta_porte[0].cuit_remitente_comercial_venta_secundaria2 ? this.transformDatoTabla(carta_porte[0].cuit_remitente_comercial_venta_secundaria2, "intervinienteCuit") : ""
+                dato.destino = carta_porte[0].cuit_destino ? this.transformDatoTabla(carta_porte[0].cuit_destino, "intervinienteCuit") : ""
+                dato.destinatario = carta_porte[0].cuit_destinatario ? this.transformDatoTabla(carta_porte[0].cuit_destinatario, "intervinienteCuit") : ""
+
+                dato.entrega = this.entregaInterviniente(carta_porte[0])
             } else {
-                var cpe:any = ""
-                var benef:any = ""
-                var ctg:any = ""
-                var planta:any = ""
-                var corredor_pri:any = ""
-                var corredor_sec:any = ""
-                var rte_pri:any = ""
-                var rte_sec:any = ""
-                var rte_sec_dos:any = ""
-                var destino:any = ""
-                var destinatario:any = ""
+                var cpe: any = ""
+                var benef: any = ""
+                var ctg: any = ""
+                var planta: any = ""
+                var corredor_pri: any = ""
+                var corredor_sec: any = ""
+                var rte_pri: any = ""
+                var rte_sec: any = ""
+                var rte_sec_dos: any = ""
+                var destino: any = ""
+                var destinatario: any = ""
+                var entrega: any = ""
 
-                var ctgDef:any = []
+                var ctgDef: any = []
 
-                carta_porte.forEach((e:any) => {
+                carta_porte.forEach((e: any) => {
                     var agregar = false
-                    
+
                     try {
                         var data = JSON.parse(e.data)
                         agregar = (data.estado == 'CN') || (data.estado == 'AC') || (data.estado == 'CF')
                     } catch {
                     }
 
-                    if(agregar){
+                    if (agregar) {
                         planta += (e.planta_destino ? e.planta_destino.toString() : '') + " "
-                        benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante,"socioCuit") : "-"    
-                        corredor_pri += this.transformDatoTabla(e.cuit_corredor_venta_primaria,"intervinienteCuit") + " "
-                        corredor_sec += this.transformDatoTabla(e.cuit_corredor_venta_secundaria,"intervinienteCuit") + " "
-                        rte_pri += this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria,"intervinienteCuit") + " "
-                        rte_sec += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria,"intervinienteCuit") + " "
-                        rte_sec_dos += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria2,"intervinienteCuit") + " "
-                        destino += this.transformDatoTabla(e.cuit_destino,"intervinienteCuit") + " "
-                        destinatario += this.transformDatoTabla(e.cuit_destinatario,"intervinienteCuit") + " "
+                        benef = e.cuit_solicitante ? this.transformDatoTabla(e.cuit_solicitante, "socioCuit") : "-"
+                        corredor_pri += this.transformDatoTabla(e.cuit_corredor_venta_primaria, "intervinienteCuit") + " "
+                        corredor_sec += this.transformDatoTabla(e.cuit_corredor_venta_secundaria, "intervinienteCuit") + " "
+                        rte_pri += this.transformDatoTabla(e.cuit_remitente_comercial_venta_primaria, "intervinienteCuit") + " "
+                        rte_sec += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria, "intervinienteCuit") + " "
+                        rte_sec_dos += this.transformDatoTabla(e.cuit_remitente_comercial_venta_secundaria2, "intervinienteCuit") + " "
+                        destino += this.transformDatoTabla(e.cuit_destino, "intervinienteCuit") + " "
+                        destinatario += this.transformDatoTabla(e.cuit_destinatario, "intervinienteCuit") + " "
+                        entrega += this.entregaInterviniente(e)
                         ctgDef.push(e.nro_ctg)
                     }
 
@@ -887,48 +897,49 @@ export class InicioComponent {
                 dato.rte_sec_dos = rte_sec_dos
                 dato.destino = destino
                 dato.destinatario = destinatario
+                dato.entrega = entrega
                 dato.cpe_definitiva = ctgDef.toString()
             }
         }
 
-        var asientosAfectados:any = []
-        if(this.db_asientos.some((e:any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false})){
-            const asientos = this.db_asientos.filter((e:any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false})
-            asientos.forEach((e:any) => {
+        var asientosAfectados: any = []
+        if (this.db_asientos.some((e: any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false })) {
+            const asientos = this.db_asientos.filter((e: any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(mov.id)) : false) : false })
+            asientos.forEach((e: any) => {
 
-                if(e.haber){
+                if (e.haber) {
                     asientosAfectados.push(e.id)
                     haber += parseFloat(e.haber)
                 }
-                if(e.debe){
+                if (e.debe) {
                     debe += parseFloat(e.debe)
                 }
             })
-            dato.gastos = this.transformDatoTabla(debe,"moneda")
-            dato.factura = this.transformDatoTabla(haber,"moneda")
+            dato.gastos = this.transformDatoTabla(debe, "moneda")
+            dato.factura = this.transformDatoTabla(haber, "moneda")
         }
 
         for (let i = 0; i < asientosAfectados.length; i++) {
-            if(this.db_ordenes_pago.some((e:any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(asientosAfectados[i])) : false) : false })){
+            if (this.db_ordenes_pago.some((e: any) => { return e.afecta ? (JSON.parse(e.afecta).length ? (JSON.parse(e.afecta).includes(asientosAfectados[i])) : false) : false })) {
                 dato.pagado = "SI"
             }
         }
 
 
         var banderas = mov.id_bandera ? (typeof mov.id_bandera == 'string' ? JSON.parse(mov.id_bandera) : mov.id_bandera) : []
-        banderas.forEach((e:any) => {
-            dato.banderas.push(this.db_banderas.find((f:any) => { return f.id == e }))
+        banderas.forEach((e: any) => {
+            dato.banderas.push(this.db_banderas.find((f: any) => { return f.id == e }))
         })
 
         return dato
     }
-    transformDatoTabla(dato: any, tipo: any, registro:any=0) {
+    transformDatoTabla(dato: any, tipo: any, registro: any = 0) {
         if (tipo == 'grano') {
             return this.db_granos.some((e: any) => { return e.id == dato }) ? this.db_granos.find((e: any) => { return e.id == dato }).alias : '-'
         }
-        if (tipo=='deposito'){
-            if(dato == '820432e06a30') return 'ALE';
-            if(dato == '815386d01a94') return 'MOLIENDAS';
+        if (tipo == 'deposito') {
+            if (dato == '820432e06a30') return 'ALE';
+            if (dato == '815386d01a94') return 'MOLIENDAS';
             return dato
         }
         if (tipo == 'fecha') {
@@ -938,6 +949,9 @@ export class InicioComponent {
         }
         if (tipo == 'campo') {
             return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).alias : '-'
+        }
+        if (tipo == 'campoProduce') {
+            return this.db_establecimientos.some((e: any) => { return e.id == dato }) ? this.db_establecimientos.find((e: any) => { return e.id == dato }).codigo : '-'
         }
         if (tipo == 'tipo_orig') {
             return this.optionsDe.some((e: any) => { return e.id == dato }) ? this.optionsDe.find((e: any) => { return e.id == dato }).label : '-'
@@ -958,10 +972,10 @@ export class InicioComponent {
             return this.db_choferes.some((e: any) => { return e.id == dato }) ? this.db_choferes.find((e: any) => { return e.id == dato }).alias : '-'
         }
         if (tipo == 'intervinientes') {
-            return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato}).alias : '-'
+            return this.db_intervinientes.some((e: any) => { return e.id == dato }) ? this.db_intervinientes.find((e: any) => { return e.id == dato }).alias : '-'
         }
         if (tipo == 'intervinienteCuit') {
-            return this.db_intervinientes.some((e: any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e: any) => { return e.cuit == dato}).alias : dato
+            return this.db_intervinientes.some((e: any) => { return e.cuit == dato }) ? this.db_intervinientes.find((e: any) => { return e.cuit == dato }).alias : dato
         }
         if (tipo == 'kg') {
             return dato ? dato.toLocaleString("es-AR") : '-'
@@ -973,8 +987,8 @@ export class InicioComponent {
             return this.db_socios.some((e: any) => { return e.cuit.toString() == dato.toString() }) ? this.db_socios.find((e: any) => { return e.cuit.toString() == dato.toString() }).alias : '-'
         }
         if (tipo == 'ordenNumero') {
-            if(this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == dato})){
-                return this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == dato}).numero
+            if (this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == dato })) {
+                return this.db_ordenes_carga.find((e: any) => { return e.id_movimiento == dato }).numero
             } else {
                 return ""
             }
@@ -993,6 +1007,33 @@ export class InicioComponent {
             return number.toLocaleString('es-AR', options);
         }
         return registro.id
+    }
+
+    entregaInterviniente(cpe: any) {
+        var entrega: any = ''
+
+        if (cpe) {
+            if (cpe.cuit_remitente_comercial_venta_secundaria2) {
+                if (this.db_socios.some((e: any) => { return e.cuit == cpe.cuit_remitente_comercial_venta_secundaria2 })) {
+                    entrega = this.db_socios.find((e: any) => { return e.cuit == cpe.cuit_remitente_comercial_venta_secundaria2 }).alias
+                }
+            }
+
+            if (cpe.cuit_remitente_comercial_venta_secundaria) {
+                if (this.db_socios.some((e: any) => { return e.cuit == cpe.cuit_remitente_comercial_venta_secundaria })) {
+                    entrega = this.db_socios.find((e: any) => { return e.cuit == cpe.cuit_remitente_comercial_venta_secundaria }).alias
+                }
+            }
+
+            if (cpe.cuit_remitente_comercial_venta_primaria) {
+                if (this.db_socios.some((e: any) => { return e.cuit == cpe.cuit_remitente_comercial_venta_primaria })) {
+                    entrega = this.db_socios.find((e: any) => { return e.cuit == cpe.cuit_remitente_comercial_venta_primaria }).alias
+                }
+            }
+        }
+
+        return entrega
+
     }
 
     buscarTransporte() {
@@ -1175,7 +1216,7 @@ export class InicioComponent {
 
         this.datosMovimiento.fecha = fechaHoy
 
-        if (typeof this.datosMovimiento.id_bandera == 'string'){
+        if (typeof this.datosMovimiento.id_bandera == 'string') {
             this.datosMovimiento.id_bandera = JSON.parse(this.datosMovimiento.id_bandera)
         }
 
@@ -1197,8 +1238,8 @@ export class InicioComponent {
 
         this.datosMovimiento.activo = 1
 
-        if(this.datosMovimiento.id_bandera){
-            if(typeof this.datosMovimiento.id_bandera != 'string'){
+        if (this.datosMovimiento.id_bandera) {
+            if (typeof this.datosMovimiento.id_bandera != 'string') {
                 this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
             }
         }
@@ -1221,8 +1262,8 @@ export class InicioComponent {
         var fecha = new Date(this.datosMovimiento.fecha);
         this.datosMovimiento.fecha = fecha.toISOString().slice(0, 19).replace('T', ' ');
 
-        if(this.datosMovimiento.id_bandera){
-            if(typeof this.datosMovimiento.id_bandera != 'string'){
+        if (this.datosMovimiento.id_bandera) {
+            if (typeof this.datosMovimiento.id_bandera != 'string') {
                 this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
             }
         }
@@ -1243,8 +1284,8 @@ export class InicioComponent {
         if (confirm('Desea eliminar Movimiento?')) {
             this.datosMovimiento.estado = 0
 
-            if(this.datosMovimiento.id_bandera){
-                if(typeof this.datosMovimiento.id_bandera != 'string'){
+            if (this.datosMovimiento.id_bandera) {
+                if (typeof this.datosMovimiento.id_bandera != 'string') {
                     this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
                 }
             }
@@ -1264,21 +1305,21 @@ export class InicioComponent {
     }
     mostrarMovimiento(mov_id: any) {
         console.log('MOV ID: ', mov_id)
-        this.datosMovimiento = { ... this.db_movimientos.find((e:any) => { return e.id == mov_id}) }
+        this.datosMovimiento = { ... this.db_movimientos.find((e: any) => { return e.id == mov_id }) }
         console.log(this.datosMovimiento)
 
         const fecha = new Date(this.datosMovimiento.fecha);
 
         const yyyy = fecha.getFullYear().toString().padStart(4, '0');
         const MM = (fecha.getMonth() + 1).toString().padStart(2, '0');
-        const dd = fecha.getDate().toString().padStart(2, '0');     
+        const dd = fecha.getDate().toString().padStart(2, '0');
 
         const fechaMov = `${yyyy}-${MM}-${dd}`;
 
         this.datosMovimiento.fecha = fechaMov;
 
-        if(this.datosMovimiento.id_bandera){
-            if (typeof this.datosMovimiento.id_bandera == 'string'){
+        if (this.datosMovimiento.id_bandera) {
+            if (typeof this.datosMovimiento.id_bandera == 'string') {
                 this.datosMovimiento.id_bandera = JSON.parse(this.datosMovimiento.id_bandera)
             }
         } else {
@@ -1303,7 +1344,7 @@ export class InicioComponent {
         }
         if (this.datosMovimiento.id_chofer) {
             this.chofer = this.db_choferes.find((e: any) => { return e.id == this.datosMovimiento.id_chofer })
-            if(this.chofer){
+            if (this.chofer) {
                 this.cod_chofer = this.chofer.codigo
             }
         } else {
@@ -1312,7 +1353,7 @@ export class InicioComponent {
         }
         if (this.datosMovimiento.id_camion) {
             this.camion = this.db_camiones.find((e: any) => { return e.id == this.datosMovimiento.id_camion })
-            if(this.camion){
+            if (this.camion) {
                 this.cod_camion = this.camion.codigo
             }
         } else {
@@ -1418,7 +1459,7 @@ export class InicioComponent {
     guardarOrdenCarga(accion: any) {
 
 
-        if(this.datosOrdenCarga.id){
+        if (this.datosOrdenCarga.id) {
             this.editarOrdenCargaEnDB()
         } else {
             this.guardarOrdenCargaEnDB()
@@ -1435,8 +1476,8 @@ export class InicioComponent {
 
     }
 
-    agregarOrdenCargaRegistro(registro_id:any){
-        const registro = this.db_movimientos.find((e:any) => { return e.id == registro_id })
+    agregarOrdenCargaRegistro(registro_id: any) {
+        const registro = this.db_movimientos.find((e: any) => { return e.id == registro_id })
 
         var fecha = new Date(registro.fecha);
         const fechaFormateada = fecha.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, "/");
@@ -1463,19 +1504,19 @@ export class InicioComponent {
 
         this.displayOrdenCarga = true
     }
-    mostrarModalOrdenCarga(registro:any, event:any = false){
-        if(event){
+    mostrarModalOrdenCarga(registro: any, event: any = false) {
+        if (event) {
             event.preventDefault()
         }
 
-        var ordenCarga:any = this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == registro })
+        var ordenCarga: any = this.db_ordenes_carga.find((e: any) => { return e.id_movimiento == registro })
 
         this.datosOrdenCarga = ordenCarga
 
         this.displayOrdenCarga = true
     }
 
-    guardarOrdenCargaEnDB(){
+    guardarOrdenCargaEnDB() {
         var idd = this.generateUUID()
         if (this.db_ordenes_carga.some((e: any) => { return e.id == idd })) {
             this.guardarOrdenCargaEnDB()
@@ -1497,7 +1538,7 @@ export class InicioComponent {
             }
         )
     }
-    editarOrdenCargaEnDB(){
+    editarOrdenCargaEnDB() {
         this.comunicacionService.updateDB("orden_carga", this.datosOrdenCarga).subscribe(
             (res: any) => {
                 res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Editado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -1510,7 +1551,7 @@ export class InicioComponent {
         )
     }
 
-    borrarOrdenCarga(ordenCarga:any){
+    borrarOrdenCarga(ordenCarga: any) {
         if (confirm('Desea eliminar elemento?')) {
             ordenCarga.estado = 0
             this.comunicacionService.updateDB("orden_carga", ordenCarga).subscribe(
@@ -1550,18 +1591,18 @@ export class InicioComponent {
     generateNumeroOrdenDeCarga() {
         this.comunicacionService.getDB('orden_carga').subscribe(
             (res: any) => {
-                var ordenes_carga:any = res.filter((e:any) => { 
+                var ordenes_carga: any = res.filter((e: any) => {
                     const num = parseInt(e.numero.split("-")[0]) ? parseInt(e.numero.split("-")[0]) : 0
                     return num == parseInt(PUNTO_ORDEN_CARGA)
                 })
-        
-                const numeroMasGrande = ordenes_carga.reduce((acumulado:any, objetoActual:any) => {
+
+                const numeroMasGrande = ordenes_carga.reduce((acumulado: any, objetoActual: any) => {
                     const valor = parseInt(objetoActual.numero.split("-")[1])
                     return Math.max(acumulado, valor);
                 }, 0);
-        
+
                 const punto = PUNTO_ORDEN_CARGA.toString().padStart(2, '0');
-                const numero = (numeroMasGrande+1).toString().padStart(5, '0');
+                const numero = (numeroMasGrande + 1).toString().padStart(5, '0');
 
                 this.datosOrdenCarga.numero = punto + "-" + numero;
             },
@@ -1647,14 +1688,14 @@ export class InicioComponent {
             return ""
         }
         if (tipo == 'ordenNumero') {
-            if(this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == registro.id})){
-                return this.db_ordenes_carga.find((e:any) => { return e.id_movimiento == registro.id}).numero
+            if (this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == registro.id })) {
+                return this.db_ordenes_carga.find((e: any) => { return e.id_movimiento == registro.id }).numero
             } else {
                 return ""
             }
         }
         if (tipo == 'existeOrdenCarga') {
-            return this.db_ordenes_carga.some((e:any) => { return e.id_movimiento == registro})
+            return this.db_ordenes_carga.some((e: any) => { return e.id_movimiento == registro })
         }
         if (tipo == 'cpe') {
             return '~cpe~'
@@ -1968,7 +2009,7 @@ export class InicioComponent {
         this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
             (res: any) => {
                 console.log(res)
-                if(res.mensaje.toString().length == 11){
+                if (res.mensaje.toString().length == 11) {
                     window.open(PDF_CPE_URI + '/' + res.mensaje + '.pdf', '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
                 }
             },
@@ -1987,22 +2028,22 @@ export class InicioComponent {
             return
         }
 
-        const mov = this.db_movimientos.find((e:any) => { return e.id == mov_id })
+        const mov = this.db_movimientos.find((e: any) => { return e.id == mov_id })
 
         this.intervinientesCPE = {
-            destinatario: [... this.db_intervinientes.filter((e:any) => { return e.dstro == 1})],
-            destino: [... this.db_intervinientes.filter((e:any) => { return e.dstno == 1})],
-            corredor_venta_primaria: [... this.db_intervinientes.filter((e:any) => { return e.corvtapri == 1})],
-            corredor_venta_secundaria: [... this.db_intervinientes.filter((e:any) => { return e.corvtasec == 1})],
-            mercado_a_termino: [... this.db_intervinientes.filter((e:any) => { return e.mertermino == 1})],
-            remitente_comercial_venta_primaria: [... this.db_intervinientes.filter((e:any) => { return e.rtecomvtapri == 1})],
-            remitente_comercial_venta_secundaria: [... this.db_intervinientes.filter((e:any) => { return e.rtecomvtasec == 1})],
-            remitente_comercial_venta_secundaria2: [... this.db_intervinientes.filter((e:any) => { return e.rtecomvtasec2 == 1})],
-            representante_entregador: [... this.db_intervinientes.filter((e:any) => { return e.rteent == 1})],
-            representante_recibidor: [... this.db_intervinientes.filter((e:any) => { return e.rterec == 1})],
-            remitente_comercial_productor: [... this.db_intervinientes.filter((e:any) => { return e.rtecomprod == 1})],
-            intermediario_flete: [... this.db_intervinientes.filter((e:any) => { return e.intflet == 1})],
-            pagador_flete: [... this.db_intervinientes.filter((e:any) => { return e.pagflet == 1})],
+            destinatario: [... this.db_intervinientes.filter((e: any) => { return e.dstro == 1 })],
+            destino: [... this.db_intervinientes.filter((e: any) => { return e.dstno == 1 })],
+            corredor_venta_primaria: [... this.db_intervinientes.filter((e: any) => { return e.corvtapri == 1 })],
+            corredor_venta_secundaria: [... this.db_intervinientes.filter((e: any) => { return e.corvtasec == 1 })],
+            mercado_a_termino: [... this.db_intervinientes.filter((e: any) => { return e.mertermino == 1 })],
+            remitente_comercial_venta_primaria: [... this.db_intervinientes.filter((e: any) => { return e.rtecomvtapri == 1 })],
+            remitente_comercial_venta_secundaria: [... this.db_intervinientes.filter((e: any) => { return e.rtecomvtasec == 1 })],
+            remitente_comercial_venta_secundaria2: [... this.db_intervinientes.filter((e: any) => { return e.rtecomvtasec2 == 1 })],
+            representante_entregador: [... this.db_intervinientes.filter((e: any) => { return e.rteent == 1 })],
+            representante_recibidor: [... this.db_intervinientes.filter((e: any) => { return e.rterec == 1 })],
+            remitente_comercial_productor: [... this.db_intervinientes.filter((e: any) => { return e.rtecomprod == 1 })],
+            intermediario_flete: [... this.db_intervinientes.filter((e: any) => { return e.intflet == 1 })],
+            pagador_flete: [... this.db_intervinientes.filter((e: any) => { return e.pagflet == 1 })],
             chofer: [... this.db_choferes],
             transportista: [... this.db_transportistas]
         }
@@ -2055,9 +2096,9 @@ export class InicioComponent {
             codigo_turno: null,
             fecha_hora_partida: null,
             dominio: null,
-            dominio1:null,
-            dominio2:null,
-            dominio3:null,
+            dominio1: null,
+            dominio2: null,
+            dominio3: null,
             datos: null,
             creado_por: null,
             creado_el: null,
@@ -2078,10 +2119,10 @@ export class InicioComponent {
             this.onSelectSolicitante()
         }
         if (mov.id_corredor) {
-            this.datosCPE.cuit_corredor_venta_primaria = this.db_intervinientes.some((e:any) => { return e.id == mov.id_corredor }) ? this.db_intervinientes.find((e:any) => { return e.id == mov.id_corredor }).cuit : null;
+            this.datosCPE.cuit_corredor_venta_primaria = this.db_intervinientes.some((e: any) => { return e.id == mov.id_corredor }) ? this.db_intervinientes.find((e: any) => { return e.id == mov.id_corredor }).cuit : null;
         }
         if (mov.id_acopio) {
-            this.datosCPE.cuit_destino = this.db_intervinientes.some((e:any) => { return e.id == mov.id_acopio }) ? this.db_intervinientes.find((e:any) => { return e.id == mov.id_acopio }).cuit : null;
+            this.datosCPE.cuit_destino = this.db_intervinientes.some((e: any) => { return e.id == mov.id_acopio }) ? this.db_intervinientes.find((e: any) => { return e.id == mov.id_acopio }).cuit : null;
         }
         if (mov.id_transporte) {
             this.datosCPE.cuit_transportista = this.db_transportistas.some((e: any) => { return e.id == mov.id_transporte }) ? this.db_transportistas.find((e: any) => { return e.id == mov.id_transporte }).cuit : null;
@@ -2112,22 +2153,22 @@ export class InicioComponent {
 
         this.displayCPE = true
     }
-    abrirModalVerCPE(mov_id:any, borrarCambiosDetectados=true, event:any = false){
-        if(event){
+    abrirModalVerCPE(mov_id: any, borrarCambiosDetectados = true, event: any = false) {
+        if (event) {
             event.preventDefault();
         }
 
         this.datosVerCPE = [];
 
-        if(borrarCambiosDetectados){
+        if (borrarCambiosDetectados) {
             this.cambiosDetectadosCPE = []
         }
 
-        this.datosVerCPE = [ ... this.db_carta_porte.filter((e:any) => { return e.id_movimiento == mov_id })]
+        this.datosVerCPE = [... this.db_carta_porte.filter((e: any) => { return e.id_movimiento == mov_id })]
 
-        this.datosVerCPE.forEach((e:any) => {
-            if(e.data){
-                if(typeof(e.data) == 'string'){
+        this.datosVerCPE.forEach((e: any) => {
+            if (e.data) {
+                if (typeof (e.data) == 'string') {
                     e.data = JSON.parse(e.data)
                 } else {
                     const datoJson = JSON.stringify(e.data)
@@ -2215,7 +2256,7 @@ export class InicioComponent {
 
 
     }
-    onSelectSolicitante(){
+    onSelectSolicitante() {
         this.cpeCamposOrigen = []
 
         var data = {
@@ -2247,7 +2288,7 @@ export class InicioComponent {
         )
     }
 
-    dummy(cuit:any){
+    dummy(cuit: any) {
         var data = {
             cuit: cuit,
             ejecutar: "dummy",
@@ -2255,12 +2296,12 @@ export class InicioComponent {
         }
         this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
             (res: any) => {
-                if(res){
-                    res.app == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'APP -> Ok'}) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: APP'})
-                    res.db == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'DB -> Ok'}) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: DB'})
-                    res.auth == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'AUTH -> Ok'}) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: AUTH'})
+                if (res) {
+                    res.app == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'APP -> Ok' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: APP' })
+                    res.db == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'DB -> Ok' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: DB' })
+                    res.auth == 'Ok' ? this.messageService.add({ severity: 'success', summary: 'OK', detail: 'AUTH -> Ok' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error: AUTH' })
                 } else {
-                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error en la peticion'})
+                    this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Error en la peticion' })
                 }
 
                 //app: 'Ok', db: 'Ok', auth: 'Ok'}
@@ -2271,8 +2312,8 @@ export class InicioComponent {
         )
     }
 
-    autorizarGuardarCPE(){
-        var data:any = {
+    autorizarGuardarCPE() {
+        var data: any = {
             cuit: 0,
             ejecutar: "autorizar_cpe_automotor",
             data: {}
@@ -2282,14 +2323,14 @@ export class InicioComponent {
 
 
         //CABECERA
-        if(this.datosCPE.cuit_solicitante){
+        if (this.datosCPE.cuit_solicitante) {
             data.cuit = parseInt(this.datosCPE.cuit_solicitante)
             data.data.cuit_solicitante = parseInt(this.datosCPE.cuit_solicitante)
         } else {
             errores.push('No existe CUIT Solicitante')
         }
 
-        if(this.datosCPE.tipo_cpe){
+        if (this.datosCPE.tipo_cpe) {
             data.data.tipo_cpe = parseInt(this.datosCPE.tipo_cpe)
         } else {
             errores.push('No existe Tipo Cpe')
@@ -2298,11 +2339,11 @@ export class InicioComponent {
 
 
         //ORIGEN
-        if(this.datosCPE.es_solicitante_campo){
+        if (this.datosCPE.es_solicitante_campo) {
 
-            if(this.datosCPE.cod_localidad_productor){
-                data.data.cod_provincia_productor= this.cpeCamposOrigen.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? parseInt(this.cpeCamposOrigen.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia) : null
-                data.data.cod_localidad_productor= parseInt(this.datosCPE.cod_localidad_productor)
+            if (this.datosCPE.cod_localidad_productor) {
+                data.data.cod_provincia_productor = this.cpeCamposOrigen.some((e: any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? parseInt(this.cpeCamposOrigen.find((e: any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia) : null
+                data.data.cod_localidad_productor = parseInt(this.datosCPE.cod_localidad_productor)
             } else {
                 errores.push('Solicitante: Campo - no se selecciono Localidad de solicitante')
             }
@@ -2315,19 +2356,19 @@ export class InicioComponent {
         data.data.cuit_destino = this.datosCPE.cuit_destino ? parseInt(this.datosCPE.cuit_destino) : false
         data.data.cuit_destinatario = this.datosCPE.cuit_destinatario ? parseInt(this.datosCPE.cuit_destinatario) : false
 
-        if(this.datosCPE.es_destino_campo){
+        if (this.datosCPE.es_destino_campo) {
             data.data.es_destino_campo = true
 
-            data.data.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? parseInt(this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad) : false
-            data.data.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? parseInt(this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia) : false
+            data.data.cod_localidad = this.cpeCamposDestino.some((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }) ? parseInt(this.cpeCamposDestino.find((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }).codLocalidad) : false
+            data.data.cod_provincia = this.cpeCamposDestino.some((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }) ? parseInt(this.cpeCamposDestino.find((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }).codProvincia) : false
             data.data.planta_destino = false
 
         } else {
             data.data.es_destino_campo = false
 
-            data.data.cod_localidad = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? parseInt(this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codLocalidad) : false
-            data.data.cod_provincia = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? parseInt(this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codProvincia) : false
-            data.data.planta_destino = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? parseInt(this.datosCPE.cod_destino) : false
+            data.data.cod_localidad = this.cpePlantasDestino.some((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }) ? parseInt(this.cpePlantasDestino.find((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }).codLocalidad) : false
+            data.data.cod_provincia = this.cpePlantasDestino.some((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }) ? parseInt(this.cpePlantasDestino.find((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }).codProvincia) : false
+            data.data.planta_destino = this.cpePlantasDestino.some((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }) ? parseInt(this.datosCPE.cod_destino) : false
         }
 
         //INTERVINIENTES
@@ -2360,15 +2401,15 @@ export class InicioComponent {
         data.data.codigo_turno = this.datosCPE.codigo_turno ? this.datosCPE.codigo_turno : false
 
         data.data.fecha_hora_partida = this.datosCPE.fecha_hora_partida ? this.datosCPE.fecha_hora_partida : null
-        if(this.datosCPE.fecha_hora_partida){
-    
+        if (this.datosCPE.fecha_hora_partida) {
+
             let fecha = this.datosCPE.fecha_hora_partida.split("T")[0];
             let hora = this.datosCPE.fecha_hora_partida.split("T")[1];
-    
+
             let ano = parseInt(fecha.split("-")[0]);
             let mes = parseInt(fecha.split("-")[1]);
             let dia = parseInt(fecha.split("-")[2]);
-    
+
             let horaNum = parseInt(hora.split(":")[0]);
             let minuto = parseInt(hora.split(":")[1]);
 
@@ -2388,21 +2429,21 @@ export class InicioComponent {
         this.datosCPE.dominio3 ? data.data.dominio.push(this.datosCPE.dominio3) : null
 
 
-        if(errores.length){
-            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al crear CPE: ' + errores.join(" - ")})
+        if (errores.length) {
+            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo al crear CPE: ' + errores.join(" - ") })
         } else {
-            if(confirm("Desea realizar CPE?")){
+            if (confirm("Desea realizar CPE?")) {
 
                 this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                     (res: any) => {
-                        if(res){
-                            if(res.mensaje){
-                                if(res.datos){
+                        if (res) {
+                            if (res.mensaje) {
+                                if (res.datos) {
                                     const nro_ctg = res.datos.nro_ctg ? res.datos.nro_ctg : ''
                                     const nro_cpe = res.datos.nro_cpe ? res.datos.nro_cpe : ''
                                     const nro_cpe_completo = data.data.sucursal.toString().padStart(2, '0') + "-" + nro_cpe.toString().padStart(5, '0')
 
-                                    this.messageService.add({ severity: 'success', summary: 'CREADO CORRECTAMENTE!', detail: 'Se creo la CPE: ' + nro_cpe_completo + ' con CTG: ' + nro_ctg})
+                                    this.messageService.add({ severity: 'success', summary: 'CREADO CORRECTAMENTE!', detail: 'Se creo la CPE: ' + nro_cpe_completo + ' con CTG: ' + nro_ctg })
 
                                     this.datosCPE.nro_ctg = nro_ctg
                                     this.datosCPE.nro_cpe = nro_cpe
@@ -2410,18 +2451,18 @@ export class InicioComponent {
                                     this.datosCPE.data = '{"kg_descarga":0,"estado":"AC"}'
 
                                     //mover archivo
-                                    if(res.datos.archivo){
+                                    if (res.datos.archivo) {
                                         this.cpeService.guardarArchivo(res.datos.archivo).subscribe(
-                                            (respue:any) => {
-                                                if(respue){
-                                                    if(respue.ok){
+                                            (respue: any) => {
+                                                if (respue) {
+                                                    if (respue.ok) {
                                                         this.cpeService.moverArchivo(nro_ctg.toString(), "AC", nro_cpe_completo).subscribe(
                                                             (resp: any) => {
-                                                                if(resp){
-                                                                    if(resp.mensaje){
+                                                                if (resp) {
+                                                                    if (resp.mensaje) {
                                                                         this.abrirModalVerCPE(this.datosCPE.id_movimiento, false)
 
-                                                                        const setear = {nro_ctg: nro_ctg}
+                                                                        const setear = { nro_ctg: nro_ctg }
                                                                         const nombreArch = "CPE " + nro_cpe_completo + " - CTG " + nro_ctg + " - " + "AC" + ".pdf"
                                                                         this.setearUrl(setear, nombreArch)
 
@@ -2441,7 +2482,7 @@ export class InicioComponent {
                                                     }
                                                 }
                                             },
-                                            (erroor:any) => {
+                                            (erroor: any) => {
                                                 console.error(erroor)
                                             }
                                         )
@@ -2454,7 +2495,7 @@ export class InicioComponent {
                                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor no envio respuesta.datos' })
                                 }
                             } else {
-                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. mensaje = "FALSO"\n\n* '+ res.resp })
+                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. mensaje = "FALSO"\n\n* ' + res.resp })
                             }
                         } else {
                             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar hacer CPE. El Servidor no envio respuesta' })
@@ -2467,14 +2508,14 @@ export class InicioComponent {
             }
         }
 
-        
+
     }
-    anularCPE(datoCPE:any){
-        const nrpCPE = (datoCPE.sucursal ? datoCPE.sucursal.toString().padStart(2,'0') : '') + "-" + (datoCPE.nro_cpe ? datoCPE.nro_cpe.toString().padStart(8, '0') : '')
-        if(confirm(`Desea ANULAR esta CARTA DE PORTE?\nCTG: ${datoCPE.nro_ctg}\nCPE: ${nrpCPE}`)){
+    anularCPE(datoCPE: any) {
+        const nrpCPE = (datoCPE.sucursal ? datoCPE.sucursal.toString().padStart(2, '0') : '') + "-" + (datoCPE.nro_cpe ? datoCPE.nro_cpe.toString().padStart(8, '0') : '')
+        if (confirm(`Desea ANULAR esta CARTA DE PORTE?\nCTG: ${datoCPE.nro_ctg}\nCPE: ${nrpCPE}`)) {
             console.log(datoCPE)
 
-            var data:any = {
+            var data: any = {
                 cuit: datoCPE.cuit_solicitante,
                 ejecutar: "anular_cpe",
                 data: {
@@ -2488,12 +2529,12 @@ export class InicioComponent {
             this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                 (res: any) => {
                     console.log(res)
-                    if(res){
-                        if(res.mensaje){
-                            this.messageService.add({ severity: 'success', summary: 'ANULADO CORRECTAMENTE!', detail: 'Se anulo la CPE: ' + nrpCPE + " - CTG: " + datoCPE.nro_ctg})
+                    if (res) {
+                        if (res.mensaje) {
+                            this.messageService.add({ severity: 'success', summary: 'ANULADO CORRECTAMENTE!', detail: 'Se anulo la CPE: ' + nrpCPE + " - CTG: " + datoCPE.nro_ctg })
 
                             this.cambiosDetectadosCPE = []
-                            if(!datoCPE.data){
+                            if (!datoCPE.data) {
                                 datoCPE.data = {
                                     kg_descarga: 0,
                                     estado: "AN"
@@ -2510,7 +2551,7 @@ export class InicioComponent {
             )
         }
     }
-    editarCPE(datoCPE:any){
+    editarCPE(datoCPE: any) {
 
         this.displayEditarCPE = true
 
@@ -2536,15 +2577,15 @@ export class InicioComponent {
             peso_tara: datoCPE.peso_tara,
         }
 
-        if(datoCPE.dominio){
+        if (datoCPE.dominio) {
             const dominios = (typeof datoCPE.dominio == 'string') ? JSON.parse(datoCPE.dominio) : datoCPE.dominio
             this.datosEditarCPE.dominio1 = dominios[0] ? dominios[0] : ''
             this.datosEditarCPE.dominio2 = dominios[1] ? dominios[1] : ''
             this.datosEditarCPE.dominio3 = dominios[2] ? dominios[2] : ''
         }
     }
-    informarContingencia(datoCPE:any){
-        var data:any = {
+    informarContingencia(datoCPE: any) {
+        var data: any = {
             cuit: datoCPE.cuit_solicitante,
             ejecutar: "informar_contingencia",
             data: {
@@ -2554,29 +2595,29 @@ export class InicioComponent {
 
         console.log(data)
 
-        if(confirm("Contingencia por desperfecto mecánico?")){
+        if (confirm("Contingencia por desperfecto mecánico?")) {
             this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                 (res: any) => {
-                    if(res){
-                        if(res.mensaje){
-                            this.messageService.add({ severity: 'success', summary: 'CONTINGENCIA INFORMADA CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg})
+                    if (res) {
+                        if (res.mensaje) {
+                            this.messageService.add({ severity: 'success', summary: 'CONTINGENCIA INFORMADA CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg })
                         } else {
-                            this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA'})
+                            this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA' })
                         }
                     } else {
-                        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA'})
+                        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA' })
                     }
                 },
                 (err: any) => {
                     console.log(err)
-                    this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA'})
+                    this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'ERROR AL INFORMAR CONTINGENCIA' })
                 }
             )
         }
     }
-    autorizarEditarCPE(){
+    autorizarEditarCPE() {
 
-        var data:any = {
+        var data: any = {
             cuit: this.datosEditarCPE.cuit_solicitante,
             ejecutar: "editar_cpe_automotor",
             data: {
@@ -2603,44 +2644,44 @@ export class InicioComponent {
                 dominio: []
             }
         }
-        if(this.datosEditarCPE.dominio1){
+        if (this.datosEditarCPE.dominio1) {
             data.data.dominio.push(this.datosEditarCPE.dominio1)
         }
-        if(this.datosEditarCPE.dominio2){
+        if (this.datosEditarCPE.dominio2) {
             data.data.dominio.push(this.datosEditarCPE.dominio2)
         }
-        if(this.datosEditarCPE.dominio3){
+        if (this.datosEditarCPE.dominio3) {
             data.data.dominio.push(this.datosEditarCPE.dominio3)
         }
 
-        if(confirm("Desea EDITAR CPE?")){
+        if (confirm("Desea EDITAR CPE?")) {
             this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
                 (res: any) => {
                     console.log(res)
 
-                    if(res){
-                        if(res.mensaje){
-                            this.messageService.add({ severity: 'success', summary: 'EDITADO CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg})
+                    if (res) {
+                        if (res.mensaje) {
+                            this.messageService.add({ severity: 'success', summary: 'EDITADO CORRECTAMENTE!', detail: 'Se edito la CPE con CTG: ' + data.data.nro_ctg })
                             this.displayEditarCPE = false
                             this.abrirModalVerCPE(this.datosEditarCPE.id_movimiento)
                         } else {
-                            this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
+                            this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE' })
                         }
                     } else {
-                        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
+                        this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE' })
                     }
                 },
                 (err: any) => {
                     console.log(err)
-                    this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE'})
+                    this.messageService.add({ severity: 'error', summary: 'ERROR', detail: 'Error al editar CPE' })
                 }
             )
         }
     }
-    CPE_buscar_y_guardar(){
-        if(this.datosCPE.nro_ctg){
-            if(this.db_carta_porte.some((e:any) => { return e.nro_ctg == this.datosCPE.nro_ctg})){
-                if(confirm('ATENCION! Ya existe cargada una CPE con ese numero de CTG. Desea continuar?')){
+    CPE_buscar_y_guardar() {
+        if (this.datosCPE.nro_ctg) {
+            if (this.db_carta_porte.some((e: any) => { return e.nro_ctg == this.datosCPE.nro_ctg })) {
+                if (confirm('ATENCION! Ya existe cargada una CPE con ese numero de CTG. Desea continuar?')) {
                     this.CPE_guardarDB()
                 }
             } else {
@@ -2650,7 +2691,7 @@ export class InicioComponent {
             this.CPE_guardarDB()
         }
     }
-    CPE_guardarDB(){
+    CPE_guardarDB() {
         this.datosCPE.activo = 1
         this.datosCPE.estado = 1
 
@@ -2662,30 +2703,30 @@ export class InicioComponent {
         this.datosCPE.dominio = JSON.stringify(dominios)
 
         //DESTINO
-        if(this.datosCPE.es_destino_campo){
-            this.datosCPE.cod_localidad = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codLocalidad : null
-            this.datosCPE.cod_provincia = this.cpeCamposDestino.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}) ? this.cpeCamposDestino.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_destino}).codProvincia : null
+        if (this.datosCPE.es_destino_campo) {
+            this.datosCPE.cod_localidad = this.cpeCamposDestino.some((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }) ? this.cpeCamposDestino.find((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }).codLocalidad : null
+            this.datosCPE.cod_provincia = this.cpeCamposDestino.some((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }) ? this.cpeCamposDestino.find((e: any) => { return e.codLocalidad == this.datosCPE.cod_destino }).codProvincia : null
             this.datosCPE.planta_destino = 1
         } else {
-            this.datosCPE.cod_localidad = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codLocalidad : null
-            this.datosCPE.cod_provincia = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.cpePlantasDestino.find((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}).codProvincia : null
-            this.datosCPE.planta_destino = this.cpePlantasDestino.some((e:any) => { return e.nroPlanta == this.datosCPE.cod_destino}) ? this.datosCPE.cod_destino : null
+            this.datosCPE.cod_localidad = this.cpePlantasDestino.some((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }) ? this.cpePlantasDestino.find((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }).codLocalidad : null
+            this.datosCPE.cod_provincia = this.cpePlantasDestino.some((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }) ? this.cpePlantasDestino.find((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }).codProvincia : null
+            this.datosCPE.planta_destino = this.cpePlantasDestino.some((e: any) => { return e.nroPlanta == this.datosCPE.cod_destino }) ? this.datosCPE.cod_destino : null
         }
 
         //ORIGEN
-        if(this.datosCPE.es_solicitante_campo){
-            if(this.datosCPE.cod_localidad_productor){
-                this.datosCPE.planta_origen= false
-                this.datosCPE.cod_provincia_operador= false
-                this.datosCPE.cod_localidad_operador= false
-                this.datosCPE.cod_provincia_productor= this.cpeCamposOrigen.some((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? this.cpeCamposOrigen.find((e:any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia : null
+        if (this.datosCPE.es_solicitante_campo) {
+            if (this.datosCPE.cod_localidad_productor) {
+                this.datosCPE.planta_origen = false
+                this.datosCPE.cod_provincia_operador = false
+                this.datosCPE.cod_localidad_operador = false
+                this.datosCPE.cod_provincia_productor = this.cpeCamposOrigen.some((e: any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }) ? this.cpeCamposOrigen.find((e: any) => { return e.codLocalidad == this.datosCPE.cod_localidad_productor }).codProvincia : null
             }
         } else {
-            this.datosCPE.cod_provincia_productor= false
-            this.datosCPE.cod_localidad_productor= false
-            this.datosCPE.planta_origen= ""
-            this.datosCPE.cod_provincia_operador= ""
-            this.datosCPE.cod_localidad_operador= ""
+            this.datosCPE.cod_provincia_productor = false
+            this.datosCPE.cod_localidad_productor = false
+            this.datosCPE.planta_origen = ""
+            this.datosCPE.cod_provincia_operador = ""
+            this.datosCPE.cod_localidad_operador = ""
         }
 
         this.comunicacionService.createDB("carta_porte", this.datosCPE).subscribe(
@@ -2696,7 +2737,7 @@ export class InicioComponent {
                 this.displayCPE = false
 
                 //subir archivos
-                if(this.datosCPE.nro_ctg){
+                if (this.datosCPE.nro_ctg) {
                     this.uploader.upload()
                 }
             },
@@ -2708,22 +2749,22 @@ export class InicioComponent {
 
     }
 
-    cpeActualizarPDF(datoVerCPE:any){
+    cpeActualizarPDF(datoVerCPE: any) {
         this.spinnerActualizarCPE = true
 
-        if(!datoVerCPE.cuit_solicitante){
+        if (!datoVerCPE.cuit_solicitante) {
             return
         }
 
-        var data:any = {
+        var data: any = {
             cuit: parseInt(datoVerCPE.cuit_solicitante),
             ejecutar: "consultar_cpe_automotor",
             data: {}
         }
 
-        if(datoVerCPE.nro_ctg){
+        if (datoVerCPE.nro_ctg) {
             data.data.ctg = parseInt(datoVerCPE.nro_ctg)
-        } else if (datoVerCPE.nro_cpe && datoVerCPE.sucursal){
+        } else if (datoVerCPE.nro_cpe && datoVerCPE.sucursal) {
             data.data.nro_orden = parseInt(datoVerCPE.nro_cpe)
             data.data.sucursal = parseInt(datoVerCPE.sucursal)
         } else {
@@ -2732,24 +2773,24 @@ export class InicioComponent {
 
         this.cpeService.ejecutar(this.objUtf8ToBase64(data)).subscribe(
             (res: any) => {
-                if(res){
-                    if(res.mensaje){
-                        if(res.mensaje.archivo){
+                if (res) {
+                    if (res.mensaje) {
+                        if (res.mensaje.archivo) {
                             this.cpeService.guardarArchivo(res.mensaje.archivo).subscribe(
-                                (respue:any) => {
-                                    if(respue){
-                                        if(respue.ok){
+                                (respue: any) => {
+                                    if (respue) {
+                                        if (respue.ok) {
                                             const nro_cpe = res.mensaje.sucursal.toString().padStart(2, '0') + "-" + res.mensaje.nroOrden.toString().padStart(5, '0')
                                             this.cpeService.moverArchivo(res.mensaje.nroCTG.toString(), res.mensaje.estado, nro_cpe).subscribe(
                                                 (resp: any) => {
-                                                    if(resp){
-                                                        if(resp.mensaje){
+                                                    if (resp) {
+                                                        if (resp.mensaje) {
                                                             this.abrirModalVerCPE(datoVerCPE.id_movimiento, false)
-        
-                                                            const setear = {nro_ctg: res.mensaje.nroCTG}
+
+                                                            const setear = { nro_ctg: res.mensaje.nroCTG }
                                                             const nombreArch = "CPE " + nro_cpe + " - CTG " + res.mensaje.nroCTG + " - " + res.mensaje.estado + ".pdf"
                                                             this.setearUrl(setear, nombreArch)
-        
+
                                                             this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivo creado con exito' })
                                                         } else {
                                                             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al intentar mover el archivo...' })
@@ -2766,13 +2807,13 @@ export class InicioComponent {
                                         }
                                     }
                                 },
-                                (erroor:any) => {
+                                (erroor: any) => {
                                     console.error(erroor)
                                 }
                             )
                         }
-                        if(res.mensaje.nroCTG){
-                            if(res.mensaje.nroCTG.toString().length == 11){
+                        if (res.mensaje.nroCTG) {
+                            if (res.mensaje.nroCTG.toString().length == 11) {
                                 this.compararDatosCPE(datoVerCPE, res.mensaje)
                             }
                         }
@@ -2789,11 +2830,11 @@ export class InicioComponent {
         )
     }
 
-    compararDatosCPE(ant:any, act:any){
+    compararDatosCPE(ant: any, act: any) {
         this.cambiosDetectadosCPE = []
         this.datosParaActualizarCPE = ant
 
-        if(act.nroCTG != ant.nro_ctg){
+        if (act.nroCTG != ant.nro_ctg) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'nro_ctg',
@@ -2802,7 +2843,7 @@ export class InicioComponent {
                 valor: act.nroCTG
             })
         }
-        if(act.sucursal != ant.sucursal){
+        if (act.sucursal != ant.sucursal) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'sucursal',
@@ -2811,7 +2852,7 @@ export class InicioComponent {
                 valor: act.sucursal
             })
         }
-        if(act.nroOrden != ant.nro_cpe){
+        if (act.nroOrden != ant.nro_cpe) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'nro_cpe',
@@ -2820,7 +2861,7 @@ export class InicioComponent {
                 valor: act.nroOrden
             })
         }
-        if(act.datosCarga.codGrano != ant.cod_grano){
+        if (act.datosCarga.codGrano != ant.cod_grano) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cod_grano',
@@ -2829,7 +2870,7 @@ export class InicioComponent {
                 valor: act.datosCarga.codGrano
             })
         }
-        if(act.destinatario.cuit != ant.cuit_destinatario){
+        if (act.destinatario.cuit != ant.cuit_destinatario) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cuit_destinatario',
@@ -2838,8 +2879,8 @@ export class InicioComponent {
                 valor: act.destinatario.cuit
             })
         }
-        
-        if(act.transporte.codigoTurno != ant.codigo_turno){
+
+        if (act.transporte.codigoTurno != ant.codigo_turno) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'codigo_turno',
@@ -2848,7 +2889,7 @@ export class InicioComponent {
                 valor: act.transporte.codigoTurno
             })
         }
-        if(act.transporte.cuitTransportista != ant.cuit_transportista){
+        if (act.transporte.cuitTransportista != ant.cuit_transportista) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cuit_transportista',
@@ -2857,7 +2898,7 @@ export class InicioComponent {
                 valor: act.transporte.cuitTransportista
             })
         }
-        if(act.transporte.cuitChofer != ant.cuit_chofer){
+        if (act.transporte.cuitChofer != ant.cuit_chofer) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cuit_chofer',
@@ -2866,7 +2907,7 @@ export class InicioComponent {
                 valor: act.transporte.cuitChofer
             })
         }
-        if(act.transporte.tarifa != ant.tarifa){
+        if (act.transporte.tarifa != ant.tarifa) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'tarifa',
@@ -2875,7 +2916,7 @@ export class InicioComponent {
                 valor: act.transporte.tarifa
             })
         }
-        if(act.transporte.kmRecorrer != ant.km_recorrer){
+        if (act.transporte.kmRecorrer != ant.km_recorrer) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'km_recorrer',
@@ -2885,7 +2926,7 @@ export class InicioComponent {
             })
         }
 
-        if(act.destino.planta != ant.planta_destino){
+        if (act.destino.planta != ant.planta_destino) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'planta_destino',
@@ -2894,7 +2935,7 @@ export class InicioComponent {
                 valor: act.destino.planta
             })
         }
-        if(act.destino.codProvincia != ant.cod_provincia){
+        if (act.destino.codProvincia != ant.cod_provincia) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cod_provincia',
@@ -2903,7 +2944,7 @@ export class InicioComponent {
                 valor: act.destino.codProvincia
             })
         }
-        if(act.destino.codLocalidad != ant.cod_localidad){
+        if (act.destino.codLocalidad != ant.cod_localidad) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cod_localidad',
@@ -2912,7 +2953,7 @@ export class InicioComponent {
                 valor: act.destino.codLocalidad
             })
         }
-        if(act.destino.cuit != ant.cuit_destino){
+        if (act.destino.cuit != ant.cuit_destino) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'cuit_destino',
@@ -2922,7 +2963,7 @@ export class InicioComponent {
             })
         }
 
-        if(act.codACTUAL != ant.codVIEJO){
+        if (act.codACTUAL != ant.codVIEJO) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'codVIEJO',
@@ -2932,7 +2973,7 @@ export class InicioComponent {
             })
         }
 
-        if(!ant.data){
+        if (!ant.data) {
             ant.data = {
                 kg_descarga: 0,
                 estado: ""
@@ -2943,7 +2984,7 @@ export class InicioComponent {
         const taraDesc = act.datosCarga.pesoTaraDescarga ? parseInt(act.datosCarga.pesoTaraDescarga) : 0
         const brutoDesc = act.datosCarga.pesoBrutoDescarga ? parseInt(act.datosCarga.pesoBrutoDescarga) : 0
         const neto = brutoDesc - taraDesc
-        if(neto != ant.data.kg_descarga){
+        if (neto != ant.data.kg_descarga) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'kg_descarga',
@@ -2952,7 +2993,7 @@ export class InicioComponent {
                 valor: neto
             })
         }
-        if(bruto != ant.peso_bruto){
+        if (bruto != ant.peso_bruto) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'peso_bruto',
@@ -2961,7 +3002,7 @@ export class InicioComponent {
                 valor: bruto
             })
         }
-        if(tara != ant.peso_tara){
+        if (tara != ant.peso_tara) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'peso_tara',
@@ -2970,7 +3011,7 @@ export class InicioComponent {
                 valor: tara
             })
         }
-        if(act.estado != ant.data.estado){
+        if (act.estado != ant.data.estado) {
             this.cambiosDetectadosCPE.push({
                 modificar: true,
                 tipo: 'estado',
@@ -2980,10 +3021,10 @@ export class InicioComponent {
             })
         }
 
-        if(act.intervinientes){
+        if (act.intervinientes) {
             let int = act.intervinientes
-            if(int.cuitCorredorVentaPrimaria){
-                if(int.cuitCorredorVentaPrimaria != ant.cuit_corredor_venta_primaria){
+            if (int.cuitCorredorVentaPrimaria) {
+                if (int.cuitCorredorVentaPrimaria != ant.cuit_corredor_venta_primaria) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_corredor_venta_primaria',
@@ -2993,8 +3034,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitCorredorVentaSecundaria){
-                if(int.cuitCorredorVentaSecundaria != ant.cuit_corredor_venta_secundaria){
+            if (int.cuitCorredorVentaSecundaria) {
+                if (int.cuitCorredorVentaSecundaria != ant.cuit_corredor_venta_secundaria) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_corredor_venta_secundaria',
@@ -3004,8 +3045,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitMercadoATermino){
-                if(int.cuitMercadoATermino != ant.cuit_mercado_a_termino){
+            if (int.cuitMercadoATermino) {
+                if (int.cuitMercadoATermino != ant.cuit_mercado_a_termino) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_mercado_a_termino',
@@ -3015,8 +3056,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitRemitenteComercialVentaPrimaria){
-                if(int.cuitRemitenteComercialVentaPrimaria != ant.cuit_remitente_comercial_venta_primaria){
+            if (int.cuitRemitenteComercialVentaPrimaria) {
+                if (int.cuitRemitenteComercialVentaPrimaria != ant.cuit_remitente_comercial_venta_primaria) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_remitente_comercial_venta_primaria',
@@ -3026,8 +3067,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitRemitenteComercialVentaSecundaria){
-                if(int.cuitRemitenteComercialVentaSecundaria != ant.cuit_remitente_comercial_venta_secundaria){
+            if (int.cuitRemitenteComercialVentaSecundaria) {
+                if (int.cuitRemitenteComercialVentaSecundaria != ant.cuit_remitente_comercial_venta_secundaria) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_remitente_comercial_venta_secundaria',
@@ -3037,8 +3078,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitRemitenteComercialVentaSecundaria2){
-                if(int.cuitRemitenteComercialVentaSecundaria2 != ant.cuit_remitente_comercial_venta_secundaria2){
+            if (int.cuitRemitenteComercialVentaSecundaria2) {
+                if (int.cuitRemitenteComercialVentaSecundaria2 != ant.cuit_remitente_comercial_venta_secundaria2) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_remitente_comercial_venta_secundaria2',
@@ -3048,8 +3089,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitRepresentanteEntregador){
-                if(int.cuitRepresentanteEntregador != ant.cuit_representante_entregador){
+            if (int.cuitRepresentanteEntregador) {
+                if (int.cuitRepresentanteEntregador != ant.cuit_representante_entregador) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_representante_entregador',
@@ -3059,8 +3100,8 @@ export class InicioComponent {
                     })
                 }
             }
-            if(int.cuitRepresentanteRecibidor){
-                if(int.cuitRepresentanteRecibidor != ant.cuit_representante_recibidor){
+            if (int.cuitRepresentanteRecibidor) {
+                if (int.cuitRepresentanteRecibidor != ant.cuit_representante_recibidor) {
                     this.cambiosDetectadosCPE.push({
                         modificar: true,
                         tipo: 'cuit_representante_recibidor',
@@ -3072,10 +3113,10 @@ export class InicioComponent {
             }
         }
     }
-    actualizarCPE(){
-        this.cambiosDetectadosCPE.forEach((e:any) => {
-            if(e.modificar){
-                if(e.tipo == "kg_descarga" || e.tipo == "estado"){
+    actualizarCPE() {
+        this.cambiosDetectadosCPE.forEach((e: any) => {
+            if (e.modificar) {
+                if (e.tipo == "kg_descarga" || e.tipo == "estado") {
                     this.datosParaActualizarCPE.data[e.tipo] = e.valor
                 } else {
                     this.datosParaActualizarCPE[e.tipo] = e.valor
@@ -3098,13 +3139,13 @@ export class InicioComponent {
             }
         )
     }
-    eliminarCPE(dato:any){
-        if(confirm('Desea elimar el registro de la carta de porte? \nLos archivos que se hayan subido quedarán guardados')){
+    eliminarCPE(dato: any) {
+        if (confirm('Desea elimar el registro de la carta de porte? \nLos archivos que se hayan subido quedarán guardados')) {
             dato.data = JSON.stringify(dato.data)
             delete dato.archivos;
 
             dato.estado = 0;
-    
+
             this.comunicacionService.updateDB("carta_porte", dato).subscribe(
                 (res: any) => {
                     res.mensaje ? this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Eliminado con exito' }) : this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Fallo en backend' })
@@ -3156,7 +3197,7 @@ export class InicioComponent {
         )
     }
 
-    onUpload(event:any) {
+    onUpload(event: any) {
         if (event.originalEvent.body.mensaje) {
             this.messageService.add({ severity: 'success', summary: 'Exito!', detail: 'Archivos cargados con exito' })
         } else {
@@ -3164,8 +3205,8 @@ export class InicioComponent {
         }
     }
 
-    irAURL(dato:any, archivo:any, descargar:any){
-        if(descargar){
+    irAURL(dato: any, archivo: any, descargar: any) {
+        if (descargar) {
             const uri = this.API_URI_UPLOAD + '/download.php?folder=' + dato.nro_ctg + '&file=' + archivo
             window.open(uri);
         } else {
@@ -3173,7 +3214,7 @@ export class InicioComponent {
             window.open(uri, '_blank', 'location=no,height=800,width=800,scrollbars=yes,status=yes');
         }
     }
-    setearUrl(dato:any, archivo:any){
+    setearUrl(dato: any, archivo: any) {
         this.iframeVisor.nativeElement.src = this.API_URI_UPLOAD + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo + '#zoom=125'
     }
 
@@ -3182,22 +3223,156 @@ export class InicioComponent {
         const workbook = XLSX.utils.book_new();
 
         /* Crear una hoja de cálculo */
-        const datos = this.dataParaMostrarTabla.map((e:any) => {
+        var data = [...this.dataParaMostrarTabla]
+
+        const datos = data.map((e: any) => {
 
             var banderas = ''
-            e.banderas.forEach((band:any) => {
+            e.banderas.forEach((band: any) => {
                 banderas += (band.alias + ', ')
             })
 
             e.banderas = banderas
         })
-        const worksheet = XLSX.utils.json_to_sheet(this.dataParaMostrarTabla);
-      
+        const worksheet = XLSX.utils.json_to_sheet(data);
+
         /* Agregar la hoja de cálculo al libro de trabajo */
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
-      
+
         /* Descargar el archivo */
         XLSX.writeFile(workbook, 'movimientos.xlsx');
+    }
+
+    exportToExcel2() {
+        var movimientos: any = []
+
+        this.getDB('movimientos', () => {
+            this.getDB('movimiento_origen', () => {
+                this.dataParaMostrarTabla.forEach((mov: any) => {
+                    var movimiento: any = { ...mov }
+
+                    var kg_descarga:any = 0
+                    var kg_mermas:any = 0
+                    var kg_final:any = 0
+
+                    var kg_acondicionadora_entrada:any = 0
+                    var kg_acondicionadora_diferencia:any = 0
+                    var kg_acondicionadora_salida:any = 0
+
+                    var ok_origen:any = ''
+                    var ok_descarga:any = ''
+
+                    var kg_netos_cpe: any = 0
+
+                    if(this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == mov.id })){
+                        var mov_local = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == mov.id })
+
+                        if(mov_local.kg_descarga){
+                            kg_descarga = parseInt(mov_local.kg_descarga) ? parseInt(mov_local.kg_descarga) : 0
+                        }
+                        if(mov_local.kg_mermas){
+                            kg_mermas = parseInt(mov_local.kg_mermas) ? parseInt(mov_local.kg_mermas) : 0
+                        }
+                        if(mov_local.kg_final){
+                            kg_final = parseInt(mov_local.kg_final) ? parseInt(mov_local.kg_final) : 0
+                        }
+                        if(mov_local.kg_acondicionadora_entrada){
+                            kg_acondicionadora_entrada = parseInt(mov_local.kg_acondicionadora_entrada) ? parseInt(mov_local.kg_acondicionadora_entrada) : 0
+                        }
+                        if(mov_local.kg_acondicionadora_diferencia){
+                            kg_acondicionadora_diferencia = parseInt(mov_local.kg_acondicionadora_diferencia) ? parseInt(mov_local.kg_acondicionadora_diferencia) : 0
+                        }
+                        if(mov_local.kg_acondicionadora_salida){
+                            kg_acondicionadora_salida = parseInt(mov_local.kg_acondicionadora_salida) ? parseInt(mov_local.kg_acondicionadora_salida) : 0
+                        }
+
+                        if(mov_local.ok_origen){
+                            ok_origen = (mov_local.ok_origen == 1) ? 'OK' : ''
+                        }
+                        if(mov_local.ok_descarga){
+                            ok_descarga = (mov_local.ok_descarga == 1) ? 'OK' : ''
+                        }
+                    }
+
+
+                    movimiento.kg_acondicionadora_entrada = kg_acondicionadora_entrada
+                    movimiento.kg_acondicionadora_diferencia = kg_acondicionadora_diferencia
+                    movimiento.kg_acondicionadora_salida = kg_acondicionadora_salida
+                    movimiento.kg_descarga = kg_descarga
+                    movimiento.kg_mermas = kg_mermas
+                    movimiento.kg_final = kg_final
+
+                    if(this.db_carta_porte.some((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })){
+                        var cpe = this.db_carta_porte.find((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })
+
+                        if(cpe.peso_tara && cpe.peso_bruto){
+                            var tara = parseInt(cpe.peso_tara) ? parseInt(cpe.peso_tara) : 0
+                            var bruto = parseInt(cpe.peso_bruto) ? parseInt(cpe.peso_bruto) : 0
+
+                            kg_netos_cpe = bruto - tara
+                        }
+                    }
+
+                    movimiento.kg_netos_cpe = kg_netos_cpe
+
+                    movimiento.ok_origen = ok_origen
+                    movimiento.ok_descarga = ok_descarga
+
+
+                    movimiento.kg_tara = parseInt(movimiento.kg_tara) ? parseInt(movimiento.kg_tara) : 0
+                    movimiento.kg_bruto = parseInt(movimiento.kg_bruto) ? parseInt(movimiento.kg_bruto) : 0
+                    movimiento.kg_neto = parseInt(movimiento.kg_neto) ? parseInt(movimiento.kg_neto) : 0
+                    movimiento.kg_regulacion = parseInt(movimiento.kg_regulacion) ? parseInt(movimiento.kg_regulacion) : 0
+                    movimiento.kg_neto_final = parseInt(movimiento.kg_neto_final) ? parseInt(movimiento.kg_neto_final) : 0
+                    movimiento.kg_campo = parseInt(movimiento.kg_campo) ? parseInt(movimiento.kg_campo) : 0
+
+
+                    movimientos.push(movimiento)
+                })
+
+                /* Crear un libro de trabajo */
+                const workbook = XLSX.utils.book_new();
+
+                movimientos.map((e: any) => {
+
+                    var banderas = ''
+                    e.banderas.forEach((band: any) => {
+                        banderas += (band.alias + ', ')
+                    })
+
+                    e.banderas = banderas
+                })
+
+                const worksheet = XLSX.utils.json_to_sheet(movimientos);
+
+                /* Agregar la hoja de cálculo al libro de trabajo */
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+
+                /* Descargar el archivo */
+                XLSX.writeFile(workbook, 'movimientos.xlsx');
+
+            })
+        })
+    }
+
+    getDB(tabla: any, func: any = false) {
+        this.sqlite.getDB(tabla).subscribe(
+            (res: any) => {
+                if (res) {
+                    this.db_locales[tabla] = res
+
+                    if (func) {
+                        func()
+                    }
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, sin respuesta' })
+                }
+            },
+            (err: any) => {
+                console.log(err)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error conectando a BACKEND' })
+            }
+        )
     }
 }
 
