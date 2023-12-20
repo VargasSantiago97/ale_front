@@ -154,6 +154,7 @@ export class InicioComponent {
     filtroRapido: any = {}
 
     selectedTablaInicio: any
+    itemsExport: any
 
     constructor(
         private comunicacionService: ComunicacionService,
@@ -334,6 +335,30 @@ export class InicioComponent {
             pagador_flete: [{ razon_social: 'nom', cuit: 123 }],
             transportista: [{ razon_social: 'nom', cuit: 123 }]
         };
+
+        this.itemsExport = [
+            {
+                label: 'Exportar Excel Detallado',
+                icon: 'pi pi-file-export',
+                command: () => {
+                    this.exportToExcel2();
+                }
+            },
+            {
+                label: 'Exportar Excel Por Origen',
+                icon: 'pi pi-file-export',
+                command: () => {
+                    this.exportToExcel3();
+                }
+            },
+            {
+                label: 'Exportar Excel Por Destino',
+                icon: 'pi pi-file-export',
+                //command: () => {
+                //    this.exportToExcel2();
+                //}
+            }
+        ];
     }
 
     obtenerCamiones() {
@@ -3243,6 +3268,7 @@ export class InicioComponent {
         XLSX.writeFile(workbook, 'movimientos.xlsx');
     }
 
+    //Detallado
     exportToExcel2() {
         var movimientos: any = []
 
@@ -3353,6 +3379,147 @@ export class InicioComponent {
 
             })
         })
+    }
+
+    //Detallado por origen
+    exportToExcel3() {
+        var movimientos: any = []
+
+        this.getDB('movimientos', () => {
+            this.getDB('movimiento_origen', () => {
+                this.dataParaMostrarTabla.forEach((mov: any) => {
+                    var movimiento: any = { ...mov }
+
+                    var kg_descarga:any = 0
+                    var kg_mermas:any = 0
+                    var kg_final:any = 0
+
+                    var kg_acondicionadora_entrada:any = 0
+                    var kg_acondicionadora_diferencia:any = 0
+                    var kg_acondicionadora_salida:any = 0
+
+                    var ok_origen:any = ''
+                    var ok_descarga:any = ''
+
+                    var kg_netos_cpe: any = 0
+
+                    if(this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == mov.id })){
+                        var mov_local = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == mov.id })
+
+                        if(mov_local.kg_descarga){
+                            kg_descarga = parseInt(mov_local.kg_descarga) ? parseInt(mov_local.kg_descarga) : 0
+                        }
+                        if(mov_local.kg_mermas){
+                            kg_mermas = parseInt(mov_local.kg_mermas) ? parseInt(mov_local.kg_mermas) : 0
+                        }
+                        if(mov_local.kg_final){
+                            kg_final = parseInt(mov_local.kg_final) ? parseInt(mov_local.kg_final) : 0
+                        }
+                        if(mov_local.kg_acondicionadora_entrada){
+                            kg_acondicionadora_entrada = parseInt(mov_local.kg_acondicionadora_entrada) ? parseInt(mov_local.kg_acondicionadora_entrada) : 0
+                        }
+                        if(mov_local.kg_acondicionadora_diferencia){
+                            kg_acondicionadora_diferencia = parseInt(mov_local.kg_acondicionadora_diferencia) ? parseInt(mov_local.kg_acondicionadora_diferencia) : 0
+                        }
+                        if(mov_local.kg_acondicionadora_salida){
+                            kg_acondicionadora_salida = parseInt(mov_local.kg_acondicionadora_salida) ? parseInt(mov_local.kg_acondicionadora_salida) : 0
+                        }
+
+                        if(mov_local.ok_origen){
+                            ok_origen = (mov_local.ok_origen == 1) ? 'OK' : ''
+                        }
+                        if(mov_local.ok_descarga){
+                            ok_descarga = (mov_local.ok_descarga == 1) ? 'OK' : ''
+                        }
+                    }
+
+                    movimiento.kg_acondicionadora_entrada = kg_acondicionadora_entrada
+                    movimiento.kg_acondicionadora_diferencia = kg_acondicionadora_diferencia
+                    movimiento.kg_acondicionadora_salida = kg_acondicionadora_salida
+                    movimiento.kg_descarga = kg_descarga
+                    movimiento.kg_mermas = kg_mermas
+                    movimiento.kg_final = kg_final
+
+                    if(this.db_carta_porte.some((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })){
+                        var cpe = this.db_carta_porte.find((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })
+
+                        if(cpe.peso_tara && cpe.peso_bruto){
+                            var tara = parseInt(cpe.peso_tara) ? parseInt(cpe.peso_tara) : 0
+                            var bruto = parseInt(cpe.peso_bruto) ? parseInt(cpe.peso_bruto) : 0
+
+                            kg_netos_cpe = bruto - tara
+                        }
+                    }
+
+                    movimiento.kg_netos_cpe = kg_netos_cpe
+                    
+                    movimiento.ok_origen = ok_origen
+                    movimiento.ok_descarga = ok_descarga
+                    
+                    
+                    movimiento.kg_tara = parseInt(movimiento.kg_tara) ? parseInt(movimiento.kg_tara) : 0
+                    movimiento.kg_bruto = parseInt(movimiento.kg_bruto) ? parseInt(movimiento.kg_bruto) : 0
+                    movimiento.kg_neto = parseInt(movimiento.kg_neto) ? parseInt(movimiento.kg_neto) : 0
+                    movimiento.kg_regulacion = parseInt(movimiento.kg_regulacion) ? parseInt(movimiento.kg_regulacion) : 0
+                    movimiento.kg_neto_final = parseInt(movimiento.kg_neto_final) ? parseInt(movimiento.kg_neto_final) : 0
+                    movimiento.kg_campo = parseInt(movimiento.kg_campo) ? parseInt(movimiento.kg_campo) : 0
+                    
+                    movimiento.kg_computar = this.calcularKilosComputar(movimiento)
+                    
+                    movimientos.push(movimiento)
+                })
+
+                /* Crear un libro de trabajo */
+                const workbook = XLSX.utils.book_new();
+
+                movimientos.map((e: any) => {
+
+                    var banderas = ''
+                    e.banderas.forEach((band: any) => {
+                        banderas += (band.alias + ', ')
+                    })
+
+                    e.banderas = banderas
+                })
+
+                const worksheet = XLSX.utils.json_to_sheet(movimientos);
+
+                /* Agregar la hoja de cálculo al libro de trabajo */
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+
+                /* Descargar el archivo */
+                XLSX.writeFile(workbook, 'movimientos.xlsx');
+
+            })
+        })
+    }
+
+    calcularKilosComputar(mov:any){
+
+        if(mov.kg_final){
+            return parseInt(mov.kg_final) ? parseInt(mov.kg_final) : 'NULL'
+        }
+        else if(mov.kg_descarga){
+            return parseInt(mov.kg_descarga) ? parseInt(mov.kg_descarga) : 'NULL'
+        }
+        else if(mov.kg_acondicionadora_salida){
+            return parseInt(mov.kg_acondicionadora_salida) ? parseInt(mov.kg_acondicionadora_salida) : 'NULL'
+        }
+        else if(mov.kg_acondicionadora_entrada){
+            return parseInt(mov.kg_acondicionadora_entrada) ? parseInt(mov.kg_acondicionadora_entrada) : 'NULL'
+        }
+        else if(mov.kg_neto_final){
+            return parseInt(mov.kg_neto_final) ? parseInt(mov.kg_neto_final) : 'NULL'
+        }
+        else if(mov.kg_neto){
+            return parseInt(mov.kg_neto) ? parseInt(mov.kg_neto) : 'NULL'
+        }
+        else if(mov.kg_campo){
+            return parseInt(mov.kg_campo) ? parseInt(mov.kg_campo) : 'NULL'
+        } else{
+            return 'NULL'
+        }
+
     }
 
     getDB(tabla: any, func: any = false) {

@@ -32,6 +32,11 @@
         <button pButton pRipple type="button" label="XLSX 2" class="p-button-success bott" style="margin: 6px;"
             (click)="exportToExcel2()"></button>
 
+
+
+        <p-splitButton styleClass="p-button-sm ml-1 mb-0 p-0" label="Exportar" icon="pi pi-file-export" [style]="{padding: '0px', margin: '0px'}" (onClick)="exportToExcel()" [model]="itemsExport"></p-splitButton>
+
+
         <label style="margin-left: 60px;">Buscar: </label>
 
         <input type="text" class="input-text-codigo {{filtroRapido.orden ? 'fondoVerde' : ''}}"
