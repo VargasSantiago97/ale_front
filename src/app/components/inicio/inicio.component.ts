@@ -824,6 +824,8 @@ export class InicioComponent {
 
             cpe: '',
             cpe_definitiva: '',
+            codigo_turno: '',
+            codigo_turno_definitivo: '',
             benef: '',
             ctg: '',
             planta: '',
@@ -855,6 +857,8 @@ export class InicioComponent {
                 dato.benef = carta_porte[0].cuit_solicitante ? this.transformDatoTabla(carta_porte[0].cuit_solicitante, "socioCuit") : "-"
                 dato.ctg = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
                 dato.cpe_definitiva = carta_porte[0].nro_ctg ? carta_porte[0].nro_ctg : ''
+                dato.codigo_turno = carta_porte[0].codigo_turno ? carta_porte[0].codigo_turno : ''
+                dato.codigo_turno_definitivo = carta_porte[0].codigo_turno ? carta_porte[0].codigo_turno : ''
                 dato.planta = carta_porte[0].planta_destino ? carta_porte[0].planta_destino : ''
                 dato.permiteCrearCTG = false
 
@@ -871,6 +875,8 @@ export class InicioComponent {
                 var cpe: any = ""
                 var benef: any = ""
                 var ctg: any = ""
+                var codigo_turno: any = ""
+                var codigo_turno_definitivo: any = ""
                 var planta: any = ""
                 var corredor_pri: any = ""
                 var corredor_sec: any = ""
@@ -908,6 +914,9 @@ export class InicioComponent {
 
                     cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
                     ctg += (e.nro_ctg ? e.nro_ctg.toString() : '') + " "
+
+                    codigo_turno += (e.codigo_turno ? e.codigo_turno : '') + " "
+                    codigo_turno_definitivo += (e.codigo_turno ? e.codigo_turno : '') + " "
                 })
 
                 dato.cpe = cpe
@@ -924,6 +933,8 @@ export class InicioComponent {
                 dato.destinatario = destinatario
                 dato.entrega = entrega
                 dato.cpe_definitiva = ctgDef.toString()
+                dato.codigo_turno = codigo_turno
+                dato.codigo_turno_definitivo = codigo_turno_definitivo
             }
         }
 
@@ -3277,45 +3288,45 @@ export class InicioComponent {
                 this.dataParaMostrarTabla.forEach((mov: any) => {
                     var movimiento: any = { ...mov }
 
-                    var kg_descarga:any = 0
-                    var kg_mermas:any = 0
-                    var kg_final:any = 0
+                    var kg_descarga: any = 0
+                    var kg_mermas: any = 0
+                    var kg_final: any = 0
 
-                    var kg_acondicionadora_entrada:any = 0
-                    var kg_acondicionadora_diferencia:any = 0
-                    var kg_acondicionadora_salida:any = 0
+                    var kg_acondicionadora_entrada: any = 0
+                    var kg_acondicionadora_diferencia: any = 0
+                    var kg_acondicionadora_salida: any = 0
 
-                    var ok_origen:any = ''
-                    var ok_descarga:any = ''
+                    var ok_origen: any = ''
+                    var ok_descarga: any = ''
 
                     var kg_netos_cpe: any = 0
 
-                    if(this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == mov.id })){
-                        var mov_local = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == mov.id })
+                    if (this.db_locales['movimientos'].some((e: any) => { return e.id_movimiento == mov.id })) {
+                        var mov_local = this.db_locales['movimientos'].find((e: any) => { return e.id_movimiento == mov.id })
 
-                        if(mov_local.kg_descarga){
+                        if (mov_local.kg_descarga) {
                             kg_descarga = parseInt(mov_local.kg_descarga) ? parseInt(mov_local.kg_descarga) : 0
                         }
-                        if(mov_local.kg_mermas){
+                        if (mov_local.kg_mermas) {
                             kg_mermas = parseInt(mov_local.kg_mermas) ? parseInt(mov_local.kg_mermas) : 0
                         }
-                        if(mov_local.kg_final){
+                        if (mov_local.kg_final) {
                             kg_final = parseInt(mov_local.kg_final) ? parseInt(mov_local.kg_final) : 0
                         }
-                        if(mov_local.kg_acondicionadora_entrada){
+                        if (mov_local.kg_acondicionadora_entrada) {
                             kg_acondicionadora_entrada = parseInt(mov_local.kg_acondicionadora_entrada) ? parseInt(mov_local.kg_acondicionadora_entrada) : 0
                         }
-                        if(mov_local.kg_acondicionadora_diferencia){
+                        if (mov_local.kg_acondicionadora_diferencia) {
                             kg_acondicionadora_diferencia = parseInt(mov_local.kg_acondicionadora_diferencia) ? parseInt(mov_local.kg_acondicionadora_diferencia) : 0
                         }
-                        if(mov_local.kg_acondicionadora_salida){
+                        if (mov_local.kg_acondicionadora_salida) {
                             kg_acondicionadora_salida = parseInt(mov_local.kg_acondicionadora_salida) ? parseInt(mov_local.kg_acondicionadora_salida) : 0
                         }
 
-                        if(mov_local.ok_origen){
+                        if (mov_local.ok_origen) {
                             ok_origen = (mov_local.ok_origen == 1) ? 'OK' : ''
                         }
-                        if(mov_local.ok_descarga){
+                        if (mov_local.ok_descarga) {
                             ok_descarga = (mov_local.ok_descarga == 1) ? 'OK' : ''
                         }
                     }
@@ -3328,10 +3339,10 @@ export class InicioComponent {
                     movimiento.kg_mermas = kg_mermas
                     movimiento.kg_final = kg_final
 
-                    if(this.db_carta_porte.some((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })){
-                        var cpe = this.db_carta_porte.find((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })
+                    if (this.db_carta_porte.some((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })) {
+                        var cpe = this.db_carta_porte.find((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })
 
-                        if(cpe.peso_tara && cpe.peso_bruto){
+                        if (cpe.peso_tara && cpe.peso_bruto) {
                             var tara = parseInt(cpe.peso_tara) ? parseInt(cpe.peso_tara) : 0
                             var bruto = parseInt(cpe.peso_bruto) ? parseInt(cpe.peso_bruto) : 0
 
@@ -3390,45 +3401,45 @@ export class InicioComponent {
                 this.dataParaMostrarTabla.forEach((mov: any) => {
                     var movimiento: any = { ...mov }
 
-                    var kg_descarga:any = 0
-                    var kg_mermas:any = 0
-                    var kg_final:any = 0
+                    var kg_descarga: any = 0
+                    var kg_mermas: any = 0
+                    var kg_final: any = 0
 
-                    var kg_acondicionadora_entrada:any = 0
-                    var kg_acondicionadora_diferencia:any = 0
-                    var kg_acondicionadora_salida:any = 0
+                    var kg_acondicionadora_entrada: any = 0
+                    var kg_acondicionadora_diferencia: any = 0
+                    var kg_acondicionadora_salida: any = 0
 
-                    var ok_origen:any = ''
-                    var ok_descarga:any = ''
+                    var ok_origen: any = ''
+                    var ok_descarga: any = ''
 
                     var kg_netos_cpe: any = 0
 
-                    if(this.db_locales['movimientos'].some((e:any) => { return e.id_movimiento == mov.id })){
-                        var mov_local = this.db_locales['movimientos'].find((e:any) => { return e.id_movimiento == mov.id })
+                    if (this.db_locales['movimientos'].some((e: any) => { return e.id_movimiento == mov.id })) {
+                        var mov_local = this.db_locales['movimientos'].find((e: any) => { return e.id_movimiento == mov.id })
 
-                        if(mov_local.kg_descarga){
+                        if (mov_local.kg_descarga) {
                             kg_descarga = parseInt(mov_local.kg_descarga) ? parseInt(mov_local.kg_descarga) : 0
                         }
-                        if(mov_local.kg_mermas){
+                        if (mov_local.kg_mermas) {
                             kg_mermas = parseInt(mov_local.kg_mermas) ? parseInt(mov_local.kg_mermas) : 0
                         }
-                        if(mov_local.kg_final){
+                        if (mov_local.kg_final) {
                             kg_final = parseInt(mov_local.kg_final) ? parseInt(mov_local.kg_final) : 0
                         }
-                        if(mov_local.kg_acondicionadora_entrada){
+                        if (mov_local.kg_acondicionadora_entrada) {
                             kg_acondicionadora_entrada = parseInt(mov_local.kg_acondicionadora_entrada) ? parseInt(mov_local.kg_acondicionadora_entrada) : 0
                         }
-                        if(mov_local.kg_acondicionadora_diferencia){
+                        if (mov_local.kg_acondicionadora_diferencia) {
                             kg_acondicionadora_diferencia = parseInt(mov_local.kg_acondicionadora_diferencia) ? parseInt(mov_local.kg_acondicionadora_diferencia) : 0
                         }
-                        if(mov_local.kg_acondicionadora_salida){
+                        if (mov_local.kg_acondicionadora_salida) {
                             kg_acondicionadora_salida = parseInt(mov_local.kg_acondicionadora_salida) ? parseInt(mov_local.kg_acondicionadora_salida) : 0
                         }
 
-                        if(mov_local.ok_origen){
+                        if (mov_local.ok_origen) {
                             ok_origen = (mov_local.ok_origen == 1) ? 'OK' : ''
                         }
-                        if(mov_local.ok_descarga){
+                        if (mov_local.ok_descarga) {
                             ok_descarga = (mov_local.ok_descarga == 1) ? 'OK' : ''
                         }
                     }
@@ -3440,10 +3451,10 @@ export class InicioComponent {
                     movimiento.kg_mermas = kg_mermas
                     movimiento.kg_final = kg_final
 
-                    if(this.db_carta_porte.some((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })){
-                        var cpe = this.db_carta_porte.find((e:any) => { return e.nro_ctg == movimiento.cpe_definitiva })
+                    if (this.db_carta_porte.some((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })) {
+                        var cpe = this.db_carta_porte.find((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })
 
-                        if(cpe.peso_tara && cpe.peso_bruto){
+                        if (cpe.peso_tara && cpe.peso_bruto) {
                             var tara = parseInt(cpe.peso_tara) ? parseInt(cpe.peso_tara) : 0
                             var bruto = parseInt(cpe.peso_bruto) ? parseInt(cpe.peso_bruto) : 0
 
@@ -3452,21 +3463,50 @@ export class InicioComponent {
                     }
 
                     movimiento.kg_netos_cpe = kg_netos_cpe
-                    
+
                     movimiento.ok_origen = ok_origen
                     movimiento.ok_descarga = ok_descarga
-                    
-                    
+
+
                     movimiento.kg_tara = parseInt(movimiento.kg_tara) ? parseInt(movimiento.kg_tara) : 0
                     movimiento.kg_bruto = parseInt(movimiento.kg_bruto) ? parseInt(movimiento.kg_bruto) : 0
                     movimiento.kg_neto = parseInt(movimiento.kg_neto) ? parseInt(movimiento.kg_neto) : 0
                     movimiento.kg_regulacion = parseInt(movimiento.kg_regulacion) ? parseInt(movimiento.kg_regulacion) : 0
                     movimiento.kg_neto_final = parseInt(movimiento.kg_neto_final) ? parseInt(movimiento.kg_neto_final) : 0
                     movimiento.kg_campo = parseInt(movimiento.kg_campo) ? parseInt(movimiento.kg_campo) : 0
-                    
-                    movimiento.kg_computar = this.calcularKilosComputar(movimiento)
-                    
-                    movimientos.push(movimiento)
+
+                    movimiento.establecimiento = ''
+                    movimiento.desde = ''
+                    movimiento.porcentaje = 1
+                    var kg_computar: any = this.calcularKilosComputar(movimiento)
+
+                    var origenes = this.db_locales['movimiento_origen'].filter((e: any) => { return e.id_movimiento == movimiento.id })
+                    if (origenes.length) {
+                        var kilos_totales_origenes: number = origenes.reduce((acc: any, curr: any) => {
+                            return acc + (parseInt(curr.kilos) ? parseInt(curr.kilos) : 0);
+                        }, 0);
+
+                        origenes.forEach((origen: any) => {
+                            var porcentaje: number = parseInt(origen.kilos) / kilos_totales_origenes
+
+                            var nuevo_movimiento: any = { ...movimiento }
+
+                            nuevo_movimiento.establecimiento = this.transformDatoTabla(origen.id_establecimiento, "campo")
+                            nuevo_movimiento.desde = origen.tipo_origen
+                            nuevo_movimiento.produccion = this.transformDatoTabla(origen.id_establecimiento, "campoProduce")
+                            nuevo_movimiento.porcentaje = porcentaje
+                            nuevo_movimiento.kg_computar = kg_computar * porcentaje
+
+                            movimientos.push(nuevo_movimiento)
+                        });
+                    } else {
+                        movimiento.establecimiento = movimiento.campo
+                        movimiento.desde = movimiento.tipo_orig
+                        movimiento.produccion = movimiento.produce
+                        movimiento.kg_computar = kg_computar
+
+                        movimientos.push(movimiento)
+                    }
                 })
 
                 /* Crear un libro de trabajo */
@@ -3494,30 +3534,30 @@ export class InicioComponent {
         })
     }
 
-    calcularKilosComputar(mov:any){
+    calcularKilosComputar(mov: any) {
 
-        if(mov.kg_final){
+        if (mov.kg_final) {
             return parseInt(mov.kg_final) ? parseInt(mov.kg_final) : 'NULL'
         }
-        else if(mov.kg_descarga){
+        else if (mov.kg_descarga) {
             return parseInt(mov.kg_descarga) ? parseInt(mov.kg_descarga) : 'NULL'
         }
-        else if(mov.kg_acondicionadora_salida){
+        else if (mov.kg_acondicionadora_salida) {
             return parseInt(mov.kg_acondicionadora_salida) ? parseInt(mov.kg_acondicionadora_salida) : 'NULL'
         }
-        else if(mov.kg_acondicionadora_entrada){
+        else if (mov.kg_acondicionadora_entrada) {
             return parseInt(mov.kg_acondicionadora_entrada) ? parseInt(mov.kg_acondicionadora_entrada) : 'NULL'
         }
-        else if(mov.kg_neto_final){
+        else if (mov.kg_neto_final) {
             return parseInt(mov.kg_neto_final) ? parseInt(mov.kg_neto_final) : 'NULL'
         }
-        else if(mov.kg_neto){
+        else if (mov.kg_neto) {
             return parseInt(mov.kg_neto) ? parseInt(mov.kg_neto) : 'NULL'
         }
-        else if(mov.kg_campo){
+        else if (mov.kg_campo) {
             return parseInt(mov.kg_campo) ? parseInt(mov.kg_campo) : 'NULL'
-        } else{
-            return 'NULL'
+        } else {
+            return 35000
         }
 
     }
