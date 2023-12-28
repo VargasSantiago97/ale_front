@@ -876,7 +876,7 @@ export class InicioComponent {
                 var benef: any = ""
                 var ctg: any = ""
                 var codigo_turno: any = ""
-                var codigo_turno_definitivo: any = ""
+                var codigo_turno_definitivo: any = []
                 var planta: any = ""
                 var corredor_pri: any = ""
                 var corredor_sec: any = ""
@@ -910,13 +910,13 @@ export class InicioComponent {
                         destinatario += this.transformDatoTabla(e.cuit_destinatario, "intervinienteCuit") + " "
                         entrega += this.entregaInterviniente(e)
                         ctgDef.push(e.nro_ctg)
+                        codigo_turno_definitivo.push(e.codigo_turno ? e.codigo_turno : '')
                     }
 
                     cpe += (e.sucursal ? e.sucursal.toString().padStart(2, '0') : '') + "-" + (e.nro_cpe ? e.nro_cpe.toString().padStart(5, '0') : '') + " "
                     ctg += (e.nro_ctg ? e.nro_ctg.toString() : '') + " "
 
                     codigo_turno += (e.codigo_turno ? e.codigo_turno : '') + " "
-                    codigo_turno_definitivo += (e.codigo_turno ? e.codigo_turno : '') + " "
                 })
 
                 dato.cpe = cpe
@@ -934,7 +934,7 @@ export class InicioComponent {
                 dato.entrega = entrega
                 dato.cpe_definitiva = ctgDef.toString()
                 dato.codigo_turno = codigo_turno
-                dato.codigo_turno_definitivo = codigo_turno_definitivo
+                dato.codigo_turno_definitivo = codigo_turno_definitivo.toString()
             }
         }
 

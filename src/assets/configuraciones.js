@@ -22,8 +22,8 @@ var vars = {
 
     PDF_CPE_URI: 'http://localhost/cpe/pdf_cpe',
 
-    SUCURSAL: 2,
-    PUNTO_ORDEN_CARGA: 2,
+    SUCURSAL: 1, //2
+    PUNTO_ORDEN_CARGA: 1, //2
     PUNTO_ORDEN_PAGO: 1,
 
     CLAVE_PASS: 'ale1',
