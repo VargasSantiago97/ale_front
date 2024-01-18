@@ -95,7 +95,7 @@ export class ActualizarCPEComponent {
 
 
 
-                if(estado != 'CN' && estado != 'AN' && estado != 'RE' && estado != 'DE' && cpe.cuit_solicitante != 20211753049 && cpe.nro_ctg[2] == 1 && !(this.cpeNoIncluir.includes(cpe.nro_ctg))){ //DE
+                if(estado != 'CN' && estado != 'AN' && estado != 'RE' && estado != 'DE' && cpe.cuit_solicitante != 20211753049 && cpe.cuit_solicitante != 2 && cpe.nro_ctg[2] == 1 && !(this.cpeNoIncluir.includes(cpe.nro_ctg))){ //DE
                 //if(cpe.cuit_solicitante != 20211753049 && cpe.nro_ctg[2] == 1 && !(this.cpeNoIncluir.includes(cpe.nro_ctg))){ //DE
                     const dato = {
                         socio: this.transformDatoTabla(cpe.cuit_solicitante, "socioCuit"),

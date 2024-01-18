@@ -135,7 +135,7 @@ export class InicioComponent {
 
     datosFiltro: any = {
         fechaDesde: new Date('01/01/2023'),
-        fechaHasta: new Date('12/31/2023'),
+        fechaHasta: new Date('12/31/2024'),
         granos: ['vacios', 'todos'],
         socios: ['vacios', 'todos'],
         establecimientos: ['vacios', 'todos'],
@@ -357,6 +357,13 @@ export class InicioComponent {
                 //command: () => {
                 //    this.exportToExcel2();
                 //}
+            },
+            {
+                label: 'Copiar WhatsApp',
+                icon: 'pi pi-copy',
+                command: () => {
+                    this.copyVariableToClipboard();
+                }
             }
         ];
     }
@@ -3581,6 +3588,65 @@ export class InicioComponent {
             }
         )
     }
+
+    copyVariableToClipboard() {
+        
+        var datosViajes: any = []
+        this.selectedTablaInicio.forEach((select:any) => {
+            var a: any = null
+
+            if(select.banderas.length){
+                const aliases = select.banderas.map((item:any) => item.alias);
+                a = aliases.join(', ');
+            }
+
+            var viaje = `Fecha: *${select.fecha}*
+Cultivo: *${select.cultivo}*
+Origen: *${select.campo} (_${select.tipo_orig}_)*
+
+Benef.: *${select.benef}*
+N° Orden: *${select.orden}*
+
+Transporte: *${select.transporte}*
+Chofer: *${select.chofer}*
+PAT CH.: *${select.pat}*
+PAT AC.: *${select.patAc}*
+CTG: *${select.cpe_definitiva}*
+CPE: *${select.cpe}*
+
+KG BRUTO: *${select.kg_bruto}*
+KG TARA: *${select.kg_tara}*
+KG NETO: *${select.kg_neto}*
+KG REGULACION: *${select.kg_regulacion}*
+KG NETO TOTAL: *${select.kg_neto_final}*${ (select.kg_campo != '-') ? '\nKG CAMPO: *'+select.kg_campo+'*' : ''}
+${ a ? '\nA: *'+a+'*' : ''}
+Destinatario: *${select.destinatario}*
+Destino: *${select.destino}*
+${ select.observacionesCompleta ? '\nObs: '+select.observacionesCompleta : ''}`
+
+            datosViajes.push(viaje)
+        })
+
+        var textoACopiar: any = datosViajes.join('\n---------------------------------------------------\n\n')
+
+        // Crea un elemento de texto temporal
+        const tempElement = document.createElement('textarea');
+        
+        // Asigna el valor de la variable al elemento de texto
+        tempElement.value = textoACopiar;
+    
+        // Agrega el elemento de texto al DOM
+        document.body.appendChild(tempElement);
+    
+        // Selecciona el contenido del elemento de texto
+        tempElement.select();
+    
+        // Copia el contenido al portapapeles
+        document.execCommand('copy');
+    
+        // Elimina el elemento de texto temporal
+        document.body.removeChild(tempElement);
+      }
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
