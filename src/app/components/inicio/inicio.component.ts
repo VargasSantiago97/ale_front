@@ -362,7 +362,14 @@ export class InicioComponent {
                 label: 'Copiar WhatsApp',
                 icon: 'pi pi-copy',
                 command: () => {
-                    this.copyVariableToClipboard();
+                    this.whatsAppCompleto();
+                }
+            },
+            {
+                label: 'Copiar WhatsApp Transp.',
+                icon: 'pi pi-copy',
+                command: () => {
+                    this.whatsAppResumen();
                 }
             }
         ];
@@ -3589,7 +3596,7 @@ export class InicioComponent {
         )
     }
 
-    copyVariableToClipboard() {
+    whatsAppCompleto() {
         
         var datosViajes: any = []
         this.selectedTablaInicio.forEach((select:any) => {
@@ -3629,24 +3636,55 @@ ${ select.observacionesCompleta ? '\nObs: '+select.observacionesCompleta : ''}`
 
         var textoACopiar: any = datosViajes.join('\n---------------------------------------------------\n\n')
 
-        // Crea un elemento de texto temporal
-        const tempElement = document.createElement('textarea');
+        this.copiarPortapapeles(textoACopiar)
+    }
+    
+    whatsAppResumen() {
         
-        // Asigna el valor de la variable al elemento de texto
-        tempElement.value = textoACopiar;
+        var datosViajes: any = []
+        this.selectedTablaInicio.forEach((select:any) => {
+            var a: any = null
+
+            if(select.banderas.length){
+                const aliases = select.banderas.map((item:any) => item.alias);
+                a = aliases.join(', ');
+            }
+
+            var viaje = `Fecha: *${select.fecha}*
+Cultivo: *${select.cultivo}*
+Origen: *${select.campo} (_${select.tipo_orig}_)*
+
+Benef.: *${select.benef}*
+N° Orden: *${select.orden}*
+CTG: *${select.cpe_definitiva}*
+CPE: *${select.cpe}*
+
+Transporte: *${select.transporte}*
+Chofer: *${select.chofer}*
+PAT.: *${select.pat} - ${select.patAc}*
+${ a ? '\nA: *'+a+'*' : ''}${ select.observacionesCompleta ? '\nObs: '+select.observacionesCompleta : ''}`
+
+            datosViajes.push(viaje)
+        })
+
+        var textoACopiar: any = datosViajes.join('\n---------------------------------------------------\n\n')
+
+        this.copiarPortapapeles(textoACopiar)
+    }
     
-        // Agrega el elemento de texto al DOM
+    copiarPortapapeles(texto:any) {
+        const tempElement = document.createElement('textarea');
+
+        tempElement.value = texto;
+
         document.body.appendChild(tempElement);
-    
-        // Selecciona el contenido del elemento de texto
+
         tempElement.select();
-    
-        // Copia el contenido al portapapeles
+
         document.execCommand('copy');
-    
-        // Elimina el elemento de texto temporal
+
         document.body.removeChild(tempElement);
-      }
+    }
 }
 
 //["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
