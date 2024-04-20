@@ -6,6 +6,7 @@ import { PadronService } from 'src/app/services/padron.service';
 import { CpeService } from 'src/app/services/cpe/cpe.service';
 import * as XLSX from 'xlsx';
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
+import { LoginService } from 'src/app/services/login.service';
 
 declare var vars: any;
 
@@ -134,8 +135,8 @@ export class InicioComponent {
     cpeCamposDestino: any = [];
 
     datosFiltro: any = {
-        fechaDesde: new Date('01/01/2023'),
-        fechaHasta: new Date('12/31/2024'),
+        fechaDesde: new Date(), //febrero 2024
+        fechaHasta: new Date(),
         granos: ['vacios', 'todos'],
         socios: ['vacios', 'todos'],
         establecimientos: ['vacios', 'todos'],
@@ -155,16 +156,20 @@ export class InicioComponent {
 
     selectedTablaInicio: any
     itemsExport: any
+    esSuperUsuario: any = false;
 
     constructor(
         private comunicacionService: ComunicacionService,
         private sqlite: SqliteService,
         private messageService: MessageService,
         private padronService: PadronService,
-        private cpeService: CpeService
+        private cpeService: CpeService,
+        private login: LoginService
     ) { }
 
     ngOnInit() {
+        this.esSuperUsuario = this.login.esSuperUsuario()
+
         this.cols = [
             { field: "cultivo", header: "Cultivo" },
             { field: "fecha", header: "Fecha" },
@@ -268,6 +273,15 @@ export class InicioComponent {
             observaciones: '200px',
             banderas: '80px'
         }
+
+        var filtro_inicio: any = '02/01/2024'
+        var filtro_fin: any = '12/31/2024'
+
+        if(localStorage.getItem('filtro_inicio')) filtro_inicio = localStorage.getItem('filtro_inicio')
+        if(localStorage.getItem('filtro_fin')) filtro_fin = localStorage.getItem('filtro_fin')
+
+        this.datosFiltro.fechaDesde =  new Date(filtro_inicio)
+        this.datosFiltro.fechaHasta =  new Date(filtro_fin)
 
         this.obtenerCamiones()
         this.obtenerChoferes()
@@ -690,6 +704,9 @@ export class InicioComponent {
     }
 
     datosParaTabla(mantenerFiltro: any = false, permiteFiltrosRapidos: any = null) {
+        localStorage.setItem('filtro_inicio', this.datosFiltro.fechaDesde)
+        localStorage.setItem('filtro_fin', this.datosFiltro.fechaHasta)
+
         if (!(this.load_transportistas_all || this.load_ordenes_pago || this.load_asientos || this.load_carta_porte || this.load_camiones || this.load_choferes || this.load_condicion_iva || this.load_socios || this.load_transportistas || this.load_campanas || this.load_depositos || this.load_establecimientos || this.load_gastos || this.load_granos || this.load_banderas || this.load_movimientos || this.load_ordenes_carga || this.load_intervinientes)) {
             this.dataParaMostrarTabla = []
 
