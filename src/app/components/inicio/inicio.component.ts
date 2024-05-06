@@ -822,6 +822,7 @@ export class InicioComponent {
     movimientoToMostrarTabla(mov: any) {
         var dato: any = {
             id: mov.id,
+            camp: mov.id_campana ? this.transformDatoTabla(mov.id_campana, "campana") : "-",
             cultivo: mov.id_grano ? this.transformDatoTabla(mov.id_grano, "grano") : "-",
             fecha: mov.fecha ? this.transformDatoTabla(mov.fecha, "fecha") : "-",
             orden: this.transformDatoTabla(mov.id, "ordenNumero"),
@@ -1007,6 +1008,11 @@ export class InicioComponent {
         if (tipo == 'deposito') {
             if (dato == '820432e06a30') return 'ALE';
             if (dato == '815386d01a94') return 'MOLIENDAS';
+            return dato
+        }
+        if (tipo == 'campana') {
+            if (dato == '0f3805fd027b') return '22-23';
+            if (dato == 'e89c3e1b10c5') return '23-24';
             return dato
         }
         if (tipo == 'fecha') {
@@ -3444,6 +3450,7 @@ export class InicioComponent {
                     var ok_descarga: any = ''
 
                     var kg_netos_cpe: any = 0
+                    var estado: any = ""
 
                     if (this.db_locales['movimientos'].some((e: any) => { return e.id_movimiento == mov.id })) {
                         var mov_local = this.db_locales['movimientos'].find((e: any) => { return e.id_movimiento == mov.id })
@@ -3490,10 +3497,24 @@ export class InicioComponent {
                             var bruto = parseInt(cpe.peso_bruto) ? parseInt(cpe.peso_bruto) : 0
 
                             kg_netos_cpe = bruto - tara
+                            
+                            if(cpe.data){
+                                try {
+                                    const jj = JSON.parse(cpe.data)
+
+                                    if(jj.estado){
+                                        estado = jj.estado
+                                    }
+                                } catch (error) {
+                                    
+                                }
+                            }
                         }
                     }
 
                     movimiento.kg_netos_cpe = kg_netos_cpe
+
+                    movimiento.estado = estado
 
                     movimiento.ok_origen = ok_origen
                     movimiento.ok_descarga = ok_descarga
