@@ -871,10 +871,20 @@ export class InicioComponent {
             deposito: mov.id_deposito ? this.transformDatoTabla(mov.id_deposito, "deposito") : "-",
             produce: mov.id_origen ? this.transformDatoTabla(mov.id_origen, "campoProduce") : "-",
             entrega: '',
+            datos: {},
 
             banderas: []
 
         }
+
+        //Acomodar JSON data:
+        try {
+            var data_json = JSON.parse(mov.datos)
+            dato.datos = data_json
+        } catch (error) {
+            
+        }
+
 
         var haber = 0.0
         var debe = 0.0
@@ -1277,6 +1287,7 @@ export class InicioComponent {
             creado_el: null,
             editado_por: null,
             editado_el: null,
+            datos: {},
             activo: 1,
             estado: 1
         }
@@ -1316,6 +1327,11 @@ export class InicioComponent {
                 this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
             }
         }
+        if (this.datosMovimiento.datos) {
+            if (typeof this.datosMovimiento.datos != 'string') {
+                this.datosMovimiento.datos = JSON.stringify(this.datosMovimiento.datos)
+            }
+        }
 
         this.comunicacionService.createDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
@@ -1340,6 +1356,11 @@ export class InicioComponent {
                 this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
             }
         }
+        if (this.datosMovimiento.datos) {
+            if (typeof this.datosMovimiento.datos != 'string') {
+                this.datosMovimiento.datos = JSON.stringify(this.datosMovimiento.datos)
+            }
+        }
 
         this.comunicacionService.updateDB("movimientos", this.datosMovimiento).subscribe(
             (res: any) => {
@@ -1360,6 +1381,11 @@ export class InicioComponent {
             if (this.datosMovimiento.id_bandera) {
                 if (typeof this.datosMovimiento.id_bandera != 'string') {
                     this.datosMovimiento.id_bandera = JSON.stringify(this.datosMovimiento.id_bandera)
+                }
+            }
+            if (this.datosMovimiento.datos) {
+                if (typeof this.datosMovimiento.datos != 'string') {
+                    this.datosMovimiento.datos = JSON.stringify(this.datosMovimiento.datos)
                 }
             }
 
@@ -1399,6 +1425,13 @@ export class InicioComponent {
             this.datosMovimiento.id_bandera = []
         }
 
+        if (this.datosMovimiento.datos) {
+            if (typeof this.datosMovimiento.datos == 'string') {
+                this.datosMovimiento.datos = JSON.parse(this.datosMovimiento.datos)
+            }
+        } else {
+            this.datosMovimiento.datos = {}
+        }
 
         this.setearTransporteChoferCamion()
 
@@ -3437,10 +3470,14 @@ export class InicioComponent {
             this.getDB('movimiento_origen', () => {
                 this.dataParaMostrarTabla.forEach((mov: any) => {
                     var movimiento: any = { ...mov }
+                    delete movimiento.datos
 
                     var kg_descarga: any = 0
                     var kg_mermas: any = 0
                     var kg_final: any = 0
+
+                    var kg_reconocidos: any = 0
+                    var factor: any = 0
 
                     var kg_acondicionadora_entrada: any = 0
                     var kg_acondicionadora_diferencia: any = 0
@@ -3482,12 +3519,22 @@ export class InicioComponent {
                         }
                     }
 
+                    if(mov.datos.kg_reconocidos){
+                        kg_reconocidos = mov.datos.kg_reconocidos
+                    }
+                    if(mov.datos.factor){
+                        factor = mov.datos.factor
+                    }
+
+
                     movimiento.kg_acondicionadora_entrada = kg_acondicionadora_entrada
                     movimiento.kg_acondicionadora_diferencia = kg_acondicionadora_diferencia
                     movimiento.kg_acondicionadora_salida = kg_acondicionadora_salida
                     movimiento.kg_descarga = kg_descarga
                     movimiento.kg_mermas = kg_mermas
                     movimiento.kg_final = kg_final
+                    movimiento.kg_reconocidos = kg_reconocidos
+                    movimiento.factor = factor
 
                     if (this.db_carta_porte.some((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })) {
                         var cpe = this.db_carta_porte.find((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })
@@ -3530,7 +3577,7 @@ export class InicioComponent {
                     movimiento.establecimiento = ''
                     movimiento.desde = ''
                     movimiento.porcentaje = 1
-                    var kg_computar: any = this.calcularKilosComputar(movimiento)
+                    var kg_computar: any = this.calcularKilosComputar(movimiento) + kg_reconocidos
 
                     var origenes = this.db_locales['movimiento_origen'].filter((e: any) => { return e.id_movimiento == movimiento.id })
                     if (origenes.length) {

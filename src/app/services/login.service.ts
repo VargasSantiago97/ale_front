@@ -56,6 +56,8 @@ export class LoginService {
 
       if(this.CODIGO_USER == '1'){
         sessionStorage.setItem('super', "true")
+      } else {
+        sessionStorage.setItem('super', "false")
       }
   
       this.esSessionIniciada = true

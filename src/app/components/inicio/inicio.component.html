@@ -29,12 +29,14 @@
         <button pButton pRipple type="button" label="XLSX" class="p-button-success bott" style="margin: 6px;"
             (click)="exportToExcel()"></button>
 
-        <button *ngIf="esSuperUsuario" pButton pRipple type="button" label="XLSX 2" class="p-button-success bott" style="margin: 6px;"
-            (click)="exportToExcel2()"></button>
+        <button *ngIf="esSuperUsuario" pButton pRipple type="button" label="XLSX 2" class="p-button-success bott"
+            style="margin: 6px;" (click)="exportToExcel2()"></button>
 
 
 
-        <p-splitButton *ngIf="esSuperUsuario" styleClass="p-button-sm ml-1 mb-0 p-0" label="Exportar" icon="pi pi-file-export" [style]="{padding: '0px', margin: '0px'}" (onClick)="exportToExcel()" [model]="itemsExport"></p-splitButton>
+        <p-splitButton *ngIf="esSuperUsuario" styleClass="p-button-sm ml-1 mb-0 p-0" label="Exportar"
+            icon="pi pi-file-export" [style]="{padding: '0px', margin: '0px'}" (onClick)="exportToExcel()"
+            [model]="itemsExport"></p-splitButton>
 
 
         <label style="margin-left: 60px;">Buscar: </label>
@@ -463,13 +465,15 @@
             <label>CORREDOR: <strong>{{datosMovimiento.id_corredor ?
                     transformDatoTabla(datosMovimiento.id_corredor,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_corredores" [(ngModel)]="datosMovimiento.id_corredor" optionLabel="alias"
-                optionValue="id" [filter]="true" [style]="{ width: '90%' }" [metaKeySelection]="false"></p-listbox>
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }" [listStyle]="{'max-height': '220px'}"
+                [metaKeySelection]="false"></p-listbox>
         </div>
         <div class="col">
             <label>ACOPIO: <strong>{{datosMovimiento.id_acopio ?
                     transformDatoTabla(datosMovimiento.id_acopio,"intervinientes") : ''}}</strong></label><br>
             <p-listbox [options]="db_acopios" [(ngModel)]="datosMovimiento.id_acopio" optionLabel="alias"
-                optionValue="id" [filter]="true" [style]="{ width: '90%' }" [metaKeySelection]="false"></p-listbox>
+                optionValue="id" [filter]="true" [style]="{ width: '90%' }" [listStyle]="{'max-height': '220px'}"
+                [metaKeySelection]="false"></p-listbox>
         </div>
         <div class="col">
             <div class="formgrid row">
@@ -481,6 +485,25 @@
             </div>
             <div class="formgrid row">
 
+            </div>
+        </div>
+    </div>
+    <div *ngIf="esSuperUsuario && datosMovimiento.datos">
+        <p-divider align="left">
+            <b>Datos locales</b>
+        </p-divider>
+        <div class="formgrid row" >
+            <div class="col-2">
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">FACTOR %</span>
+                    <p-inputNumber [(ngModel)]="datosMovimiento.datos.factor" mode="decimal" inputId="withoutgrouping" [minFractionDigits]="2" [maxFractionDigits]="5" [useGrouping]="false"> </p-inputNumber>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">KG RECONOCIDOS</span>
+                    <p-inputNumber [(ngModel)]="datosMovimiento.datos.kg_reconocidos" mode="decimal" inputId="withoutgrouping" [useGrouping]="false"> </p-inputNumber>
+                </div>
             </div>
         </div>
     </div>
