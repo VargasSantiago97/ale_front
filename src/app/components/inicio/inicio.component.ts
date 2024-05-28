@@ -3476,6 +3476,11 @@ export class InicioComponent {
                     var kg_mermas: any = 0
                     var kg_final: any = 0
 
+                    var reconocidos_danados: any = 0
+                    var reconocidos_verdes: any = 0
+                    var reconocidos_humedad: any = 0
+                    var reconocidos_otros: any = 0
+
                     var kg_reconocidos: any = 0
                     var factor: any = 0
 
@@ -3519,12 +3524,23 @@ export class InicioComponent {
                         }
                     }
 
-                    if(mov.datos.kg_reconocidos){
-                        kg_reconocidos = mov.datos.kg_reconocidos
+                    if(mov.datos.reconocidos_danados){
+                        reconocidos_danados = parseInt(mov.datos.reconocidos_danados) ? parseInt(mov.datos.reconocidos_danados) : 0
+                    }
+                    if(mov.datos.reconocidos_verdes){
+                        reconocidos_verdes = parseInt(mov.datos.reconocidos_verdes) ? parseInt(mov.datos.reconocidos_verdes) : 0
+                    }
+                    if(mov.datos.reconocidos_humedad){
+                        reconocidos_humedad = parseInt(mov.datos.reconocidos_humedad) ? parseInt(mov.datos.reconocidos_humedad) : 0
+                    }
+                    if(mov.datos.reconocidos_otros){
+                        reconocidos_otros = parseInt(mov.datos.reconocidos_otros) ? parseInt(mov.datos.reconocidos_otros) : 0
                     }
                     if(mov.datos.factor){
-                        factor = mov.datos.factor
+                        factor = parseFloat(mov.datos.factor) ? parseFloat(mov.datos.factor) : 0.0
                     }
+
+                    kg_reconocidos = reconocidos_danados + reconocidos_verdes + reconocidos_humedad + reconocidos_otros
 
 
                     movimiento.kg_acondicionadora_entrada = kg_acondicionadora_entrada
@@ -3533,7 +3549,13 @@ export class InicioComponent {
                     movimiento.kg_descarga = kg_descarga
                     movimiento.kg_mermas = kg_mermas
                     movimiento.kg_final = kg_final
-                    movimiento.kg_reconocidos = kg_reconocidos
+
+                    movimiento.kg_recon_dan = reconocidos_danados
+                    movimiento.kg_recon_ver = reconocidos_verdes
+                    movimiento.kg_recon_hum = reconocidos_humedad
+                    movimiento.kg_recon_otr = reconocidos_otros
+                    movimiento.kg_recon_totales = kg_reconocidos
+
                     movimiento.factor = factor
 
                     if (this.db_carta_porte.some((e: any) => { return e.nro_ctg == movimiento.cpe_definitiva })) {
@@ -3577,7 +3599,7 @@ export class InicioComponent {
                     movimiento.establecimiento = ''
                     movimiento.desde = ''
                     movimiento.porcentaje = 1
-                    var kg_computar: any = this.calcularKilosComputar(movimiento) + kg_reconocidos
+                    var kg_computar: any = this.calcularKilosComputar(movimiento)
 
                     var origenes = this.db_locales['movimiento_origen'].filter((e: any) => { return e.id_movimiento == movimiento.id })
                     if (origenes.length) {
@@ -3595,6 +3617,7 @@ export class InicioComponent {
                             nuevo_movimiento.produccion = this.transformDatoTabla(origen.id_establecimiento, "campoProduce")
                             nuevo_movimiento.porcentaje = porcentaje
                             nuevo_movimiento.kg_computar = kg_computar * porcentaje
+                            nuevo_movimiento.kg_computar_con_rec = (kg_computar + kg_reconocidos) * porcentaje
 
                             movimientos.push(nuevo_movimiento)
                         });
@@ -3603,6 +3626,7 @@ export class InicioComponent {
                         movimiento.desde = movimiento.tipo_orig
                         movimiento.produccion = movimiento.produce
                         movimiento.kg_computar = kg_computar
+                        movimiento.kg_computar_con_rec = kg_computar + kg_reconocidos
 
                         movimientos.push(movimiento)
                     }

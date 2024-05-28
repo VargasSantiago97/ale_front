@@ -326,7 +326,7 @@
         <b>Transporte</b>
     </p-divider>
     <div class="formgrid row">
-        <div class="field col-4">
+        <div class="field col-3">
             <div class="tarjeta">
                 <h6>Transporte: <button (click)="actualizarTransportistas()" class="button-tabla"><i
                             class="pi pi-refresh"></i></button></h6>
@@ -377,7 +377,7 @@
                 <button class="button-ver-todo" (click)="verTodosChoferes()">Ver todos</button>
             </div>
         </div>
-        <div class="field col-3">
+        <div class="field col-2">
             <div class="tarjeta">
                 <h6>Camion: <button (click)="actualizarCamiones()" class="button-tabla"><i
                             class="pi pi-refresh"></i></button></h6>
@@ -456,6 +456,13 @@
                 </table>
             </div>
         </div>
+        <div class="field col-2">
+            <span class="p-float-label">
+                <textarea id="float-input" rows="5" [style]="{'width': '100%'}" pInputTextarea
+                    [(ngModel)]="datosMovimiento.observaciones"></textarea>
+                <label for="float-input">Observaciones</label>
+            </span>
+        </div>
     </div>
     <p-divider align="left">
         <b>Datos varios</b>
@@ -476,34 +483,38 @@
                 [metaKeySelection]="false"></p-listbox>
         </div>
         <div class="col">
-            <div class="formgrid row">
-                <span class="p-float-label">
-                    <textarea id="float-input" rows="5" cols="70" pInputTextarea
-                        [(ngModel)]="datosMovimiento.observaciones"></textarea>
-                    <label for="float-input">Observaciones</label>
-                </span>
-            </div>
-            <div class="formgrid row">
-
-            </div>
-        </div>
-    </div>
-    <div *ngIf="esSuperUsuario && datosMovimiento.datos">
-        <p-divider align="left">
-            <b>Datos locales</b>
-        </p-divider>
-        <div class="formgrid row" >
-            <div class="col-2">
-                <div class="p-inputgroup">
-                    <span class="p-inputgroup-addon">FACTOR %</span>
-                    <p-inputNumber [(ngModel)]="datosMovimiento.datos.factor" mode="decimal" inputId="withoutgrouping" [minFractionDigits]="2" [maxFractionDigits]="5" [useGrouping]="false"> </p-inputNumber>
-                </div>
-            </div>
-            <div class="col-2">
-                <div class="p-inputgroup">
-                    <span class="p-inputgroup-addon">KG RECONOCIDOS</span>
-                    <p-inputNumber [(ngModel)]="datosMovimiento.datos.kg_reconocidos" mode="decimal" inputId="withoutgrouping" [useGrouping]="false"> </p-inputNumber>
-                </div>
+            <div class="tarjeta" *ngIf="esSuperUsuario && datosMovimiento.datos">
+                <h6>Kilos reconocidos:</h6>
+                <table>
+                    <tr>
+                        <td>DAÑADOS</td>
+                        <td><input type="number" step=1 class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.datos.reconocidos_danados"><br></td>
+                    </tr>
+                    <tr>
+                        <td>VERDES</td>
+                        <td><input type="number" step=1 class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.datos.reconocidos_verdes"><br></td>
+                    </tr>
+                    <tr>
+                        <td>HUMEDAD</td>
+                        <td><input type="number" step=1 class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.datos.reconocidos_humedad"><br></td>
+                    </tr>
+                    <tr>
+                        <td>OTROS</td>
+                        <td><input type="number" step=1 class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.datos.reconocidos_otros"><br></td>
+                        <td><input type="text" class="input-text-codigo" [style]="{'width':'100%'}"
+                                [(ngModel)]="datosMovimiento.datos.reconocidos_otros_obs"><br></td>
+                    </tr>
+                    <br/>
+                    <tr>
+                        <td>FACTOR (Girasol)</td>
+                        <td><input type="number" step=0.01 class="input-text-codigo"
+                                [(ngModel)]="datosMovimiento.datos.factor"><br></td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
