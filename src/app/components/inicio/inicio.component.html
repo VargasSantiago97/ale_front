@@ -514,6 +514,10 @@
                         <td><input type="number" step=0.01 class="input-text-codigo"
                                 [(ngModel)]="datosMovimiento.datos.factor"><br></td>
                     </tr>
+                    <div class="field-checkbox">
+                        <p-checkbox [(ngModel)]="datosMovimiento.datos.control_reconocidos" [binary]="true" inputId="binary"></p-checkbox>
+                        <label for="binary">Controlado?: {{datosMovimiento.datos.control_reconocidos}}</label>
+                    </div>
                 </table>
             </div>
         </div>

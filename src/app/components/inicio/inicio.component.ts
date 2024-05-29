@@ -3490,6 +3490,7 @@ export class InicioComponent {
 
                     var ok_origen: any = ''
                     var ok_descarga: any = ''
+                    var ok_recon: any = ''
 
                     var kg_netos_cpe: any = 0
                     var estado: any = ""
@@ -3539,6 +3540,11 @@ export class InicioComponent {
                     if(mov.datos.factor){
                         factor = parseFloat(mov.datos.factor) ? parseFloat(mov.datos.factor) : 0.0
                     }
+                    if(mov.datos.control_reconocidos){
+                        ok_recon = mov.datos.control_reconocidos ? "OK" : ""
+                    } else {
+                        ok_recon = ""
+                    }
 
                     kg_reconocidos = reconocidos_danados + reconocidos_verdes + reconocidos_humedad + reconocidos_otros
 
@@ -3587,6 +3593,7 @@ export class InicioComponent {
 
                     movimiento.ok_origen = ok_origen
                     movimiento.ok_descarga = ok_descarga
+                    movimiento.ok_recon = ok_recon
 
 
                     movimiento.kg_tara = parseInt(movimiento.kg_tara) ? parseInt(movimiento.kg_tara) : 0
