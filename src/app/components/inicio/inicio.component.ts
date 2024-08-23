@@ -937,6 +937,10 @@ export class InicioComponent {
                     try {
                         var data = JSON.parse(e.data)
                         agregar = (data.estado == 'CN') || (data.estado == 'AC') || (data.estado == 'CF')
+
+                        if(agregar){
+                            agregar = e.planta_destino ? true : false  
+                        }
                     } catch {
                     }
 

@@ -134,25 +134,23 @@
 <p-dialog header="FILTROS" [(visible)]="displayFiltros" [modal]="true" [style]="{width: '98vw', height: '900px'}"
     [draggable]="true" [resizable]="false">
     <div class="formgrid row">
-        <div class="field col">
+        <div class="field col-4" [style]="{ 'max-width': '20%'}">
             <div class="field">
                 <label>FECHA DESDE</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaDesde" dateFormat="dd/mm/yy"></p-calendar>
             </div>
         </div>
-        <br>
-        <div class="field col">
+        <div class="field col-4" [style]="{ 'max-width': '20%'}">
             <div class="field">
                 <label>FECHA HASTA</label><br>
                 <p-calendar inputId="basic" [(ngModel)]="datosFiltro.fechaHasta" dateFormat="dd/mm/yy"></p-calendar>
             </div>
         </div>
-        <br>
-        <div class="field col">
+        <div class="field col-4" [style]="{ 'max-width': '60%'}">
             <div class="field">
                 <label>BANDERA</label><br>
 
-                <p-multiSelect [options]="db_banderas" [(ngModel)]="datosFiltro.id_bandera" defaultLabel="Seleccionar"
+                <p-multiSelect [options]="db_banderas" [(ngModel)]="datosFiltro.id_bandera" defaultLabel="Seleccionar" [style]="{'max-width': '100%'}"
                     optionLabel="alias" optionValue="id" class="multiselect-custom">
                     <ng-template let-bandera pTemplate="item">
                         <div class="bandera-item">
