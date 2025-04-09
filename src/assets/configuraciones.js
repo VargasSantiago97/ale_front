@@ -5,17 +5,17 @@ var vars = {
     API_URI_IMPORTAR: 'http://localhost/api/importaciones',
     API_URI_REPORTE_XLSX: 'http://localhost/api/xlsx',
 
-    API_URI_NUBE: 'http://154.49.246.119/api',
+    API_URI_NUBE: 'http://46.202.147.144/api',
 
     //API_URI_PADRON: 'http://localhost/ng_fact/camacho/api', //OFICINA
-    API_URI_PADRON: 'http://norteyagua.online/api/afip/api', //HOME
+    API_URI_PADRON: 'http://46.202.147.144/api/afip/api', //HOME
     API_URI_UPLOAD: 'http://localhost/api',
 
     //API_URI_CONAGRO: 'http://localhost/api'
     //API_URI_CONAGRO: 'http://192.168.50.141/api'
 
-    //API_CPE: 'http://localhost/cpe',
-    API_CPE: 'http://norteyagua.online/cpe',
+    API_CPE: 'http://localhost/cpe',
+
     API_CPE_ARCHIVOS: 'http://localhost/cpe',
 
     ORDEN_CARGA: 'http://localhost/api/pdf',

@@ -3328,6 +3328,14 @@ export class InicioComponent {
         this.iframeVisor.nativeElement.src = this.API_URI_UPLOAD + '/view.php?folder=' + dato.nro_ctg + '&file=' + archivo + '#zoom=125'
     }
 
+    pasarANumero(dato: any){
+        if(!dato) return 0;
+
+        if(dato == '-') return 0;
+
+        return parseInt(dato.replace('.', ''))
+    }
+
     exportToExcel() {
         /* Crear un libro de trabajo */
         const workbook = XLSX.utils.book_new();
@@ -3473,6 +3481,8 @@ export class InicioComponent {
         this.getDB('movimientos', () => {
             this.getDB('movimiento_origen', () => {
                 this.dataParaMostrarTabla.forEach((mov: any) => {
+
+                    console.log(mov)
                     var movimiento: any = { ...mov }
                     delete movimiento.datos
 
@@ -3530,16 +3540,16 @@ export class InicioComponent {
                     }
 
                     if(mov.datos.reconocidos_danados){
-                        reconocidos_danados = parseInt(mov.datos.reconocidos_danados) ? parseInt(mov.datos.reconocidos_danados) : 0
+                        reconocidos_danados = this.pasarANumero(mov.datos.reconocidos_danados)
                     }
                     if(mov.datos.reconocidos_verdes){
-                        reconocidos_verdes = parseInt(mov.datos.reconocidos_verdes) ? parseInt(mov.datos.reconocidos_verdes) : 0
+                        reconocidos_verdes = this.pasarANumero(mov.datos.reconocidos_verdes)
                     }
                     if(mov.datos.reconocidos_humedad){
-                        reconocidos_humedad = parseInt(mov.datos.reconocidos_humedad) ? parseInt(mov.datos.reconocidos_humedad) : 0
+                        reconocidos_humedad = this.pasarANumero(mov.datos.reconocidos_humedad)
                     }
                     if(mov.datos.reconocidos_otros){
-                        reconocidos_otros = parseInt(mov.datos.reconocidos_otros) ? parseInt(mov.datos.reconocidos_otros) : 0
+                        reconocidos_otros = this.pasarANumero(mov.datos.reconocidos_otros)
                     }
                     if(mov.datos.factor){
                         factor = parseFloat(mov.datos.factor) ? parseFloat(mov.datos.factor) : 0.0
@@ -3600,12 +3610,12 @@ export class InicioComponent {
                     movimiento.ok_recon = ok_recon
 
 
-                    movimiento.kg_tara = parseInt(movimiento.kg_tara) ? parseInt(movimiento.kg_tara) : 0
-                    movimiento.kg_bruto = parseInt(movimiento.kg_bruto) ? parseInt(movimiento.kg_bruto) : 0
-                    movimiento.kg_neto = parseInt(movimiento.kg_neto) ? parseInt(movimiento.kg_neto) : 0
-                    movimiento.kg_regulacion = parseInt(movimiento.kg_regulacion) ? parseInt(movimiento.kg_regulacion) : 0
-                    movimiento.kg_neto_final = parseInt(movimiento.kg_neto_final) ? parseInt(movimiento.kg_neto_final) : 0
-                    movimiento.kg_campo = parseInt(movimiento.kg_campo) ? parseInt(movimiento.kg_campo) : 0
+                    movimiento.kg_tara = this.pasarANumero(movimiento.kg_tara)
+                    movimiento.kg_bruto = this.pasarANumero(movimiento.kg_bruto)
+                    movimiento.kg_neto = this.pasarANumero(movimiento.kg_neto)
+                    movimiento.kg_regulacion = this.pasarANumero(movimiento.kg_regulacion)
+                    movimiento.kg_neto_final = this.pasarANumero(movimiento.kg_neto_final)
+                    movimiento.kg_campo = this.pasarANumero(movimiento.kg_campo)
 
                     movimiento.establecimiento = ''
                     movimiento.desde = ''
@@ -3806,400 +3816,3 @@ ${ a ? '\nA: *'+a+'*' : ''}${ select.observacionesCompleta ? '\nObs: '+select.ob
         document.body.removeChild(tempElement);
     }
 }
-
-//["id", "fecha", "id_campana", "id_socio", "id_origen", "id_grano", "id_transporte", "id_chofer", "id_camion", "id_corredor", "id_acopio", "id_deposito", "kg_bruto", "kg_tara", "kg_neto", "kg_regulacion", "kg_neto_final", "observaciones", "tipo_origen", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
-
-/*
-CPE
-ret:
-'cabecera': {
-    'fechaEmision': datetime.datetime(2023, 4, 28, 17, 43, 47), 
-    'nroCTG': 10109471135L, 
-    'sucursal': 0, 
-    'tipoCartaPorte': 74, 
-    'fechaInicioEstado': datetime.datetime(2023, 5, 1, 13, 56, 52), 
-    'nroOrden': 1209L, 
-    'estado': u'CN', 
-    'fechaVencimiento': datetime.datetime(2023, 5, 4, 11, 5)}, 
-    'origen': {'codProvincia': 16, 'codLocalidad': 10583, 'cuit': 30715327720L}, 
-    'destinatario': {'cuit': 30715118773L}, 
-    'intervinientes': {
-        'cuitCorredorVentaPrimaria': 23220029379L, 
-        'cuitRepresentanteEntregador': 30707386076L, 
-        'cuitCorredorVentaSecundaria': 23220029379L
-    }
-'datosCarga': {
-    'codGrano': 23, 
-    'pesoTaraDescarga': 14000, 
-    'pesoBruto': 44100, 
-    'pesoTara': 14200, 
-    'cosecha': 2223, 
-    'pesoBrutoDescarga': 44200
-}
-'transporte': [
-    {
-        'codigoTurno': u'MOL0721/01052023', 
-        'tarifaReferencia': Decimal('13847.91'), 
-        'cuitTransportista': 23136003119L, 
-        'dominio': u'FFZ879', 
-        'mercaderiaFumigada': True, 
-        'fechaHoraPartida': datetime.datetime(2023, 4, 28, 17, 45), 
-        'cuitChofer': 20378287031L, 
-        'tarifa': Decimal('9500'), 
-        'kmRecorrer': 850
-    }
-], 
-'errores': [], 
-'correspondeRetiroProductor': False, 
-'metadata': {'servidor': u'santiago', 'fechaHora': datetime.datetime(2023, 5, 4, 9, 2, 31)}, 
-'destino': {
-    'planta': 408411, 
-    'codProvincia': 12, 
-    'codLocalidad': 18794, 
-    'cuit': 30715118773L
-}, 
-'retiroProductor': None,
-
-
-
-CPE DB:
-
-    `id` VARCHAR(12) NOT NULL,
-    `sucursal` VARCHAR(5) NOT NULL,
-    `nro_cpe` VARCHAR(15) NOT NULL,
-    `nro_ctg` VARCHAR(15) NOT NULL,
-    `id_movimiento` VARCHAR(12) NOT NULL,
-    `cuit_solicitante` VARCHAR(12) NOT NULL,
-    `tipo_cpe` VARCHAR(10) NOT NULL,
-    `observaciones` VARCHAR(100) NOT NULL,
-    `es_solicitante_campo` VARCHAR(10) NOT NULL,
-    `planta_origen` VARCHAR(10) NOT NULL,
-    `cod_provincia_operador` VARCHAR(10) NOT NULL,
-    `cod_localidad_operador` VARCHAR(10) NOT NULL,
-    `cod_provincia_productor` VARCHAR(10) NOT NULL,
-    `cod_localidad_productor` VARCHAR(10) NOT NULL,
-    `corresponde_retiro_productor` VARCHAR(10) NOT NULL,
-    `certificado_coe` VARCHAR(30) NOT NULL,
-    `cuit_remitente_comercial_productor` VARCHAR(12) NOT NULL,
-    `cuit_destino` VARCHAR(12) NOT NULL,
-    `cuit_destinatario` VARCHAR(12) NOT NULL,
-    `es_destino_campo` VARCHAR(10) NOT NULL,
-    `cod_localidad` VARCHAR(10) NOT NULL,
-    `cod_provincia` VARCHAR(10) NOT NULL,
-    `planta_destino` VARCHAR(10) NOT NULL,
-    `cuit_corredor_venta_primaria` VARCHAR(12) NOT NULL,
-    `cuit_corredor_venta_secundaria` VARCHAR(12) NOT NULL,
-    `cuit_mercado_a_termino` VARCHAR(12) NOT NULL,
-    `cuit_remitente_comercial_venta_primaria` VARCHAR(12) NOT NULL,
-    `cuit_remitente_comercial_venta_secundaria` VARCHAR(12) NOT NULL,
-    `cuit_remitente_comercial_venta_secundaria2` VARCHAR(12) NOT NULL,
-    `cuit_representante_entregador` VARCHAR(12) NOT NULL,
-    `cuit_representante_recibidor` VARCHAR(12) NOT NULL,
-    `peso_tara` FLOAT NOT NULL,
-    `peso_bruto` FLOAT NOT NULL,
-    `cod_grano` VARCHAR(10) NOT NULL,
-    `cosecha` VARCHAR(10) NOT NULL,
-    `cuit_transportista` VARCHAR(12) NOT NULL,
-    `cuit_pagador_flete` VARCHAR(12) NOT NULL,
-    `cuit_intermediario_flete` VARCHAR(12) NOT NULL,
-    `cuit_chofer` VARCHAR(12) NOT NULL,
-    `mercaderia_fumigada` VARCHAR(10) NOT NULL,
-    `km_recorrer` FLOAT NOT NULL,
-    `tarifa_referencia` FLOAT NOT NULL,
-    `tarifa` FLOAT NOT NULL,
-    `codigo_turno` VARCHAR(30) NOT NULL,
-    `fecha_hora_partida` VARCHAR(30) NOT NULL,
-    `dominio` VARCHAR(50) NOT NULL,
-    `datos` TEXT NOT NULL,
-    `creado_por` VARCHAR(12) NULL DEFAULT NULL,
-    `creado_el` DATETIME NULL DEFAULT NULL,
-    `editado_por`VARCHAR(12) NULL DEFAULT NULL,
-    `editado_el` DATETIME NULL DEFAULT NULL,
-    `activo` INT(11) NULL DEFAULT NULL,
-    `estado` INT(11) NULL DEFAULT NULL,
-    `terminada` INT(11) NULL DEFAULT NULL,
-    `controlada` INT(11) NULL DEFAULT NULL,
-    `controlada_final` INT(11) NULL DEFAULT NULL,
-    `sistema` INT(11) NULL DEFAULT NULL,
-    `observaciones_sistema` TEXT NULL DEFAULT NULL,
-    `data` TEXT NULL DEFAULT NULL,
-
-{
-    "contingencia": [
-        {
-            "concepto": "B", 
-            "concepto_desactivacion": "B", 
-            "cuit_transportista": 20333333334, 
-            "descripcion": "Desctrucci\u00f3n carga", 
-            "nro_operativo": 1111111111
-        }
-    ], 
-    "": "20267565393", 
-    "datos_carga": [
-        {
-            "cod_grano": 23, 
-            "cosecha": 2021, 
-            "peso_bruto": 110, 
-            "peso_tara": 10
-        }
-    ],
-    "destino": [
-        {
-            "cod_localidad": 14310, 
-            "cod_provincia": 12, 
-            "cuit_destinatario": "20267565393", 
-            "cuit_destino": "20267565393", 
-            "es_destino_campo": "true", 
-            "planta": 1938
-        }
-    ], 
-    "intervinientes": [
-        {
-            "cuit_corredor_venta_primaria": null, 
-            "cuit_corredor_venta_secundaria": null, 
-            "cuit_mercado_a_termino": null, 
-            "cuit_remitente_comercial_venta_primaria": 27000000014, 
-            "cuit_remitente_comercial_venta_secundaria": null, 
-            "cuit_remitente_comercial_venta_secundaria2": 20400000000, 
-            "cuit_representante_entregador": null, 
-            "cuit_representante_recibidor": null
-        }
-    ], 
-    "nro_orden": 28, 
-    "observaciones": "Notas del transporte", 
-    "origen": [
-        {
-            "cod_localidad_productor": 14310, 
-            "cod_provincia_productor": 1
-        }
-    ],
-    "retiro_productor": [
-        {
-            "certificado_coe": null, 
-            "corresponde_retiro_productor": "false", 
-            "cuit_remitente_comercial_productor": null, 
-            "es_solicitante_campo": "true"
-        }
-    ],
-    "": 222,
-    "": 74,
-    "transporte": [
-        {
-            "codigo_turno": null, 
-            "cuit_chofer": "20333333334", 
-            "cuit_intermediario_flete": null, 
-            "cuit_pagador_flete": null, 
-            "cuit_transportista": 20120372913, 
-            "dominio": "AB000ST", 
-            "fecha_hora_partida": "2023-04-13T16:41:26", 
-            "km_recorrer": 500, 
-            "mercaderia_fumigada": "true", 
-            "tarifa": null, 
-            "tarifa_referencia": 1234.5
-        },
-        {
-            "dominio": "AC001ST"
-        }
-    ]
-}
-
-
-
-//todos
-{
-    "contingencia": [
-        {
-            "concepto": "B", 
-            "concepto_desactivacion": "B", 
-            "cuit_transportista": 20333333334, 
-            "descripcion": "Desctrucci\u00f3n carga", 
-            "nro_operativo": 1111111111
-        }
-    ], 
-    "cuit_solicitante": "20267565393", 
-    "datos_carga": [
-        {
-            "cod_grano": 23, 
-            "cosecha": 2021, 
-            "peso_bruto": 110, 
-            "peso_tara": 10
-        }
-    ],
-    "destino": [
-        {
-            "cod_localidad": 14310, 
-            "cod_provincia": 12, 
-            "cuit_destinatario": "20267565393", 
-            "cuit_destino": "20267565393", 
-            "es_destino_campo": "true", 
-            "planta": 1938
-        }
-    ], 
-    "intervinientes": [
-        {
-            "cuit_corredor_venta_primaria": null, 
-            "cuit_corredor_venta_secundaria": null, 
-            "cuit_mercado_a_termino": null, 
-            "cuit_remitente_comercial_venta_primaria": 27000000014, 
-            "cuit_remitente_comercial_venta_secundaria": null, 
-            "cuit_remitente_comercial_venta_secundaria2": 20400000000, 
-            "cuit_representante_entregador": null, 
-            "cuit_representante_recibidor": null
-        }
-    ], 
-    "nro_orden": 28, 
-    "observaciones": "Notas del transporte", 
-    "origen": [
-        {
-            "cod_localidad_productor": 14310, 
-            "cod_provincia_productor": 1
-        }
-    ], 
-    "retiro_productor": [
-        {
-            "certificado_coe": null, 
-            "corresponde_retiro_productor": "false", 
-            "cuit_remitente_comercial_productor": null, 
-            "es_solicitante_campo": "true"
-        }
-    ], 
-    "sucursal": 222, 
-    "tipo_cpe": 74, 
-    "transporte": [
-        {
-            "codigo_turno": null, 
-            "cuit_chofer": "20333333334", 
-            "cuit_intermediario_flete": null, 
-            "cuit_pagador_flete": null, 
-            "cuit_transportista": 20120372913, 
-            "dominio": "AB000ST", 
-            "fecha_hora_partida": "2023-04-13T16:41:26", 
-            "km_recorrer": 500, 
-            "mercaderia_fumigada": "true", 
-            "tarifa": null, 
-            "tarifa_referencia": 1234.5
-        }, 
-        {
-            "dominio": "AC001ST"
-        }
-    ]
-
-    {
-        "tabla": "orden_carga",
-        "columnas": ["id", "id_movimiento", "numero", "fecha", "beneficiario", "transportista", "conductor", "patentes", "establecimiento", "cultivo", "trilla_silo", "tara", "bruto", "neto", "firma1", "firma2", "observaciones", "creado_por", "creado_el", "editado_por", "editado_el", "activo", "estado"]
-    },
-}
-
-
-
-
-
-DATOS DE CARTA DE PORTE QUE TRAE WSCPE
-    "mensaje":
-    nroCTG
-    datosCarga.codGrano
-    datosCarga.pesoTaraDescarga
-    datosCarga.pesoBruto
-    datosCarga.pesoTara
-    datosCarga.cosecha
-    datosCarga.pesoBrutoDescarga
-    sucursal
-    correspondeRetiroProductor
-    nroOrden
-    estado
-    retiroProductor
-
-    destinatario.cuit
-
-    transporte.codigoTurno
-    transporte.tarifaReferencia
-    transporte.cuitTransportista
-    transporte.dominio
-    transporte.mercaderiaFumigada
-    transporte.cuitChofer
-    transporte.tarifa
-    transporte.kmRecorrer
-
-    destino.planta
-    destino.codProvincia
-    destino.codLocalidad
-    destino.cuit
-
-    intervinientes.cuitCorredorVentaPrimaria
-    intervinientes.cuitRepresentanteEntregador
-    intervinientes.cuitCorredorVentaSecundaria
-
-    }
-}
-
-DATOS DE CPE QUE SE ARMA CON LA DB
-{
-    "id": "846bdfcc03d7",
-    "sucursal": "0",
-    "nro_cpe": "1207",
-    "nro_ctg": "10109399145",
-    "id_movimiento": "756ff81d8192",
-    "cuit_solicitante": "30715327720",
-    "tipo_cpe": "74",
-    "observaciones": null,
-    "es_solicitante_campo": "1",
-    "planta_origen": null,
-    "cod_provincia_operador": null,
-    "cod_localidad_operador": null,
-    "cod_provincia_productor": null,
-    "cod_localidad_productor": null,
-    "corresponde_retiro_productor": "",
-    "certificado_coe": null,
-    "cuit_remitente_comercial_productor": null,
-    "cuit_destino": "30709590894",
-    "cuit_destinatario": "33502232229",
-    "es_destino_campo": "",
-    "cod_localidad": null,
-    "cod_provincia": null,
-    "planta_destino": null,
-    "cuit_corredor_venta_primaria": "23220029379",
-    "cuit_corredor_venta_secundaria": "23220029379",
-    "cuit_mercado_a_termino": null,
-    "cuit_remitente_comercial_venta_primaria": null,
-    "cuit_remitente_comercial_venta_secundaria": null,
-    "cuit_remitente_comercial_venta_secundaria2": null,
-    "cuit_representante_entregador": "30707386076",
-    "cuit_representante_recibidor": null,
-    "peso_tara": "15000",
-    "peso_bruto": "45000",
-    "cod_grano": "23",
-    "cosecha": "2223",
-    "cuit_transportista": "23136003119",
-    "cuit_pagador_flete": null,
-    "cuit_intermediario_flete": null,
-    "cuit_chofer": "20144129076",
-    "mercaderia_fumigada": "1",
-    "km_recorrer": "850",
-    "tarifa_referencia": "13847.9",
-    "tarifa": "9500",
-    "codigo_turno": "RTSO2304276556687",
-    "fecha_hora_partida": "2023-04-26T11:02",
-    "dominio": "[\"GTD444\",\"ELV966\"]",
-    "datos": null,
-    "creado_por": "10",
-    "creado_el": "2023-04-28 11:09:40",
-    "editado_por": "10",
-    "editado_el": "2023-04-28 11:09:45",
-    "activo": "1",
-    "estado": "1",
-    "terminada": null,
-    "controlada": null,
-    "controlada_final": null,
-    "sistema": null,
-    "observaciones_sistema": null,
-    "data": {
-        "kg_descarga": 30340,
-        "estado": "CN",
-        "kg_mermas": 0
-    },
-    "archivos": [
-        "CPE 00-01207 - CTG 10109399145 - CN.pdf",
-        "cpe-00000-00001207 FRANCOVIG DOMINGO.pdf"
-    ]
-}
- */
