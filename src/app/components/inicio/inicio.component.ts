@@ -3333,7 +3333,13 @@ export class InicioComponent {
 
         if(dato == '-') return 0;
 
-        return parseInt(dato.replace('.', ''))
+        let datoDevolver = 0
+        try {
+            datoDevolver = parseInt(dato.replace('.', ''))
+        } catch {
+            datoDevolver = 0
+        }
+        return datoDevolver
     }
 
     exportToExcel() {
